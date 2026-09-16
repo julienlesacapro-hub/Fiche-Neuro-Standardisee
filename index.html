@@ -433,12 +433,12 @@ input.dpick::-webkit-clear-button{display:none}
   td.lv small{display:none}
   .bb{padding:8px 12px;font-size:13px}
   svg.body{width:46vw;max-width:200px;height:auto}
-  /* la carte métamérique prend toute la largeur : une bande dorsale ne fait
-     que quelques pixels de haut sur un demi-écran, impossible à viser au doigt */
-  #s_sens .bodywrap{flex-direction:column;gap:12px;align-items:center}
-  #s_sens .bodyfig{width:100%;text-align:center}
-  svg.sensmap{width:min(94vw,360px) !important;max-width:none !important;height:auto !important}
-  #s_sens .sumcol{min-width:100%}
+  /* les deux faces restent côte à côte, y compris sur téléphone : les comparer
+     d'un coup d'œil compte plus que la taille de chaque bande */
+  #s_sens .bodywrap{flex-direction:row;flex-wrap:wrap;gap:4px;justify-content:center}
+  #s_sens .bodyfig{flex:1 1 0;min-width:0;text-align:center}
+  svg.sensmap{width:100% !important;max-width:none !important;height:auto !important}
+  #s_sens .sumcol{flex-basis:100%;min-width:100%;order:9}
   .sumcol{min-width:100%}
   .aisbox .aisg{font-size:19px}
   #navbar{display:flex}
@@ -577,8 +577,8 @@ const NO  = [{v:1,l:'OUI',c:'v-ok'},{v:0,l:'NON',c:'v-ab'}];          // OUI = n
 const NN  = [{v:1,l:'OUI'},{v:0,l:'NON'}];                            // neutre
 const CO  = [{v:1,l:'D'},{v:2,l:'G'},{v:3,l:'Bilat.'}];
 const CO2 = [{v:1,l:'D'},{v:2,l:'G'}];
-const REF = [{v:0,l:'Absent',c:'v-ab'},{v:1,l:'Présent',c:'v-ok'},{v:2,l:'Très vif',c:'v-wn'}];
-const BBK = [{v:0,l:'Flexion',c:'v-ok'},{v:1,l:'Neutre',c:'v-wn'},{v:2,l:'Extension',c:'v-ab'}];
+const REF = [{v:0,l:'Absent',c:'v-ab'},{v:1,l:'Présent',c:'v-ok'},{v:2,l:'Très vif',c:'v-ab'}];
+const BBK = [{v:0,l:'Flexion',c:'v-ok'},{v:1,l:'Neutre',c:'v-ok'},{v:2,l:'Extension',c:'v-ab'}];
 const MRC = [{v:0,l:'0'},{v:1,l:'1'},{v:2,l:'2'},{v:3,l:'3'},{v:4,l:'4'},{v:5,l:'5'}];
 const MRC_TXT = 'Échelle MRC (Medical Research Council) — 0 : aucune contraction · 1 : contraction visible sans mouvement · '+
  '2 : mouvement possible pesanteur éliminée · 3 : mouvement contre pesanteur · 4 : mouvement contre résistance · 5 : force normale';
@@ -787,6 +787,24 @@ barre:{t:'Manœuvres de Barré et de Mingazzini',
    '<h4>Intérêt</h4><p>Ces deux manœuvres révèlent un déficit trop discret pour être vu au testing segmentaire. '+
    'Une chute asymétrique vaut un déficit, même avec une force cotée 5 partout.</p>'},
 
+pup:{t:'Examen pupillaire',
+ h:'<h4>Conditions</h4><p>Lumière ambiante tamisée, le sujet fixe un point lointain : '+
+   'une pupille se contracte à la fixation rapprochée et l\'anisocorie disparaît alors à tort.</p>'+
+   '<h4>Ce que vous cotez</h4><ul>'+
+   '<li><b>Anisocorie</b> — différence de diamètre entre les deux pupilles. '+
+   'Notez la pupille la plus large : c\'est elle qui oriente. Une anisocorie de moins d\'un millimètre '+
+   'existe chez environ un sujet sur cinq et n\'a pas de valeur, sauf si elle est nouvelle.</li>'+
+   '<li><b>Mydriase</b> — pupille dilatée, classiquement au-delà de 5 mm en lumière ambiante.</li>'+
+   '<li><b>Myosis</b> — pupille resserrée, en deçà de 2 mm.</li>'+
+   '<li><b>Réflexe photomoteur</b> — éclairez une pupille par le côté, elle doit se contracter, '+
+   'et l\'autre aussi (réflexe consensuel). Testez les deux yeux.</li></ul>'+
+   '<h4>En médecine de plongée</h4><p>Une anisocorie ou une mydriase apparue au décours d\'une plongée '+
+   'fait discuter un accident de désaturation cérébral ou un barotraumatisme cérébral par embolie gazeuse. '+
+   'Un myosis serré bilatéral oriente plutôt vers une atteinte protubérantielle ou une cause toxique. '+
+   'Dans tous ces cas, l\'avis est sans délai.</p>'+
+   '<h4>Pièges</h4><p>Un collyre mydriatique, une chirurgie oculaire, une prothèse ou un traumatisme '+
+   'ancien expliquent une anisocorie fixe : demandez-le avant de conclure.</p>'},
+
 gcs:{t:'Score de Glasgow',
  h:'<h4>Règle générale</h4><p>Cotez la <b>meilleure</b> réponse obtenue, et pour la réponse motrice '+
    'la meilleure des deux côtés. Le total va de 3 à 15.</p>'+
@@ -896,7 +914,20 @@ const SPEC = [
 ]},
 
 {id:'fsup', t:'Fonctions supérieures', cols:1,
- norm:{fs_comport:0,fs_dts:0,fs_parole:0,fs_visuel:0,fs_audition:0,fs_acouph:0,fs_vertiges:0,nys:0,vns:0}, f:[
+ norm:{fs_comport:0,fs_dts:0,fs_parole:0,fs_visuel:0,fs_audition:0,fs_acouph:0,fs_vertiges:0,nys:0,vns:0,
+       pup_sym:1,pup_aniso:0,pup_myd:0,pup_myo:0,pup_rpm:1}, f:[
+  {k:'h_pup', t:'head', l:'Examen pupillaire', full:1,
+   sub2:'En lumière tamisée, puis réaction à la lumière. Une anisocorie nouvelle après plongée impose un avis sans délai.'},
+  {k:'pup_sym', l:'Pupilles symétriques', t:'choice', o:NO, help:'pup'},
+  {k:'pup_aniso', l:'Anisocorie', t:'choice', o:ON, dep:['pup_sym',[0]], sub:1, help:'pup'},
+  {k:'pup_aniso_cote', l:'Pupille la plus large', t:'choice', o:CO2, dep:['pup_aniso',[1]], sub:1},
+  {k:'pup_myd', l:'Mydriase', t:'choice', o:ON, help:'pup'},
+  {k:'pup_myd_cote', l:'Côté', t:'choice', o:CO, dep:['pup_myd',[1]], sub:1},
+  {k:'pup_myo', l:'Myosis', t:'choice', o:ON, help:'pup'},
+  {k:'pup_myo_cote', l:'Côté', t:'choice', o:CO, dep:['pup_myo',[1]], sub:1},
+  {k:'pup_rpm', l:'Réflexe photomoteur présent', t:'choice', o:NO, help:'pup'},
+  {k:'pup_rpm_cote', l:'Côté déficitaire', t:'choice', o:CO, dep:['pup_rpm',[0]], sub:1},
+  {k:'h_fsup', t:'head', l:'Fonctions supérieures', full:1},
   {k:'fs_comport', l:'Troubles du comportement', t:'choice', o:ON},
   {k:'fs_dts',     l:'Désorientation temporo-spatiale (DTS)', t:'choice', o:ON},
   {k:'fs_parole',  l:'Troubles de la parole', t:'choice', o:ON},
@@ -969,8 +1000,8 @@ const SPEC = [
   {k:'ref_rot_G', l:'Rotulien GAUCHE', t:'choice', o:REF, flags:RFLAGS, copyref:1},
   {k:'ref_ach_D', l:'Achilléen DROIT', t:'choice', o:REF, flags:RFLAGS, copyref:1},
   {k:'ref_ach_G', l:'Achilléen GAUCHE',t:'choice', o:REF, flags:RFLAGS, copyref:1},
-  {k:'bbk_D', help:'babinski', l:'Cutané plantaire (BBK) DROIT',  t:'choice', o:BBK},
-  {k:'bbk_G', help:'babinski', l:'Cutané plantaire (BBK) GAUCHE', t:'choice', o:BBK},
+  {k:'bbk_D', ok:[0,1], help:'babinski', l:'Cutané plantaire (BBK) DROIT',  t:'choice', o:BBK},
+  {k:'bbk_G', ok:[0,1], help:'babinski', l:'Cutané plantaire (BBK) GAUCHE', t:'choice', o:BBK},
   {k:'trep_pied', help:'trep', l:'Trépidation du pied', t:'choice', o:ON, full:1},
   {k:'trep_pied_cote', l:'Côté', t:'choice', o:CO, dep:['trep_pied',[1]], sub:1, full:1},
   {k:'trep_pied_qual_D', l:'Caractère à DROITE',  t:'choice', o:TREP, dep:['trep_pied_cote',[1,3]], sub:1, full:1},
@@ -1126,8 +1157,12 @@ const SPEC = [
    Elles n'entrent jamais dans le fichier de données : un CSV n'est pas un
    album, et une photo de patient est une donnée identifiante.
    ===================================================================== */
-const PJ_TITRES = ['Examen cutané','Otoscopie','Lésion cutanée','Schéma annoté',
-                   'Champ visuel','Document remis','Autre'];
+/* Titres proposés. Ce sont des raccourcis : le titre reste un texte libre,
+   que l'on peut modifier ou compléter après l'avoir choisi. */
+const PJ_TITRES = ['Examen pupillaire','Lésion cutanée','Otoscopie droite','Otoscopie gauche',
+                   'Paramètres de plongée','Ordinateur de plongée','Appareil respiratoire de plongée',
+                   'Fiche de prise en charge pré-hospitalière','Ordonnance médicamenteuse',
+                   'Document du patient','Autre'];
 const PJ_MAX_PX = 1600;      // côté le plus long après réduction
 const PJ_QUAL   = 0.82;      // qualité JPEG
 const PJ_MAX_N  = 12;        // nombre maximal de photos par fiche
@@ -1847,7 +1882,7 @@ function fieldHTML(f){
       const on = v===o.v, gh = (v==null && g===o.v);
       return '<span class="opt'+(f.mrc?' sm mrc-'+o.v:'')+(f.eva?' sm eva-'+o.v:'')+
         (on?' on '+(o.c||''):'')+(gh?' gh':'')+
-        '" onclick="setVal(\''+f.k+'\','+JSON.stringify(o.v)+')"'+(gh?' title="Valeur de l\'examen précédent"':'')+
+        '" onclick="setVal(\''+f.k+'\','+esc(JSON.stringify(o.v))+')"'+(gh?' title="Valeur de l\'examen précédent"':'')+
         '>'+esc(o.l)+'</span>';
     }).join('')+'</span>'+
     (v!=null?'<button class="clr" title="Effacer" onclick="setVal(\''+f.k+'\',null)">&times;</button>':'')+
@@ -1976,10 +2011,17 @@ function dateType(k, el){
   else if(d.length === 8){ REC._badDate[k] = out; el.classList.add('bad'); }
   else { REC._badDate[k] = out; el.classList.remove('bad'); if(REC.d[k]) setDateVal(k, ''); }
 }
+/* Le formulaire est reconstruit APRÈS le clic en cours : reconstruire pendant
+   le blur détacherait le bouton visé et le clic serait perdu, obligeant à
+   cliquer deux fois dès qu'une date restait incomplète. */
+const reRender = () => setTimeout(renderForm, 0);
+/* Quitter un champ de date ne reconstruit pas le formulaire : le faire
+   détacherait l'élément que l'on vient de cliquer, et le clic serait perdu.
+   Tout ce qui dépend de la date est déjà remis à jour par setDateVal. */
 function dateBlur(k, el){
   const iso = frToIso(el.value);
-  if(!el.value.trim()){ if(REC._badDate) delete REC._badDate[k]; el.classList.remove('bad'); setDateVal(k,''); renderForm(); return; }
-  if(iso){ if(REC._badDate) delete REC._badDate[k]; el.classList.remove('bad'); setDateVal(k, iso); renderForm(); }
+  if(!el.value.trim()){ if(REC._badDate) delete REC._badDate[k]; el.classList.remove('bad'); setDateVal(k,''); return; }
+  if(iso){ if(REC._badDate) delete REC._badDate[k]; el.classList.remove('bad'); setDateVal(k, iso); }
   else { el.classList.add('bad'); toast('Date incomplète ou impossible : attendu JJ/MM/AAAA'); }
 }
 function timeType(k, el){
@@ -1995,8 +2037,8 @@ function timeType(k, el){
 }
 function timeBlur(k, el){
   const hm = normHeure(el.value);
-  if(!el.value.trim()){ if(REC._badTime) delete REC._badTime[k]; el.classList.remove('bad'); setDateVal(k,''); renderForm(); return; }
-  if(hm){ if(REC._badTime) delete REC._badTime[k]; el.classList.remove('bad'); setDateVal(k, hm); renderForm(); }
+  if(!el.value.trim()){ if(REC._badTime) delete REC._badTime[k]; el.classList.remove('bad'); setDateVal(k,''); return; }
+  if(hm){ if(REC._badTime) delete REC._badTime[k]; el.classList.remove('bad'); setDateVal(k, hm); }
   else { el.classList.add('bad'); toast('Heure impossible : attendu HH:MM'); }
 }
 /* le champ natif reste dans la page, invisible, uniquement pour son sélecteur */
@@ -2009,7 +2051,7 @@ function openPicker(k){
 function datePick(k, val){
   if(REC._badDate) delete REC._badDate[k];
   if(REC._badTime) delete REC._badTime[k];
-  setDateVal(k, val); renderForm();
+  setDateVal(k, val); reRender();
 }
 /* écriture silencieuse : on met à jour les calculs dérivés sans reconstruire
    le formulaire, pour ne pas voler le focus au champ en cours de frappe */
@@ -2039,7 +2081,12 @@ function anomalies(){
   SPEC.forEach(s=>{ if(!s.norm) return;
     Object.keys(s.norm).forEach(k=>{ const v=REC.d[k];
       if(k==='sens_examinee'||k==='vns') return;
-      if(v!=null && v!==s.norm[k] && FIELDS[k]) L.push(FIELDS[k].l); }); });
+      const f = FIELDS[k];
+      if(v==null || !f) return;
+      /* certains items ont plusieurs réponses normales : le cutané plantaire
+         est normal en flexion comme en réponse indifférente */
+      if(f.ok && f.ok.indexOf(v)>=0) return;
+      if(v!==s.norm[k]) L.push(f.l); }); });
   MODAL.forEach(m=>{ const c=REC.d['sens_'+m.k+'_nb']||0;
     if(c) L.push(m.l+' : '+c+(m.mode==='land'?' relief':' métamère')+(c>1?'s':'')); });
   if(REC.d.cut_nb) L.push('Lésions cutanées : '+REC.d.cut_nb+' zone'+(REC.d.cut_nb>1?'s':''));
@@ -2050,7 +2097,9 @@ function anomalies(){
 /* =====================================================================
    RENDU DU FORMULAIRE
    ===================================================================== */
-const CLOSED = {};
+/* L'encart du score ASIA est replié au départ : c'est un résultat, pas une
+   saisie. Il s'ouvre d'un clic quand on veut le lire. */
+const CLOSED = {asia:1};
 /* Reconstruire #form détruit le champ en cours de saisie et fait perdre le focus.
    On mémorise le champ actif et la position du curseur, et on les restaure. */
 function renderForm(){
@@ -2599,9 +2648,11 @@ function dermFigBlock(m){
   return '<div class="dbar">'+grain('zone')+grain('meta')+
      '<span class="dsc">'+esc(m.l)+' : <b>'+(sc==null?'—':sc)+'</b> / 112'+
      (nt?' <span style="color:#b4531a">('+nt+' NT)</span>':'')+'</span></div>'+
-   '<div class="dbar">'+brush+
-     '<button class="bb" onclick="dermAll(\''+m.k+'\',null)">&#9003; Effacer</button>'+
-     '<button class="bb" onclick="dermAll(\''+m.k+'\',2)">Tout normal</button></div>'+
+   '<div class="dbar">'+brush+'</div>'+
+   '<div class="dbar">'+
+     '<button class="bb" onclick="dermAll(\''+m.k+'\',2)">Tout normal</button>'+
+     '<button class="bb" onclick="dermAll(\''+m.k+'\',9)">Tout non testable</button>'+
+     '<button class="bb" onclick="dermAll(\''+m.k+'\',null)">&#9003; Effacer</button></div>'+
    '<div class="note" style="margin:6px 0">'+
      (SGRAIN==='zone'
       ? 'Choisissez la cotation, puis cliquez une <b>zone anatomique</b> : tous ses métamères la reçoivent. '+
@@ -3029,14 +3080,26 @@ async function pjAdd(input){
   touch(); renderForm();
   toast(out.length - cur.length + ' photo(s) ajoutée(s)');
 }
+/* Le menu ne fait que remplir le champ : le titre reste modifiable ensuite,
+   et « Autre » laisse simplement le champ à compléter. */
 function pjSetTitre(id, t){
   const L = pjList(); const it = L.find(x=>x.id===id); if(!it) return;
-  it.titre = t; if(t !== 'Autre') it.libre = '';
+  it.titre = (t === 'Autre') ? '' : t;
   REC.d.pj = L; touch(); renderForm();
+  if(t === 'Autre'){ const el = document.getElementById('i_pj_'+id); if(el) el.focus(); }
 }
 function pjSetLibre(id, v){
   const L = pjList(); const it = L.find(x=>x.id===id); if(!it) return;
-  it.libre = v; REC.d.pj = L; touch(); softRefresh();
+  it.titre = v; REC.d.pj = L; touch();
+  const card = document.getElementById('pjc_'+id);
+  if(card) card.classList.toggle('notitle', !v.trim());
+  renderSynth(); pjBadge();
+}
+function pjBadge(){
+  const L = pjList(), sans = L.filter(x=>!String(x.titre||'').trim()).length;
+  const b = $('#b_pj'); if(!b) return;
+  b.textContent = L.length ? L.length+' photo'+(L.length>1?'s':'')+(sans?' · '+sans+' sans titre':'') : 'aucune';
+  b.className = 'badge'+(L.length ? (sans?' ab':' ok') : '');
 }
 function pjMove(id, dir){
   const L = pjList(); const i = L.findIndex(x=>x.id===id);
@@ -3053,16 +3116,19 @@ function pjDel(id){
 }
 function pjLabel(it){
   if(!it) return '';
-  if(it.titre === 'Autre' && it.libre) return it.libre;
-  return it.titre || '(sans titre)';
+  const t = String(it.titre||'').trim();
+  if(t && t !== 'Autre') return t;
+  /* fiches créées avant la 6.3 : le titre libre vivait dans un champ séparé */
+  const l = String(it.libre||'').trim();
+  return l || '(sans titre)';
 }
 function pjBlock(){
   const L = pjList(), closed = CLOSED.pj ? ' closed' : '';
   const poids = L.reduce((s,x)=>s+(x.ko||0),0);
-  const sans = L.filter(x=>!x.titre).length;
+  const sans = L.filter(x=>!String(x.titre||'').trim() && !String(x.libre||'').trim()).length;
   let h = '<div class="sec'+closed+'" id="s_pj"><h3 onclick="if(!event.target.closest(\'button\')&&!event.target.closest(\'label\'))toggleSec(\'pj\')">'+
     '<span class="caret">&#9660;</span>Pièces jointes photographiques'+
-    '<span class="fill"><span class="badge'+(L.length?(sans?' ab':' ok'):'')+'">'+
+    '<span class="fill"><span class="badge'+(L.length?(sans?' ab':' ok'):'')+'" id="b_pj">'+
       (L.length ? L.length+' photo'+(L.length>1?'s':'')+(sans?' · '+sans+' sans titre':'') : 'aucune')+
     '</span></span></h3><div class="body">';
 
@@ -3085,17 +3151,17 @@ function pjBlock(){
     h += '<div style="color:var(--ink2);font-size:12.5px;padding:10px 0">Aucune photo pour cette fiche.</div>';
   } else {
     h += '<div class="pjgrid">' + L.map((it,i)=>{
-      const opts = PJ_TITRES.map(t=>'<option value="'+esc(t)+'"'+(it.titre===t?' selected':'')+'>'+esc(t)+'</option>').join('');
-      return '<figure class="pjcard'+(it.titre?'':' notitle')+'">'+
+      const cur = String(it.titre||'').trim() || String(it.libre||'').trim();
+      const connu = PJ_TITRES.indexOf(cur) >= 0;
+      const opts = PJ_TITRES.map(t=>'<option value="'+esc(t)+'"'+(cur===t?' selected':'')+'>'+esc(t)+'</option>').join('');
+      return '<figure class="pjcard'+(cur?'':' notitle')+'" id="pjc_'+it.id+'">'+
         '<img src="'+it.data+'" alt="'+esc(pjLabel(it))+'">'+
         '<figcaption>'+
-          '<select onchange="pjSetTitre(\''+it.id+'\',this.value)">'+
-            '<option value=""'+(it.titre?'':' selected')+'>— titre de la photo —</option>'+opts+
+          '<select onchange="pjSetTitre(\''+it.id+'\',this.value)" title="Choisir un titre, puis le modifier si besoin">'+
+            '<option value=""'+(connu?'':' selected')+'>'+(cur&&!connu?'— titre personnalisé —':'— choisir un titre —')+'</option>'+opts+
           '</select>'+
-          (it.titre==='Autre'
-            ? '<input type="text" id="i_pj_'+it.id+'" placeholder="Préciser le titre" value="'+esc(it.libre||'')+'" '+
-              'oninput="pjSetLibre(\''+it.id+'\',this.value)">'
-            : '')+
+          '<input type="text" id="i_pj_'+it.id+'" placeholder="Titre de la photo" value="'+esc(cur)+'" '+
+            'oninput="pjSetLibre(\''+it.id+'\',this.value)">'+
           '<div class="pjmeta">'+esc(it.nom||'')+' · '+it.w+'×'+it.h+' · '+it.ko+' ko'+
             '<span class="pjbtns">'+
               '<button class="mini" onclick="pjMove(\''+it.id+'\',-1)" '+(i===0?'disabled':'')+' title="Monter">&#9650;</button>'+
@@ -3245,6 +3311,17 @@ function narrative(){
     L.push('VNS : '+v.join(' ; ')+'.');
   } else if(d.vns===0) L.push('VNS : non réalisée.');
 
+  /* examen pupillaire */
+  const pu=[];
+  if(d.pup_sym===0) pu.push('pupilles asymétriques');
+  if(d.pup_aniso===1) pu.push('anisocorie'+(d.pup_aniso_cote?', pupille la plus large '+(d.pup_aniso_cote===1?'à droite':'à gauche'):''));
+  if(d.pup_myd===1) pu.push('mydriase '+cote(d.pup_myd_cote));
+  if(d.pup_myo===1) pu.push('myosis '+cote(d.pup_myo_cote));
+  if(d.pup_rpm===0) pu.push('réflexe photomoteur aboli '+cote(d.pup_rpm_cote));
+  if(pu.length) L.push('PUPILLES : '+pu.join(' ; ')+'.');
+  else if(has('pup_sym')||has('pup_rpm'))
+    L.push('PUPILLES : symétriques, sans mydriase ni myosis, réflexe photomoteur présent des deux côtés.');
+
   /* ORL */
   const orl=[];
   ['D','G'].forEach(sd=>{ const v=d['oto_'+sd];
@@ -3286,9 +3363,15 @@ function narrative(){
     else if(fl)ra.push(RN[b]+' '+side+' présent'+fl);
   }));
   ['D','G'].forEach(s=>{ const v=d['hoffman_'+s]; if(v===1) ra.push('signe de Hoffmann positif '+(s==='D'?'à droite':'à gauche')); });
+  /* seule l'extension est pathologique : la réponse indifférente est notée
+     comme un fait d'examen, pas comme une anomalie */
+  const bbkInd = [];
   ['D','G'].forEach(s=>{ const v=d['bbk_'+s]; if(v==null)return;
     if(v===2)ra.push('cutané plantaire en extension '+(s==='D'?'à droite':'à gauche'));
-    if(v===1)ra.push('cutané plantaire indifférent '+(s==='D'?'à droite':'à gauche')); });
+    if(v===1)bbkInd.push(s==='D'?'à droite':'à gauche'); });
+  const bbkTxt = bbkInd.length
+    ? 'cutané plantaire indifférent '+bbkInd.join(' et ')+(bbkInd.length===2?'':', en flexion de l\'autre côté')
+    : 'cutané plantaire en flexion des deux côtés';
   const trepTxt = (base,nom) => {
     const parts=[];
     ['D','G'].forEach(sd=>{
@@ -3303,8 +3386,9 @@ function narrative(){
   if(d.trep_pied===1)ra.push(trepTxt('trep_pied','trépidation du pied'));
   if(d.trep_rot===1)ra.push(trepTxt('trep_rot','trépidation rotulienne'));
   if(d.contract===1)ra.push('contractions musculaires spontanées '+cote(d.contract_cote)+(d.contract_loc?' ('+d.contract_loc+')':''));
-  if(ra.length) L.push('RÉFLEXES : '+ra.join(' ; ')+'.');
-  else if(rtested) L.push('RÉFLEXES : ostéotendineux présents et symétriques, Hoffmann négatif, cutané plantaire en flexion des deux côtés, pas de trépidation ni de contraction spontanée.');
+  if(ra.length) L.push('RÉFLEXES : '+ra.join(' ; ')+(bbkInd.length?' ; '+bbkTxt:'')+'.');
+  else if(rtested) L.push('RÉFLEXES : ostéotendineux présents et symétriques, Hoffmann négatif, '+
+    bbkTxt+', pas de trépidation ni de contraction spontanée.');
 
   /* force motrice */
   const dec = Object.keys(LIMB_DEF).filter(l=>l!=='sph' && d[LIMB_DEF[l]]!=null);
@@ -3411,7 +3495,10 @@ function copySynth(){ navigator.clipboard.writeText(narrative()).then(()=>toast(
    ===================================================================== */
 function pv(k,normalVal){ const v=REC.d[k];
   if(v==null||v==='') return '<span style="color:#888">—</span>';
-  const t=lab(k); const abn = normalVal!=null && v!==normalVal;
+  const t=lab(k), f=FIELDS[k];
+  /* une valeur déclarée normale par le champ ne se souligne pas à l'impression */
+  const ok = f && f.ok && f.ok.indexOf(v)>=0;
+  const abn = !ok && normalVal!=null && v!==normalVal;
   return '<span class="pv'+(abn?' ab':'')+'">'+esc(t!=null?t:v)+'</span>'; }
 function pline(l,html){ return '<div class="pl"><b>'+l+' :</b> '+html+'</div>'; }
 function pcote(k){ const v=REC.d[k]; return v?' <span class="pv">('+(v===1?'D':v===2?'G':'D+G')+')</span>':''; }
@@ -3450,7 +3537,16 @@ function buildPrint(){
       ' &nbsp; <b>Total : '+(d.gcs_tot!=null ? d.gcs_tot+'/15'
         : (d.gcs_nc ? '<span class="ab">non calculable</span> <span class="pf">modalité non cotable</span>' : '—'))+'</b>'));
 
-  h+=box('FONCTIONS SUPÉRIEURES','<div class="p2"><div>'+
+  /* les pupilles tiennent dans l'encart des fonctions supérieures : un encadré
+     de plus coûterait un millimètre de trop sur la page 1 */
+  h+=box('PUPILLES ET FONCTIONS SUPÉRIEURES',
+      '<div class="pl"><b>Pupilles :</b> symétriques '+pv('pup_sym',1)+
+      ' · anisocorie '+pv('pup_aniso',0)+(d.pup_aniso===1&&d.pup_aniso_cote?
+        ' <span class="pv">(plus large '+(d.pup_aniso_cote===1?'à droite':'à gauche')+')</span>':'')+
+      ' · mydriase '+pv('pup_myd',0)+pcote('pup_myd_cote')+
+      ' · myosis '+pv('pup_myo',0)+pcote('pup_myo_cote')+
+      ' · réflexe photomoteur '+pv('pup_rpm',1)+pcote('pup_rpm_cote')+'</div>'+
+      '<div class="p2"><div>'+
       pline('Troubles du comportement',pv('fs_comport',0))+
       pline('Désorientation (DTS)',pv('fs_dts',0))+
       pline('Troubles de la parole',pv('fs_parole',0))+

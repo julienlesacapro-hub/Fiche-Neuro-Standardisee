@@ -1,0 +1,23 @@
+# dépendances et sorties de build
+node_modules/
+native/node_modules/
+native/android/
+native/ios/
+native/www/index.html.bak
+*.apk
+*.aab
+*.ipa
+.gradle/
+build/
+DerivedData/
+
+# données cliniques : rien de tout cela ne doit partir sur GitHub
+*.csv.local
+donnees_neuro.csv
+fiches_neuro_*.json
+sel_pseudonymisation*.txt
+!docs/dictionnaire_variables.csv
+
+# systèmes
+.DS_Store
+Thumbs.db

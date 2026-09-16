@@ -7,7 +7,7 @@ Deux sorties, depuis la même saisie :
 
 1. une fiche A4 imprimable et enregistrable en PDF (3 pages) ;
 2. un fichier `donnees_neuro.csv` unique qui s'incrémente, une ligne par fiche,
-   488 colonnes, prêt pour R, Python, SPSS, Jamovi ou Excel.
+   500 colonnes, prêt pour R, Python, SPSS, Jamovi ou Excel.
 
 Aucune donnée ne quitte l'appareil. Pas de serveur, pas de compte, pas de
 requête réseau. Le code entier tient dans `index.html`.
@@ -52,7 +52,7 @@ cd Fiche-Neuro-Standardisee
 # copiez ici le contenu de ce dossier (index.html, icons/, manifest, sw.js, docs/, native/)
 
 git add .
-git commit -m "Fiche neuro standardisée v6.0.0"
+git commit -m "Fiche neuro standardisée v6.3.0"
 git push origin main
 ```
 
@@ -71,12 +71,12 @@ en HTTPS, condition nécessaire pour l'installation et le service worker.
 ### Publier une mise à jour
 
 Modifiez `index.html`, incrémentez `VERSION` en tête de `sw.js`
-(`v6.0.0` → `v6.0.1`), poussez. Sans ce changement de version, les appareils
+(`v6.3.0` → `v6.3.1`), poussez. Sans ce changement de version, les appareils
 déjà installés gardent l'ancienne copie en cache.
 
 ```bash
-sed -i "s/const VERSION = 'v6.0.0'/const VERSION = 'v6.0.1'/" sw.js
-git commit -am "v6.0.1" && git push
+sed -i "s/const VERSION = 'v6.3.0'/const VERSION = 'v6.3.1'/" sw.js
+git commit -am "v6.3.1" && git push
 ```
 
 Au lancement suivant avec réseau, l'application signale la mise à jour et
@@ -98,14 +98,14 @@ serveur interne à l'établissement, ou distribuez `index.html` par clé USB.
 ## Contenu du dépôt
 
 ```
-index.html                 application complète, fichier unique, 253 ko
+index.html                 application complète, fichier unique, 275 ko
 manifest.webmanifest       déclaration d'installation (nom, icônes, plein écran)
 sw.js                      service worker : démarrage hors ligne, mises à jour
 icons/                     icônes 32 à 1024 px, dont deux masquables Android
 brand_logo_source.png      le blason, fichier maître, pour régénérer les icônes
 docs/
   PUBLIER.md                   publier et mettre à jour, pas à pas
-  dictionnaire_variables.csv   488 variables, libellé et codage de chacune
+  dictionnaire_variables.csv   500 variables, libellé et codage de chacune
   NOTICE.md                    mode d'emploi clinique et technique
 native/                    projet Capacitor pour Android et iOS
 .nojekyll                  désactive le moteur Jekyll de GitHub Pages
@@ -113,15 +113,20 @@ native/                    projet Capacitor pour Android et iOS
 
 ---
 
-## Aides à l'examen et médias
+## Aides à l'examen
 
-Un bouton **?** ouvre, à côté des items techniques, la manœuvre et son interprétation.
-Vous pouvez y attacher vos propres photos et vidéos de signes positifs : elles restent
-dans la base locale du poste et n'entrent ni dans le PDF ni dans le fichier de données.
-Le menu **Aides à l'examen** exporte cette médiathèque pour la copier sur un autre poste.
+Un bouton **?** ouvre, à côté des items techniques, la manœuvre, le résultat normal,
+ce qui compte comme pathologique et les pièges. Seize fiches, quatre avec un schéma au trait.
 
-Une vidéo d'un signe positif filmée sur un patient reste une donnée de santé identifiante.
-Filmez un volontaire, floutez, ou recueillez et conservez un consentement écrit.
+## Pièces jointes photographiques
+
+Un encart en fin de fiche reçoit jusqu'à douze photos, chacune avec un titre. Elles sont
+réduites à 1600 pixels, enregistrées avec la fiche, et imprimées sur une page dédiée du PDF.
+Elles n'entrent pas dans le fichier de données, qui ne reçoit que leur nombre et leurs titres.
+
+Une photographie de patient reste une donnée de santé identifiante, visage ou pas. Cadrez au
+plus juste, recueillez le consentement, et chiffrez le support de toute sauvegarde JSON qui
+en contient.
 
 ---
 
