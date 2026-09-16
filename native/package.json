@@ -1,0 +1,28 @@
+{
+  "name": "fiche-neuro-standardisee",
+  "version": "5.0.0",
+  "description": "Fiche d'examen neurologique standardisé — médecine hyperbare et accidents de désaturation",
+  "author": "LESACA Julien",
+  "license": "UNLICENSED",
+  "private": true,
+  "scripts": {
+    "www": "node -e \"require('fs').copyFileSync('../index.html','www/index.html')\"",
+    "sync": "cap sync",
+    "android": "cap sync android && cap open android",
+    "ios": "cap sync ios && cap open ios",
+    "build:android": "cap sync android && cd android && ./gradlew assembleRelease",
+    "bundle:android": "cap sync android && cd android && ./gradlew bundleRelease"
+  },
+  "dependencies": {
+    "@capacitor/android": "^7.0.0",
+    "@capacitor/app": "^7.0.0",
+    "@capacitor/core": "^7.0.0",
+    "@capacitor/filesystem": "^7.0.0",
+    "@capacitor/ios": "^7.0.0",
+    "@capacitor/share": "^7.0.0"
+  },
+  "devDependencies": {
+    "@capacitor/assets": "^3.0.0",
+    "@capacitor/cli": "^7.0.0"
+  }
+}

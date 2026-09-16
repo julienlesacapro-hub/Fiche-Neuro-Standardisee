@@ -1,0 +1,3291 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fiche d'examen neurologique standardisé</title>
+<meta name="theme-color" content="#101725">
+<meta name="color-scheme" content="light">
+<meta name="description" content="Fiche d'examen neurologique standardisé pour la médecine hyperbare et les accidents de désaturation. Fonctionne hors ligne, les données restent sur l'appareil.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Fiche Neuro">
+<meta name="format-detection" content="telephone=no">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='112' fill='%2316233b'/%3E%3Cg stroke='%23ffffff' stroke-width='34' stroke-linecap='round' fill='none'%3E%3Ccircle cx='196' cy='140' r='56'/%3E%3Cpath d='M196 208 V360'/%3E%3Cpath d='M120 258 H272'/%3E%3Cpath d='M196 360 L146 452'/%3E%3Cpath d='M196 360 L246 452'/%3E%3C/g%3E%3Cg stroke='%234d9bff' stroke-width='30' stroke-linecap='round'%3E%3Cpath d='M356 170 h76'/%3E%3Cpath d='M356 256 h76'/%3E%3Cpath d='M356 342 h76'/%3E%3C/g%3E%3C/svg%3E">
+
+<style>
+:root{
+  --bd:#c9ced6; --bd2:#e3e7ec; --bg:#f4f6f9; --card:#fff;
+  --ink:#14181f; --ink2:#5a6472; --acc:#1b4f8f; --acc-l:#e8f0fa;
+  --ok:#1f7a4d; --ok-l:#e6f4ec; --warn:#b4531a; --warn-l:#fbeee4;
+  --bad:#a32020; --bad-l:#fbeaea; --sel:#1b4f8f;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font:13px/1.45 "Segoe UI",Roboto,system-ui,-apple-system,sans-serif;color:var(--ink);background:var(--bg)}
+button,input,select,textarea{font-family:inherit;font-size:13px;color:inherit}
+
+/* ---------- barre d'outils ---------- */
+#topbar{position:sticky;top:0;z-index:50;background:#101725;color:#fff;
+  padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px);
+  display:flex;align-items:center;gap:8px;padding:7px 12px;flex-wrap:wrap;
+  box-shadow:0 1px 6px rgba(0,0,0,.25)}
+#topbar .ttl{font-weight:700;letter-spacing:.02em;margin-right:6px;font-size:13px}
+#topbar .sep{width:1px;height:22px;background:#3a4558;margin:0 3px}
+.tb{background:#22304a;color:#fff;border:1px solid #394a68;border-radius:5px;
+  padding:5px 10px;cursor:pointer;white-space:nowrap}
+.tb:hover{background:#2e4066}
+.tb.pri{background:#1b6fd0;border-color:#3b8ae8}
+.tb.pri:hover{background:#2a80e4}
+.tb.gd{background:#1a6b43;border-color:#2a8a59}
+.tb.gd:hover{background:#228152}
+.tb.dg{background:#8f2020;border-color:#b03030}
+.onlyphone{display:none}
+#tbmore{display:contents}
+#dbstate{margin-left:auto;font-size:11.5px;color:#9fb0c8;display:flex;align-items:center;gap:8px}
+#dbstate b{color:#eaf1fb}
+.dot{width:8px;height:8px;border-radius:50%;background:#c0392b;display:inline-block}
+.dot.on{background:#27ae60}
+
+/* ---------- structure ---------- */
+#wrap{display:flex;gap:0;align-items:flex-start;min-width:0;max-width:100%}
+#side{width:250px;flex:0 0 250px;background:#fff;border-right:1px solid var(--bd);
+  height:calc(100vh - 40px);position:sticky;top:40px;overflow:auto;padding:10px}
+#side.hide{display:none}
+#main{flex:1;min-width:0;max-width:100%;padding:12px 16px 120px;overflow:hidden}
+#form,.sec,.sec>.body,.grid2,.bodywrap,.dbar,#sensTabs{min-width:0;max-width:100%}
+.dwrap{max-width:100%}
+#side h4{margin:0 0 8px;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink2)}
+#search{width:100%;padding:6px 8px;border:1px solid var(--bd);border-radius:5px;margin-bottom:8px}
+.fitem{border:1px solid var(--bd2);border-left:3px solid var(--acc);border-radius:5px;
+  padding:6px 8px;margin-bottom:6px;cursor:pointer;background:#fbfcfe}
+.fitem:hover{background:var(--acc-l)}
+.fitem.cur{background:var(--acc-l);border-left-color:#0a2f5c}
+.fitem .d{font-weight:700}
+.fitem .m{font-size:11px;color:var(--ink2)}
+
+/* ---------- sections ---------- */
+.sec{background:var(--card);border:1px solid var(--bd);border-radius:7px;margin-bottom:10px;overflow:hidden}
+.sec>h3{margin:0;padding:7px 11px;background:#eef2f7;border-bottom:1px solid var(--bd);
+  font-size:12px;text-transform:uppercase;letter-spacing:.07em;color:#243247;
+  display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none}
+.sec>h3 .caret{font-size:10px;color:var(--ink2);transition:transform .15s}
+.sec.closed>h3 .caret{transform:rotate(-90deg)}
+.sec.closed .body{display:none}
+.sec>h3 .fill{margin-left:auto;display:flex;gap:6px;align-items:center}
+.sec .body{padding:9px 11px}
+.mini{background:#fff;border:1px solid var(--bd);border-radius:4px;padding:2px 8px;
+  font-size:11px;cursor:pointer;color:var(--ok);font-weight:600}
+.mini:hover{background:var(--ok-l)}
+.badge{font-size:10.5px;padding:1px 7px;border-radius:9px;background:#dde4ec;color:#41506a;font-weight:700}
+.badge.ok{background:var(--ok-l);color:var(--ok)}
+.badge.ab{background:var(--bad-l);color:var(--bad)}
+
+/* ---------- lignes de champs ---------- */
+.row{display:flex;align-items:center;gap:8px;padding:3px 0;flex-wrap:wrap;min-width:0;max-width:100%;
+  border-bottom:1px dotted #e8ecf1}
+.row:last-child{border-bottom:0}
+.row>.lbl{flex:0 0 262px;font-weight:600;color:#1e2833}
+.row>.lbl small{display:block;font-weight:400;color:var(--ink2);font-size:11px}
+.row.sub{padding-left:24px;background:#fafbfd}
+.row.sub>.lbl{flex-basis:238px;font-weight:400;color:var(--ink2)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 18px}
+@media(max-width:1000px){.grid2{grid-template-columns:1fr}}
+.hidden{display:none !important}
+
+/* ---------- boutons de choix ---------- */
+.opts{display:inline-flex;flex-wrap:wrap;gap:4px}
+.opt{border:1px solid var(--bd);background:#fff;border-radius:5px;padding:3px 11px;
+  cursor:pointer;user-select:none;min-width:34px;text-align:center;line-height:1.3}
+.opt:hover{border-color:var(--acc);background:var(--acc-l)}
+.opt.on{background:var(--sel);border-color:var(--sel);color:#fff;font-weight:600}
+.opt.on.v-ok{background:var(--ok);border-color:var(--ok)}
+.opt.on.v-ab{background:var(--bad);border-color:var(--bad)}
+.opt.on.v-wn{background:var(--warn);border-color:var(--warn)}
+.opt.sm{padding:2px 8px;font-size:12px;min-width:26px}
+.clr{border:0;background:none;color:#95a0ae;cursor:pointer;font-size:15px;line-height:1;padding:0 4px}
+.clr:hover{color:var(--bad)}
+input[type=text],input[type=date],input[type=time],input[type=number],select,textarea{
+  border:1px solid var(--bd);border-radius:5px;padding:4px 7px;background:#fff}
+input[type=text]:focus,textarea:focus,select:focus{outline:2px solid var(--acc-l);border-color:var(--acc)}
+.calc{background:#f0f3f7;border:1px dashed var(--bd);border-radius:5px;padding:3px 9px;
+  font-weight:700;color:var(--acc)}
+.req{border-color:var(--bad) !important;background:var(--bad-l) !important}
+.chips{display:inline-flex;gap:4px;flex-wrap:wrap}
+.chip{border:1px solid var(--bd);border-radius:12px;padding:2px 10px;cursor:pointer;background:#fff;font-size:12px}
+.chip.on{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:600}
+textarea{width:100%;min-height:52px;resize:vertical}
+.phr{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.phr button{font-size:11px;padding:2px 8px;border:1px dashed var(--bd);background:#fbfcfe;
+  border-radius:10px;cursor:pointer;color:var(--ink2)}
+.phr button:hover{border-style:solid;border-color:var(--acc);color:var(--acc);background:var(--acc-l)}
+
+/* ---------- force MRC ---------- */
+.mrc .opt{min-width:28px;padding:3px 7px;font-weight:600}
+.mrc .opt.on{color:#fff}
+.mrc-0.on,.mrc-1.on{background:var(--bad);border-color:var(--bad)}
+.mrc-2.on,.mrc-3.on{background:var(--warn);border-color:var(--warn)}
+.mrc-4.on{background:#b8961f;border-color:#b8961f}
+.mrc-5.on{background:var(--ok);border-color:var(--ok)}
+
+/* ---------- schémas corporels ---------- */
+#patholder{position:absolute;width:0;height:0;overflow:hidden}
+#sensTabs{display:flex;gap:5px;margin:10px 0 8px;flex-wrap:wrap;align-items:stretch}
+.stab{border:1px solid var(--bd);background:#fff;border-radius:6px;padding:5px 13px;cursor:pointer;
+  text-align:left;line-height:1.25}
+.stab small{display:block;font-size:10.5px;color:var(--ink2);font-weight:400}
+.stab.on{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:600}
+.stab.on small{color:#cfe0f5}
+.brush{display:flex;gap:5px;flex-wrap:wrap;align-items:center;margin-bottom:9px;
+  background:#f7f9fc;border:1px solid var(--bd2);border-radius:6px;padding:6px 8px}
+.brush .bl{font-size:11.5px;font-weight:700;color:var(--ink2);text-transform:uppercase;letter-spacing:.04em;margin-right:2px}
+.bb{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--bd);background:#fff;
+  border-radius:16px;padding:3px 11px;cursor:pointer;font-size:12px}
+.bb:hover{border-color:var(--acc)}
+.bb.on{border-color:#101725;box-shadow:0 0 0 2px #101725 inset;font-weight:700}
+.bb svg.sw{display:block;flex:0 0 auto}
+.bodywrap,.landwrap{display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start}
+.bodyfig{text-align:center}
+.bodyfig .cap{font-size:11px;font-weight:700;color:var(--ink2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px}
+.sumcol{flex:1;min-width:210px;font-size:12px}
+svg.body{background:#fff;border:1px solid var(--bd2);border-radius:6px}
+svg.body .z{fill:#fff;stroke:#2b3440;stroke-width:1.1;cursor:pointer}
+svg.body .z:hover{stroke:#1b4f8f;stroke-width:2.6}
+svg.body .deco{fill:none;stroke:#2b3440;stroke-width:1;pointer-events:none}
+svg.body .sid{font:700 11px sans-serif;fill:#5a6472;pointer-events:none}
+#zoneList,#zoneList2{font-size:11.5px;color:var(--ink2);margin-top:6px;min-height:18px}
+.legend{display:flex;flex-wrap:wrap;gap:12px;margin-top:8px;font-size:11.5px;color:var(--ink2);align-items:center}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.legend svg.sw{display:block;flex:0 0 auto}
+
+/* ---------- table des reliefs osseux (pallesthésie) ---------- */
+.landtab{border-collapse:collapse;font-size:12.5px}
+.landtab th{background:#eef2f7;border:1px solid var(--bd);padding:4px 10px;font-size:11px;
+  text-transform:uppercase;letter-spacing:.04em;color:#41506a}
+.landtab td{border:1px solid var(--bd2);padding:3px 6px}
+.landtab td:first-child{font-weight:600;white-space:nowrap}
+.landtab td:first-child small{font-weight:400;color:var(--ink2)}
+.lgrp{display:inline-flex;gap:3px;flex-wrap:wrap}
+.lb{border:1px solid var(--bd);background:#fff;border-radius:5px;padding:3px 9px;
+  cursor:pointer;font-size:11.5px;color:#5a6472;white-space:nowrap}
+.lb:hover{border-color:var(--acc);background:var(--acc-l);color:var(--acc)}
+.lb.on{color:#fff;font-weight:700;border-color:transparent}
+.lb.s1.on{background:#2f6fb5}
+.lb.s2.on{background:#b07b18}
+.lb.s3.on{background:#8c2020}
+.lb.n.on{background:var(--ok)}
+.cpb{margin-left:8px}
+.cprow{display:block;padding:5px 7px;border:1px solid var(--bd2);border-radius:5px;margin-bottom:4px;cursor:pointer}
+.cprow:hover{background:var(--acc-l);border-color:var(--acc)}
+
+/* ---------- tables métamériques et reliefs ---------- */
+.dbar{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:10px 0 8px}
+.dbar .dsc{margin-left:auto;font-size:12.5px;color:var(--ink2)}
+.dbar .dsc b{color:var(--acc);font-size:14px}
+.dwrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.dtab,.landtab{border-collapse:separate;border-spacing:0;font-size:12.5px;width:100%}
+.dtab th,.landtab th{position:sticky;top:0;z-index:2;background:#eef2f7;border-bottom:1px solid var(--bd);
+  padding:5px 8px;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:#41506a;text-align:left}
+.dtab td,.landtab td{border-bottom:1px solid var(--bd2);padding:3px 5px;vertical-align:middle}
+.dtab tr:nth-child(even) td,.landtab tr:nth-child(even) td{background:#fafbfd}
+.dtab tr.key td{background:#fff6e6}
+td.lv{white-space:nowrap;min-width:92px}
+td.lv b{font-size:13px}
+td.lv small{display:block;font-weight:400;color:var(--ink2);font-size:10.5px;max-width:190px;white-space:normal;line-height:1.2}
+.dgrp{display:inline-flex;gap:3px}
+.db{border:1px solid var(--bd);background:#fff;border-radius:5px;min-width:30px;padding:5px 6px;
+  cursor:pointer;font-size:12px;font-weight:600;color:#5a6472}
+.db:hover{border-color:var(--acc);background:var(--acc-l)}
+.db.on{color:#fff;border-color:transparent}
+.db.d2.on{background:#1f7a4d}
+.db.d1.on{background:#b8961f}
+.db.d0.on{background:#8c2020}
+.db.d9.on{background:#5a6472}
+.dprop{border:1px solid var(--bd);background:#fff;border-radius:5px;padding:4px 7px;cursor:pointer;color:var(--ink2)}
+.dprop:hover{border-color:var(--acc);color:var(--acc);background:var(--acc-l)}
+
+/* ---------- panneau ASIA ---------- */
+.asiagrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0}
+@media(max-width:820px){.asiagrid{grid-template-columns:repeat(2,1fr)}}
+.atile{border:1px solid var(--bd2);border-radius:7px;padding:8px 10px;background:#fbfcfe}
+.atile .at{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink2)}
+.atile .av{font-size:19px;font-weight:700;color:var(--acc);line-height:1.2;margin:2px 0}
+.atile .as{font-size:11px;color:var(--ink2)}
+.aisbox{border:2px dashed var(--bd);border-radius:8px;padding:10px 14px;margin-top:8px;background:#fbfcfe}
+.aisbox.on{border-style:solid;border-color:var(--bad);background:var(--bad-l)}
+.aisbox .aisg{font-size:22px;font-weight:800;letter-spacing:.02em}
+.aisbox.on .aisg{color:var(--bad)}
+.aisbox .aist{font-size:12.5px;color:var(--ink2);margin-top:2px}
+
+/* ---------- valeurs de l'examen précédent ---------- */
+.opt.gh,.chip.gh{color:#8b95a3;border-style:dashed;background:#fbfcfe}
+.opt.gh:hover,.chip.gh:hover{color:var(--acc);border-style:solid}
+.ghb{margin-left:6px;border:1px dashed var(--bd);background:#fbfcfe;color:#8b95a3;
+  border-radius:12px;padding:2px 9px;cursor:pointer;font-size:11px;max-width:260px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:middle}
+.ghb:hover{border-style:solid;border-color:var(--acc);color:var(--acc);background:var(--acc-l)}
+.prevnote{background:#eef4fb;border-color:#bcd4ee}
+.chip.sm{font-size:11px;padding:1px 8px}
+
+/* ---------- échelle de douleur ---------- */
+.eva .opt{min-width:26px;padding:3px 7px;font-weight:600}
+.eva-0.on{background:var(--ok);border-color:var(--ok)}
+.eva-1.on,.eva-2.on,.eva-3.on{background:#5b8f3a;border-color:#5b8f3a}
+.eva-4.on,.eva-5.on,.eva-6.on{background:#b8961f;border-color:#b8961f}
+.eva-7.on,.eva-8.on{background:var(--warn);border-color:var(--warn)}
+.eva-9.on,.eva-10.on{background:var(--bad);border-color:var(--bad)}
+
+/* ---------- synthèse ---------- */
+#synth{background:#fbfcfe;border:1px solid var(--bd2);border-radius:6px;padding:9px 11px;
+  font-size:12.5px;line-height:1.55;white-space:pre-wrap}
+
+/* ---------- modale ---------- */
+#mask{position:fixed;inset:0;background:rgba(12,18,28,.55);z-index:100;display:none;
+  align-items:center;justify-content:center;padding:20px}
+#mask.on{display:flex}
+#modal{background:#fff;border-radius:9px;max-width:820px;width:100%;max-height:88vh;
+  overflow:auto;padding:18px 22px;box-shadow:0 12px 40px rgba(0,0,0,.35)}
+#modal h3{margin:0 0 10px}
+#modal table{border-collapse:collapse;width:100%;font-size:12px}
+#modal th,#modal td{border:1px solid var(--bd2);padding:4px 7px;text-align:left}
+#modal th{background:#eef2f7}
+.note{background:#fff8e6;border:1px solid #f0d99a;border-radius:6px;padding:9px 11px;font-size:12px;margin:10px 0}
+#toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#101725;color:#fff;
+  padding:9px 18px;border-radius:6px;z-index:200;opacity:0;transition:opacity .25s;pointer-events:none}
+#toast.on{opacity:1}
+#print-root{display:none}
+
+/* ---------- navigation basse (téléphone) ---------- */
+#navbar{display:none;position:fixed;left:0;right:0;bottom:0;z-index:60;background:#101725;
+  align-items:center;gap:6px;box-shadow:0 -2px 10px rgba(0,0,0,.28);
+  padding:7px calc(8px + env(safe-area-inset-right,0px)) calc(7px + env(safe-area-inset-bottom,0px)) calc(8px + env(safe-area-inset-left,0px))}
+#navbar button{flex:0 0 auto;background:#22304a;color:#fff;border:1px solid #394a68;border-radius:6px;
+  padding:9px 12px;font-size:14px;cursor:pointer}
+#navbar #navsel{flex:1;min-width:0;background:#22304a;color:#fff;border:1px solid #394a68;
+  border-radius:6px;padding:9px 8px;font-size:13px}
+#navbar .sv{background:#1a6b43;border-color:#2a8a59}
+
+/* ---------- tablette / petit ecran ---------- */
+@media screen and (max-width:900px){
+  #wrap{flex-direction:column}
+  #side{display:none}                 /* accessible par Menu > Fiches enregistrees */
+  #main{padding:10px 10px calc(74px + env(safe-area-inset-bottom,0px))}
+  .row>.lbl{flex:0 0 100%}
+  .row.sub{padding-left:10px}
+  .row.sub>.lbl{flex-basis:100%}
+  .grid2{grid-template-columns:1fr}
+  #topbar{gap:5px;padding:6px 8px;flex-wrap:nowrap}
+  #topbar .ttl{white-space:nowrap;flex:0 0 auto}
+  #tbmore,.nophone{display:none !important}
+  .onlyphone{display:inline-block}
+  .tb{padding:7px 10px;flex:0 0 auto}
+  .opt{padding:6px 13px}
+  .chip{padding:5px 12px}
+  svg.body{width:44vw;height:auto;max-width:220px}
+  #navbar{display:flex}
+  #dbstate{margin-left:auto;min-width:0;flex:0 1 auto;white-space:nowrap;
+           overflow:hidden;text-overflow:ellipsis;font-size:11.5px}
+  #dbstate .lbl2{display:none}
+}
+/* ---------- téléphone ---------- */
+@media screen and (max-width:560px){
+  body{font-size:14px}
+  #topbar{padding:6px;gap:4px}
+  #topbar .ttl{font-size:12px}
+  #topbar .lbl2{display:none}
+  #tbmore,.nophone{display:none !important}
+  .onlyphone{display:inline-block}
+  #side{display:none}
+  .tb{padding:9px 10px;font-size:13px}
+  #dbstate{margin-left:auto;font-size:10.5px;order:9;max-width:130px;line-height:1.15}
+  #topbar .sep{display:none}
+  #main{padding:8px 8px calc(76px + env(safe-area-inset-bottom,0px));min-width:0}
+  #wrap{min-width:0}
+  .sec,.sec .body{min-width:0}
+  .dbar{gap:4px}
+  .dbar .dsc{margin-left:0;flex-basis:100%}
+  #sensTabs{gap:3px}
+  .stab{padding:6px 8px;font-size:12px;flex:1 1 30%}
+  .stab small{font-size:9.5px}
+  .legend{font-size:11px}
+  .note{font-size:11.5px}
+  .sec>h3{padding:10px 10px;font-size:12px}
+  .sec .body{padding:8px}
+  .row{padding:6px 0}
+  .opt{padding:9px 14px;font-size:14px}
+  .chip{padding:8px 13px;font-size:13px}
+  .mrc .opt,.eva .opt{min-width:36px;padding:9px 9px;font-size:14px}
+  .db{min-width:29px;padding:10px 2px;font-size:12.5px}
+  .dgrp{gap:2px}
+  .dtab th,.landtab th{padding:5px 3px;font-size:10px}
+  .dtab td,.landtab td{padding:3px 2px}
+  .dtab th:first-child{width:40px}
+  .dprop{padding:9px 3px}
+  .lb{padding:8px 9px;font-size:12px}
+  .dprop{padding:8px 9px}
+  td.lv{min-width:40px;max-width:48px}
+  td.lv b{font-size:12px}
+  td.lv small{display:none}
+  .bb{padding:8px 12px;font-size:13px}
+  svg.body{width:46vw;max-width:200px;height:auto}
+  .sumcol{min-width:100%}
+  .aisbox .aisg{font-size:19px}
+  #navbar{display:flex}
+}
+
+/* ---------- impression ---------- */
+@media print{
+  @page{size:A4 portrait;margin:8mm 9mm}
+  #topbar,#side,#main,#mask,#toast,#navbar{display:none !important}
+  #patholder{display:block !important;position:absolute;width:0;height:0;overflow:hidden}
+  body{background:#fff;font-size:8.3pt}
+  #print-root{display:block}
+  .pg{page-break-after:always}
+  .pg:last-child{page-break-after:auto}
+  .pbox{border:1px solid #000;margin-bottom:1.6mm}
+  .pbox>h4{margin:0;padding:.6mm 1.4mm;font-size:8.4pt;font-weight:700;border-bottom:1px solid #000;
+    background:#e9e9e9;letter-spacing:.04em}
+  .pbox .pb{padding:.8mm 1.4mm}
+  .pl{padding:.28mm 0;line-height:1.26}
+  .pl b{font-weight:700}
+  .pv{font-weight:700}
+  .pv.ab{text-decoration:underline}
+  .phead{text-align:center;font-size:12.6pt;font-weight:700;margin:0 0 2mm}
+  .pid{display:grid;grid-template-columns:repeat(4,1fr);gap:.4mm 3mm;border:1px solid #000;padding:1mm 1.4mm;margin-bottom:1.6mm}
+  .p2{display:grid;grid-template-columns:1fr 1fr;gap:0 4mm}
+  .pgrid3{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4mm}
+  .pgrid2{display:grid;grid-template-columns:repeat(2,1fr);gap:1.6mm}
+  .pgrid2 .pbox{margin-bottom:0;display:flex;flex-direction:column}
+  .pgrid2 .pzl{margin-top:auto}
+  .dtabp td{text-align:center}
+  .dtabp td:first-child{text-align:left}
+  .ptab .ab{color:#000;text-decoration:underline}
+  .paisp{border-top:1px solid #000;margin-top:1mm;padding-top:1mm;font-size:8.6pt}
+  .ptab tr.key td{background:#e9e9e9}
+  .pgrid3 .pbox{margin-bottom:0;display:flex;flex-direction:column}
+  .pgrid3 .pzl{margin-top:auto}
+  .psvg{display:flex;gap:1mm;justify-content:space-around}
+  .psvg svg.body{width:26mm;height:auto;border:0;background:none}
+  .psvg svg.body .z{stroke:#000;stroke-width:1.3;fill:#fff}
+  .psvg svg.body .deco{fill:none;stroke:#000;stroke-width:1}
+  .psvg svg.body .sid{font:700 13px sans-serif;fill:#000}
+  .pcap{font-size:6.6pt;font-weight:700;text-align:center;letter-spacing:.02em}
+  .pzl{font-size:6.6pt;line-height:1.25;border-top:1px solid #000;padding:.6mm 1.2mm;min-height:6mm}
+  .pbox>h4.small{font-size:7.2pt;line-height:1.2}
+  .pbox>h4 .sb{font-weight:400;font-style:italic;text-transform:none;letter-spacing:0}
+  .plegend{display:flex;flex-wrap:wrap;gap:.8mm 3mm;font-size:6.6pt;margin:1mm 0;align-items:center}
+  .plegend span{display:inline-flex;align-items:center;gap:1mm}
+  .plegend svg.sw{display:block;flex:0 0 auto}
+  .ptab{border-collapse:collapse;width:100%;font-size:7.2pt}
+  .ptab th{background:#e9e9e9;border:.3mm solid #000;padding:.2mm 1mm;text-align:left;font-size:6.8pt}
+  .ptab td{border:.3mm solid #666;padding:.2mm 1mm}
+  .ptab td:first-child{font-weight:600}
+  .pf{font-style:italic;font-weight:400}
+  .pfoot{display:flex;justify-content:space-between;font-size:9.4pt;font-weight:700;
+    border-top:1px solid #000;padding-top:1mm;margin-top:1mm}
+  .psyn{border:1px solid #000;padding:1mm 1.4mm;font-size:8.2pt;line-height:1.35;white-space:pre-wrap}
+}
+@media screen{ .pg{display:none} }
+</style>
+</head>
+<body>
+<div id="topbar">
+  <span class="ttl">FICHE NEURO</span>
+  <button class="tb nophone" onclick="toggleSide()" title="Afficher / masquer la liste des fiches">&#9776;</button>
+  <span class="sep"></span>
+  <button class="tb pri" onclick="newFiche()">+<span class="lbl2"> Nouvelle</span> fiche</button>
+  <button class="tb nophone" onclick="newFollowUp()" title="Nouvel examen pour le même sujet, pré-rempli avec la fiche courante">+ Ré-examen du sujet</button>
+  <span class="sep"></span>
+  <button class="tb gd" onclick="saveFiche()">&#128190;<span class="lbl2"> Enregistrer <small style="opacity:.7">(Ctrl+S)</small></span></button>
+  <button class="tb pri" onclick="doPrint()">&#128424;<span class="lbl2"> PDF / Imprimer</span></button>
+  <span class="sep"></span>
+  <span id="tbmore">
+    <button class="tb" onclick="connectFile()" title="Choisir le fichier CSV unique qui s'incrémente sur le disque">&#128193; Fichier de données</button>
+    <button class="tb" onclick="openExport()">&#11015; Exporter</button>
+    <button class="tb" onclick="openImport()">&#11014; Importer / Fusionner</button>
+    <button class="tb" onclick="openScan()" title="Douchette code-barres et pseudonymisation">&#9906; Douchette</button>
+    <button class="tb" onclick="openDict()" title="Dictionnaire des variables">&#8505; Variables</button>
+    <button class="tb" onclick="openInstall()" title="Installation hors ligne et mises a jour">&#128241; Installation</button>
+    <button class="tb" onclick="openHelp()">? Aide</button>
+  </span>
+  <button class="tb pri" id="btninstall" style="display:none" onclick="openInstall()">&#11015;<span class="lbl2"> Installer</span></button>
+  <button class="tb onlyphone" onclick="openMenu()">&#9776;<span class="lbl2"> Menu</span></button>
+  <span id="dbstate"></span>
+</div>
+
+<div id="wrap">
+  <div id="side">
+    <h4>Fiches enregistrées</h4>
+    <input id="search" placeholder="Rechercher (n&deg; dossier, examinateur&hellip;)" oninput="renderList()">
+    <div id="list"></div>
+  </div>
+  <div id="main">
+    <div id="form"></div>
+  </div>
+</div>
+
+<div id="navbar">
+  <button onclick="navStep(-1)" title="Section précédente">&#9650;</button>
+  <select id="navsel" onchange="navGo(this.value)"></select>
+  <button onclick="navStep(1)" title="Section suivante">&#9660;</button>
+  <button class="sv" onclick="saveFiche()">&#128190;</button>
+</div>
+
+<div id="patholder" aria-hidden="true"></div>
+<div id="mask" onclick="if(event.target===this)closeModal()"><div id="modal"></div></div>
+<div id="toast"></div>
+<div id="print-root"></div>
+<script>
+"use strict";
+/* =====================================================================
+   FICHE D'EXAMEN NEUROLOGIQUE STANDARDISÉ — générateur hors ligne
+   Fichier unique, aucune dépendance externe, fonctionne sans réseau.
+   ===================================================================== */
+
+/* ---------- raccourcis ---------- */
+const $  = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const esc = s => String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- jeux d'options ---------- */
+const ON  = [{v:1,l:'OUI',c:'v-ab'},{v:0,l:'NON',c:'v-ok'}];          // OUI = anormal
+const NO  = [{v:1,l:'OUI',c:'v-ok'},{v:0,l:'NON',c:'v-ab'}];          // OUI = normal
+const NN  = [{v:1,l:'OUI'},{v:0,l:'NON'}];                            // neutre
+const CO  = [{v:1,l:'D'},{v:2,l:'G'},{v:3,l:'Bilat.'}];
+const CO2 = [{v:1,l:'D'},{v:2,l:'G'}];
+const REF = [{v:0,l:'Absent',c:'v-ab'},{v:1,l:'Présent',c:'v-ok'},{v:2,l:'Très vif',c:'v-wn'}];
+const BBK = [{v:0,l:'Flexion',c:'v-ok'},{v:1,l:'Neutre',c:'v-wn'},{v:2,l:'Extension',c:'v-ab'}];
+const MRC = [{v:0,l:'0'},{v:1,l:'1'},{v:2,l:'2'},{v:3,l:'3'},{v:4,l:'4'},{v:5,l:'5'}];
+const MRC_TXT = 'Échelle MRC (Medical Research Council) — 0 : aucune contraction · 1 : contraction visible sans mouvement · '+
+ '2 : mouvement possible pesanteur éliminée · 3 : mouvement contre pesanteur · 4 : mouvement contre résistance · 5 : force normale';
+const EVA = Array.from({length:11},(_,i)=>({v:i,l:String(i)}));
+const num = n => Array.from({length:n},(_,i)=>({v:i+1,l:String(i+1)}));
+
+/* positions du regard — plusieurs modalités possibles simultanément */
+const REGARD = [
+ {v:'centre', l:'Regard centré',          s:'centré'},
+ {v:'lat_d',  l:'Regard latéral droit',   s:'latéral droit'},
+ {v:'lat_g',  l:'Regard latéral gauche',  s:'latéral gauche'},
+ {v:'haut',   l:'Regard vers le haut',    s:'vers le haut'},
+ {v:'bas',    l:'Regard vers le bas',     s:'vers le bas'}
+];
+/* caractère de la trépidation */
+const TREP = [{v:1,l:'Épuisable',c:'v-wn'},{v:2,l:'Inépuisable',c:'v-ab'}];
+
+/* ---------- ORL et barotraumatisme ---------- */
+/* Classification de Teed, variante la plus répandue en médecine de plongée.
+   À adapter si votre service utilise une autre graduation. */
+const TEED = [
+ {v:0,l:'Normal',c:'v-ok'},
+ {v:1,l:'Teed 1'},{v:2,l:'Teed 2',c:'v-wn'},{v:3,l:'Teed 3',c:'v-ab'},{v:4,l:'Teed 4',c:'v-ab'}
+];
+const TEED_TXT = 'Classification de Teed — 0 : tympan normal · 1 : rétraction tympanique, congestion du manche du marteau · '+
+ '2 : érythème diffus du tympan · 3 : hémorragie intratympanique (hémotympan) · 4 : perforation tympanique. '+
+ 'Variante usuelle en médecine de plongée, à adapter à la graduation de votre service.';
+const VALS = [{v:2,l:'Perméable',c:'v-ok'},{v:1,l:'Difficile',c:'v-wn'},{v:0,l:'Impossible',c:'v-ab'}];
+const WEBER = [{v:0,l:'Non latéralisé',c:'v-ok'},{v:1,l:'Latéralisé à DROITE',c:'v-ab'},{v:2,l:'Latéralisé à GAUCHE',c:'v-ab'}];
+const RINNE = [{v:1,l:'Positif (CA > CO)',c:'v-ok'},{v:0,l:'Négatif (CO > CA)',c:'v-ab'}];
+
+/* qualités complémentaires des réflexes ostéotendineux */
+const RFLAGS = [{k:'poly', l:'polycinétique'},{k:'etendu', l:'étendu'}];
+
+/* =====================================================================
+   SPÉCIFICATION DES CHAMPS
+   t : txt | num | date | time | choice | multi | calc | area
+   dep: [clé, [valeurs qui affichent le champ], …]   (condition OU)
+   flags: qualités binaires complémentaires          pii: donnée identifiante
+   custom: bloc rendu par du code dédié (schémas corporels)
+   ===================================================================== */
+const SPEC = [
+{id:'ident', t:'Identification', cols:2, f:[
+  {k:'dossier',   l:"N° de dossier / identifiant sujet", t:'txt', req:1, hint:"Identifiant que vous choisissez. Un numéro déjà connu remplit automatiquement l'identité et l'accident."},
+  {k:'nom',       l:'Nom',     t:'txt', pii:1},
+  {k:'prenom',    l:'Prénom',  t:'txt', pii:1},
+  {k:'sexe',      l:'Sexe',    t:'choice', o:[{v:1,l:'M'},{v:2,l:'F'},{v:3,l:'Autre'}]},
+  {k:'ddn',       l:'Date de naissance', t:'date', pii:1},
+  {k:'age',       l:'Âge (ans)', t:'calc'},
+  {k:'date_acc',  l:"Date de l'accident", t:'date'},
+  {k:'heure_acc', l:"Heure de l'accident", t:'time'},
+  {k:'date_ex',   l:"Date de l'examen", t:'date', req:1},
+  {k:'heure_ex',  l:"Heure de l'examen", t:'time', req:1},
+  {k:'delai_min', l:'Délai accident → examen (min)', t:'calc'},
+  {k:'examinateur',l:'Examinateur', t:'txt', list:'exlist'},
+  {k:'num_ex',    l:"N° d'examen pour ce sujet", t:'calc'}
+]},
+
+{id:'consc', t:'Conscience', cols:1, norm:{avpu:1,gcs_y:4,gcs_v:5,gcs_m:6}, f:[
+  {k:'avpu', l:'AVPU', t:'choice', o:[{v:1,l:'Alert',c:'v-ok'},{v:2,l:'Verbal',c:'v-wn'},{v:3,l:'Pain',c:'v-ab'},{v:4,l:'Unresponsive',c:'v-ab'}]},
+  {k:'gcs_y', l:'Glasgow — Ouverture des yeux (Y)', t:'choice', o:num(4)},
+  {k:'gcs_v', l:'Glasgow — Réponse verbale (V)',    t:'choice', o:num(5)},
+  {k:'gcs_m', l:'Glasgow — Réponse motrice (M)',    t:'choice', o:num(6)},
+  {k:'gcs_tot', l:'Score de Glasgow total (/15)', t:'calc'}
+]},
+
+{id:'fsup', t:'Fonctions supérieures', cols:1,
+ norm:{fs_comport:0,fs_dts:0,fs_parole:0,fs_visuel:0,fs_audition:0,fs_acouph:0,fs_vertiges:0,nys:0,vns:0}, f:[
+  {k:'fs_comport', l:'Troubles du comportement', t:'choice', o:ON},
+  {k:'fs_dts',     l:'Désorientation temporo-spatiale (DTS)', t:'choice', o:ON},
+  {k:'fs_parole',  l:'Troubles de la parole', t:'choice', o:ON},
+  {k:'fs_visuel',  l:'Troubles visuels', t:'choice', o:ON},
+  {k:'fs_visuel_cote', l:'Côté', t:'choice', o:CO, dep:['fs_visuel',[1]], sub:1},
+  {k:'fs_audition',l:"Troubles de l'audition", t:'choice', o:ON},
+  {k:'fs_audition_cote', l:'Côté', t:'choice', o:CO, dep:['fs_audition',[1]], sub:1},
+  {k:'fs_acouph',  l:'Acouphènes', t:'choice', o:ON},
+  {k:'fs_acouph_cote', l:'Côté', t:'choice', o:CO, dep:['fs_acouph',[1]], sub:1},
+  {k:'fs_vertiges',l:'Vertiges', t:'choice', o:ON},
+  {k:'nys', l:'Nystagmus', t:'choice', o:ON, hint:"À coter même en l'absence de vertige"},
+  {k:'nys_cote', l:'Côté de la secousse rapide', t:'choice', o:CO2, dep:['nys',[1]], sub:1},
+  {k:'nys_regard', l:'Position(s) du regard', t:'multi', o:REGARD, dep:['nys',[1]], sub:1,
+   hint:'Plusieurs positions possibles'},
+  {k:'nys_type', l:'Sens du nystagmus', t:'choice', dep:['nys',[1]], sub:1,
+   o:[{v:1,l:'Même sens que la secousse rapide'},{v:2,l:'Sens inverse'},{v:3,l:'Girato-rotatoire'}]},
+  {k:'vns', l:'VNS (vidéonystagmoscopie) réalisée', t:'choice', o:NN},
+  {k:'vns_spont', l:'Nystagmus spontané sous VNS', t:'choice', o:ON, dep:['vns',[1]], sub:1},
+  {k:'vns_spont_cote', l:'Côté (secousse rapide)', t:'choice', o:CO2, dep:['vns_spont',[1]], sub:1},
+  {k:'vns_spont_regard', l:'Position(s) du regard', t:'multi', o:REGARD, dep:['vns_spont',[1]], sub:1},
+  {k:'vns_sensib', l:'VNS sensibilisée', t:'choice', o:NN, dep:['vns',[1]], sub:1, hint:'Épreuve vibratoire mastoïdienne'},
+  {k:'vns_niv', l:'NIV — nystagmus induit par vibration', t:'choice', o:ON, dep:['vns_sensib',[1]], sub:1},
+  {k:'vns_niv_cote', l:'Côté (secousse rapide)', t:'choice', o:CO2, dep:['vns_niv',[1]], sub:1},
+  {k:'vns_niv_regard', l:'Position(s) du regard', t:'multi', o:REGARD, dep:['vns_niv',[1]], sub:1}
+]},
+
+{id:'orl', t:'ORL et barotraumatisme', cols:2, note:TEED_TXT,
+ norm:{oto_D:0,oto_G:0,valsalva_D:2,valsalva_G:2,weber:0,rinne_D:1,rinne_G:1}, f:[
+  {k:'oto_D', l:'Otoscopie — oreille DROITE',  t:'choice', o:TEED},
+  {k:'oto_G', l:'Otoscopie — oreille GAUCHE',  t:'choice', o:TEED},
+  {k:'oto_epanch_D', l:'Épanchement rétro-tympanique DROIT',  t:'choice', o:ON, dep:['oto_D',[1,2,3,4]], sub:1},
+  {k:'oto_epanch_G', l:'Épanchement rétro-tympanique GAUCHE', t:'choice', o:ON, dep:['oto_G',[1,2,3,4]], sub:1},
+  {k:'valsalva_D', l:'Perméabilité tubaire (Valsalva) DROITE',  t:'choice', o:VALS},
+  {k:'valsalva_G', l:'Perméabilité tubaire (Valsalva) GAUCHE', t:'choice', o:VALS},
+  {k:'weber', l:'Test de Weber', t:'choice', o:WEBER, full:1, hint:'Diapason sur le vertex ou les incisives'},
+  {k:'rinne_D', l:'Test de Rinne DROIT',  t:'choice', o:RINNE},
+  {k:'rinne_G', l:'Test de Rinne GAUCHE', t:'choice', o:RINNE},
+  {k:'orl_txt', l:'Commentaire ORL', t:'txt', wide:1, full:1, nofill:1,
+   phr:['Otalgie droite','Otalgie gauche','Otorragie droite','Otorragie gauche','Plénitude auriculaire','Autophonie','Vertige positionnel déclenché au Valsalva','Barotraumatisme sinusien','Épistaxis']}
+]},
+
+{id:'sfonc', t:'Signes fonctionnels', cols:1, norm:{sf_ceph:0,sf_rachis:0,sf_subj:0,eva_type:2,eva_score:0}, f:[
+  {k:'sf_ceph',   l:'Céphalées', t:'choice', o:ON},
+  {k:'sf_rachis', l:'Douleur rachidienne', t:'choice', o:ON},
+  {k:'sf_rachis_loc', l:'Localisation', t:'multi', o:[{v:'cervicale',l:'Cervicale'},{v:'dorsale',l:'Dorsale'},{v:'lombaire',l:'Lombaire'}], dep:['sf_rachis',[1]], sub:1},
+  {k:'eva_type', l:'Échelle de douleur utilisée', t:'choice',
+   o:[{v:1,l:'EVA (visuelle analogique)'},{v:2,l:'EN (échelle numérique)'},{v:3,l:'Non évaluable',c:'v-wn'}]},
+  {k:'eva_score', l:'Intensité de la douleur (/10)', t:'choice', o:EVA, eva:1, dep:['eva_type',[1,2]], sub:1},
+  {k:'eva_loc', l:'Siège de la douleur cotée', t:'txt', wide:1, dep:['eva_type',[1,2]], sub:1, nofill:1,
+   phr:['Rachis cervical','Rachis dorsal','Rachis lombaire','Céphalées','Épaule droite','Épaule gauche','Membre supérieur droit','Membre supérieur gauche','Membre inférieur droit','Membre inférieur gauche','Thorax','Abdomen','Douleur diffuse']},
+  {k:'sf_subj',   l:'Signes subjectifs', t:'choice', o:ON, hint:'Fourmillements, picotements, peau cartonnée, brûlures, décharges, engourdissement'},
+  {k:'sf_subj_cote', l:'Côté', t:'choice', o:CO, dep:['sf_subj',[1]], sub:1}
+]},
+
+{id:'subj', t:'Signes subjectifs — localisation', custom:'subj', cols:1, f:[]},
+
+{id:'refsup', t:'Réflexes — membres supérieurs', cols:2,
+ norm:{ref_bicip_D:1,ref_bicip_G:1,ref_tricip_D:1,ref_tricip_G:1,hoffman_D:0,hoffman_G:0}, f:[
+  {k:'ref_bicip_D', l:'Bicipital DROIT',  t:'choice', o:REF, flags:RFLAGS, copyref:1},
+  {k:'ref_bicip_G', l:'Bicipital GAUCHE', t:'choice', o:REF, flags:RFLAGS, copyref:1},
+  {k:'ref_tricip_D',l:'Tricipital DROIT', t:'choice', o:REF, flags:RFLAGS, copyref:1},
+  {k:'ref_tricip_G',l:'Tricipital GAUCHE',t:'choice', o:REF, flags:RFLAGS, copyref:1},
+  {k:'hoffman_D', l:'Signe de Hoffmann DROIT',  t:'choice', o:ON, hint:'OUI = pathologique'},
+  {k:'hoffman_G', l:'Signe de Hoffmann GAUCHE', t:'choice', o:ON, hint:'OUI = pathologique'}
+]},
+
+{id:'refinf', t:'Réflexes — membres inférieurs', cols:2,
+ norm:{ref_rot_D:1,ref_rot_G:1,ref_ach_D:1,ref_ach_G:1,bbk_D:0,bbk_G:0,trep_pied:0,trep_rot:0,contract:0}, f:[
+  {k:'ref_rot_D', l:'Rotulien DROIT',  t:'choice', o:REF, flags:RFLAGS, copyref:1},
+  {k:'ref_rot_G', l:'Rotulien GAUCHE', t:'choice', o:REF, flags:RFLAGS, copyref:1},
+  {k:'ref_ach_D', l:'Achilléen DROIT', t:'choice', o:REF, flags:RFLAGS, copyref:1},
+  {k:'ref_ach_G', l:'Achilléen GAUCHE',t:'choice', o:REF, flags:RFLAGS, copyref:1},
+  {k:'bbk_D', l:'Cutané plantaire (BBK) DROIT',  t:'choice', o:BBK},
+  {k:'bbk_G', l:'Cutané plantaire (BBK) GAUCHE', t:'choice', o:BBK},
+  {k:'trep_pied', l:'Trépidation du pied', t:'choice', o:ON, full:1},
+  {k:'trep_pied_cote', l:'Côté', t:'choice', o:CO, dep:['trep_pied',[1]], sub:1, full:1},
+  {k:'trep_pied_qual_D', l:'Caractère à DROITE',  t:'choice', o:TREP, dep:['trep_pied_cote',[1,3]], sub:1, full:1},
+  {k:'trep_pied_qual_G', l:'Caractère à GAUCHE', t:'choice', o:TREP, dep:['trep_pied_cote',[2,3]], sub:1, full:1},
+  {k:'trep_rot',  l:'Trépidation de la rotule', t:'choice', o:ON, full:1},
+  {k:'trep_rot_cote', l:'Côté', t:'choice', o:CO, dep:['trep_rot',[1]], sub:1, full:1},
+  {k:'trep_rot_qual_D', l:'Caractère à DROITE',  t:'choice', o:TREP, dep:['trep_rot_cote',[1,3]], sub:1, full:1},
+  {k:'trep_rot_qual_G', l:'Caractère à GAUCHE', t:'choice', o:TREP, dep:['trep_rot_cote',[2,3]], sub:1, full:1},
+  {k:'contract',  l:'Contractions musculaires spontanées', t:'choice', o:ON, full:1},
+  {k:'contract_cote', l:'Côté', t:'choice', o:CO, dep:['contract',[1]], sub:1, full:1},
+  {k:'contract_loc',  l:'Localisation', t:'txt', wide:1, dep:['contract',[1]], sub:1, full:1, nofill:1,
+   phr:['Deltoïde','Biceps brachial','Avant-bras','Éminence thénar','Muscles intercostaux','Paravertébraux lombaires','Quadriceps','Jumeaux / mollet','Loge antéro-externe de jambe','Muscles de la face']}
+]},
+
+{id:'force', t:'Force motrice — myotomes clés (MRC 0–5)', cols:2, note:MRC_TXT+
+ ' · Les dix myotomes clés sont ceux de la cotation ASIA (ISNCSCI).',
+ norm:{f_c5_D:5,f_c5_G:5,f_c6_D:5,f_c6_G:5,f_c7_D:5,f_c7_G:5,f_c8_D:5,f_c8_G:5,f_t1_D:5,f_t1_G:5,
+       f_l2_D:5,f_l2_G:5,f_l3_D:5,f_l3_G:5,f_l4_D:5,f_l4_G:5,f_l5_D:5,f_l5_G:5,f_s1_D:5,f_s1_G:5,
+       f_epaule_D:5,f_epaule_G:5,f_main_D:5,f_main_G:5}, f:[
+  {k:'f_c5_D', l:'C5 — flexion du coude DROIT',   t:'choice', o:MRC, mrc:1, copyforce:1},
+  {k:'f_c5_G', l:'C5 — flexion du coude GAUCHE',  t:'choice', o:MRC, mrc:1, copyforce:1},
+  {k:'f_c6_D', l:'C6 — extension du poignet DROIT',  t:'choice', o:MRC, mrc:1, copyforce:1},
+  {k:'f_c6_G', l:'C6 — extension du poignet GAUCHE', t:'choice', o:MRC, mrc:1, copyforce:1},
+  {k:'f_c7_D', l:'C7 — extension du coude DROIT',   t:'choice', o:MRC, mrc:1, copyforce:1},
+  {k:'f_c7_G', l:'C7 — extension du coude GAUCHE',  t:'choice', o:MRC, mrc:1, copyforce:1},
+  {k:'f_c8_D', l:'C8 — flexion des doigts DROITE',  t:'choice', o:MRC, mrc:1, copyforce:1},
+  {k:'f_c8_G', l:'C8 — flexion des doigts GAUCHE',  t:'choice', o:MRC, mrc:1, copyforce:1},
+  {k:'f_t1_D', l:'T1 — abduction du 5e doigt DROITE',  t:'choice', o:MRC, mrc:1, copyforce:1},
+  {k:'f_t1_G', l:'T1 — abduction du 5e doigt GAUCHE', t:'choice', o:MRC, mrc:1, copyforce:1},
+  {k:'f_l2_D', l:'L2 — flexion de hanche DROITE',  t:'choice', o:MRC, mrc:1, copyforce:1},
+  {k:'f_l2_G', l:'L2 — flexion de hanche GAUCHE', t:'choice', o:MRC, mrc:1, copyforce:1},
+  {k:'f_l3_D', l:'L3 — extension du genou DROIT',   t:'choice', o:MRC, mrc:1, copyforce:1},
+  {k:'f_l3_G', l:'L3 — extension du genou GAUCHE',  t:'choice', o:MRC, mrc:1, copyforce:1},
+  {k:'f_l4_D', l:'L4 — flexion dorsale de cheville DROITE',  t:'choice', o:MRC, mrc:1, copyforce:1},
+  {k:'f_l4_G', l:'L4 — flexion dorsale de cheville GAUCHE', t:'choice', o:MRC, mrc:1, copyforce:1},
+  {k:'f_l5_D', l:"L5 — extension de l'hallux DROIT",  t:'choice', o:MRC, mrc:1, copyforce:1},
+  {k:'f_l5_G', l:"L5 — extension de l'hallux GAUCHE", t:'choice', o:MRC, mrc:1, copyforce:1},
+  {k:'f_s1_D', l:'S1 — flexion plantaire DROITE',  t:'choice', o:MRC, mrc:1, copyforce:1},
+  {k:'f_s1_G', l:'S1 — flexion plantaire GAUCHE', t:'choice', o:MRC, mrc:1, copyforce:1},
+  {k:'f_epaule_D', l:'Élévation des épaules DROITE (hors ASIA)',  t:'choice', o:MRC, mrc:1},
+  {k:'f_epaule_G', l:'Élévation des épaules GAUCHE (hors ASIA)', t:'choice', o:MRC, mrc:1},
+  {k:'f_main_D', l:'Serrage de main DROITE (hors ASIA)',  t:'choice', o:MRC, mrc:1},
+  {k:'f_main_G', l:'Serrage de main GAUCHE (hors ASIA)', t:'choice', o:MRC, mrc:1},
+  {k:'vac', l:'Contraction anale volontaire (VAC)', t:'choice', o:NO, full:1,
+   hint:'Élément indispensable à la détermination du caractère complet ou incomplet'},
+  {k:'dap', l:'Pression anale profonde perçue (DAP)', t:'choice', o:NO, full:1}
+]},
+
+{id:'motr', t:'Motricité', cols:1, norm:{par_fac:0,barre:0,ming:0}, f:[
+  {k:'par_fac', l:'Paralysie faciale', t:'choice', o:ON},
+  {k:'par_fac_cote', l:'Côté', t:'choice', o:CO, dep:['par_fac',[1]], sub:1},
+  {k:'par_oeil', l:"Absence de fermeture de l'œil", t:'choice', o:ON, dep:['par_fac',[1]], sub:1},
+  {k:'barre', l:'Chute au BARRÉ', t:'choice', o:ON, hint:'Bras tendus à 45°, 10 s'},
+  {k:'barre_cote', l:'Côté', t:'choice', o:CO, dep:['barre',[1]], sub:1},
+  {k:'ming', l:'Chute au MINGAZZINI', t:'choice', o:ON, hint:'Cuisses à 90° des hanches, jambes horizontales, 10 s'},
+  {k:'ming_cote', l:'Côté', t:'choice', o:CO, dep:['ming',[1]], sub:1}
+]},
+
+{id:'mict', t:'Miction', cols:1, norm:{mict:1,mict_type:1}, f:[
+  {k:'mict', l:"Miction depuis l'accident", t:'choice', o:NO},
+  {k:'mict_type', l:'Caractéristiques', t:'choice', dep:['mict',[1]], sub:1,
+   o:[{v:1,l:'Normale',c:'v-ok'},{v:2,l:'Avec effort',c:'v-wn'},{v:3,l:'Rétention',c:'v-ab'}]},
+  {k:'mict_residu_pre',  l:'Résidu pré-mictionnel (mL)',  t:'num', min:0, max:3000, unit:'mL', hint:'Mesure échographique (bladder scan)'},
+  {k:'mict_residu_post', l:'Résidu post-mictionnel (mL)', t:'num', min:0, max:3000, unit:'mL'}
+]},
+
+{id:'coord', t:'Coordination', cols:1,
+ norm:{vertic:1,equil_yo:1,equil_yf:1,marche:1,marche_yo:0,marche_yf:0,talon_genou:1,doigt_nez:1}, f:[
+  {k:'vertic', l:'Verticalisation possible', t:'choice', o:NO},
+  {k:'equil_yo', l:'Équilibre statique conservé — yeux OUVERTS', t:'choice', o:NO, dep:['vertic',[1]], sub:1},
+  {k:'equil_yf', l:'Équilibre statique conservé — yeux FERMÉS',  t:'choice', o:NO, dep:['vertic',[1]], sub:1},
+  {k:'marche', l:'Marche possible', t:'choice', o:NO},
+  {k:'marche_yo', l:'Marche yeux OUVERTS', t:'choice', dep:['marche',[1]], sub:1, o:[{v:0,l:'Normale',c:'v-ok'},{v:1,l:'Anormale',c:'v-ab'}]},
+  {k:'marche_yf', l:'Marche yeux FERMÉS',  t:'choice', dep:['marche',[1]], sub:1, o:[{v:0,l:'Normale',c:'v-ok'},{v:1,l:'Anormale',c:'v-ab'}]},
+  {k:'devia_cote', l:'Côté de la déviation', t:'choice', o:CO2, dep:['marche_yo',[1],'marche_yf',[1]], sub:1},
+  {k:'talon_genou', l:'Talon-genou réalisé correctement', t:'choice', o:NO},
+  {k:'talon_genou_cote', l:'Côté déficitaire', t:'choice', o:CO, dep:['talon_genou',[0]], sub:1},
+  {k:'doigt_nez', l:'Doigt-nez réalisé correctement', t:'choice', o:NO},
+  {k:'doigt_nez_cote', l:'Côté déficitaire', t:'choice', o:CO, dep:['doigt_nez',[0]], sub:1}
+]},
+
+{id:'sens', t:'Sensibilités', custom:'sens', cols:1, norm:{sens_examinee:1}, f:[
+  {k:'sens_examinee', l:'Examen des sensibilités réalisé', t:'choice', o:NO,
+   hint:"Si NON, toutes les zones et tous les reliefs osseux sont exportés comme valeurs manquantes, et non comme normaux."}
+]},
+
+{id:'asia', t:'Score ASIA (ISNCSCI)', custom:'asia', cols:1, f:[]},
+
+{id:'cut', t:'Lésions cutanées de désaturation', custom:'cut', cols:1, norm:{cut_present:0}, f:[
+  {k:'cut_present', l:'Lésions cutanées présentes', t:'choice', o:ON,
+   hint:'Marbrures (cutis marmorata), érythème, œdème, prurit, papules, emphysème sous-cutané'},
+  {k:'cut_delai', l:"Délai d'apparition après émersion (min)", t:'num', min:0, max:2880, unit:'min', dep:['cut_present',[1]], sub:1},
+  {k:'cut_evol', l:'Évolution sous oxygène', t:'choice', dep:['cut_present',[1]], sub:1,
+   o:[{v:1,l:'Régression',c:'v-ok'},{v:2,l:'Stable',c:'v-wn'},{v:3,l:'Extension',c:'v-ab'}]},
+  {k:'cut_txt', l:'Commentaire', t:'txt', wide:1, dep:['cut_present',[1]], sub:1, nofill:1,
+   phr:['Marbrures typiques du tronc','Marbrures des flancs','Prurit isolé','Œdème du membre supérieur','Œdème du membre inférieur','Emphysème sous-cutané cervical','Photographies réalisées']}
+]},
+
+{id:'concl', t:'Conclusion', cols:1, f:[
+  {k:'conclusion', l:"Conclusion de l'examen", t:'choice',
+   o:[{v:1,l:'Examen neurologique normal',c:'v-ok'},{v:2,l:'Examen neurologique anormal',c:'v-ab'},{v:3,l:'À recontrôler',c:'v-wn'}]},
+  {k:'orientation', l:'Orientation', t:'choice',
+   o:[{v:1,l:'Retour au domicile',c:'v-ok'},
+      {v:2,l:'Hospitalisation en service de médecine',c:'v-wn'},
+      {v:3,l:'Hospitalisation en surveillance continue',c:'v-wn'},
+      {v:4,l:'Hospitalisation en soins intensifs',c:'v-ab'},
+      {v:5,l:'Transfert vers une autre structure'}]},
+  {k:'orientation_autre', l:'Préciser la structure', t:'txt', wide:1, dep:['orientation',[5]], sub:1, nofill:1},
+  {k:'orientation_txt', l:"Précisions sur l'orientation", t:'area', wide:1, nofill:1,
+   phr:['Surveillance neurologique horaire.','Réévaluation à H+1.','Réévaluation à H+4.','Réévaluation à H+24.','Avis neurochirurgical demandé.','Avis ORL demandé.','Imagerie cérébrale demandée.','Imagerie rachidienne demandée.','Consignes de surveillance remises au patient.','Consignes de surveillance remises à l\'entourage.','Sortie contre avis médical.','Transport médicalisé.','Transport non médicalisé.']},
+  {k:'notes', l:'Commentaires libres', t:'area', wide:1, nofill:1,
+   phr:['Examen limité par la douleur.','Examen limité par la barrière de la langue.','Patient non coopérant.','Aucune anomalie constatée sur l\'ensemble de l\'examen.','Comparaison avec l\'examen précédent : état stationnaire.','Comparaison avec l\'examen précédent : aggravation.','Comparaison avec l\'examen précédent : amélioration.','Prise de traitement antalgique avant l\'examen.','Consommation d\'alcool ou de toxiques suspectée.','Réévaluation programmée.']}
+]}
+];
+
+/* =====================================================================
+   SCHÉMAS CORPORELS
+   ===================================================================== */
+const SLOTS = [
+ {s:'tete',      r:'tetecou', d:"M100,8 A26,26 0 0,0 100,60 Z"},
+ {s:'cou',       r:'tetecou', d:"M88,58 L100,58 L100,76 L84,76 C86,70 87,64 88,58 Z"},
+ {s:'epaule',    r:'MS',      d:"M84,76 C70,74 55,79 51,92 C49,99 49,104 50,110 L73,110 C74,96 78,86 84,76 Z"},
+ {s:'troncsup',  r:'tronc',   d:"M84,76 C78,86 74,96 73,110 C72,126 74,140 77,152 L100,152 L100,76 Z"},
+ {s:'troncinf',  r:'tronc',   d:"M77,152 C74,172 74,194 76,208 L100,208 L100,152 Z"},
+ {s:'bassin',    r:'tronc',   d:"M76,208 C68,222 70,240 74,252 L100,252 L100,208 Z"},
+ {s:'bras',      r:'MS',      d:"M50,110 L73,110 C72,134 70,158 68,180 L45,180 C47,156 48,133 50,110 Z"},
+ {s:'avantbras', r:'MS',      d:"M45,180 L68,180 C67,204 65,228 64,248 L39,248 C41,225 43,203 45,180 Z"},
+ {s:'main',      r:'MS',      d:"M39,248 L64,248 C65,264 62,281 54,289 C46,294 39,291 36,283 C34,269 36,258 39,248 Z"},
+ {s:'cuisse',    r:'MI',      d:"M74,252 L100,252 L97,270 C96,297 94,320 93,338 L76,338 C74,312 73,280 74,252 Z"},
+ {s:'jambe',     r:'MI',      d:"M76,338 L93,338 C92,362 91,388 90,410 L79,410 C78,388 77,362 76,338 Z"},
+ {s:'pied',      r:'MI',      d:"M79,410 L90,410 L90,428 C90,435 84,437 76,437 C70,437 66,434 66,430 C66,423 74,418 79,412 Z"}
+];
+const SLOT_LAB = {
+ ant:{tete:'Face',cou:'Cou ant.',epaule:'Épaule / deltoïde',troncsup:'Thorax ant.',troncinf:'Abdomen',
+      bassin:'Aine / pli inguinal',bras:'Bras ant.',avantbras:'Avant-bras ant.',main:'Main (palmaire)',
+      cuisse:'Cuisse ant.',jambe:'Jambe ant.',pied:'Pied (dos)'},
+ post:{tete:'Occiput',cou:'Nuque',epaule:'Épaule post. / trapèze',troncsup:'Dos (région scapulaire)',
+      troncinf:'Lombes',bassin:'Fesse',bras:'Bras post.',avantbras:'Avant-bras post.',main:'Main (dorsale)',
+      cuisse:'Cuisse post.',jambe:'Mollet',pied:'Plante'}
+};
+const VIEWS = [{v:'ant',l:'Face antérieure'},{v:'post',l:'Face postérieure'}];
+const REGION_LAB = {tetecou:'Tête / cou', MS:'Membre supérieur', tronc:'Tronc', MI:'Membre inférieur'};
+
+/* ---------- modalités sensitives ---------- */
+/* Le tact léger et la piqûre sont cotés par métamère, conformément à l'ISNCSCI (ASIA).
+   La pallesthésie reste cotée sur les reliefs osseux : elle ne fait pas partie du score. */
+const MODAL = [
+ {k:'lt',  l:'Tact léger',    sub:'sensibilité épicritique — coton',          s:'TACT LÉGER',    mode:'derm'},
+ {k:'pp',  l:'Piqûre',        sub:'sensibilité thermoalgique — pointe mousse', s:'PIQÛRE',        mode:'derm'},
+ {k:'pal', l:'Pallesthésie',  sub:'vibratoire, reliefs osseux, diapason',      s:'PALLESTHÉSIE',  mode:'land'}
+];
+
+/* ---------- les 28 métamères et leurs points clés ISNCSCI ---------- */
+const DERM = [
+ {k:'c2',  l:'C2',    p:'Protubérance occipitale externe'},
+ {k:'c3',  l:'C3',    p:'Creux sus-claviculaire'},
+ {k:'c4',  l:'C4',    p:'Sommet de l’articulation acromio-claviculaire'},
+ {k:'c5',  l:'C5',    p:'Face latérale du pli du coude'},
+ {k:'c6',  l:'C6',    p:'Pouce, face dorsale P1'},
+ {k:'c7',  l:'C7',    p:'Majeur, face dorsale P1'},
+ {k:'c8',  l:'C8',    p:'Auriculaire, face dorsale P1'},
+ {k:'t1',  l:'T1',    p:'Face médiale du pli du coude'},
+ {k:'t2',  l:'T2',    p:'Apex du creux axillaire'},
+ {k:'t3',  l:'T3',    p:'3e espace intercostal'},
+ {k:'t4',  l:'T4',    p:'4e espace intercostal, ligne mamelonnaire'},
+ {k:'t5',  l:'T5',    p:'5e espace intercostal'},
+ {k:'t6',  l:'T6',    p:'Appendice xiphoïde'},
+ {k:'t7',  l:'T7',    p:'7e espace intercostal'},
+ {k:'t8',  l:'T8',    p:'8e espace intercostal'},
+ {k:'t9',  l:'T9',    p:'9e espace intercostal'},
+ {k:'t10', l:'T10',   p:'Ombilic'},
+ {k:'t11', l:'T11',   p:'11e espace intercostal'},
+ {k:'t12', l:'T12',   p:'Milieu du ligament inguinal'},
+ {k:'l1',  l:'L1',    p:'Mi-distance entre T12 et L2'},
+ {k:'l2',  l:'L2',    p:'Face antéro-médiale de cuisse, tiers moyen'},
+ {k:'l3',  l:'L3',    p:'Condyle fémoral médial'},
+ {k:'l4',  l:'L4',    p:'Malléole médiale'},
+ {k:'l5',  l:'L5',    p:'Dos du pied, 3e articulation métatarso-phalangienne'},
+ {k:'s1',  l:'S1',    p:'Face latérale du talon'},
+ {k:'s2',  l:'S2',    p:'Creux poplité, ligne médiane'},
+ {k:'s3',  l:'S3',    p:'Tubérosité ischiatique'},
+ {k:'s45', l:'S4-5',  p:'Région périanale, à moins d’un centimètre de la marge'}
+];
+const DERM_IDX = (function(){ const m={}; DERM.forEach((d,i)=>m[d.k]=i); return m; })();
+
+/* cotation ISNCSCI d'un métamère */
+const DSTATE = [
+ {v:2, l:'Normal',  ab:'2',  col:'#1f7a4d'},
+ {v:1, l:'Altéré',  ab:'1',  col:'#b8961f'},
+ {v:0, l:'Absent',  ab:'0',  col:'#8c2020'},
+ {v:9, l:'Non testable', ab:'NT', col:'#5a6472'}
+];
+const dstate = v => DSTATE.find(x=>x.v===v);
+
+/* myotomes clés ASIA, dans l'ordre céphalo-caudal */
+const MYO = [
+ {k:'c5', l:'C5', m:'Flexion du coude'},
+ {k:'c6', l:'C6', m:'Extension du poignet'},
+ {k:'c7', l:'C7', m:'Extension du coude'},
+ {k:'c8', l:'C8', m:'Flexion des doigts'},
+ {k:'t1', l:'T1', m:'Abduction du 5e doigt'},
+ {k:'l2', l:'L2', m:'Flexion de hanche'},
+ {k:'l3', l:'L3', m:'Extension du genou'},
+ {k:'l4', l:'L4', m:'Flexion dorsale de cheville'},
+ {k:'l5', l:'L5', m:"Extension de l'hallux"},
+ {k:'s1', l:'S1', m:'Flexion plantaire'}
+];
+
+/* reliefs osseux testés en pallesthésie */
+const LANDMARKS = [
+ {k:'crane',        l:'Crâne', uni:1},
+ {k:'clavicule',    l:'Clavicule'},
+ {k:'epaule',       l:'Épaule'},
+ {k:'coude',        l:'Coude'},
+ {k:'poignet',      l:'Poignet'},
+ {k:'doigt',        l:'Doigt'},
+ {k:'costal',       l:'Grill costal'},
+ {k:'eias',         l:'EIAS'},
+ {k:'rotule',       l:'Rotule'},
+ {k:'malleole_int', l:'Malléole interne'},
+ {k:'malleole_ext', l:'Malléole externe'},
+ {k:'orteil',       l:'Orteil'}
+];
+
+/* états de cotation d'un relief osseux (pallesthésie) */
+const SSTATE = [
+ {v:1, k:'hypo',  l:'Hypoesthésie',  lp:'Diminuée', ab:'Hypo',  abp:'Diminuée', pat:'pHypo',  col:'#2f6fb5'},
+ {v:2, k:'hyper', l:'Hyperesthésie', lp:'Exagérée', ab:'Hyper', abp:'Exagérée', pat:'pHyper', col:'#b07b18'},
+ {v:3, k:'an',    l:'Anesthésie',    lp:'Abolie',   ab:'An',    abp:'Abolie',   pat:'pAn',    col:'#8c2020'}
+];
+const sstate = v => SSTATE.find(s=>s.v===v);
+const sLabel = (mod,v) => { const s=sstate(v); return s ? (mod==='pal'?s.lp:s.l) : ''; };
+
+/* ressentis subjectifs localisables sur le schéma */
+const SUBJT = [
+ {v:1, k:'fourmillements',  l:'Fourmillements',        pat:'sP1', col:'#1f6f4a'},
+ {v:2, k:'picotements',     l:'Picotements',           pat:'sP2', col:'#8a5a00'},
+ {v:3, k:'cartonnee',       l:'Peau cartonnée',        pat:'sP3', col:'#4a4a8a'},
+ {v:4, k:'brulures',        l:'Brûlures',              pat:'sP4', col:'#a83232'},
+ {v:5, k:'decharges',       l:'Décharges électriques', pat:'sP5', col:'#7a2d8a'},
+ {v:6, k:'engourdissement', l:'Engourdissement',       pat:'sP6', col:'#4a6a7a'}
+];
+const subjt = v => SUBJT.find(s=>s.v===v);
+
+/* lésions cutanées d'accident de désaturation */
+const CUTT = [
+ {v:1, k:'marbrures',  l:'Marbrures (cutis marmorata)', pat:'cP1', col:'#8c2020'},
+ {v:2, k:'erytheme',   l:'Érythème',                    pat:'cP2', col:'#c0392b'},
+ {v:3, k:'oedeme',     l:'Œdème',                       pat:'cP3', col:'#1f6f9e'},
+ {v:4, k:'prurit',     l:'Prurit',                      pat:'cP4', col:'#8a5a00'},
+ {v:5, k:'papules',    l:'Papules, plaques',            pat:'cP5', col:'#7a2d8a'},
+ {v:6, k:'emphyseme',  l:'Emphysème sous-cutané',       pat:'cP6', col:'#1f6f4a'}
+];
+const cutt = v => CUTT.find(s=>s.v===v);
+
+/* ---------- clés ---------- */
+function dermKey(mod,lvl,side){ return 'sens_'+mod+'_'+lvl+'_'+side; }
+function myoKey(lvl,side){ return 'f_'+lvl+'_'+side; }
+function subjKey(view,slot,side){ return 'subj_'+view+'_'+slot+'_'+side; }
+function cutKey(view,slot,side){ return 'cut_'+view+'_'+slot+'_'+side; }
+function landKey(l,side){ return 'sens_pal_'+l.k+(l.uni?'':'_'+side); }
+/* demi-image gauche : côté D en vue antérieure, côté G en vue postérieure */
+function sideOf(view,half){ return view==='ant' ? (half==='L'?'D':'G') : (half==='L'?'G':'D'); }
+
+/* ---------- motifs SVG ---------- */
+function patternDefs(){
+  const p = [];
+  // sensibilités
+  p.push('<pattern id="pHypo" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">'+
+         '<rect width="7" height="7" fill="#fff"/><line x1="0" y1="0" x2="0" y2="7" stroke="#2f6fb5" stroke-width="2.6"/></pattern>');
+  p.push('<pattern id="pHyper" width="7" height="7" patternUnits="userSpaceOnUse">'+
+         '<rect width="7" height="7" fill="#fff"/><path d="M0,0 L7,7 M7,0 L0,7" stroke="#8a6010" stroke-width="2.2"/></pattern>');
+  p.push('<pattern id="pAn" width="6" height="6" patternUnits="userSpaceOnUse">'+
+         '<rect width="6" height="6" fill="#8c2020"/><path d="M0,3 L6,3" stroke="#fff" stroke-width="1"/></pattern>');
+  // ressentis subjectifs
+  p.push('<pattern id="sP1" width="7" height="7" patternUnits="userSpaceOnUse">'+
+         '<rect width="7" height="7" fill="#fff"/><circle cx="3.5" cy="3.5" r="2" fill="#1f6f4a"/></pattern>');
+  p.push('<pattern id="sP2" width="8" height="8" patternUnits="userSpaceOnUse">'+
+         '<rect width="8" height="8" fill="#fff"/><path d="M4,1.2 L4,6.8 M1.2,4 L6.8,4" stroke="#8a5a00" stroke-width="2"/></pattern>');
+  p.push('<pattern id="sP3" width="7" height="7" patternUnits="userSpaceOnUse">'+
+         '<rect width="7" height="7" fill="#fff"/><path d="M0,0 L7,0 M0,0 L0,7" stroke="#4a4a8a" stroke-width="2.2"/></pattern>');
+  p.push('<pattern id="sP4" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">'+
+         '<rect width="6" height="6" fill="#fff"/><line x1="0" y1="0" x2="0" y2="6" stroke="#a83232" stroke-width="2.4"/></pattern>');
+  p.push('<pattern id="sP5" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)">'+
+         '<rect width="6" height="6" fill="#fff"/><line x1="0" y1="0" x2="0" y2="6" stroke="#7a2d8a" stroke-width="2.4"/></pattern>');
+  p.push('<pattern id="sP6" width="7" height="7" patternUnits="userSpaceOnUse">'+
+         '<rect width="7" height="7" fill="#fff"/><path d="M0,3.5 L7,3.5" stroke="#4a6a7a" stroke-width="2.4"/></pattern>');
+  // lésions cutanées
+  p.push('<pattern id="cP1" width="9" height="9" patternUnits="userSpaceOnUse">'+
+         '<rect width="9" height="9" fill="#fff"/><path d="M0,4.5 Q2.25,1 4.5,4.5 T9,4.5" stroke="#8c2020" stroke-width="2" fill="none"/></pattern>');
+  p.push('<pattern id="cP2" width="6" height="6" patternUnits="userSpaceOnUse">'+
+         '<rect width="6" height="6" fill="#f5c6c0"/><circle cx="3" cy="3" r="1.3" fill="#c0392b"/></pattern>');
+  p.push('<pattern id="cP3" width="8" height="8" patternUnits="userSpaceOnUse">'+
+         '<rect width="8" height="8" fill="#fff"/><circle cx="4" cy="4" r="2.6" fill="none" stroke="#1f6f9e" stroke-width="1.8"/></pattern>');
+  p.push('<pattern id="cP4" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(30)">'+
+         '<rect width="7" height="7" fill="#fff"/><path d="M0,2 L7,2 M0,5 L7,5" stroke="#8a5a00" stroke-width="1.6" stroke-dasharray="2 2"/></pattern>');
+  p.push('<pattern id="cP5" width="8" height="8" patternUnits="userSpaceOnUse">'+
+         '<rect width="8" height="8" fill="#fff"/><rect x="2" y="2" width="4" height="4" fill="#7a2d8a"/></pattern>');
+  p.push('<pattern id="cP6" width="8" height="8" patternUnits="userSpaceOnUse">'+
+         '<rect width="8" height="8" fill="#fff"/><circle cx="2.5" cy="2.5" r="1.4" fill="none" stroke="#1f6f4a" stroke-width="1.4"/>'+
+         '<circle cx="6" cy="6" r="1" fill="none" stroke="#1f6f4a" stroke-width="1.4"/></pattern>');
+  return '<svg id="patdefs" width="0" height="0" aria-hidden="true" focusable="false"><defs>'+p.join('')+'</defs></svg>';
+}
+const patFill = id => 'fill:url(#'+id+');fill-opacity:1';
+/* vignette de légende : un motif SVG ne s'applique pas à un élément HTML,
+   il faut un vrai <svg> qui référence le motif. */
+function swatch(pat,w,h){ w=w||17; h=h||12;
+  return '<svg class="sw" width="'+w+'" height="'+h+'" viewBox="0 0 '+w+' '+h+'" aria-hidden="true">'+
+    '<rect x="0.5" y="0.5" width="'+(w-1)+'" height="'+(h-1)+'" fill="url(#'+pat+')" stroke="#4a5464" stroke-width="1"/></svg>'; }
+
+/* ---------- figure corporelle générique ----------
+   valOf(view, slot, side)  -> code de cotation (0 = rien)
+   styOf(code)              -> style CSS de remplissage
+   labOf(code)              -> libellé court affiché au survol            */
+function bodyFig(view, keyOf, valOf, styOf, labOf, handler){
+  const mk = half => SLOTS.map(s=>{
+    const side = sideOf(view,half);
+    const v = valOf(view,s.s,side)||0;
+    return '<path class="z'+(v?' on':'')+'" data-k="'+keyOf(view,s.s,side)+'"'+
+      ' data-lab="'+esc(SLOT_LAB[view][s.s]+' '+side+(v?' — '+labOf(v):''))+'"'+
+      (v?' style="'+styOf(v)+'"':'')+' d="'+s.d+'"></path>';
+  }).join('');
+  const face = view==='ant'
+    ? '<g class="deco"><circle cx="91" cy="28" r="1.8"/><circle cx="109" cy="28" r="1.8"/><path d="M100,32 L100,40 M94,48 Q100,51 106,48"/></g>'
+    : '<g class="deco"><path d="M100,76 L100,250"/></g>';
+  const lab = view==='ant'
+    ? '<text class="sid" x="20" y="100">D</text><text class="sid" x="176" y="100">G</text>'
+    : '<text class="sid" x="20" y="100">G</text><text class="sid" x="176" y="100">D</text>';
+  return '<svg class="body" viewBox="0 0 200 445" width="200" height="420"'+
+    (handler?' onclick="'+handler+'(event)" onmousemove="zoneHover(event)" onmouseleave="zoneHover(null)"':'')+'>'+
+    '<g>'+mk('L')+'</g><g transform="translate(200,0) scale(-1,1)">'+mk('R')+'</g>'+face+lab+'</svg>';
+}
+/* figures spécialisées */
+function subjSVG(view,interactive){
+  return bodyFig(view,
+    (v,s,sd)=>subjKey(v,s,sd),
+    (v,s,sd)=>REC.d[subjKey(v,s,sd)],
+    c=>patFill(subjt(c).pat),
+    c=>subjt(c).l,
+    interactive?'subjClick':null);
+}
+function cutSVG(view,interactive){
+  return bodyFig(view,
+    (v,s,sd)=>cutKey(v,s,sd),
+    (v,s,sd)=>REC.d[cutKey(v,s,sd)],
+    c=>patFill(cutt(c).pat),
+    c=>cutt(c).l,
+    interactive?'cutClick':null);
+}
+function subjSVG(view,interactive){
+  return bodyFig(view,
+    (v,s,sd)=>subjKey(v,s,sd),
+    (v,s,sd)=>REC.d[subjKey(v,s,sd)],
+    c=>patFill(subjt(c).pat),
+    c=>subjt(c).l,
+    interactive?'subjClick':null);
+}
+
+/* =====================================================================
+   ÉTAT
+   ===================================================================== */
+let REC = null;             // fiche courante {id, d:{}, created, updated}
+let DB  = [];               // toutes les fiches
+let PREV = null;            // examen précédent du même dossier
+let DIRTY = false;
+let SENSMOD = 'lt';         // modalité sensitive affichée
+let SBRUSH = 1;             // pinceau sensibilité : 1 hypo, 2 hyper, 3 anesthésie, 0 gomme
+let JBRUSH = 1;             // pinceau des signes subjectifs : 1..6, 0 gomme
+let CBRUSH = 1;             // pinceau des lésions cutanées : 1..6, 0 gomme
+let ASIA = {};              // résultats du calcul ASIA
+const FIELDS = {};          // index clé -> champ
+SPEC.forEach(s=>s.f.forEach(f=>{ f._sec=s.id; FIELDS[f.k]=f; }));
+const LAND_REG = {crane:'tetecou', clavicule:'MS', epaule:'MS', coude:'MS', poignet:'MS', doigt:'MS',
+                  costal:'tronc', eias:'tronc', rotule:'MI', malleole_int:'MI', malleole_ext:'MI', orteil:'MI'};
+
+function blank(){
+  const now = new Date();
+  return { id:'F'+now.getTime().toString(36).toUpperCase()+Math.random().toString(36).slice(2,6).toUpperCase(),
+           created:now.toISOString(), updated:now.toISOString(),
+           d:{ date_ex: iso(now), heure_ex: hhmm(now) } };
+}
+const iso  = d => d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const hhmm = d => String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+const stamp = f => (f.d.date_ex||'9999-99-99')+'T'+(f.d.heure_ex||'99:99')+'|'+(f.created||'');
+
+/* =====================================================================
+   EXAMEN PRÉCÉDENT DU MÊME DOSSIER
+   ===================================================================== */
+function prevFiche(){
+  const doss = REC && REC.d.dossier;
+  if(!doss) return null;
+  const sibs = DB.filter(f=>f.d.dossier===doss && f.id!==REC.id)
+                 .sort((a,b)=>stamp(a).localeCompare(stamp(b)));
+  if(!sibs.length) return null;
+  const cur = stamp(REC);
+  const before = sibs.filter(f=>stamp(f) < cur);
+  return before.length ? before[before.length-1] : sibs[sibs.length-1];
+}
+/* remplissage automatique de l'identité et de l'accident */
+const ID_KEYS = ['nom','prenom','sexe','ddn','date_acc','heure_acc'];
+function autofillFromDossier(){
+  const before = PREV && PREV.id;
+  PREV = prevFiche();
+  if(!PREV) return;
+  let n = 0;
+  ID_KEYS.forEach(k=>{ const v=REC.d[k];
+    if((v==null||v==='') && PREV.d[k]!=null && PREV.d[k]!==''){ REC.d[k]=PREV.d[k]; n++; } });
+  if(n && PREV.id!==before) toast('Dossier connu : identité et accident repris de l\'examen du '+frDate(PREV.d.date_ex));
+}
+/* valeur grisée proposée depuis l'examen précédent */
+const NOGHOST = {date_ex:1,heure_ex:1,num_ex:1,age:1,delai_min:1,gcs_tot:1};
+function ghostVal(k){
+  if(!PREV || NOGHOST[k]) return null;
+  const cur = REC.d[k];
+  if(cur!=null && cur!=='' && !(Array.isArray(cur)&&!cur.length)) return null;
+  const pv = PREV.d[k];
+  if(pv==null || pv==='' || (Array.isArray(pv)&&!pv.length)) return null;
+  return pv;
+}
+function acceptGhost(k){ const g=ghostVal(k); if(g==null) return;
+  REC.d[k]=Array.isArray(g)?g.slice():g; pruneDeps(); touch(); refreshField(k); }
+/* reprise complète de l'examen précédent sur les champs vides */
+function takePrev(){
+  if(!PREV) return;
+  if(!confirm("Reprendre toutes les valeurs de l'examen précédent du "+frDate(PREV.d.date_ex)+
+              " sur les champs encore vides ?\n\nLes valeurs déjà saisies ne sont pas modifiées.")) return;
+  let n=0;
+  Object.keys(PREV.d).forEach(k=>{
+    if(NOGHOST[k] || /^sens_(lt|pp|pal)_(nb|score|nt|zones|tetecou|MS|tronc|MI)/.test(k) ||
+       /^(subj|cut)_(nb|zones)/.test(k) || /^asia_/.test(k) || k==='sens_obj') return;
+    const cur = REC.d[k];
+    if(cur==null || cur==='' || (Array.isArray(cur)&&!cur.length)){
+      const pv = PREV.d[k];
+      if(pv!=null && pv!=='' && !(Array.isArray(pv)&&!pv.length)){ REC.d[k]=Array.isArray(pv)?pv.slice():pv; n++; }
+    }
+  });
+  pruneDeps(); touch(); renderForm(); toast(n+' valeur'+(n>1?'s':'')+' reprise'+(n>1?'s':'')+" de l'examen précédent");
+}
+
+/* =====================================================================
+   CHAMPS CALCULÉS
+   ===================================================================== */
+function computeAll(){
+  const d = REC.d;
+  if(d.ddn && d.date_ex){
+    const b=new Date(d.ddn), e=new Date(d.date_ex);
+    if(!isNaN(b)&&!isNaN(e)&&e>=b){ let a=e.getFullYear()-b.getFullYear();
+      const m=e.getMonth()-b.getMonth(); if(m<0||(m===0&&e.getDate()<b.getDate())) a--;
+      d.age = a; } else delete d.age;
+  } else delete d.age;
+  if(d.date_acc && d.heure_acc && d.date_ex && d.heure_ex){
+    const a=new Date(d.date_acc+'T'+d.heure_acc), e=new Date(d.date_ex+'T'+d.heure_ex);
+    if(!isNaN(a)&&!isNaN(e)) d.delai_min = Math.round((e-a)/60000); else delete d.delai_min;
+  } else delete d.delai_min;
+  if(d.gcs_y!=null && d.gcs_v!=null && d.gcs_m!=null) d.gcs_tot = d.gcs_y+d.gcs_v+d.gcs_m;
+  else delete d.gcs_tot;
+  if(d.dossier){
+    const sib = DB.filter(f=>f.d.dossier===d.dossier && f.id!==REC.id).concat([REC])
+                  .sort((a,b)=>stamp(a).localeCompare(stamp(b)));
+    d.num_ex = sib.findIndex(f=>f.id===REC.id)+1;
+  } else delete d.num_ex;
+
+  MODAL.forEach(m=> m.mode==='land' ? palAgg() : dermAgg(m.k));
+  subjAgg(); cutAgg(); ASIA = asiaCalc();
+
+  if(d.sens_examinee===0) delete d.sens_obj;
+  else d.sens_obj = MODAL.reduce((n,m)=>n+(d['sens_'+m.k+'_nb']||0),0) > 0 ? 1 : 0;
+}
+
+/* agrégats d'une modalité cotée par métamère (tact léger, piqûre) */
+function dermAgg(mod){
+  const d=REC.d, p='sens_'+mod+'_';
+  let tot=0, totD=0, totG=0, nt=0, rempli=0; const ab=[];
+  DERM.forEach(lv=>['D','G'].forEach(sd=>{
+    const v=d[dermKey(mod,lv.k,sd)];
+    if(v==null) return;
+    rempli++;
+    if(v===9){ nt++; return; }
+    tot+=v; if(sd==='D')totD+=v; else totG+=v;
+    if(v<2) ab.push(lv.l+' '+sd+' ('+(v===0?'absent':'altéré')+')');
+  }));
+  d[p+'score']   = rempli?tot:null;
+  d[p+'score_D'] = rempli?totD:null;
+  d[p+'score_G'] = rempli?totG:null;
+  d[p+'nt']      = rempli?nt:null;
+  d[p+'nb']      = rempli?ab.length:null;
+  d[p+'zones']   = ab.join(' | ');
+  [p+'score',p+'score_D',p+'score_G',p+'nt',p+'nb'].forEach(k=>{ if(d[k]==null) delete d[k]; });
+}
+/* agrégats des lésions cutanées de désaturation */
+function cutAgg(){
+  const d=REC.d, on=[];
+  VIEWS.forEach(v=>SLOTS.forEach(sl=>['D','G'].forEach(sd=>{
+    const val=d[cutKey(v.v,sl.s,sd)];
+    if(val) on.push({v:v.v,s:sl.s,r:sl.r,side:sd,val:val});
+  })));
+  d.cut_nb   = on.length;
+  d.cut_nb_D = on.filter(z=>z.side==='D').length;
+  d.cut_nb_G = on.filter(z=>z.side==='G').length;
+  CUTT.forEach(t=> d['cut_'+t.k+'_nb'] = on.filter(z=>z.val===t.v).length);
+  ['tetecou','MS','tronc','MI'].forEach(r=>['D','G'].forEach(sd=>
+    d['cut_'+r+'_'+sd] = on.some(z=>z.r===r&&z.side===sd)?1:0));
+  d.cut_zones = on.map(z=>SLOT_LAB[z.v][z.s]+' '+z.side+' ('+cutt(z.val).l.toLowerCase()+')').join(' | ');
+}
+
+/* =====================================================================
+   SCORE ASIA (ISNCSCI) — calcul indicatif
+   Les totaux, le niveau sensitif et le niveau moteur des segments pourvus
+   d'un myotome clé suivent la norme. Dans les segments qui en sont dépourvus
+   (C1-C4, T2-L1, S2-S5), la norme présume le niveau moteur égal au niveau
+   sensitif « si la fonction motrice sus-jacente est normale ». Cette condition
+   demande un jugement clinique : l'outil l'applique de façon mécanique.
+   Vérifiez sur la grille officielle avant toute décision.
+   ===================================================================== */
+const MYO_UE = ['c5','c6','c7','c8','t1'], MYO_LE = ['l2','l3','l4','l5','s1'];
+const LVL_LAB = k => { const d=DERM.find(x=>x.k===k); return d?d.l:k; };
+
+function asiaCalc(){
+  const d=REC.d, A={};
+  const mv = (k,sd) => { const v=d[myoKey(k,sd)]; return (v==null)?null:v; };
+
+  /* totaux sensitifs */
+  A.lt  = d.sens_lt_score;  A.ltD = d.sens_lt_score_D;  A.ltG = d.sens_lt_score_G;
+  A.pp  = d.sens_pp_score;  A.ppD = d.sens_pp_score_D;  A.ppG = d.sens_pp_score_G;
+
+  /* totaux moteurs */
+  const sum = (ks,sd) => { let t=0,n=0; ks.forEach(k=>{ const v=mv(k,sd); if(v!=null){t+=v;n++;} }); return n?t:null; };
+  A.uemsD=sum(MYO_UE,'D'); A.uemsG=sum(MYO_UE,'G');
+  A.lemsD=sum(MYO_LE,'D'); A.lemsG=sum(MYO_LE,'G');
+  A.uems=(A.uemsD==null&&A.uemsG==null)?null:(A.uemsD||0)+(A.uemsG||0);
+  A.lems=(A.lemsD==null&&A.lemsG==null)?null:(A.lemsD||0)+(A.lemsG||0);
+  A.motTotal=(A.uems==null&&A.lems==null)?null:(A.uems||0)+(A.lems||0);
+
+  /* niveau sensitif : métamère le plus caudal normal en tact léger ET en piqûre,
+     tous les métamères sus-jacents étant eux aussi normaux */
+  function sensIdx(sd){
+    let last=-1;
+    for(let i=0;i<DERM.length;i++){
+      const lt=d[dermKey('lt',DERM[i].k,sd)], pp=d[dermKey('pp',DERM[i].k,sd)];
+      if(lt===2 && pp===2) last=i; else break;
+    }
+    return last;   // -1 = au-dessus de C2
+  }
+  /* niveau moteur : myotome clé le plus caudal coté au moins 3,
+     tous les myotomes sus-jacents étant à 5 */
+  function motIdx(sd){
+    let last=-1;
+    for(let i=0;i<MYO.length;i++){
+      const v=mv(MYO[i].k,sd);
+      if(v==null) break;
+      if(v>=3){ let ok=true; for(let j=0;j<i;j++){ if(mv(MYO[j].k,sd)!==5){ok=false;break;} }
+        if(ok) last=DERM_IDX[MYO[i].k]; else break; }
+      else break;
+    }
+    return last;
+  }
+  const MYO_IDX = MYO.map(m0=>DERM_IDX[m0.k]);
+  ['D','G'].forEach(sd=>{
+    const si=sensIdx(sd); let mi=motIdx(sd);
+    /* Segments dépourvus de myotome clé (C1-C4, T2-L1, S2-S5) : la norme y présume
+       le niveau moteur égal au niveau sensitif, à condition que la fonction motrice
+       sus-jacente soit normale. On prolonge donc le niveau moteur dans l'intervalle
+       situé sous le dernier myotome clé intact, jusqu'au niveau sensitif, et pas
+       au-delà du myotome clé suivant.
+       Le niveau issu des myotomes n'est jamais rabaissé par le niveau sensitif :
+       un myotome clé coté 5 reste intact même si le dermatome correspondant est altéré. */
+    if(mi<0) mi = si;                       /* aucun myotome clé intact : C1-C4 */
+    else if(si>mi){
+      const nxt = MYO_IDX.find(x=>x>mi);
+      const cap = (nxt==null) ? DERM.length-1 : nxt-1;
+      mi = Math.min(si, cap);
+    }
+    A['sensIdx_'+sd]=si; A['motIdx_'+sd]=mi;
+    A['sens_'+sd] = si<0 ? 'C1' : DERM[si].l;
+    A['mot_'+sd]  = mi<0 ? 'C1' : DERM[mi].l;
+  });
+
+  /* niveau neurologique de la lésion : le plus rostral des quatre */
+  const idxs=[A.sensIdx_D,A.sensIdx_G,A.motIdx_D,A.motIdx_G];
+  A.nliIdx = Math.min.apply(null, idxs);
+  A.nli = A.nliIdx<0 ? 'C1' : DERM[A.nliIdx].l;
+
+  /* préservation sacrée */
+  const s45lt=[d[dermKey('lt','s45','D')],d[dermKey('lt','s45','G')]];
+  const s45pp=[d[dermKey('pp','s45','D')],d[dermKey('pp','s45','G')]];
+  A.sacral = s45lt.some(v=>v>=1&&v!==9) || s45pp.some(v=>v>=1&&v!==9) || d.dap===1 || d.vac===1;
+  A.sacralKnown = s45lt.some(v=>v!=null) || s45pp.some(v=>v!=null) || d.dap!=null || d.vac!=null;
+
+  /* complétude de la saisie */
+  let remplis=0, total=0;
+  DERM.forEach(lv=>['D','G'].forEach(sd=>{ ['lt','pp'].forEach(m=>{ total++; if(d[dermKey(m,lv.k,sd)]!=null) remplis++; }); }));
+  MYO.forEach(m0=>['D','G'].forEach(sd=>{ total++; if(mv(m0.k,sd)!=null) remplis++; }));
+  A.remplis=remplis; A.total=total;
+
+  /* grade AIS */
+  A.ais=null; A.aisTxt='';
+  if(remplis>0 && A.sacralKnown){
+    if(!A.sacral){ A.ais='A'; A.aisTxt='Lésion complète : aucune préservation sacrée.'; }
+    else {
+      const sparing = ['D','G'].some(sd=>{
+        const mi=A['motIdx_'+sd];
+        return MYO.some(m0=> DERM_IDX[m0.k] > mi+2 && (mv(m0.k,sd)||0) >= 1);
+      });
+      const motorIncomplete = (d.vac===1) || sparing;
+      if(!motorIncomplete){ A.ais='B'; A.aisTxt='Sensitivement incomplet, moteur complet.'; }
+      else {
+        const below=[];
+        ['D','G'].forEach(sd=>MYO.forEach(m0=>{ if(DERM_IDX[m0.k] > A.nliIdx){ const v=mv(m0.k,sd); if(v!=null) below.push(v); } }));
+        const ok = below.filter(v=>v>=3).length;
+        if(!below.length){ A.ais='C'; A.aisTxt='Moteur incomplet, aucun myotome clé évaluable sous le niveau.'; }
+        else if(ok >= below.length/2){ A.ais='D'; A.aisTxt='Moteur incomplet : au moins la moitié des myotomes clés sous le niveau cotés 3 ou plus.'; }
+        else { A.ais='C'; A.aisTxt='Moteur incomplet : moins de la moitié des myotomes clés sous le niveau cotés 3 ou plus.'; }
+      }
+      const toutNormal = A.lt===112 && A.pp===112 && A.motTotal===100;
+      if(toutNormal){ A.ais='E'; A.aisTxt='Examen normal. Grade E seulement si un déficit antérieur est documenté ; sinon il n\'y a pas de lésion médullaire.'; }
+    }
+  }
+  d.asia_lt=A.lt; d.asia_pp=A.pp; d.asia_uems=A.uems; d.asia_lems=A.lems;
+  d.asia_sens_D=A.sens_D; d.asia_sens_G=A.sens_G; d.asia_mot_D=A.mot_D; d.asia_mot_G=A.mot_G;
+  d.asia_nli=A.nli; d.asia_sacral=A.sacralKnown?(A.sacral?1:0):null; d.asia_ais=A.ais;
+  ['asia_lt','asia_pp','asia_uems','asia_lems','asia_sacral','asia_ais','asia_nli',
+   'asia_sens_D','asia_sens_G','asia_mot_D','asia_mot_G'].forEach(k=>{ if(d[k]==null) delete d[k]; });
+  return A;
+}
+/* agrégats de la pallesthésie, cotée sur les reliefs osseux */
+function palAgg(){
+  const d=REC.d, on=[];
+  LANDMARKS.forEach(l=>{
+    if(l.uni){ const v=d[landKey(l,null)]; if(v) on.push({l:l,side:null,val:v}); }
+    else ['D','G'].forEach(sd=>{ const v=d[landKey(l,sd)]; if(v) on.push({l:l,side:sd,val:v}); });
+  });
+  const p='sens_pal_';
+  d[p+'nb']   = on.length;
+  d[p+'nb_D'] = on.filter(z=>z.side==='D').length;
+  d[p+'nb_G'] = on.filter(z=>z.side==='G').length;
+  SSTATE.forEach(st=> d[p+'nb_'+st.k] = on.filter(z=>z.val===st.v).length);
+  ['tetecou','MS','tronc','MI'].forEach(r=>['D','G'].forEach(sd=>
+    d[p+r+'_'+sd] = on.some(z=>LAND_REG[z.l.k]===r && (z.side===sd||z.side===null))?1:0));
+  d[p+'zones'] = on.map(z=>z.l.l+(z.side?' '+z.side:'')+' ('+sLabel('pal',z.val).toLowerCase()+')').join(' | ');
+}
+/* agrégats des signes subjectifs localisés */
+function subjAgg(){
+  const d=REC.d, on=[];
+  VIEWS.forEach(v=>SLOTS.forEach(s=>['D','G'].forEach(side=>{
+    const val=d[subjKey(v.v,s.s,side)];
+    if(val) on.push({v:v.v,s:s.s,r:s.r,side:side,val:val});
+  })));
+  d.subj_nb   = on.length;
+  d.subj_nb_D = on.filter(z=>z.side==='D').length;
+  d.subj_nb_G = on.filter(z=>z.side==='G').length;
+  SUBJT.forEach(t=> d['subj_'+t.k+'_nb'] = on.filter(z=>z.val===t.v).length);
+  ['tetecou','MS','tronc','MI'].forEach(r=>['D','G'].forEach(sd=>
+    d['subj_'+r+'_'+sd] = on.some(z=>z.r===r&&z.side===sd)?1:0));
+  d.subj_zones = on.map(z=>SLOT_LAB[z.v][z.s]+' '+z.side+' ('+subjt(z.val).l.toLowerCase()+')').join(' | ');
+}
+
+/* =====================================================================
+   RENDU DES CHAMPS
+   ===================================================================== */
+function depOK(f){
+  if(!f.dep) return true;
+  for(let i=0;i<f.dep.length;i+=2) if(f.dep[i+1].indexOf(REC.d[f.dep[i]])>=0) return true;
+  return false;
+}
+function flagHTML(f){
+  if(!f.flags || REC.d[f.k]==null) return '';
+  return '<span class="chips" style="margin-left:6px">'+f.flags.map(fl=>{
+    const k=f.k+'_'+fl.k;
+    return '<span class="chip sm'+(REC.d[k]?' on':'')+'" onclick="toggleFlag(\''+k+'\')">'+esc(fl.l)+'</span>';
+  }).join('')+'</span>';
+}
+function fieldHTML(f){
+  const d=REC.d, v=d[f.k], g=ghostVal(f.k);
+  let ctl='';
+  if(f.t==='choice'){
+    ctl='<span class="opts'+(f.mrc?' mrc':'')+(f.eva?' eva':'')+'">'+f.o.map(o=>{
+      const on = v===o.v, gh = (v==null && g===o.v);
+      return '<span class="opt'+(f.mrc?' sm mrc-'+o.v:'')+(f.eva?' sm eva-'+o.v:'')+
+        (on?' on '+(o.c||''):'')+(gh?' gh':'')+
+        '" onclick="setVal(\''+f.k+'\','+JSON.stringify(o.v)+')"'+(gh?' title="Valeur de l\'examen précédent"':'')+
+        '>'+esc(o.l)+'</span>';
+    }).join('')+'</span>'+
+    (v!=null?'<button class="clr" title="Effacer" onclick="setVal(\''+f.k+'\',null)">&times;</button>':'')+
+    flagHTML(f)+
+    (f.copyref && v!=null ? '<button class="mini cpb" onclick="openCopyRef(\''+f.k+'\')">copier vers&hellip;</button>' : '');
+  } else if(f.t==='multi'){
+    const arr = Array.isArray(v)?v:[], ga = Array.isArray(g)?g:[];
+    ctl='<span class="chips">'+f.o.map(o=>'<span class="chip'+(arr.indexOf(o.v)>=0?' on':'')+
+      (!arr.length && ga.indexOf(o.v)>=0?' gh':'')+
+      '" onclick="toggleMulti(\''+f.k+'\',\''+o.v+'\')">'+esc(o.l)+'</span>').join('')+'</span>';
+  } else if(f.t==='calc'){
+    ctl='<span class="calc">'+(v==null||v===''?'—':esc(v))+(f.k==='gcs_tot'?' / 15':'')+'</span>';
+  } else if(f.t==='area'){
+    ctl='<textarea id="i_'+f.k+'" oninput="setRaw(\''+f.k+'\',this.value)"'+
+        (g?' placeholder="'+esc(String(g).slice(0,120))+'"':'')+'>'+esc(v||'')+'</textarea>'+ghostBtn(f,g);
+  } else if(f.t==='num'){
+    ctl='<input id="i_'+f.k+'" type="number" inputmode="numeric" style="width:110px"'+
+        (f.min!=null?' min="'+f.min+'"':'')+(f.max!=null?' max="'+f.max+'"':'')+
+        (g!=null?' placeholder="'+esc(g)+'"':'')+
+        ' value="'+esc(v==null?'':v)+'" oninput="setNum(\''+f.k+'\',this.value)">'+
+        (f.unit?'<span style="margin-left:5px;color:#5a6472">'+esc(f.unit)+'</span>':'')+ghostBtn(f,g);
+  } else {
+    const ty = f.t==='date'?'date':f.t==='time'?'time':'text';
+    ctl='<input id="i_'+f.k+'" type="'+ty+'"'+(f.wide?' style="width:min(520px,100%)"':'')+
+        (f.list?' list="'+f.list+'"':'')+(f.req&&!v?' class="req"':'')+
+        (g!=null&&ty==='text'?' placeholder="'+esc(g)+'"':'')+
+        ' value="'+esc(v||'')+'" oninput="setRaw(\''+f.k+'\',this.value)">'+ghostBtn(f,g);
+  }
+  if(f.k==='dossier'){
+    ctl += '<button class="mini" style="margin-left:8px" onclick="openPseudo()">'+
+           (SET.hash?'&#9906; Scanner / pseudonymiser':'&#9906; Scanner')+'</button>';
+    if(SET.hash) ctl += '<div style="font-size:11px;color:'+(REC.d.dossier_pseudo?'#1f7a4d':'#b4531a')+';margin-top:3px">'+
+      (REC.d.dossier_pseudo ? '&#10003; valeur pseudonymisée'
+        : 'Pseudonymisation active : une valeur tapée directement ici n\'est PAS pseudonymisée.')+'</div>';
+  }
+  const phr = f.phr ? '<div class="phr">'+f.phr.map(p=>'<button onclick="addPhrase(\''+f.k+'\',this.textContent)">'+esc(p)+'</button>').join('')+'</div>' : '';
+  return '<div class="row'+(f.sub?' sub':'')+(depOK(f)?'':' hidden')+'" id="r_'+f.k+'" '+(f.full?'style="grid-column:1/-1"':'')+'>'+
+    '<span class="lbl">'+esc(f.l)+(f.req?' <span style="color:#a32020">*</span>':'')+(f.hint?'<small>'+esc(f.hint)+'</small>':'')+'</span>'+
+    '<span style="flex:1;min-width:0">'+ctl+phr+'</span></div>';
+}
+function ghostBtn(f,g){
+  if(g==null) return '';
+  const lbl = f.t==='date'? frDate(g) : String(g).slice(0,40);
+  return '<button class="ghb" title="Reprendre la valeur de l\'examen précédent" onclick="acceptGhost(\''+f.k+'\')">&#8617; '+esc(lbl)+'</button>';
+}
+
+function secFill(s){
+  const vis = s.f.filter(f=>f.t!=='calc' && !f.nofill && depOK(f));
+  const done = vis.filter(f=>{const v=REC.d[f.k]; return Array.isArray(v)?v.length>0:(v!=null&&v!=='')}).length;
+  return {done:done, tot:vis.length};
+}
+function anomalies(){
+  const L=[];
+  SPEC.forEach(s=>{ if(!s.norm) return;
+    Object.keys(s.norm).forEach(k=>{ const v=REC.d[k];
+      if(k==='sens_examinee'||k==='vns') return;
+      if(v!=null && v!==s.norm[k] && FIELDS[k]) L.push(FIELDS[k].l); }); });
+  MODAL.forEach(m=>{ const c=REC.d['sens_'+m.k+'_nb']||0;
+    if(c) L.push(m.l+' : '+c+(m.mode==='land'?' relief':' métamère')+(c>1?'s':'')); });
+  if(REC.d.cut_nb) L.push('Lésions cutanées : '+REC.d.cut_nb+' zone'+(REC.d.cut_nb>1?'s':''));
+  if(ASIA && ASIA.ais && ASIA.ais!=='E') L.push('AIS '+ASIA.ais);
+  return L;
+}
+
+/* =====================================================================
+   RENDU DU FORMULAIRE
+   ===================================================================== */
+const CLOSED = {};
+/* Reconstruire #form détruit le champ en cours de saisie et fait perdre le focus.
+   On mémorise le champ actif et la position du curseur, et on les restaure. */
+function renderForm(){
+  const ae = document.activeElement;
+  const fid = (ae && ae.id && ae.id.indexOf('i_')===0) ? ae.id : null;
+  let ss=null, se=null;
+  if(fid){ try{ ss=ae.selectionStart; se=ae.selectionEnd; }catch(e){} }
+  renderFormInner();
+  if(fid){ const el=document.getElementById(fid);
+    if(el){ el.focus(); if(ss!=null){ try{ el.setSelectionRange(ss,se); }catch(e){} } } }
+}
+function renderFormInner(){
+  computeAll();
+  PREV = prevFiche();
+  const exs = Array.from(new Set(DB.map(f=>f.d.examinateur).filter(Boolean)));
+  let h = '<datalist id="exlist">'+exs.map(e=>'<option value="'+esc(e)+'">').join('')+'</datalist>';
+  h += '<div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap">'+
+       '<button class="tb gd" style="background:#1a6b43" onclick="allNormal()">&#10003; Tout renseigner comme NORMAL</button>'+
+       '<span style="font-size:11.5px;color:#5a6472">Puis ne modifiez que les items anormaux.</span>'+
+       '<span id="globalfill" style="margin-left:auto"></span></div>';
+  if(PREV) h += '<div class="note prevnote" id="prevnote">'+
+       '<b>Dossier déjà connu.</b> Examen précédent du '+frDate(PREV.d.date_ex)+' à '+(PREV.d.heure_ex||'—')+
+       (PREV.d.num_ex?' (examen n°'+PREV.d.num_ex+')':'')+
+       (PREV.d.examinateur?', examinateur '+esc(PREV.d.examinateur):'')+
+       '. Les valeurs <span class="opt gh" style="padding:1px 7px">grisées</span> sont celles de cet examen : cliquez pour les reprendre. '+
+       '<button class="tb" style="background:#1b4f8f;margin-left:6px" onclick="takePrev()">Reprendre tout l\'examen précédent</button></div>';
+  h += '<div id="coher"></div>';
+
+  SPEC.forEach(s=>{
+    if(s.custom==='subj'){ h += subjBlock(); return; }
+    if(s.custom==='sens'){ h += sensBlock(); return; }
+    if(s.custom==='asia'){ h += asiaBlock(); return; }
+    if(s.custom==='cut'){  h += cutBlock();  return; }
+    const fi = secFill(s), closed = CLOSED[s.id]?' closed':'';
+    h+='<div class="sec'+closed+'" id="s_'+s.id+'"><h3 onclick="if(!event.target.closest(\'button\'))toggleSec(\''+s.id+'\')">'+
+       '<span class="caret">&#9660;</span>'+esc(s.t)+
+       '<span class="fill">'+(s.norm?'<button class="mini" onclick="applyNormal(\''+s.id+'\')">tout normal</button>':'')+
+       '<span class="badge'+(fi.done===fi.tot&&fi.tot>0?' ok':'')+'" id="b_'+s.id+'">'+fi.done+'/'+fi.tot+'</span></span></h3>'+
+       '<div class="body">'+(s.note?'<div class="note">'+esc(s.note)+'</div>':'')+
+       '<div class="'+(s.cols===2?'grid2':'')+'">'+s.f.map(fieldHTML).join('')+'</div></div></div>';
+  });
+
+  h += '<div class="sec" id="s_syn"><h3 onclick="if(!event.target.closest(\'button\'))toggleSec(\'syn\')">'+
+       '<span class="caret">&#9660;</span>Synthèse rédigée (générée automatiquement)'+
+       '<span class="fill"><button class="mini" onclick="copySynth()">copier le texte</button></span></h3>'+
+       '<div class="body"><div id="synth"></div></div></div>';
+
+  $('#form').innerHTML = h;
+  buildNav(); renderSynth(); updateGlobalFill();
+}
+/* ---------- navigation par sections (téléphone) ---------- */
+function navSections(){
+  const out=[];
+  SPEC.forEach(sec=>{ const el=document.getElementById('s_'+sec.id); if(el) out.push({id:sec.id,t:sec.t}); });
+  if(document.getElementById('s_syn')) out.push({id:'syn',t:'Synthèse rédigée'});
+  return out;
+}
+function buildNav(){
+  const sel=$('#navsel'); if(!sel) return;
+  const secs=navSections();
+  sel.innerHTML = secs.map((x,i)=>'<option value="'+x.id+'">'+(i+1)+'. '+esc(x.t)+'</option>').join('');
+}
+function navGo(id){
+  const el=document.getElementById('s_'+id); if(!el) return;
+  if(el.classList.contains('closed')) toggleSec(id);
+  el.scrollIntoView({behavior:'smooth',block:'start'});
+  const sel=$('#navsel'); if(sel) sel.value=id;
+}
+function navStep(d){
+  const secs=navSections(), sel=$('#navsel'); if(!sel||!secs.length) return;
+  let i=secs.findIndex(x=>x.id===sel.value); if(i<0) i=0;
+  i=Math.max(0,Math.min(secs.length-1,i+d));
+  navGo(secs[i].id);
+}
+function toggleSec(id){ CLOSED[id]=!CLOSED[id]; const e=$('#s_'+id); if(e) e.classList.toggle('closed'); }
+function toggleSide(){ $('#side').classList.toggle('hide'); }
+
+function updateGlobalFill(){
+  let d=0,t=0; SPEC.forEach(s=>{ if(s.custom&&s.id==='subj') return; const f=secFill(s); d+=f.done; t+=f.tot;});
+  const A=anomalies();
+  const el=$('#globalfill');
+  if(el) el.innerHTML='<span class="badge'+(A.length?' ab':' ok')+'">'+
+    (A.length? (A.length>1? A.length+' items anormaux' : '1 item anormal') : 'aucune anomalie')+'</span> '+
+    '<span class="badge'+(d===t?' ok':'')+'">Complétude : '+d+'/'+t+'</span>';
+  const w=$('#coher');
+  if(w) w.innerHTML = (REC.d.conclusion===1 && A.length)
+    ? '<div class="note" style="background:#fbeaea;border-color:#e0a5a5;margin:0 0 10px"><b>Incohérence à vérifier.</b> '+
+      'La conclusion est « examen neurologique normal » alors que '+A.length+' item'+(A.length>1?'s sont anormaux':' est anormal')+' : '+
+      esc(A.slice(0,8).join(', '))+(A.length>8?'…':'')+'.</div>' : '';
+}
+
+/* Un champ devenu sans objet ne doit pas garder une valeur fantôme dans le fichier
+   de données : on efface les champs dont la condition d'affichage n'est plus remplie. */
+function pruneDeps(){
+  let again = true, guard = 0;
+  while(again && guard++ < 6){
+    again = false;
+    Object.keys(FIELDS).forEach(k=>{
+      const f = FIELDS[k];
+      if(f.dep && !depOK(f) && REC.d[k]!=null){ delete REC.d[k]; again = true; }
+    });
+  }
+}
+
+/* ---------- mise à jour des valeurs ---------- */
+function setVal(k,v){ REC.d[k] = (REC.d[k]===v)?null:v; if(REC.d[k]==null) delete REC.d[k];
+  pruneDeps(); touch(); refreshField(k); }
+let DOSSIER_T=null;
+function setRaw(k,v){
+  if(v==='') delete REC.d[k]; else REC.d[k]=v;
+  touch();
+  if(k==='dossier'){
+    REC.d.dossier_pseudo = 0;   // saisie directe : la valeur n'est pas pseudonymisée
+    // on attend la fin de la frappe avant de chercher le dossier et de reconstruire le formulaire
+    clearTimeout(DOSSIER_T);
+    DOSSIER_T = setTimeout(()=>{ autofillFromDossier(); renderForm(); }, 550);
+  }
+  softRefresh();
+}
+function setNum(k,v){ if(v===''||v==null) delete REC.d[k]; else { const n=Number(v); if(!isNaN(n)) REC.d[k]=n; }
+  touch(); softRefresh(); }
+function toggleFlag(k){ REC.d[k]=REC.d[k]?0:1; if(!REC.d[k]) delete REC.d[k]; touch();
+  const base=k.replace(/_(poly|etendu)$/,''); refreshField(base); }
+function toggleMulti(k,v){ const a=Array.isArray(REC.d[k])?REC.d[k].slice():[];
+  const i=a.indexOf(v); if(i>=0)a.splice(i,1); else a.push(v);
+  if(a.length)REC.d[k]=a; else delete REC.d[k]; pruneDeps(); touch(); refreshField(k); }
+function addPhrase(k,p){
+  const f=FIELDS[k], cur=REC.d[k]||'';
+  REC.d[k] = f.t==='area' ? (cur?cur.replace(/\s*$/,'')+'\n'+p:p) : (cur?cur.replace(/\s*;?\s*$/,'')+' ; '+p:p);
+  touch(); const el=$('#i_'+k); if(el) el.value=REC.d[k]; softRefresh();
+}
+function touch(){ DIRTY=true; REC.updated=new Date().toISOString(); updateBar(); }
+
+function refreshField(k){
+  computeAll();
+  const f=FIELDS[k];
+  if(!f){ softRefresh(); return; }
+  const sec=SPEC.find(s=>s.id===f._sec);
+  if(sec && sec.custom){ renderForm(); return; }
+  sec.f.forEach(g=>{ const r=$('#r_'+g.k); if(r) r.outerHTML=fieldHTML(g); });
+  refreshBadges(); updateGlobalFill(); renderSynth();
+}
+function softRefresh(){ computeAll();
+  ['age','delai_min','num_ex','gcs_tot'].forEach(k=>{ const r=$('#r_'+k); if(r) r.outerHTML=fieldHTML(FIELDS[k]); });
+  refreshBadges(); updateGlobalFill(); renderSynth();
+}
+function refreshBadges(){
+  SPEC.forEach(s=>{ const b=$('#b_'+s.id); if(!b) return; const fi=secFill(s);
+    b.textContent=fi.done+'/'+fi.tot; b.className='badge'+(fi.done===fi.tot&&fi.tot>0?' ok':''); });
+}
+
+/* ---------- boutons « normal » ---------- */
+function applyNormal(secId){
+  const s=SPEC.find(x=>x.id===secId); if(!s||!s.norm) return;
+  Object.keys(s.norm).forEach(k=>REC.d[k]=s.norm[k]);
+  pruneDeps(); touch(); renderForm(); toast('Section « '+s.t+' » renseignée comme normale');
+}
+function allNormal(){
+  SPEC.forEach(s=>{ if(s.norm) Object.keys(s.norm).forEach(k=>REC.d[k]=s.norm[k]); });
+  REC.d.conclusion=1; pruneDeps(); touch(); renderForm(); toast('Tous les items renseignés comme normaux');
+}
+
+
+/* =====================================================================
+   DOUCHETTE CODE-BARRES — écouteur global
+   Une douchette USB ou Bluetooth se comporte comme un clavier : elle
+   « tape » le code en quelques dizaines de millisecondes puis envoie
+   Entrée. On reconnaît cette rafale et on la route vers le n° de dossier,
+   quel que soit le champ qui avait le focus.
+   ===================================================================== */
+const WEDGE = {buf:'', last:0, start:0, el:null};
+const WEDGE_GAP  = 50;  // ms au-delà desquelles on considère qu'une nouvelle rafale commence
+const WEDGE_RATE = 15;  // ms par caractère au maximum, moyenne sur toute la rafale
+const WEDGE_MIN  = 4;   // longueur minimale d'un code pour être pris au sérieux
+
+/* Une douchette émet 1 à 5 ms par caractère. Un être humain, même très rapide,
+   ne descend pas durablement sous 60 ms. Le critère de vitesse moyenne est donc
+   ce qui distingue un scan d'une frappe, bien plus sûrement qu'un seuil par touche. */
+function wedgeKey(e){
+  if(!SET.wedge) return;
+  if(e.ctrlKey || e.altKey || e.metaKey) return;
+  const now = Date.now();
+  if(e.key === 'Enter' || e.key === 'Tab'){
+    const code = WEDGE.buf, n = code.length;
+    WEDGE.buf = '';
+    const rafale = n >= WEDGE_MIN &&
+                   (now - WEDGE.last) <= WEDGE_GAP &&
+                   (WEDGE.last - WEDGE.start) <= (n - 1) * WEDGE_RATE;
+    if(rafale){ e.preventDefault(); e.stopPropagation(); handleScan(code, WEDGE.el); }
+    return;
+  }
+  if(e.key.length !== 1) return;
+  const ae = document.activeElement;
+  // nouvelle rafale si le temps écoulé est trop long, ou si le focus a changé
+  if(now - WEDGE.last > WEDGE_GAP || ae !== WEDGE.el){ WEDGE.buf=''; WEDGE.start=now; WEDGE.el=ae; }
+  // une frappe trop lente pour une douchette : on repart de ce caractère
+  else if(WEDGE.buf.length && (now - WEDGE.last) > WEDGE_RATE){ WEDGE.buf=''; WEDGE.start=now; }
+  WEDGE.buf += e.key;
+  WEDGE.last = now;
+}
+document.addEventListener('keydown', wedgeKey, true);
+
+/* retire la chaîne du champ où elle est tombée par erreur, puis l'applique au dossier */
+async function handleScan(raw, el){
+  const dossEl = document.getElementById('i_dossier');
+  if(el && el !== dossEl && el.tagName && /^(INPUT|TEXTAREA)$/.test(el.tagName)){
+    const v = String(el.value || '');
+    if(v.length >= raw.length && v.slice(-raw.length) === raw){
+      el.value = v.slice(0, v.length - raw.length);
+      const k = el.id && el.id.indexOf('i_')===0 ? el.id.slice(2) : null;
+      if(k && FIELDS[k]){ if(el.value==='') delete REC.d[k]; else REC.d[k]=el.value; }
+    }
+  }
+  await setDossierFromScan(raw);
+}
+
+/* applique un identifiant scanné ou saisi : extraction, pseudonymisation, recherche */
+async function setDossierFromScan(raw){
+  clearTimeout(DOSSIER_T);
+  let code = String(raw||'').trim().replace(/[\u0000-\u001F\u007F]/g,'');
+  if(SET.scanRe){
+    try{ const m = new RegExp(SET.scanRe).exec(code); if(m) code = (m[1]!=null ? m[1] : m[0]); }
+    catch(err){ toast("Règle d'extraction invalide, code pris tel quel"); }
+  }
+  if(!code){ toast('Code illisible'); return; }
+  let val = code, pseudo = 0;
+  if(SET.hash){
+    const h = await pseudonymize(code);
+    if(!h){ toast("Pseudonymisation impossible : sel absent ou navigateur sans crypto.subtle"); return; }
+    val = h; pseudo = 1;
+  }
+  REC.d.dossier = val;
+  REC.d.dossier_pseudo = pseudo;
+  touch(); autofillFromDossier(); renderForm(); beep();
+  toast(pseudo ? 'Identifiant pseudonymisé : '+val : 'Identifiant scanné : '+val);
+}
+
+/* SHA-256 salé, tronqué. Le sel n'est jamais écrit dans les fichiers exportés. */
+async function pseudonymize(code){
+  if(!SET.salt) return null;
+  if(!(window.crypto && crypto.subtle && crypto.subtle.digest)) return null;
+  try{
+    const data = new TextEncoder().encode(SET.salt + '\u001F' + code);
+    const buf  = await crypto.subtle.digest('SHA-256', data);
+    const hex  = Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+    return 'P-' + hex.slice(0, SET.hashLen||12).toUpperCase();
+  }catch(e){ return null; }
+}
+
+/* court bip de confirmation, silencieux si l'audio n'est pas disponible */
+function beep(){
+  try{
+    const Ctx = window.AudioContext || window.webkitAudioContext; if(!Ctx) return;
+    const c = new Ctx(), o = c.createOscillator(), g = c.createGain();
+    o.type='square'; o.frequency.value=1180; g.gain.value=0.05;
+    o.connect(g); g.connect(c.destination); o.start();
+    setTimeout(()=>{ o.stop(); c.close(); }, 70);
+  }catch(e){}
+}
+
+/* saisie manuelle d'un identifiant à pseudonymiser */
+function openPseudo(){
+  modalHTML('<h3>Identifiant à pseudonymiser</h3>'+
+   '<div class="note">Scannez le code-barres ou saisissez l\'identifiant. '+
+   'Il est transformé en pseudonyme et <b>n\'est enregistré nulle part en clair</b> : '+
+   'ni dans la fiche, ni dans le PDF, ni dans le fichier de données.</div>'+
+   '<input id="pseudoIn" type="text" autocomplete="off" style="width:100%;font-size:16px;padding:8px" '+
+   'placeholder="Scannez ici" onkeydown="if(event.key===\'Enter\'){event.preventDefault();applyPseudo();}">'+
+   '<div id="pseudoPrev" style="margin:10px 0;font-size:12px;color:#5a6472"></div>'+
+   '<button class="tb gd" onclick="applyPseudo()">Appliquer au n° de dossier</button>');
+  setTimeout(()=>{ const i=$('#pseudoIn'); if(i) i.focus(); }, 60);
+}
+async function applyPseudo(){
+  const i=$('#pseudoIn'); if(!i) return;
+  const v=i.value.trim(); if(!v){ toast('Aucun identifiant saisi'); return; }
+  closeModal(); await setDossierFromScan(v);
+}
+
+/* =====================================================================
+   RECOPIE D'UN RÉFLEXE ET DE SES QUALITÉS VERS D'AUTRES RÉFLEXES
+   ===================================================================== */
+const REFKEYS = ['ref_bicip_D','ref_bicip_G','ref_tricip_D','ref_tricip_G','ref_rot_D','ref_rot_G','ref_ach_D','ref_ach_G'];
+function refDesc(k){
+  const f=FIELDS[k], v=REC.d[k];
+  if(v==null) return 'non renseigné';
+  const o=f.o.find(x=>x.v===v), fl=RFLAGS.filter(x=>REC.d[k+'_'+x.k]).map(x=>x.l);
+  return (o?o.l:v)+(fl.length?' ('+fl.join(', ')+')':'');
+}
+function openCopyRef(src){
+  if(REC.d[src]==null){ toast('Renseignez d\'abord ce réflexe'); return; }
+  const others = REFKEYS.filter(k=>k!==src);
+  modalHTML('<h3>Copier «&nbsp;'+esc(FIELDS[src].l)+'&nbsp;»</h3>'+
+   '<div class="note">Cotation à copier : <b>'+esc(refDesc(src))+'</b>.<br>'+
+   'Les réflexes cochés recevront exactement cette cotation et ces qualités. Les autres ne changent pas.</div>'+
+   '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">'+
+     '<button class="tb" onclick="pickRef(\'all\')">Tous</button>'+
+     '<button class="tb" onclick="pickRef(\'side_'+(src.slice(-1))+'\')">Même côté</button>'+
+     '<button class="tb" onclick="pickRef(\'ms\')">Membres supérieurs</button>'+
+     '<button class="tb" onclick="pickRef(\'mi\')">Membres inférieurs</button>'+
+     '<button class="tb" onclick="pickRef(\'none\')">Aucun</button></div>'+
+   '<div id="copylist">'+others.map(k=>
+     '<label class="cprow"><input type="checkbox" class="cpref" value="'+k+'"> <b>'+esc(FIELDS[k].l)+'</b>'+
+     ' <span style="color:#5a6472">— actuellement : '+esc(refDesc(k))+'</span></label>').join('')+'</div>'+
+   '<button class="tb gd" style="margin-top:12px" onclick="applyCopyRef(\''+src+'\')">Appliquer</button>');
+}
+function pickRef(mode){
+  $$('.cpref').forEach(c=>{
+    const k=c.value, side=k.slice(-1), fam=k.slice(0,k.length-2);
+    let on=false;
+    if(mode==='all') on=true;
+    else if(mode==='none') on=false;
+    else if(mode.indexOf('side_')===0) on = (side===mode.slice(5));
+    else if(mode==='ms') on = (fam==='ref_bicip'||fam==='ref_tricip');
+    else if(mode==='mi') on = (fam==='ref_rot'||fam==='ref_ach');
+    c.checked=on;
+  });
+}
+function applyCopyRef(src){
+  const targets = $$('.cpref').filter(c=>c.checked).map(c=>c.value);
+  if(!targets.length){ toast('Aucun réflexe sélectionné'); return; }
+  const v = REC.d[src];
+  targets.forEach(k=>{
+    REC.d[k]=v;
+    RFLAGS.forEach(fl=>{ if(REC.d[src+'_'+fl.k]) REC.d[k+'_'+fl.k]=1; else delete REC.d[k+'_'+fl.k]; });
+  });
+  pruneDeps(); touch(); closeModal(); renderForm();
+  toast('Cotation reportée sur '+targets.length+' réflexe'+(targets.length>1?'s':''));
+}
+
+/* =====================================================================
+   BLOC « SIGNES SUBJECTIFS — LOCALISATION »
+   ===================================================================== */
+function subjBlock(){
+  const n = REC.d.subj_nb||0, closed = CLOSED.subj?' closed':'';
+  return '<div class="sec'+closed+'" id="s_subj"><h3 onclick="if(!event.target.closest(\'button\'))toggleSec(\'subj\')">'+
+   '<span class="caret">&#9660;</span>Signes subjectifs — localisation'+
+   '<span class="fill"><button class="mini" onclick="clearSubj()">effacer le schéma</button>'+
+   '<span class="badge'+(n?' ab':'')+'" id="b_subj">'+(n? n+' zone'+(n>1?'s':'') : 'aucune')+'</span></span></h3>'+
+   '<div class="body">'+
+   (REC.d.sf_subj===1?'':'<div class="note">Répondez OUI à « Signes subjectifs » dans la section précédente pour que ce schéma soit exporté.</div>')+
+   '<div class="brush"><span class="bl">Ressenti à appliquer :</span>'+
+   SUBJT.map(t=>'<button class="bb'+(JBRUSH===t.v?' on':'')+'" onclick="setJBrush('+t.v+')">'+
+     swatch(t.pat)+esc(t.l)+'</button>').join('')+
+   '<button class="bb'+(JBRUSH===0?' on':'')+'" onclick="setJBrush(0)">&#9003; Gomme</button></div>'+
+   '<div class="bodywrap" id="subjbodies">'+bodiesSubj()+'</div>'+
+   '<div id="zoneList"></div>'+
+   '<div class="legend">'+SUBJT.map(t=>'<span>'+swatch(t.pat)+esc(t.l)+'</span>').join('')+'</div>'+
+   '</div></div>';
+}
+function bodiesSubj(){
+  return VIEWS.map(v=>'<div class="bodyfig"><div class="cap">'+esc(v.l)+'</div>'+subjSVG(v.v,true)+'</div>').join('')+
+    '<div class="sumcol" id="subjsum">'+subjSummary()+'</div>';
+}
+function subjSummary(){
+  const n=REC.d.subj_nb||0;
+  if(!n) return '<span style="color:#1f7a4d">Aucune zone renseignée.</span>';
+  return '<b>'+n+' zone'+(n>1?'s':'')+'</b> ('+(REC.d.subj_nb_D||0)+' à droite, '+(REC.d.subj_nb_G||0)+' à gauche)<br>'+
+    SUBJT.filter(t=>REC.d['subj_'+t.k+'_nb']).map(t=>'<span style="color:'+t.col+'">&#9632;</span> '+esc(t.l)+' : '+REC.d['subj_'+t.k+'_nb']).join('<br>')+
+    '<div style="color:#5a6472;margin-top:5px">'+esc(REC.d.subj_zones||'')+'</div>';
+}
+function setJBrush(v){ JBRUSH=v; $$('#s_subj .bb').forEach((b,i)=>b.classList.toggle('on', (i<SUBJT.length? SUBJT[i].v:0)===v)); }
+function subjClick(e){
+  const p=e.target.closest('path.z'); if(!p) return;
+  const k=p.dataset.k, cur=REC.d[k]||0;
+  const nv = (JBRUSH===0 || cur===JBRUSH) ? 0 : JBRUSH;
+  if(nv) REC.d[k]=nv; else delete REC.d[k];
+  paint(p, nv, nv?patFill(subjt(nv).pat):'', nv?subjt(nv).l:'');
+  touch(); computeAll();
+  const s=$('#subjsum'); if(s) s.innerHTML=subjSummary();
+  const b=$('#b_subj'); if(b){ const n=REC.d.subj_nb||0; b.textContent=n?n+' zone'+(n>1?'s':''):'aucune'; b.className='badge'+(n?' ab':''); }
+  renderSynth();
+}
+function clearSubj(){
+  VIEWS.forEach(v=>SLOTS.forEach(s=>['D','G'].forEach(sd=>delete REC.d[subjKey(v.v,s.s,sd)])));
+  touch(); renderForm(); toast('Schéma des signes subjectifs effacé');
+}
+
+/* ---------- helpers partagés par les schémas corporels ---------- */
+function paint(p,v,sty,lab){
+  p.classList.toggle('on',!!v);
+  if(v){ p.setAttribute('style',sty); p.dataset.lab=p.dataset.lab.split(' — ')[0]+' — '+lab; }
+  else { p.removeAttribute('style'); p.dataset.lab=p.dataset.lab.split(' — ')[0]; }
+}
+function zoneHover(e){
+  const els=[$('#zoneList'),$('#zoneList2'),$('#zoneList3')];
+  if(!e){ els.forEach(el=>{if(el)el.textContent='';}); return; }
+  const p=e.target.closest('path.z'), t=p?p.dataset.lab:'';
+  els.forEach(el=>{ if(el) el.textContent=t; });
+}
+
+/* =====================================================================
+   BLOC « SENSIBILITÉS » — métamères (ASIA) et reliefs osseux
+   ===================================================================== */
+function sensBlock(){
+  const m = MODAL.find(x=>x.k===SENSMOD) || MODAL[0];
+  const closed = CLOSED.sens?' closed':'';
+  const bad = MODAL.reduce((n,x)=>n+(REC.d['sens_'+x.k+'_nb']||0),0);
+  return '<div class="sec'+closed+'" id="s_sens"><h3 onclick="if(!event.target.closest(\'button\'))toggleSec(\'sens\')">'+
+   '<span class="caret">&#9660;</span>Sensibilités'+
+   '<span class="fill"><button class="mini" onclick="clearSens()">tout effacer</button>'+
+   '<span class="badge'+(bad?' ab':' ok')+'" id="b_sens">'+(bad? bad+' anomalie'+(bad>1?'s':'') : 'normal')+'</span></span></h3>'+
+   '<div class="body">'+fieldHTML(FIELDS.sens_examinee)+
+   '<div id="sensTabs">'+MODAL.map(x=>'<button class="stab'+(x.k===SENSMOD?' on':'')+'" onclick="setSensMod(\''+x.k+'\')">'+
+     esc(x.l)+'<small>'+esc(x.sub)+'</small></button>').join('')+'</div>'+
+   '<div id="sensarea">'+sensArea()+'</div></div></div>';
+}
+function sensArea(){
+  const m = MODAL.find(x=>x.k===SENSMOD) || MODAL[0];
+  return m.mode==='land' ? landTable(m) : dermTable(m);
+}
+
+/* ---------- table des 28 métamères ---------- */
+function dermCell(mod,lv,sd){
+  const k=dermKey(mod,lv.k,sd), v=REC.d[k];
+  return '<span class="dgrp">'+DSTATE.map(st=>
+    '<button class="db d'+st.v+(v===st.v?' on':'')+'" title="'+esc(st.l)+'" '+
+    'onclick="dermSet(\''+k+'\','+st.v+')">'+esc(st.ab)+'</button>').join('')+'</span>';
+}
+function dermTable(m){
+  const rows = DERM.map((lv,i)=>
+    '<tr'+(lv.k==='s45'?' class="key"':'')+'><td class="lv"><b>'+esc(lv.l)+'</b><small>'+esc(lv.p)+'</small></td>'+
+    '<td>'+dermCell(m.k,lv,'D')+'</td><td>'+dermCell(m.k,lv,'G')+'</td>'+
+    '<td><button class="dprop" title="Reporter cette ligne sur tous les métamères situés en dessous" '+
+    'onclick="dermDown(\''+m.k+'\','+i+')">&#9660;</button></td></tr>').join('');
+  const p='sens_'+m.k+'_', sc=REC.d[p+'score'];
+  return '<div class="dbar">'+
+     '<button class="mini" onclick="dermAll(\''+m.k+'\',2)">Tout normal (2)</button>'+
+     '<button class="mini" onclick="dermAll(\''+m.k+'\',9)">Tout non testable</button>'+
+     '<button class="mini" onclick="dermAll(\''+m.k+'\',null)">Effacer</button>'+
+     '<span class="dsc">'+esc(m.l)+' : <b>'+(sc==null?'—':sc)+'</b> / 112'+
+     (REC.d[p+'nt']?' <span style="color:#b4531a">('+REC.d[p+'nt']+' NT)</span>':'')+'</span></div>'+
+   '<div class="dwrap"><table class="dtab"><thead><tr><th>Métamère</th><th>Droite</th><th>Gauche</th><th></th></tr></thead>'+
+   '<tbody>'+rows+'</tbody></table></div>'+
+   '<div class="legend">'+DSTATE.map(st=>'<span><b style="color:'+st.col+'">'+esc(st.ab)+'</b> = '+esc(st.l)+'</span>').join('')+
+   '<span style="color:#5a6472">Le chevron reporte la ligne sur tous les métamères situés en dessous.</span></div>';
+}
+function dermSet(k,v){
+  if(REC.d[k]===v) delete REC.d[k]; else REC.d[k]=v;
+  touch(); computeAll();
+  const a=$('#sensarea'); if(a) a.innerHTML=sensArea();
+  afterSensChange();
+}
+function dermDown(mod,i){
+  const lv=DERM[i], vD=REC.d[dermKey(mod,lv.k,'D')], vG=REC.d[dermKey(mod,lv.k,'G')];
+  if(vD==null && vG==null){ toast('Renseignez d\'abord cette ligne'); return; }
+  for(let j=i+1;j<DERM.length;j++){
+    if(vD!=null) REC.d[dermKey(mod,DERM[j].k,'D')]=vD;
+    if(vG!=null) REC.d[dermKey(mod,DERM[j].k,'G')]=vG;
+  }
+  touch(); computeAll();
+  const a=$('#sensarea'); if(a) a.innerHTML=sensArea();
+  afterSensChange();
+  toast('Reporté de '+lv.l+' jusqu\'à S4-5');
+}
+function dermAll(mod,v){
+  DERM.forEach(lv=>['D','G'].forEach(sd=>{
+    const k=dermKey(mod,lv.k,sd);
+    if(v==null) delete REC.d[k]; else REC.d[k]=v; }));
+  touch(); computeAll();
+  const a=$('#sensarea'); if(a) a.innerHTML=sensArea();
+  afterSensChange();
+}
+
+/* ---------- table des reliefs osseux (pallesthésie) ---------- */
+function landTable(m){
+  const cell = (l,sd) => {
+    const k = landKey(l,sd), v = REC.d[k]||0;
+    return '<span class="lgrp">'+SSTATE.map(st=>
+      '<button class="lb s'+st.v+(v===st.v?' on':'')+'" title="'+esc(st.lp)+'" '+
+      'onclick="landSet(\''+k+'\','+st.v+')">'+esc(st.abp)+'</button>').join('')+
+      '<button class="lb n'+(v?'':' on')+'" title="Relief testé et normal" onclick="landSet(\''+k+'\',0)">Normale</button></span>';
+  };
+  return '<div class="dwrap"><table class="landtab"><thead><tr><th>Relief osseux</th><th>Droite</th><th>Gauche</th></tr></thead><tbody>'+
+    LANDMARKS.map(l=> '<tr><td class="lv"><b>'+esc(l.l)+'</b>'+(l.uni?'<small>médian</small>':'')+'</td>'+
+      (l.uni? '<td colspan="2">'+cell(l,null)+'</td>' : '<td>'+cell(l,'D')+'</td><td>'+cell(l,'G')+'</td>')+
+      '</tr>').join('')+'</tbody></table></div>'+
+    '<div class="legend"><span style="color:#5a6472">Cliquez directement la cotation voulue. '+
+    'Une case laissée sur «&nbsp;Normale&nbsp;» signifie relief testé et normal.</span></div>';
+}
+function landSet(k,v){
+  const cur = REC.d[k]||0;
+  if(v===0 || cur===v) delete REC.d[k]; else REC.d[k]=v;
+  touch(); computeAll();
+  const a=$('#sensarea'); if(a) a.innerHTML=sensArea();
+  afterSensChange();
+}
+function setSensMod(k){ SENSMOD=k; renderForm(); }
+function afterSensChange(){
+  const b=$('#b_sens');
+  if(b){ const t=MODAL.reduce((n,x)=>n+(REC.d['sens_'+x.k+'_nb']||0),0);
+    b.textContent=t?t+' anomalie'+(t>1?'s':''):'normal'; b.className='badge'+(t?' ab':' ok'); }
+  const a=$('#asiabody'); if(a) a.innerHTML=asiaBody();
+  updateGlobalFill(); renderSynth();
+}
+function clearSens(){
+  MODAL.filter(m=>m.mode==='derm').forEach(m=>DERM.forEach(lv=>['D','G'].forEach(sd=>
+    delete REC.d[dermKey(m.k,lv.k,sd)])));
+  LANDMARKS.forEach(l=>{ if(l.uni) delete REC.d[landKey(l,null)];
+    else ['D','G'].forEach(sd=>delete REC.d[landKey(l,sd)]); });
+  touch(); renderForm(); toast('Toutes les cotations sensitives effacées');
+}
+
+/* =====================================================================
+   BLOC « SCORE ASIA »
+   ===================================================================== */
+function asiaBlock(){
+  const closed = CLOSED.asia?' closed':'';
+  return '<div class="sec'+closed+'" id="s_asia"><h3 onclick="if(!event.target.closest(\'button\'))toggleSec(\'asia\')">'+
+   '<span class="caret">&#9660;</span>Score ASIA (ISNCSCI)'+
+   '<span class="fill"><span class="badge'+(ASIA.ais?' ab':'')+'" id="b_asia">'+(ASIA.ais? 'AIS '+ASIA.ais : 'incomplet')+'</span></span></h3>'+
+   '<div class="body"><div id="asiabody">'+asiaBody()+'</div></div></div>';
+}
+function asiaBody(){
+  const A=ASIA||{}, n=(v,max)=> (v==null?'—':v+(max?' / '+max:''));
+  const pct = A.total? Math.round(100*A.remplis/A.total) : 0;
+  let h = '<div class="note">Calcul indicatif, produit à partir de ce que vous avez saisi. '+
+    'Totaux, niveau sensitif et niveau moteur des segments pourvus d\'un myotome clé : conformes à la norme ISNCSCI. '+
+    'Segments sans myotome clé (C1-C4, T2-L1, S2-S5) : le niveau moteur y suit le niveau sensitif, application mécanique '+
+    'd\'une règle qui demande un jugement clinique. <b>Vérifiez sur la grille officielle avant toute décision.</b></div>';
+  h += '<div class="asiagrid">'+
+    tile('Tact léger',   n(A.lt,112),  'D '+n(A.ltD,56)+' · G '+n(A.ltG,56)) +
+    tile('Piqûre',       n(A.pp,112),  'D '+n(A.ppD,56)+' · G '+n(A.ppG,56)) +
+    tile('Moteur MS',    n(A.uems,50), 'D '+n(A.uemsD,25)+' · G '+n(A.uemsG,25)) +
+    tile('Moteur MI',    n(A.lems,50), 'D '+n(A.lemsD,25)+' · G '+n(A.lemsG,25)) +
+    '</div>';
+  h += '<div class="asiagrid">'+
+    tile('Niveau sensitif', (A.sens_D||'—')+' / '+(A.sens_G||'—'), 'droite / gauche') +
+    tile('Niveau moteur',   (A.mot_D||'—')+' / '+(A.mot_G||'—'),   'droite / gauche') +
+    tile('NLI',             A.nli||'—', 'niveau neurologique de la lésion') +
+    tile('Préservation sacrée', A.sacralKnown ? (A.sacral?'OUI':'NON') : '—',
+         'S4-5, pression et contraction anales') +
+    '</div>';
+  h += '<div class="aisbox'+(A.ais?' on':'')+'"><div class="aisg">'+(A.ais? 'AIS '+A.ais : 'AIS non déterminable')+'</div>'+
+       '<div class="aist">'+esc(A.aisTxt || 'Renseignez les métamères S4-5, les myotomes clés, la contraction anale volontaire et la pression anale profonde.')+'</div></div>';
+  h += '<div style="font-size:12px;color:#5a6472;margin-top:8px">Complétude de la grille : <b>'+(A.remplis||0)+' / '+(A.total||0)+'</b> ('+pct+' %)</div>';
+  return h;
+}
+function tile(t,v,s){ return '<div class="atile"><div class="at">'+esc(t)+'</div><div class="av">'+esc(v)+'</div><div class="as">'+esc(s)+'</div></div>'; }
+
+/* =====================================================================
+   BLOC « LÉSIONS CUTANÉES DE DÉSATURATION »
+   ===================================================================== */
+function cutBlock(){
+  const n = REC.d.cut_nb||0, closed = CLOSED.cut?' closed':'';
+  const sec = SPEC.find(x=>x.id==='cut');
+  return '<div class="sec'+closed+'" id="s_cut"><h3 onclick="if(!event.target.closest(\'button\'))toggleSec(\'cut\')">'+
+   '<span class="caret">&#9660;</span>Lésions cutanées de désaturation'+
+   '<span class="fill"><button class="mini" onclick="clearCut()">effacer le schéma</button>'+
+   '<span class="badge'+(n?' ab':'')+'" id="b_cut">'+(n? n+' zone'+(n>1?'s':'') : 'aucune')+'</span></span></h3>'+
+   '<div class="body">'+sec.f.map(fieldHTML).join('')+
+   '<div class="brush"><span class="bl">Type de lésion :</span>'+
+   CUTT.map(t=>'<button class="bb'+(CBRUSH===t.v?' on':'')+'" onclick="setCBrush('+t.v+')">'+
+     swatch(t.pat)+esc(t.l)+'</button>').join('')+
+   '<button class="bb'+(CBRUSH===0?' on':'')+'" onclick="setCBrush(0)">&#9003; Gomme</button></div>'+
+   '<div class="bodywrap" id="cutbodies">'+bodiesCut()+'</div>'+
+   '<div id="zoneList3"></div>'+
+   '<div class="legend">'+CUTT.map(t=>'<span>'+swatch(t.pat)+esc(t.l)+'</span>').join('')+'</div>'+
+   '</div></div>';
+}
+function bodiesCut(){
+  return VIEWS.map(v=>'<div class="bodyfig"><div class="cap">'+esc(v.l)+'</div>'+cutSVG(v.v,true)+'</div>').join('')+
+    '<div class="sumcol" id="cutsum">'+cutSummary()+'</div>';
+}
+function cutSummary(){
+  const n=REC.d.cut_nb||0;
+  if(!n) return '<span style="color:#1f7a4d">Aucune lésion renseignée.</span>';
+  return '<b>'+n+' zone'+(n>1?'s':'')+'</b> ('+(REC.d.cut_nb_D||0)+' à droite, '+(REC.d.cut_nb_G||0)+' à gauche)<br>'+
+    CUTT.filter(t=>REC.d['cut_'+t.k+'_nb']).map(t=>'<span style="color:'+t.col+'">&#9632;</span> '+esc(t.l)+' : '+REC.d['cut_'+t.k+'_nb']).join('<br>')+
+    '<div style="color:#5a6472;margin-top:5px">'+esc(REC.d.cut_zones||'')+'</div>';
+}
+function setCBrush(v){ CBRUSH=v; $$('#s_cut .bb').forEach((b,i)=>b.classList.toggle('on',(i<CUTT.length?CUTT[i].v:0)===v)); }
+function cutClick(e){
+  const p=e.target.closest('path.z'); if(!p) return;
+  const k=p.dataset.k, cur=REC.d[k]||0;
+  const nv = (CBRUSH===0 || cur===CBRUSH) ? 0 : CBRUSH;
+  if(nv) REC.d[k]=nv; else delete REC.d[k];
+  paint(p, nv, nv?patFill(cutt(nv).pat):'', nv?cutt(nv).l:'');
+  touch(); computeAll();
+  const su=$('#cutsum'); if(su) su.innerHTML=cutSummary();
+  const b=$('#b_cut'); if(b){ const n=REC.d.cut_nb||0; b.textContent=n?n+' zone'+(n>1?'s':''):'aucune'; b.className='badge'+(n?' ab':''); }
+  renderSynth();
+}
+function clearCut(){
+  VIEWS.forEach(v=>SLOTS.forEach(sl=>['D','G'].forEach(sd=>delete REC.d[cutKey(v.v,sl.s,sd)])));
+  touch(); renderForm(); toast('Schéma des lésions cutanées effacé');
+}
+
+/* =====================================================================
+   SYNTHÈSE RÉDIGÉE
+   ===================================================================== */
+function lab(k){ const f=FIELDS[k]; if(!f||!f.o) return REC.d[k];
+  const o=f.o.find(x=>x.v===REC.d[k]); return o?o.l:null; }
+const cote = v => v===1?'à droite':v===2?'à gauche':v===3?'des deux côtés':'';
+const cot2 = v => v===1?'droite':v===2?'gauche':'';
+const has  = k => REC.d[k]!=null && REC.d[k]!=='';
+function frDate(s){ if(!s)return ''; const p=String(s).split('-'); return p.length===3?p[2]+'/'+p[1]+'/'+p[0]:s; }
+
+function multiLab(k,short){
+  const f=FIELDS[k], a=REC.d[k];
+  if(!f||!Array.isArray(a)||!a.length) return '';
+  return a.map(v=>{ const o=f.o.find(x=>x.v===v); return o?((short&&o.s)||o.l):v; }).join(', ');
+}
+const hasMulti = k => Array.isArray(REC.d[k]) && REC.d[k].length>0;
+
+function refFlags(k){
+  const out=[]; RFLAGS.forEach(fl=>{ if(REC.d[k+'_'+fl.k]) out.push(fl.l); });
+  return out.length? ' ('+out.join(', ')+')' : '';
+}
+
+/* Résumé compact d'une modalité métamérique : les niveaux contigus de même
+   cotation sont regroupés en intervalles, et les deux côtés fusionnés quand
+   ils coïncident. Sur une section complète, cela remplace une liste de
+   quarante-six items par deux intervalles. Utilisé par la synthèse rédigée
+   et par l'impression ; la colonne CSV détaillée reste inchangée. */
+function dermResume(mod){
+  const d=REC.d;
+  const ETAT = {0:'absent', 1:'altéré', 9:'non testable'};
+  const runs = {};                       /* runs[cote] = [{v, i0, i1}] */
+  ['D','G'].forEach(sd=>{
+    const out=[]; let cur=null;
+    DERM.forEach((lv,i)=>{
+      const v=d[dermKey(mod,lv.k,sd)];
+      const anormal = (v===0 || v===1 || v===9);
+      if(anormal && cur && cur.v===v && cur.i1===i-1){ cur.i1=i; return; }
+      if(anormal){ cur={v:v, i0:i, i1:i}; out.push(cur); }
+      else cur=null;
+    });
+    runs[sd]=out;
+  });
+  const label = r => (r.i0===r.i1) ? ('en '+DERM[r.i0].l)
+                                   : ('de '+DERM[r.i0].l+' à '+DERM[r.i1].l);
+  const key = r => r.v+':'+r.i0+':'+r.i1;
+  const mD = new Map(runs.D.map(r=>[key(r),r])), mG = new Map(runs.G.map(r=>[key(r),r]));
+  const parts=[];
+  runs.D.forEach(r=>{ if(mG.has(key(r))) parts.push(ETAT[r.v]+' '+label(r)+' des deux côtés');
+                      else parts.push(ETAT[r.v]+' '+label(r)+' à droite'); });
+  runs.G.forEach(r=>{ if(!mD.has(key(r))) parts.push(ETAT[r.v]+' '+label(r)+' à gauche'); });
+  return parts.join(', ');
+}
+
+function narrative(){
+  const d=REC.d, L=[];
+  let h='Examen neurologique';
+  if(d.date_ex) h+=' du '+frDate(d.date_ex);
+  if(d.heure_ex) h+=' à '+d.heure_ex;
+  const who=[]; if(d.dossier)who.push('dossier '+d.dossier);
+  if(d.sexe)who.push(lab('sexe')==='M'?'sujet masculin':lab('sexe')==='F'?'sujet féminin':'sexe non précisé');
+  if(d.age!=null)who.push(d.age+' ans');
+  if(who.length) h+=' — '+who.join(', ');
+  h+='.'; if(d.num_ex) h+=' Examen n°'+d.num_ex+' pour ce sujet.';
+  if(d.delai_min!=null) h+=' Délai accident → examen : '+d.delai_min+' min ('+Math.floor(d.delai_min/60)+' h '+String(Math.abs(d.delai_min)%60).padStart(2,'0')+').';
+  if(d.examinateur) h+=' Examinateur : '+d.examinateur+'.';
+  L.push(h);
+
+  const c=[]; if(has('avpu')) c.push('AVPU '+lab('avpu'));
+  if(d.gcs_tot!=null) c.push('Glasgow '+d.gcs_tot+'/15 (Y'+d.gcs_y+' V'+d.gcs_v+' M'+d.gcs_m+')');
+  if(c.length) L.push('CONSCIENCE : '+c.join(', ')+'.');
+
+  /* fonctions supérieures */
+  const fs=[];
+  if(d.fs_comport===1)fs.push('troubles du comportement');
+  if(d.fs_dts===1)fs.push('désorientation temporo-spatiale');
+  if(d.fs_parole===1)fs.push('troubles de la parole');
+  if(d.fs_visuel===1)fs.push('troubles visuels '+cote(d.fs_visuel_cote));
+  if(d.fs_audition===1)fs.push("troubles de l'audition "+cote(d.fs_audition_cote));
+  if(d.fs_acouph===1)fs.push('acouphènes '+cote(d.fs_acouph_cote));
+  if(d.fs_vertiges===1)fs.push('vertiges');
+  if(d.nys===1){
+    let s='nystagmus';
+    if(d.nys_cote)s+=' à secousse rapide '+cot2(d.nys_cote);
+    if(hasMulti('nys_regard'))s+=', regard '+multiLab('nys_regard',1);
+    if(has('nys_type'))s+=', '+lab('nys_type').toLowerCase();
+    fs.push(s);
+  }
+  if(fs.length) L.push('FONCTIONS SUPÉRIEURES : '+fs.join(' ; ')+'.');
+  else if(['fs_comport','fs_dts','fs_parole','fs_visuel','fs_audition','fs_acouph','fs_vertiges','nys'].some(has))
+    L.push('FONCTIONS SUPÉRIEURES : sans anomalie, pas de nystagmus.');
+
+  if(d.vns===1){
+    const v=[];
+    v.push(d.vns_spont===1
+      ? ('nystagmus spontané '+cot2(d.vns_spont_cote)+(hasMulti('vns_spont_regard')?' (regard '+multiLab('vns_spont_regard',1)+')':'')).trim()
+      : 'pas de nystagmus spontané');
+    if(d.vns_sensib===1) v.push(d.vns_niv===1
+      ? ('NIV présent '+cot2(d.vns_niv_cote)+(hasMulti('vns_niv_regard')?' (regard '+multiLab('vns_niv_regard',1)+')':'')).trim()
+      : 'NIV absent');
+    else if(d.vns_sensib===0) v.push('sans sensibilisation');
+    L.push('VNS : '+v.join(' ; ')+'.');
+  } else if(d.vns===0) L.push('VNS : non réalisée.');
+
+  /* ORL */
+  const orl=[];
+  ['D','G'].forEach(sd=>{ const v=d['oto_'+sd];
+    if(v>0) orl.push('otoscopie '+(sd==='D'?'droite':'gauche')+' Teed '+v+
+      (d['oto_epanch_'+sd]===1?' avec épanchement':'')); });
+  ['D','G'].forEach(sd=>{ const v=d['valsalva_'+sd];
+    if(v!=null && v<2) orl.push('Valsalva '+(sd==='D'?'droit':'gauche')+' '+lab('valsalva_'+sd).toLowerCase()); });
+  if(d.weber>0) orl.push('Weber '+lab('weber').toLowerCase());
+  ['D','G'].forEach(sd=>{ if(d['rinne_'+sd]===0) orl.push('Rinne '+(sd==='D'?'droit':'gauche')+' négatif'); });
+  if(d.orl_txt) orl.push(d.orl_txt);
+  if(orl.length) L.push('ORL : '+orl.join(' ; ')+'.');
+  else if(['oto_D','oto_G','valsalva_D','valsalva_G','weber','rinne_D','rinne_G'].some(has))
+    L.push('ORL : tympans normaux, Valsalva perméable des deux côtés, Weber non latéralisé, Rinne positif bilatéral.');
+
+  /* signes fonctionnels */
+  const sf=[];
+  if(d.sf_ceph===1)sf.push('céphalées');
+  if(d.sf_rachis===1)sf.push('douleur rachidienne'+(d.sf_rachis_loc&&d.sf_rachis_loc.length?' ('+d.sf_rachis_loc.join(', ')+')':''));
+  if(has('eva_type')){
+    if(d.eva_type===3) sf.push('douleur non évaluable');
+    else if(d.eva_score!=null) sf.push((d.eva_type===1?'EVA ':'EN ')+d.eva_score+'/10'+(d.eva_loc?' ('+d.eva_loc+')':''));
+  }
+  if(d.sf_subj===1){ let s='signes subjectifs';
+    if(d.sf_subj_cote)s+=' '+cote(d.sf_subj_cote);
+    if(d.subj_nb) s+=' : '+d.subj_zones;
+    sf.push(s); }
+  if(sf.length) L.push('SIGNES FONCTIONNELS : '+sf.join(' ; ')+'.');
+  else if(['sf_ceph','sf_rachis','sf_subj'].some(has)) L.push('SIGNES FONCTIONNELS : absents.');
+
+  /* réflexes */
+  const RN={ref_bicip:'bicipital',ref_tricip:'tricipital',ref_rot:'rotulien',ref_ach:'achilléen'};
+  const ra=[]; let rtested=0;
+  Object.keys(RN).forEach(b=>['D','G'].forEach(s=>{
+    const k=b+'_'+s, v=d[k]; if(v==null)return; rtested++;
+    const side=(s==='D'?'droit':'gauche'), fl=refFlags(k);
+    if(v===0)ra.push(RN[b]+' '+side+' aboli');
+    else if(v===2)ra.push(RN[b]+' '+side+' très vif'+fl);
+    else if(fl)ra.push(RN[b]+' '+side+' présent'+fl);
+  }));
+  ['D','G'].forEach(s=>{ const v=d['hoffman_'+s]; if(v===1) ra.push('signe de Hoffmann positif '+(s==='D'?'à droite':'à gauche')); });
+  ['D','G'].forEach(s=>{ const v=d['bbk_'+s]; if(v==null)return;
+    if(v===2)ra.push('cutané plantaire en extension '+(s==='D'?'à droite':'à gauche'));
+    if(v===1)ra.push('cutané plantaire indifférent '+(s==='D'?'à droite':'à gauche')); });
+  const trepTxt = (base,nom) => {
+    const parts=[];
+    ['D','G'].forEach(sd=>{
+      const c=d[base+'_cote'];
+      const concerne = (sd==='D' ? (c===1||c===3) : (c===2||c===3));
+      if(!concerne) return;
+      const q=d[base+'_qual_'+sd];
+      parts.push((sd==='D'?'à droite':'à gauche')+(q?' ('+lab(base+'_qual_'+sd).toLowerCase()+')':''));
+    });
+    return nom+' '+(parts.length?parts.join(' et '):cote(d[base+'_cote']));
+  };
+  if(d.trep_pied===1)ra.push(trepTxt('trep_pied','trépidation du pied'));
+  if(d.trep_rot===1)ra.push(trepTxt('trep_rot','trépidation rotulienne'));
+  if(d.contract===1)ra.push('contractions musculaires spontanées '+cote(d.contract_cote)+(d.contract_loc?' ('+d.contract_loc+')':''));
+  if(ra.length) L.push('RÉFLEXES : '+ra.join(' ; ')+'.');
+  else if(rtested) L.push('RÉFLEXES : ostéotendineux présents et symétriques, Hoffmann négatif, cutané plantaire en flexion des deux côtés, pas de trépidation ni de contraction spontanée.');
+
+  /* force motrice */
+  const fa=[]; let ftested=0;
+  MYO.forEach(m0=>['D','G'].forEach(sd=>{ const v=d[myoKey(m0.k,sd)]; if(v==null)return; ftested++;
+    if(v<5)fa.push(m0.l+' '+m0.m.toLowerCase()+' '+(sd==='D'?'droit':'gauche')+' coté '+v+'/5'); }));
+  ['f_epaule','f_main'].forEach(b=>['D','G'].forEach(sd=>{ const v=d[b+'_'+sd]; if(v==null||v===5)return;
+    fa.push((b==='f_epaule'?'élévation des épaules ':'serrage de main ')+(sd==='D'?'droite':'gauche')+' coté '+v+'/5'); }));
+  if(fa.length) L.push('FORCE MOTRICE (MRC) : '+fa.join(' ; ')+'.');
+  else if(ftested) L.push('FORCE MOTRICE (MRC) : 5/5 sur les '+ftested+' myotomes clés testés.');
+  if(has('vac')||has('dap'))
+    L.push('SPHINCTER : contraction anale volontaire '+(d.vac===1?'présente':d.vac===0?'absente':'non testée')+
+           ', pression anale profonde '+(d.dap===1?'perçue':d.dap===0?'non perçue':'non testée')+'.');
+
+  /* motricité */
+  const mo=[];
+  if(d.par_fac===1)mo.push('paralysie faciale '+cote(d.par_fac_cote)+(d.par_oeil===1?", sans fermeture de l'œil":''));
+  if(d.barre===1)mo.push('chute au Barré '+cote(d.barre_cote));
+  if(d.ming===1)mo.push('chute au Mingazzini '+cote(d.ming_cote));
+  if(mo.length) L.push('MOTRICITÉ : '+mo.join(' ; ')+'.');
+  else if(['par_fac','barre','ming'].some(has)) L.push('MOTRICITÉ : pas de paralysie faciale, Barré et Mingazzini tenus.');
+
+  /* miction */
+  const mi=[];
+  if(has('mict')) mi.push(d.mict===1?('miction présente'+(has('mict_type')?', '+lab('mict_type').toLowerCase():'')):"pas de miction depuis l'accident");
+  if(d.mict_residu_pre!=null)  mi.push('résidu pré-mictionnel '+d.mict_residu_pre+' mL');
+  if(d.mict_residu_post!=null) mi.push('résidu post-mictionnel '+d.mict_residu_post+' mL');
+  if(mi.length) L.push('MICTION : '+mi.join(' ; ')+'.');
+
+  /* coordination */
+  const co=[];
+  if(d.vertic===0)co.push('verticalisation impossible');
+  else if(has('vertic')){
+    if(d.equil_yo===0)co.push('équilibre statique non conservé yeux ouverts');
+    if(d.equil_yf===0)co.push('équilibre statique non conservé yeux fermés');
+  }
+  if(d.marche===0)co.push('marche impossible');
+  else if(has('marche')){
+    if(d.marche_yo===1)co.push('marche anormale yeux ouverts');
+    if(d.marche_yf===1)co.push('marche anormale yeux fermés');
+    if(d.devia_cote)co.push('déviation '+cote(d.devia_cote));
+  }
+  if(d.talon_genou===0)co.push('talon-genou déficitaire '+cote(d.talon_genou_cote));
+  if(d.doigt_nez===0)co.push('doigt-nez déficitaire '+cote(d.doigt_nez_cote));
+  if(co.length) L.push('COORDINATION : '+co.join(' ; ')+'.');
+  else if(['vertic','marche','talon_genou','doigt_nez'].some(has)) L.push('COORDINATION : verticalisation, équilibre, marche et épreuves cérébelleuses normaux.');
+
+  /* sensibilités */
+  if(d.sens_examinee===0) L.push('SENSIBILITÉS : examen non réalisé.');
+  else {
+    const se=[];
+    MODAL.forEach(m=>{ const n=d['sens_'+m.k+'_nb']||0;
+      if(!n) return;
+      const det = (m.mode==='derm') ? dermResume(m.k) : d['sens_'+m.k+'_zones'];
+      se.push(m.l.toLowerCase()+' : '+det); });
+    L.push('SENSIBILITÉS : '+(se.length? se.join(' | ') : 'tact léger, piqûre et pallesthésie normaux sur l\'ensemble des territoires testés')+'.');
+  }
+  if(ASIA && (ASIA.lt!=null || ASIA.uems!=null)){
+    const a=[];
+    if(ASIA.lt!=null) a.push('tact léger '+ASIA.lt+'/112');
+    if(ASIA.pp!=null) a.push('piqûre '+ASIA.pp+'/112');
+    if(ASIA.uems!=null) a.push('moteur MS '+ASIA.uems+'/50');
+    if(ASIA.lems!=null) a.push('moteur MI '+ASIA.lems+'/50');
+    a.push('niveaux sensitifs D '+ASIA.sens_D+' / G '+ASIA.sens_G);
+    a.push('niveaux moteurs D '+ASIA.mot_D+' / G '+ASIA.mot_G);
+    a.push('NLI '+ASIA.nli);
+    if(ASIA.sacralKnown) a.push('préservation sacrée '+(ASIA.sacral?'présente':'absente'));
+    if(ASIA.ais) a.push('AIS '+ASIA.ais);
+    L.push('ASIA (calcul indicatif) : '+a.join(', ')+'.');
+  }
+  /* lésions cutanées */
+  if(d.cut_present===1){
+    const c=[];
+    if(d.cut_nb) c.push(d.cut_zones);
+    if(d.cut_delai!=null) c.push('apparition à '+d.cut_delai+' min après émersion');
+    if(has('cut_evol')) c.push('évolution sous oxygène : '+lab('cut_evol').toLowerCase());
+    if(d.cut_txt) c.push(d.cut_txt);
+    L.push('LÉSIONS CUTANÉES : '+(c.length?c.join(' ; '):'présentes')+'.');
+  } else if(d.cut_present===0) L.push('LÉSIONS CUTANÉES : absentes.');
+
+  const cc=[]; if(has('conclusion'))cc.push(lab('conclusion'));
+  if(has('orientation'))cc.push(lab('orientation')+(d.orientation===5&&d.orientation_autre?' : '+d.orientation_autre:''));
+  if(d.orientation_txt)cc.push(d.orientation_txt.replace(/\n+/g,' '));
+  if(cc.length) L.push('CONCLUSION : '+cc.join(' — ').replace(/\s*\.\s*$/,'')+'.');
+  if(d.notes) L.push('COMMENTAIRES : '+d.notes);
+  return L.join('\n');
+}
+function renderSynth(){ const el=$('#synth'); if(el) el.textContent=narrative(); }
+function copySynth(){ navigator.clipboard.writeText(narrative()).then(()=>toast('Synthèse copiée'),()=>toast('Copie impossible')); }
+
+/* =====================================================================
+   IMPRESSION / PDF
+   ===================================================================== */
+function pv(k,normalVal){ const v=REC.d[k];
+  if(v==null||v==='') return '<span style="color:#888">—</span>';
+  const t=lab(k); const abn = normalVal!=null && v!==normalVal;
+  return '<span class="pv'+(abn?' ab':'')+'">'+esc(t!=null?t:v)+'</span>'; }
+function pline(l,html){ return '<div class="pl"><b>'+l+' :</b> '+html+'</div>'; }
+function pcote(k){ const v=REC.d[k]; return v?' <span class="pv">('+(v===1?'D':v===2?'G':'D+G')+')</span>':''; }
+function pmulti(k){ const t=multiLab(k,1); return t?' <span class="pv">[regard '+esc(t)+']</span>':''; }
+function ptrep(base,nom){
+  const d=REC.d;
+  if(d[base]!==1) return pline(nom,pv(base,0));
+  const c=d[base+'_cote'], parts=[];
+  ['D','G'].forEach(sd=>{
+    const concerne = (sd==='D' ? (c===1||c===3) : (c===2||c===3));
+    if(!concerne) return;
+    parts.push(sd+' : '+(d[base+'_qual_'+sd]!=null? pv(base+'_qual_'+sd) : '<span style="color:#888">caractère non précisé</span>'));
+  });
+  return pline(nom, pv(base,0)+pcote(base+'_cote')+(parts.length?' &nbsp; '+parts.join(' &nbsp;·&nbsp; '):''));
+}
+function pref(k){ return pv(k,1)+'<span class="pf">'+esc(refFlags(k))+'</span>'; }
+function pid(l,v){ return '<div style="font-size:8.2pt"><b>'+l+' :</b> '+(v?esc(v):'<span style="color:#888">&nbsp;</span>')+'</div>'; }
+function box(t,inner){ return '<div class="pbox"><h4>'+t+'</h4><div class="pb">'+inner+'</div></div>'; }
+
+function buildPrint(){
+  const d=REC.d, A=ASIA||{};
+  let h='<div class="pg">';
+  h+='<div class="phead">FICHE D\'EXAMEN NEUROLOGIQUE STANDARDISÉ</div>';
+  h+='<div class="pid">'+
+    pid('Nom',d.nom)+pid('Prénom',d.prenom)+pid('Sexe',lab('sexe'))+pid('Date de naissance',frDate(d.ddn))+
+    pid('N° de dossier',d.dossier)+pid('Âge',d.age!=null?d.age+' ans':'')+
+    pid('Date / heure accident',(frDate(d.date_acc)+' '+(d.heure_acc||'')).trim())+
+    pid('Délai accident→examen',d.delai_min!=null?d.delai_min+' min':'')+
+    pid('Examinateur',d.examinateur)+pid('Date examen',frDate(d.date_ex))+pid('Heure examen',d.heure_ex)+
+    pid("N° d'examen",d.num_ex)+'</div>';
+
+  h+=box('CONSCIENCE', pline('AVPU',pv('avpu',1))+
+      pline('Glasgow','Y : '+(d.gcs_y==null?'—':d.gcs_y)+'/4 &nbsp; V : '+(d.gcs_v==null?'—':d.gcs_v)+'/5 &nbsp; M : '+(d.gcs_m==null?'—':d.gcs_m)+
+      '/6 &nbsp; <b>Total : '+(d.gcs_tot==null?'—':d.gcs_tot)+'/15</b>'));
+
+  h+=box('FONCTIONS SUPÉRIEURES','<div class="p2"><div>'+
+      pline('Troubles du comportement',pv('fs_comport',0))+
+      pline('Désorientation (DTS)',pv('fs_dts',0))+
+      pline('Troubles de la parole',pv('fs_parole',0))+
+      pline('Vertiges',pv('fs_vertiges',0))+'</div><div>'+
+      pline('Troubles visuels',pv('fs_visuel',0)+pcote('fs_visuel_cote'))+
+      pline("Troubles de l'audition",pv('fs_audition',0)+pcote('fs_audition_cote'))+
+      pline('Acouphènes',pv('fs_acouph',0)+pcote('fs_acouph_cote'))+'</div></div>'+
+      pline('Nystagmus',pv('nys',0)+
+        (d.nys===1?' — secousse rapide '+pv('nys_cote')+pmulti('nys_regard')+' · '+pv('nys_type'):''))+
+      pline('VNS (vidéonystagmoscopie)',pv('vns')+
+        (d.vns===1? ' — spontané '+pv('vns_spont',0)+pcote('vns_spont_cote')+pmulti('vns_spont_regard')+
+                    ' · sensibilisée '+pv('vns_sensib')+
+                    (d.vns_sensib===1?' · NIV '+pv('vns_niv',0)+pcote('vns_niv_cote')+pmulti('vns_niv_regard'):'') : '')));
+
+  h+=box('ORL ET BAROTRAUMATISME','<div class="p2"><div>'+
+      pline('Otoscopie D (Teed)',pv('oto_D',0)+(d.oto_epanch_D===1?' <span class="pv ab">épanchement</span>':''))+
+      pline('Valsalva D',pv('valsalva_D',2))+
+      pline('Rinne D',pv('rinne_D',1))+'</div><div>'+
+      pline('Otoscopie G (Teed)',pv('oto_G',0)+(d.oto_epanch_G===1?' <span class="pv ab">épanchement</span>':''))+
+      pline('Valsalva G',pv('valsalva_G',2))+
+      pline('Rinne G',pv('rinne_G',1))+'</div></div>'+
+      pline('Weber',pv('weber',0))+(d.orl_txt?pline('Commentaire',esc(d.orl_txt)):''));
+
+  h+=box('SIGNES FONCTIONNELS',
+      pline('Céphalées',pv('sf_ceph',0))+
+      pline('Douleur rachidienne',pv('sf_rachis',0)+(d.sf_rachis_loc&&d.sf_rachis_loc.length?' <span class="pv">('+esc(d.sf_rachis_loc.join(', '))+')</span>':''))+
+      pline('Douleur cotée', (has('eva_type')? pv('eva_type')+(d.eva_type!==3&&d.eva_score!=null?' — <span class="pv'+(d.eva_score>0?' ab':'')+'">'+d.eva_score+'/10</span>':'')+
+        (d.eva_loc?' — '+esc(d.eva_loc):'') : '<span style="color:#888">—</span>'))+
+      pline('Signes subjectifs',pv('sf_subj',0)+pcote('sf_subj_cote')+
+        (d.subj_nb?' — <span class="pv">'+esc(d.subj_zones)+'</span>':'')));
+
+  h+=box('RÉFLEXES OSTÉOTENDINEUX','<div class="p2"><div>'+
+      pline('Bicipital D',pref('ref_bicip_D'))+pline('Tricipital D',pref('ref_tricip_D'))+
+      pline('Rotulien D',pref('ref_rot_D'))+pline('Achilléen D',pref('ref_ach_D'))+
+      pline('Hoffmann D',pv('hoffman_D',0))+pline('Cutané plantaire D',pv('bbk_D',0))+'</div><div>'+
+      pline('Bicipital G',pref('ref_bicip_G'))+pline('Tricipital G',pref('ref_tricip_G'))+
+      pline('Rotulien G',pref('ref_rot_G'))+pline('Achilléen G',pref('ref_ach_G'))+
+      pline('Hoffmann G',pv('hoffman_G',0))+pline('Cutané plantaire G',pv('bbk_G',0))+'</div></div>'+
+      ptrep('trep_pied','Trépidation du pied')+
+      ptrep('trep_rot','Trépidation rotulienne')+
+      pline('Contractions spontanées',pv('contract',0)+pcote('contract_cote')+(d.contract_loc?' — '+esc(d.contract_loc):'')));
+
+  h+=box('MOTRICITÉ',
+      pline('Paralysie faciale',pv('par_fac',0)+pcote('par_fac_cote')+(d.par_oeil===1?' — <span class="pv ab">absence de fermeture de l\'œil</span>':''))+
+      pline('Chute au Barré (bras tendus 45°, 10 s)',pv('barre',0)+pcote('barre_cote'))+
+      pline('Chute au Mingazzini (cuisses 90°, 10 s)',pv('ming',0)+pcote('ming_cote')));
+
+  h+=box('MICTION','<div class="p2"><div>'+
+      pline("Miction depuis l'accident",pv('mict',1))+pline('Caractéristiques',pv('mict_type',1))+'</div><div>'+
+      pline('Résidu pré-mictionnel',(d.mict_residu_pre!=null?'<span class="pv">'+d.mict_residu_pre+' mL</span>':'<span style="color:#888">—</span>'))+
+      pline('Résidu post-mictionnel',(d.mict_residu_post!=null?'<span class="pv">'+d.mict_residu_post+' mL</span>':'<span style="color:#888">—</span>'))+'</div></div>');
+
+  h+=box('COORDINATION',
+      pline('Verticalisation possible',pv('vertic',1))+
+      pline('Équilibre statique conservé','yeux ouverts '+pv('equil_yo',1)+' &nbsp;·&nbsp; yeux fermés '+pv('equil_yf',1))+
+      pline('Marche possible',pv('marche',1))+
+      pline('Marche','yeux ouverts '+pv('marche_yo',0)+' &nbsp;·&nbsp; yeux fermés '+pv('marche_yf',0)+pcote('devia_cote'))+
+      pline('Talon-genou',pv('talon_genou',1)+pcote('talon_genou_cote'))+
+      pline('Doigt-nez',pv('doigt_nez',1)+pcote('doigt_nez_cote')));
+  h+='</div>';
+
+  /* ---------- page 2 : grille ASIA ---------- */
+  h+='<div class="pg"><div class="phead" style="font-size:10.5pt">GRILLE ASIA — ISNCSCI</div>';
+  const cellv = k => { const v=d[k]; if(v==null) return '<span style="color:#aaa">·</span>';
+    return v===9?'NT':(v===2?'2':'<b class="ab">'+v+'</b>'); };
+  const dermHalf = (a,b) => '<table class="ptab dtabp"><thead><tr><th>Mét.</th><th>LT D</th><th>LT G</th><th>PP D</th><th>PP G</th></tr></thead><tbody>'+
+    DERM.slice(a,b).map(lv=>'<tr'+(lv.k==='s45'?' class="key"':'')+'><td><b>'+esc(lv.l)+'</b></td>'+
+      '<td>'+cellv(dermKey('lt',lv.k,'D'))+'</td><td>'+cellv(dermKey('lt',lv.k,'G'))+'</td>'+
+      '<td>'+cellv(dermKey('pp',lv.k,'D'))+'</td><td>'+cellv(dermKey('pp',lv.k,'G'))+'</td></tr>').join('')+
+    '</tbody></table>';
+  h+='<div class="pbox"><h4 class="small">SENSIBILITÉ PAR MÉTAMÈRE<span class="sb"> 0 absent · 1 altéré · 2 normal · NT non testable</span></h4>'+
+     '<div class="pb p2">'+dermHalf(0,14)+dermHalf(14,28)+'</div></div>';
+
+  h+='<div class="pbox"><h4 class="small">MYOTOMES CLÉS<span class="sb"> cotation MRC 0 à 5</span></h4><div class="pb p2">'+
+     '<table class="ptab"><thead><tr><th>Myotome</th><th>D</th><th>G</th></tr></thead><tbody>'+
+     MYO.slice(0,5).map(m0=>'<tr><td><b>'+esc(m0.l)+'</b> '+esc(m0.m)+'</td><td>'+
+       (d[myoKey(m0.k,'D')]==null?'<span style="color:#aaa">·</span>':(d[myoKey(m0.k,'D')]===5?'5':'<b class="ab">'+d[myoKey(m0.k,'D')]+'</b>'))+'</td><td>'+
+       (d[myoKey(m0.k,'G')]==null?'<span style="color:#aaa">·</span>':(d[myoKey(m0.k,'G')]===5?'5':'<b class="ab">'+d[myoKey(m0.k,'G')]+'</b>'))+'</td></tr>').join('')+
+     '</tbody></table>'+
+     '<table class="ptab"><thead><tr><th>Myotome</th><th>D</th><th>G</th></tr></thead><tbody>'+
+     MYO.slice(5).map(m0=>'<tr><td><b>'+esc(m0.l)+'</b> '+esc(m0.m)+'</td><td>'+
+       (d[myoKey(m0.k,'D')]==null?'<span style="color:#aaa">·</span>':(d[myoKey(m0.k,'D')]===5?'5':'<b class="ab">'+d[myoKey(m0.k,'D')]+'</b>'))+'</td><td>'+
+       (d[myoKey(m0.k,'G')]==null?'<span style="color:#aaa">·</span>':(d[myoKey(m0.k,'G')]===5?'5':'<b class="ab">'+d[myoKey(m0.k,'G')]+'</b>'))+'</td></tr>').join('')+
+     '</tbody></table></div>'+
+     '<div class="pb">'+pline('Contraction anale volontaire (VAC)',pv('vac',1))+pline('Pression anale profonde (DAP)',pv('dap',1))+
+     pline('Élévation des épaules','D '+pv('f_epaule_D',5)+' · G '+pv('f_epaule_G',5)+' &nbsp; Serrage de main : D '+pv('f_main_D',5)+' · G '+pv('f_main_G',5))+'</div></div>';
+
+  const nn=(v,m)=>v==null?'—':v+' / '+m;
+  h+='<div class="pbox"><h4 class="small">SYNTHÈSE ASIA<span class="sb"> calcul indicatif, à vérifier sur la grille officielle</span></h4><div class="pb">'+
+     '<div class="p2"><div>'+
+       pline('Tact léger', nn(A.lt,112)+' (D '+nn(A.ltD,56)+' · G '+nn(A.ltG,56)+')')+
+       pline('Piqûre',     nn(A.pp,112)+' (D '+nn(A.ppD,56)+' · G '+nn(A.ppG,56)+')')+
+       pline('Moteur membres supérieurs', nn(A.uems,50))+
+       pline('Moteur membres inférieurs', nn(A.lems,50))+
+     '</div><div>'+
+       pline('Niveau sensitif', (A.sens_D||'—')+' (D) / '+(A.sens_G||'—')+' (G)')+
+       pline('Niveau moteur',   (A.mot_D||'—')+' (D) / '+(A.mot_G||'—')+' (G)')+
+       pline('NLI', '<b>'+(A.nli||'—')+'</b>')+
+       pline('Préservation sacrée', A.sacralKnown?(A.sacral?'<b>OUI</b>':'<b class="ab">NON</b>'):'—')+
+     '</div></div>'+
+     '<div class="paisp"><b>'+(A.ais? 'AIS '+A.ais : 'AIS non déterminable')+'</b> — '+esc(A.aisTxt||'grille incomplète')+'</div>'+
+     '</div></div>';
+  h+='</div>';
+
+  /* ---------- page 3 : schémas, pallesthésie, conclusion ---------- */
+  h+='<div class="pg"><div class="phead" style="font-size:10.5pt">SCHÉMAS, PALLESTHÉSIE ET CONCLUSION</div>';
+  h+='<div class="pgrid2">';
+  h+='<div class="pbox"><h4 class="small">SIGNES SUBJECTIFS<span class="sb"> localisation du ressenti</span></h4>'+
+     '<div class="pb psvg">'+VIEWS.map(v=>'<div><div class="pcap">'+esc(v.l.replace('Face ','')).toUpperCase()+'</div>'+subjSVG(v.v,false)+'</div>').join('')+'</div>'+
+     '<div class="pzl">'+(d.subj_nb? '<b>'+d.subj_nb+' zone'+(d.subj_nb>1?'s':'')+'</b> : '+esc(d.subj_zones) : 'Aucune zone renseignée')+'</div></div>';
+  h+='<div class="pbox"><h4 class="small">LÉSIONS CUTANÉES DE DÉSATURATION<span class="sb"> '+
+     (d.cut_delai!=null?'apparition à '+d.cut_delai+' min':'')+(has('cut_evol')?' · '+lab('cut_evol').toLowerCase():'')+'</span></h4>'+
+     '<div class="pb psvg">'+VIEWS.map(v=>'<div><div class="pcap">'+esc(v.l.replace('Face ','')).toUpperCase()+'</div>'+cutSVG(v.v,false)+'</div>').join('')+'</div>'+
+     '<div class="pzl">'+(d.cut_nb? '<b>'+d.cut_nb+' zone'+(d.cut_nb>1?'s':'')+'</b> : '+esc(d.cut_zones) : (d.cut_present===0?'Aucune lésion':'Non renseigné'))+
+     (d.cut_txt?'<br>'+esc(d.cut_txt):'')+'</div></div>';
+  h+='</div>';
+  h+='<div class="plegend"><b>Ressentis :</b> '+SUBJT.map(t=>'<span>'+swatch(t.pat,14,9)+esc(t.l)+'</span>').join('')+
+     ' &nbsp; <b>Lésions :</b> '+CUTT.map(t=>'<span>'+swatch(t.pat,14,9)+esc(t.l)+'</span>').join('')+'</div>';
+
+  const half = Math.ceil(LANDMARKS.length/2);
+  const palRow = l => {
+    const c = sd => { const v=d[landKey(l,sd)]; return v? '<span class="pv ab">'+esc(sstate(v).lp)+'</span>'
+                                                      : (d.sens_examinee===0?'<span style="color:#888">—</span>':'normale'); };
+    return '<tr><td>'+esc(l.l)+'</td>'+(l.uni?'<td colspan="2" style="text-align:center">'+c(null)+'</td>':'<td>'+c('D')+'</td><td>'+c('G')+'</td>')+'</tr>';
+  };
+  h+='<div class="pbox"><h4 class="small">PALLESTHÉSIE<span class="sb"> sensibilité vibratoire sur les reliefs osseux — diapason</span></h4>'+
+     '<div class="pb"><div class="p2">'+
+     '<table class="ptab"><thead><tr><th>Relief</th><th>D</th><th>G</th></tr></thead><tbody>'+LANDMARKS.slice(0,half).map(palRow).join('')+'</tbody></table>'+
+     '<table class="ptab"><thead><tr><th>Relief</th><th>D</th><th>G</th></tr></thead><tbody>'+LANDMARKS.slice(half).map(palRow).join('')+'</tbody></table>'+
+     '</div></div></div>';
+
+  h+='<div class="pfoot"><span>Signes subjectifs : '+(d.sf_subj===1?'OUI':d.sf_subj===0?'NON':'—')+
+     '</span><span>Signes objectifs : '+(d.sens_obj===1?'OUI':d.sens_obj===0?'NON':'—')+'</span></div>';
+
+  h+='<div class="pbox" style="margin-top:1.4mm"><h4>CONCLUSION</h4><div class="pb">'+
+     pline("Conclusion de l'examen",pv('conclusion',1))+
+     pline('Orientation',pv('orientation')+(d.orientation===5&&d.orientation_autre?' — '+esc(d.orientation_autre):''))+
+     (d.orientation_txt?pline("Précisions sur l'orientation",esc(d.orientation_txt).replace(/\n/g,'<br>')):'')+
+     (d.notes?pline('Commentaires',esc(d.notes).replace(/\n/g,'<br>')):'')+'</div></div>';
+  h+='<div class="pbox"><h4>SYNTHÈSE</h4><div class="pb psyn">'+esc(narrative())+'</div></div>';
+  h+='<div style="font-size:7pt;text-align:right;margin-top:1.5mm;color:#444">Fiche '+esc(REC.id)+
+     ' — éditée le '+frDate(iso(new Date()))+' à '+hhmm(new Date())+'</div>';
+  h+='</div>';
+  return h;
+}
+
+/* Feuille de style complete de la page, reutilisee telle quelle pour
+   l'impression native : l'adaptateur d'impression d'Android et de iOS
+   applique bien les regles @media print. */
+function printCSS(){
+  return Array.prototype.map.call(document.querySelectorAll('style'), s=>s.textContent).join('\n')
+       + '\n@page{size:A4 portrait;margin:9mm 10mm}'
+       + '\nbody.printdoc{background:#fff}'
+       + '\nbody.printdoc #print-root{display:block !important}';
+}
+function printName(){
+  return 'Fiche_neuro_'+(REC.d.dossier||'sans-dossier')+'_'+(REC.d.date_ex||'')+(REC.d.num_ex?'_ex'+REC.d.num_ex:'');
+}
+function doPrint(){
+  computeAll();
+  $('#print-root').innerHTML = buildPrint();
+
+  /* Dans un WebView natif (Android, iOS), window.print() ne fait rien :
+     ni WebView ni WKWebView n'implementent l'appel. On passe alors par le
+     plugin NativePrint livre avec le projet natif, qui ouvre le service
+     d'impression du systeme (impression papier ou export PDF). */
+  const NP = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.NativePrint;
+  if(NP){
+    const doc = '<!doctype html><html lang="fr"><head><meta charset="utf-8">'+
+      '<title>'+printName()+'</title><style>'+printCSS()+'</style></head>'+
+      '<body class="printdoc">'+$('#print-root').innerHTML+'</body></html>';
+    NP.print({ name: printName(), html: doc })
+      .catch(e => toast('Impression indisponible : '+e));
+    return;
+  }
+
+  const old=document.title;
+  document.title = printName();
+  window.print();
+  setTimeout(()=>{document.title=old;},800);
+}
+
+/* =====================================================================
+   COLONNES DU FICHIER STATISTIQUE + DICTIONNAIRE
+   ===================================================================== */
+const SET = {pii:false, sep:';', poste:'', wedge:true, scanRe:'', hash:false, hashLen:12, salt:''};
+
+function codesOf(f){
+  if(f.t==='choice') return f.o.map(o=>o.v+' = '+o.l).join(' ; ');
+  if(f.t==='multi')  return '1 = coche ; 0 = non coche';
+  if(f.t==='date')   return 'AAAA-MM-JJ';
+  if(f.t==='time')   return 'HH:MM';
+  return 'texte libre';
+}
+function columns(pii){
+  const C=[], add=(k,l,codes,get)=>C.push({k:k,l:l,codes:codes,get:get||(r=>r.d[k])});
+  add('fiche_id',"Identifiant unique de la fiche",'texte (cle primaire, sert au dedoublonnage)',r=>r.id);
+  add('dossier',"N. de dossier / identifiant du sujet",'texte (cle sujet : relie les examens repetes)');
+  add('dossier_pseudo','Identifiant pseudonymise ?',
+      '1 = empreinte salee SHA-256 d un identifiant scanne ou saisi (prefixe P-) ; 0 = valeur saisie telle quelle ; vide = non renseigne',
+      r=>r.d.dossier_pseudo!=null?r.d.dossier_pseudo:'');
+  add('num_ex',"Rang de l'examen pour ce sujet",'entier >= 1, ordonne par date et heure');
+  add('date_ex',"Date de l'examen",'AAAA-MM-JJ');
+  add('heure_ex',"Heure de l'examen",'HH:MM');
+  add('examinateur','Examinateur','texte');
+  add('poste','Poste de saisie','texte (renseigne dans les reglages, utile a la fusion)',()=>SET.poste);
+  add('date_acc',"Date de l'accident",'AAAA-MM-JJ');
+  add('heure_acc',"Heure de l'accident",'HH:MM');
+  add('delai_min','Delai accident vers examen','entier, minutes (calcule)');
+  add('sexe','Sexe','1 = M ; 2 = F ; 3 = Autre');
+  add('age',"Age a la date de l'examen",'entier, annees (calcule)');
+  if(pii){ add('nom','Nom','texte - DONNEE IDENTIFIANTE');
+           add('prenom','Prenom','texte - DONNEE IDENTIFIANTE');
+           add('ddn','Date de naissance','AAAA-MM-JJ - DONNEE IDENTIFIANTE'); }
+
+  SPEC.forEach(s=>{ if(s.id==='ident') return;
+    s.f.forEach(f=>{
+      if(f.t==='multi'){
+        f.o.forEach(o=>add(f.k+'_'+o.v, f.l+' - '+o.l+' ('+s.t+')','1 = coche ; 0 = non coche',
+          r=>{const a=r.d[f.k]; return Array.isArray(a)?(a.indexOf(o.v)>=0?1:0):(r.d[f.k+'_'+o.v]!=null?r.d[f.k+'_'+o.v]:'');}));
+        add(f.k, f.l+' - liste ('+s.t+')','texte, valeurs separees par |',
+          r=>Array.isArray(r.d[f.k])?r.d[f.k].join('|'):(r.d[f.k]||''));
+      } else {
+        add(f.k, f.l+' ('+s.t+')', codesOf(f)+(f.t==='num'&&f.unit?' ('+f.unit+')':''));
+        // qualites complementaires des reflexes osteotendineux
+        if(f.flags) f.flags.forEach(fl=>{ const kk=f.k+'_'+fl.k;
+          add(kk, f.l+' - reflexe '+fl.l+' ('+s.t+')',
+              '1 = present ; 0 = absent ; vide = reflexe non teste',
+              r=>r.d[f.k]==null?'':(r.d[kk]?1:0)); });
+      }
+    });
+  });
+
+  add('sens_obj','Signes objectifs sensitifs','1 = OUI ; 0 = NON (deduit des cotations) ; vide = sensibilites non examinees',
+      r=>r.d.sens_examinee===0?'':(r.d.sens_obj!=null?r.d.sens_obj:''));
+  const SX = r => r.d.sens_examinee===1;
+
+  // ---- sensibilite par metamere (ISNCSCI) ----
+  const DCODE = '0 = absent ; 1 = altere ; 2 = normal ; 9 = non testable (NT) ; vide = non renseigne';
+  MODAL.filter(m=>m.mode==='derm').forEach(m=>{
+    const p='sens_'+m.k+'_';
+    add(p+'score',   m.l+' - score total','entier 0-112 ; les NT sont exclus du total', r=>SX(r)?(r.d[p+'score']!=null?r.d[p+'score']:''):'');
+    add(p+'score_D', m.l+' - score DROITE','entier 0-56', r=>SX(r)?(r.d[p+'score_D']!=null?r.d[p+'score_D']:''):'');
+    add(p+'score_G', m.l+' - score GAUCHE','entier 0-56', r=>SX(r)?(r.d[p+'score_G']!=null?r.d[p+'score_G']:''):'');
+    add(p+'nt',      m.l+' - nombre de metameres non testables','entier 0-56', r=>SX(r)?(r.d[p+'nt']!=null?r.d[p+'nt']:''):'');
+    add(p+'nb',      m.l+' - nombre de metameres anormaux','entier 0-56', r=>SX(r)?(r.d[p+'nb']!=null?r.d[p+'nb']:''):'');
+    add(p+'zones',   m.l+' - liste des metameres anormaux','texte, separes par |', r=>SX(r)?(r.d[p+'zones']||''):'');
+    DERM.forEach(lv=>['D','G'].forEach(sd=>{
+      const k=dermKey(m.k,lv.k,sd);
+      add(k, m.l+' - metamere '+lv.l+' '+sd+' ('+lv.p+')', DCODE, r=>SX(r)?(r.d[k]!=null?r.d[k]:''):'');
+    }));
+  });
+
+  // ---- pallesthesie sur les reliefs osseux ----
+  const ETAT = '1 = diminuee ; 2 = exageree ; 3 = abolie ; 0 = normale ; vide = non examine';
+  const pp='sens_pal_';
+  add(pp+'nb',  'Pallesthesie - nombre de reliefs anormaux','entier 0-23 ; vide = non examine', r=>SX(r)?(r.d[pp+'nb']||0):'');
+  add(pp+'nb_D','Pallesthesie - nombre a DROITE','entier', r=>SX(r)?(r.d[pp+'nb_D']||0):'');
+  add(pp+'nb_G','Pallesthesie - nombre a GAUCHE','entier', r=>SX(r)?(r.d[pp+'nb_G']||0):'');
+  SSTATE.forEach(st=> add(pp+'nb_'+st.k,'Pallesthesie - nombre cotes '+st.lp,'entier', r=>SX(r)?(r.d[pp+'nb_'+st.k]||0):''));
+  ['tetecou','MS','tronc','MI'].forEach(r0=>['D','G'].forEach(sd=>
+    add(pp+r0+'_'+sd,'Pallesthesie - atteinte '+REGION_LAB[r0]+' '+sd,'1 = atteinte ; 0 = aucune', r=>SX(r)?(r.d[pp+r0+'_'+sd]||0):'')));
+  add(pp+'zones','Pallesthesie - liste detaillee','texte, separes par |', r=>SX(r)?(r.d[pp+'zones']||''):'');
+  LANDMARKS.forEach(l=>{
+    if(l.uni) add(landKey(l,null),'Pallesthesie - '+l.l+' (median)', ETAT, r=>SX(r)?(r.d[landKey(l,null)]||0):'');
+    else ['D','G'].forEach(sd=> add(landKey(l,sd),'Pallesthesie - '+l.l+' '+sd, ETAT, r=>SX(r)?(r.d[landKey(l,sd)]||0):''));
+  });
+
+  // ---- synthese ASIA ----
+  add('asia_lt',   'ASIA - score tact leger total','entier 0-112 (calcule)');
+  add('asia_pp',   'ASIA - score piqure total','entier 0-112 (calcule)');
+  add('asia_uems', 'ASIA - score moteur membres superieurs','entier 0-50 (calcule)');
+  add('asia_lems', 'ASIA - score moteur membres inferieurs','entier 0-50 (calcule)');
+  add('asia_sens_D','ASIA - niveau sensitif DROIT','texte, metamere (calcule)');
+  add('asia_sens_G','ASIA - niveau sensitif GAUCHE','texte, metamere (calcule)');
+  add('asia_mot_D', 'ASIA - niveau moteur DROIT','texte, metamere (calcule, regle simplifiee)');
+  add('asia_mot_G', 'ASIA - niveau moteur GAUCHE','texte, metamere (calcule, regle simplifiee)');
+  add('asia_nli',   'ASIA - niveau neurologique de la lesion','texte, metamere (calcule)');
+  add('asia_sacral','ASIA - preservation sacree','1 = oui ; 0 = non ; vide = non determinable');
+  add('asia_ais',   'ASIA - grade AIS','A, B, C, D ou E (calcul indicatif, a verifier)');
+
+  // ---- signes subjectifs localises ----
+  const SJ = r => r.d.sf_subj===0 || r.d.sf_subj===1;
+  const TCODE = SUBJT.map(t=>t.v+' = '+t.l).join(' ; ')+' ; 0 = aucun ; vide = non renseigne';
+  add('subj_nb',  'Signes subjectifs - nombre total de zones','entier 0-48', r=>SJ(r)?(r.d.subj_nb||0):'');
+  add('subj_nb_D','Signes subjectifs - zones a DROITE','entier', r=>SJ(r)?(r.d.subj_nb_D||0):'');
+  add('subj_nb_G','Signes subjectifs - zones a GAUCHE','entier', r=>SJ(r)?(r.d.subj_nb_G||0):'');
+  SUBJT.forEach(t=> add('subj_'+t.k+'_nb','Signes subjectifs - zones : '+t.l,'entier', r=>SJ(r)?(r.d['subj_'+t.k+'_nb']||0):''));
+  ['tetecou','MS','tronc','MI'].forEach(r0=>['D','G'].forEach(sd=>
+    add('subj_'+r0+'_'+sd,'Signes subjectifs - atteinte '+REGION_LAB[r0]+' '+sd,'1 = oui ; 0 = non', r=>SJ(r)?(r.d['subj_'+r0+'_'+sd]||0):'')));
+  add('subj_zones','Signes subjectifs - liste detaillee','texte, separees par |', r=>SJ(r)?(r.d.subj_zones||''):'');
+  VIEWS.forEach(v=>SLOTS.forEach(sl=>['D','G'].forEach(sd=>{
+    const k=subjKey(v.v,sl.s,sd);
+    add(k,'Signes subjectifs - '+SLOT_LAB[v.v][sl.s]+' '+sd, TCODE, r=>SJ(r)?(r.d[k]||0):'');
+  })));
+
+  // ---- lesions cutanees de desaturation ----
+  const CJ = r => r.d.cut_present===0 || r.d.cut_present===1;
+  const CCODE = CUTT.map(t=>t.v+' = '+t.l).join(' ; ')+' ; 0 = aucune ; vide = non renseigne';
+  add('cut_nb',  'Lesions cutanees - nombre total de zones','entier 0-48', r=>CJ(r)?(r.d.cut_nb||0):'');
+  add('cut_nb_D','Lesions cutanees - zones a DROITE','entier', r=>CJ(r)?(r.d.cut_nb_D||0):'');
+  add('cut_nb_G','Lesions cutanees - zones a GAUCHE','entier', r=>CJ(r)?(r.d.cut_nb_G||0):'');
+  CUTT.forEach(t=> add('cut_'+t.k+'_nb','Lesions cutanees - zones : '+t.l,'entier', r=>CJ(r)?(r.d['cut_'+t.k+'_nb']||0):''));
+  ['tetecou','MS','tronc','MI'].forEach(r0=>['D','G'].forEach(sd=>
+    add('cut_'+r0+'_'+sd,'Lesions cutanees - atteinte '+REGION_LAB[r0]+' '+sd,'1 = oui ; 0 = non', r=>CJ(r)?(r.d['cut_'+r0+'_'+sd]||0):'')));
+  add('cut_zones','Lesions cutanees - liste detaillee','texte, separees par |', r=>CJ(r)?(r.d.cut_zones||''):'');
+  VIEWS.forEach(v=>SLOTS.forEach(sl=>['D','G'].forEach(sd=>{
+    const k=cutKey(v.v,sl.s,sd);
+    add(k,'Lesions cutanees - '+SLOT_LAB[v.v][sl.s]+' '+sd, CCODE, r=>CJ(r)?(r.d[k]||0):'');
+  })));
+
+  add('created','Horodatage de creation','ISO 8601',r=>r.created);
+  add('updated','Horodatage de derniere modification','ISO 8601',r=>r.updated);
+  return C;
+}
+
+/* ---------- CSV ---------- */
+function csvCell(v,sep){
+  if(v==null) return '';
+  const s=String(v);
+  return (/["\n\r]/.test(s) || s.indexOf(sep)>=0) ? '"'+s.replace(/"/g,'""')+'"' : s;
+}
+function buildCSV(recs,sep,pii){
+  const C=columns(pii), L=[C.map(c=>csvCell(c.k,sep)).join(sep)];
+  recs.forEach(r=>L.push(C.map(c=>{ let v; try{v=c.get(r);}catch(e){v='';}
+    return csvCell(v==null?'':v,sep); }).join(sep)));
+  return '﻿'+L.join('\r\n')+'\r\n';
+}
+function buildDict(sep,pii){
+  const C=columns(pii), L=[['variable','libelle','codage'].map(x=>csvCell(x,sep)).join(sep)];
+  C.forEach(c=>L.push([c.k,c.l,c.codes].map(x=>csvCell(x,sep)).join(sep)));
+  return '﻿'+L.join('\r\n')+'\r\n';
+}
+function parseCSV(txt,sep){
+  txt=txt.replace(/^﻿/,''); const rows=[]; let row=[],cur='',q=false;
+  for(let i=0;i<txt.length;i++){ const c=txt[i];
+    if(q){ if(c==='"'){ if(txt[i+1]==='"'){cur+='"';i++;} else q=false; } else cur+=c; }
+    else if(c==='"') q=true;
+    else if(c===sep){ row.push(cur); cur=''; }
+    else if(c==='\n'){ row.push(cur); rows.push(row); row=[]; cur=''; }
+    else if(c!=='\r') cur+=c;
+  }
+  if(cur!==''||row.length){ row.push(cur); rows.push(row); }
+  return rows.filter(r=>r.length>1||r[0]!=='');
+}
+
+/* =====================================================================
+   BASE LOCALE (IndexedDB)
+   ===================================================================== */
+let idb=null;
+function openDB(){ return new Promise((res,rej)=>{
+  const rq=indexedDB.open('fiche_neuro',1);
+  rq.onupgradeneeded=e=>{ const db=e.target.result;
+    if(!db.objectStoreNames.contains('fiches')) db.createObjectStore('fiches',{keyPath:'id'});
+    if(!db.objectStoreNames.contains('meta'))   db.createObjectStore('meta',{keyPath:'k'}); };
+  rq.onsuccess=e=>{idb=e.target.result;res();}; rq.onerror=e=>rej(e); }); }
+const tx=(st,mode)=>idb.transaction(st,mode).objectStore(st);
+function idbAll(){ return new Promise(r=>{ const q=tx('fiches','readonly').getAll(); q.onsuccess=()=>r(q.result||[]); q.onerror=()=>r([]); }); }
+function idbPut(o){ return new Promise(r=>{ const q=tx('fiches','readwrite').put(o); q.onsuccess=()=>r(1); q.onerror=()=>r(0); }); }
+function idbDel(id){ return new Promise(r=>{ const q=tx('fiches','readwrite').delete(id); q.onsuccess=()=>r(1); q.onerror=()=>r(0); }); }
+function metaGet(k){ return new Promise(r=>{ const q=tx('meta','readonly').get(k); q.onsuccess=()=>r(q.result?q.result.v:null); q.onerror=()=>r(null); }); }
+function metaSet(k,v){ return new Promise(r=>{ const q=tx('meta','readwrite').put({k:k,v:v}); q.onsuccess=()=>r(1); q.onerror=()=>r(0); }); }
+
+
+/* renumerote num_ex pour chaque dossier, et persiste, apres toute modification de la base */
+async function renumberAll(){
+  const by={};
+  DB.forEach(f=>{ const k=f.d.dossier||''; if(!k) return; (by[k]=by[k]||[]).push(f); });
+  const changed=[];
+  Object.keys(by).forEach(k=>{
+    by[k].sort((a,b)=>stamp(a).localeCompare(stamp(b)))
+         .forEach((f,i)=>{ if(f.d.num_ex!==i+1){ f.d.num_ex=i+1; changed.push(f); } });
+  });
+  for(const f of changed) await idbPut(f);
+  if(changed.length) DB = await idbAll();
+}
+/* ordre du fichier statistique : par dossier, puis chronologique */
+function sortedDB(){
+  return DB.slice().sort((a,b)=>{
+    const c=String(a.d.dossier||'').localeCompare(String(b.d.dossier||''),'fr',{numeric:true});
+    return c!==0 ? c : stamp(a).localeCompare(stamp(b));
+  });
+}
+
+/* =====================================================================
+   FICHIER DE DONNEES SUR LE DISQUE (File System Access API)
+   ===================================================================== */
+let DIR=null, DIRSTATE='none';   // none | ok | need | unsupported
+const FSA = typeof window.showDirectoryPicker === 'function';
+
+async function connectFile(){
+  if(!FSA){ modalHTML('<h3>Ecriture directe non disponible sur ce navigateur</h3>'+
+    '<div class="note">Ce navigateur ne gere pas l\'ecriture directe dans un dossier (API File System Access). '+
+    'Elle fonctionne sur <b>Chrome</b> et <b>Edge</b> sur ordinateur.<br><br>'+
+    'Ici, les fiches restent enregistrees dans le navigateur et vous produisez le fichier '+
+    'de donnees avec le bouton <b>Exporter</b>. C\'est le mode prevu pour la saisie sur tablette : '+
+    'vous exportez un CSV partiel, puis vous le fusionnez sur le poste principal.</div>'+
+    '<button class="tb pri" onclick="closeModal();openExport()">Aller a l\'export</button>'); return; }
+  try{
+    DIR = await window.showDirectoryPicker({mode:'readwrite', id:'ficheneuro'});
+    await metaSet('dir',DIR); DIRSTATE='ok';
+    await writeDataFiles(true);
+    toast('Dossier de donnees connecte');
+  }catch(e){ if(e && e.name!=='AbortError') toast('Connexion annulee'); }
+  updateBar();
+}
+async function restoreDir(){
+  if(!FSA){ DIRSTATE='unsupported'; return; }
+  const h=await metaGet('dir'); if(!h) return;
+  DIR=h;
+  try{ const p=await h.queryPermission({mode:'readwrite'}); DIRSTATE = p==='granted'?'ok':'need'; }
+  catch(e){ DIRSTATE='need'; }
+}
+async function regrant(){
+  if(!DIR) return connectFile();
+  try{ const p=await DIR.requestPermission({mode:'readwrite'});
+    if(p==='granted'){ DIRSTATE='ok'; await writeDataFiles(true); toast('Dossier reconnecte'); }
+  }catch(e){ toast('Acces refuse'); }
+  updateBar();
+}
+async function writeFileIn(name,txt){
+  const fh=await DIR.getFileHandle(name,{create:true});
+  const w=await fh.createWritable(); await w.write(new Blob([txt],{type:'text/plain;charset=utf-8'})); await w.close();
+}
+async function writeDataFiles(silent){
+  if(DIRSTATE!=='ok'||!DIR) return false;
+  try{
+    const recs=sortedDB();
+    await writeFileIn('donnees_neuro.csv', buildCSV(recs,SET.sep,SET.pii));
+    await writeFileIn('dictionnaire_variables.csv', buildDict(SET.sep,SET.pii));
+    await writeFileIn('sauvegarde_neuro.json', JSON.stringify({format:'fiche-neuro-v1',exported:new Date().toISOString(),fiches:recs},null,1));
+    if(!silent) toast('Fichier de donnees mis a jour');
+    return true;
+  }catch(e){ DIRSTATE='need'; updateBar(); if(!silent) toast('Ecriture impossible : '+e.message); return false; }
+}
+
+/* =====================================================================
+   ENREGISTREMENT / NAVIGATION
+   ===================================================================== */
+async function saveFiche(){
+  computeAll();
+  if(!REC.d.dossier){ toast('Le numero de dossier est obligatoire'); const i=$('#i_dossier'); if(i){i.classList.add('req');i.focus();} return; }
+  if(!REC.d.date_ex||!REC.d.heure_ex){ toast("Date et heure de l'examen obligatoires"); return; }
+  REC.updated=new Date().toISOString();
+  await idbPut(JSON.parse(JSON.stringify(REC)));
+  DB = await idbAll();
+  await renumberAll();
+  const me = DB.find(x=>x.id===REC.id); if(me) REC.d.num_ex = me.d.num_ex;
+  DIRTY=false;
+  await metaSet('draft',null);
+  const w = await writeDataFiles(true);
+  renderList(); renderForm(); updateBar();
+  toast('Fiche enregistree'+(w?' - fichier de donnees mis a jour':''));
+}
+function newFiche(){
+  if(DIRTY && !confirm('La fiche en cours contient des modifications non enregistrees. Continuer ?')) return;
+  REC=blank(); DIRTY=false; renderForm(); renderList(); updateBar();
+  window.scrollTo(0,0); setTimeout(()=>{const i=$('#i_dossier'); if(i)i.focus();},60);
+}
+function newFollowUp(){
+  if(DIRTY && !confirm('Modifications non enregistrees. Continuer ?')) return;
+  const src=JSON.parse(JSON.stringify(REC.d));
+  const keep=['dossier','nom','prenom','sexe','ddn','date_acc','heure_acc','examinateur'];
+  const nd={}; keep.forEach(k=>{ if(src[k]!=null) nd[k]=src[k]; });
+  const now=new Date(); nd.date_ex=iso(now); nd.heure_ex=hhmm(now);
+  REC=blank(); REC.d=nd; DIRTY=true; renderForm(); renderList(); updateBar();
+  window.scrollTo(0,0); toast('Nouvel examen pour le dossier '+(nd.dossier||'-'));
+}
+function loadFiche(id){
+  if(DIRTY && !confirm('Modifications non enregistrees. Continuer ?')) return;
+  const f=DB.find(x=>x.id===id); if(!f) return;
+  REC=JSON.parse(JSON.stringify(f)); DIRTY=false; renderForm(); renderList(); updateBar(); window.scrollTo(0,0);
+}
+async function delFiche(id,ev){
+  ev.stopPropagation();
+  const f=DB.find(x=>x.id===id); if(!f) return;
+  if(!confirm('Supprimer definitivement la fiche du dossier '+(f.d.dossier||'-')+' du '+frDate(f.d.date_ex)+' ?')) return;
+  await idbDel(id); DB=await idbAll(); await renumberAll(); await writeDataFiles(true);
+  if(REC.id===id){ REC=blank(); DIRTY=false; }
+  renderList(); renderForm(); updateBar(); toast('Fiche supprimee');
+}
+function renderList(){
+  const q=($('#search')?$('#search').value:'').toLowerCase().trim();
+  const recs=DB.slice().sort((a,b)=>stamp(b).localeCompare(stamp(a)))
+    .filter(f=>!q || ((f.d.dossier||'')+' '+(f.d.examinateur||'')+' '+(f.d.nom||'')+' '+(f.d.prenom||'')).toLowerCase().indexOf(q)>=0);
+  const el=$('#list'); if(!el) return;
+  el.innerHTML = recs.length? recs.map(f=>'<div class="fitem'+(REC&&f.id===REC.id?' cur':'')+'" onclick="loadFiche(\''+f.id+'\')">'+
+    '<div class="d">'+esc(f.d.dossier||'(sans numero de dossier)')+(f.d.num_ex?' <span class="badge">ex. '+f.d.num_ex+'</span>':'')+'</div>'+
+    '<div class="m">'+frDate(f.d.date_ex)+' '+(f.d.heure_ex||'')+(f.d.examinateur?' &middot; '+esc(f.d.examinateur):'')+
+    '<button class="clr" style="float:right" title="Supprimer" onclick="delFiche(\''+f.id+'\',event)">&#10006;</button></div></div>').join('')
+    : '<div style="color:#8a94a3;font-size:12px;padding:6px">Aucune fiche enregistree.</div>';
+}
+function updateBar(){
+  const s=$('#dbstate'); if(!s) return;
+  const st = DIRSTATE==='ok' ? '<span class="dot on"></span> fichier de donnees connecte'
+          : DIRSTATE==='need' ? '<span class="dot"></span> <a href="#" style="color:#f0b429" onclick="regrant();return false">autoriser a nouveau le dossier</a>'
+          : DIRSTATE==='unsupported' ? '<span class="dot"></span> export manuel (navigateur sans ecriture directe)'
+          : '<span class="dot"></span> aucun fichier de donnees';
+  s.innerHTML = '<b>'+DB.length+'</b> fiche'+(DB.length>1?'s':'')+
+    (DIRTY?' <span style="color:#ffcf66">&#9679;<span class="lbl2"> modifications non enregistrees</span></span>':
+           ' <span class="lbl2">&middot; a jour</span>')+
+    '<span class="lbl2"> &middot; '+st+'</span>';
+  const ib = $('#btninstall');
+  if(ib){
+    const show = (typeof PWA_PROMPT!=='undefined' && PWA_PROMPT) ||
+                 (typeof SW_WAITING!=='undefined' && SW_WAITING);
+    ib.style.display = show ? '' : 'none';
+    if(typeof SW_WAITING!=='undefined' && SW_WAITING){
+      ib.innerHTML = '&#8635;<span class="lbl2"> Mise a jour</span>';
+      ib.title = 'Une nouvelle version est prete';
+    }else{
+      ib.innerHTML = '&#11015;<span class="lbl2"> Installer</span>';
+      ib.title = "Installer l'application hors ligne";
+    }
+  }
+}
+
+/* =====================================================================
+   MODALES, EXPORT, IMPORT / FUSION
+   ===================================================================== */
+function modalHTML(h){ $('#modal').innerHTML=h+'<div style="margin-top:14px;text-align:right">'+
+  '<button class="tb" onclick="closeModal()">Fermer</button></div>'; $('#mask').classList.add('on'); }
+function closeModal(){ $('#mask').classList.remove('on'); }
+let toastT=null;
+function toast(m){ const t=$('#toast'); t.textContent=m; t.classList.add('on');
+  clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('on'),2600); }
+function dl(name,txt){
+  /* Dans un WebView natif, <a download> et les URL blob ne declenchent aucun
+     telechargement. On ecrit alors le fichier dans les documents de
+     l'application puis on ouvre la feuille de partage du systeme. */
+  const C = window.Capacitor && window.Capacitor.Plugins;
+  if(C && C.Filesystem){
+    (async()=>{
+      try{
+        const r = await C.Filesystem.writeFile({
+          path: name, data: txt, directory: 'DOCUMENTS', encoding: 'utf8', recursive: true });
+        if(C.Share){
+          await C.Share.share({ title: name, url: r.uri,
+            dialogTitle: 'Enregistrer ou envoyer ' + name });
+        }else{
+          toast('Enregistre dans les documents : ' + name);
+        }
+      }catch(e){ toast('Enregistrement impossible : ' + e); }
+    })();
+    return;
+  }
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([txt],{type:'text/csv;charset=utf-8'}));
+  a.download=name; document.body.appendChild(a); a.click();
+  setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1500);
+}
+const today = () => iso(new Date());
+
+async function saveSettings(){
+  const p=$('#setPoste'), sp=$('#setSep'), pi=$('#setPii');
+  if(!p||!sp||!pi) return;
+  SET.poste = p.value.trim(); SET.sep = sp.value; SET.pii = pi.checked;
+  await metaSet('settings',{poste:SET.poste,sep:SET.sep,pii:SET.pii});
+  await writeDataFiles(true);
+  toast('Reglages enregistres');
+}
+
+function openExport(){
+  const n=DB.length, C=columns(SET.pii).length;
+  modalHTML('<h3>Exporter les donnees</h3>'+
+  '<div style="display:grid;grid-template-columns:auto 1fr;gap:8px 12px;align-items:center;margin-bottom:12px">'+
+   '<label>Nom du poste de saisie</label><input id="setPoste" type="text" value="'+esc(SET.poste)+'" placeholder="ex. VSAV-3, tablette terrain, bureau" style="width:100%">'+
+   '<label>Separateur CSV</label><select id="setSep">'+
+     '<option value=";"'+(SET.sep===';'?' selected':'')+'>point-virgule ; (Excel francais)</option>'+
+     '<option value=","'+(SET.sep===','?' selected':'')+'>virgule , (R, Python, SPSS)</option>'+
+     '<option value="\t"'+(SET.sep==='\t'?' selected':'')+'>tabulation</option></select>'+
+   '<label>Identite</label><label style="font-weight:400"><input type="checkbox" id="setPii"'+(SET.pii?' checked':'')+
+     '> inclure nom, prenom et date de naissance dans le fichier de donnees</label>'+
+  '</div>'+
+  '<div class="note"><b>Donnees de sante.</b> Par defaut le fichier statistique ne contient ni nom, ni prenom, ni date de naissance : '+
+   'seuls le numero de dossier que vous saisissez, le sexe et l\'age calcule y figurent. L\'identite complete reste sur le PDF. '+
+   'Si vous cochez la case ci-dessus, le fichier devient un traitement de donnees de sante identifiantes : '+
+   'RGPD art. 9, registre des traitements, base legale et chiffrement du support relevent alors de votre responsabilite.</div>'+
+  '<button class="tb pri" onclick="saveSettings()">Enregistrer ces reglages</button>'+
+  '<hr style="margin:16px 0;border:0;border-top:1px solid #e3e7ec">'+
+  '<div style="margin-bottom:10px"><b>'+n+'</b> fiche'+(n>1?'s':'')+' &middot; <b>'+C+'</b> variables par fiche</div>'+
+  '<div style="display:flex;gap:8px;flex-wrap:wrap">'+
+   '<button class="tb gd" onclick="expCSV()">Telecharger le CSV des donnees</button>'+
+   '<button class="tb" onclick="expDict()">Telecharger le dictionnaire des variables</button>'+
+   '<button class="tb" onclick="expJSON()">Telecharger la sauvegarde JSON</button>'+
+   (FSA?'<button class="tb pri" onclick="writeDataFiles(false)">Reecrire le dossier connecte</button>':'')+
+  '</div>'+
+  '<div class="note" style="background:#eef4fb;border-color:#bcd4ee"><b>Le fichier unique qui s\'incremente.</b> '+
+   'Sur Chrome ou Edge, le bouton <b>Fichier de donnees</b> de la barre du haut vous fait choisir un dossier une seule fois. '+
+   'A chaque enregistrement de fiche, l\'outil y reecrit <code>donnees_neuro.csv</code>, <code>dictionnaire_variables.csv</code> '+
+   'et <code>sauvegarde_neuro.json</code>. Un seul fichier de donnees, toujours a jour, contenant toutes les fiches de tous les sujets.</div>');
+}
+function expCSV(){ const recs=sortedDB();
+  dl('donnees_neuro_'+today()+'.csv', buildCSV(recs,SET.sep,SET.pii)); toast('CSV telecharge'); }
+function expDict(){ dl('dictionnaire_variables_'+today()+'.csv', buildDict(SET.sep,SET.pii)); toast('Dictionnaire telecharge'); }
+function expJSON(){ dl('sauvegarde_neuro_'+today()+'.json',
+  JSON.stringify({format:'fiche-neuro-v1',exported:new Date().toISOString(),fiches:sortedDB()},null,1)); toast('Sauvegarde telechargee'); }
+
+/* ---------- import / fusion ---------- */
+const NUMKEYS = (function(){
+  const s=new Set(['age','delai_min','gcs_tot','num_ex','sens_obj','dossier_pseudo',
+                   'subj_nb','subj_nb_D','subj_nb_G','cut_nb','cut_nb_D','cut_nb_G',
+                   'asia_lt','asia_pp','asia_uems','asia_lems','asia_sacral']);
+  SPEC.forEach(sec=>sec.f.forEach(f=>{
+    if(f.t==='choice'||f.t==='calc'||f.t==='num') s.add(f.k);
+    if(f.flags) f.flags.forEach(fl=>s.add(f.k+'_'+fl.k));
+  }));
+  MODAL.filter(m=>m.mode==='derm').forEach(m=>{
+    const p='sens_'+m.k+'_';
+    ['score','score_D','score_G','nt','nb'].forEach(x=>s.add(p+x));
+    DERM.forEach(lv=>['D','G'].forEach(sd=>s.add(dermKey(m.k,lv.k,sd))));
+  });
+  const pp='sens_pal_';
+  ['nb','nb_D','nb_G'].forEach(x=>s.add(pp+x));
+  SSTATE.forEach(st=>s.add(pp+'nb_'+st.k));
+  ['tetecou','MS','tronc','MI'].forEach(r=>['D','G'].forEach(sd=>s.add(pp+r+'_'+sd)));
+  LANDMARKS.forEach(l=>{ if(l.uni) s.add(landKey(l,null)); else ['D','G'].forEach(sd=>s.add(landKey(l,sd))); });
+  SUBJT.forEach(t=>s.add('subj_'+t.k+'_nb'));
+  CUTT.forEach(t=>s.add('cut_'+t.k+'_nb'));
+  ['tetecou','MS','tronc','MI'].forEach(r=>['D','G'].forEach(sd=>{ s.add('subj_'+r+'_'+sd); s.add('cut_'+r+'_'+sd); }));
+  VIEWS.forEach(v=>SLOTS.forEach(sl=>['D','G'].forEach(sd=>{ s.add(subjKey(v.v,sl.s,sd)); s.add(cutKey(v.v,sl.s,sd)); })));
+  return s;
+})();
+/* Cles pour lesquelles 0 signifie « pas de cotation » et non une valeur clinique.
+   Les metameres en sont exclus : pour eux, 0 veut dire sensibilite absente. */
+const ZERODROP = (function(){
+  const s=new Set();
+  LANDMARKS.forEach(l=>{ if(l.uni) s.add(landKey(l,null)); else ['D','G'].forEach(sd=>s.add(landKey(l,sd))); });
+  const pp='sens_pal_';
+  ['nb','nb_D','nb_G'].forEach(x=>s.add(pp+x));
+  SSTATE.forEach(st=>s.add(pp+'nb_'+st.k));
+  ['tetecou','MS','tronc','MI'].forEach(r=>['D','G'].forEach(sd=>{
+    s.add(pp+r+'_'+sd); s.add('subj_'+r+'_'+sd); s.add('cut_'+r+'_'+sd); }));
+  ['subj','cut'].forEach(pfx=>['nb','nb_D','nb_G'].forEach(x=>s.add(pfx+'_'+x)));
+  SUBJT.forEach(t=>s.add('subj_'+t.k+'_nb'));
+  CUTT.forEach(t=>s.add('cut_'+t.k+'_nb'));
+  VIEWS.forEach(v=>SLOTS.forEach(sl=>['D','G'].forEach(sd=>{ s.add(subjKey(v.v,sl.s,sd)); s.add(cutKey(v.v,sl.s,sd)); })));
+  SPEC.forEach(sec=>sec.f.forEach(f=>{ if(f.flags) f.flags.forEach(fl=>s.add(f.k+'_'+fl.k)); }));
+  return s;
+})();
+
+/* compatibilite avec les exports des versions precedentes */
+const MYO_MIGR = {f_biceps:'f_c5', f_quadri:'f_l3', f_releveur:'f_l4'};
+function migrateKey(h){
+  // v1 : zonage anatomique effleurement / douleur / vibratoire -> plus d'equivalent metamerique
+  if(/^sens_(eff|dou|vib)_/.test(h)) return null;
+  // v2-v3 : zonage anatomique epicritique / thermoalgique -> plus d'equivalent metamerique
+  if(/^sens_(epi|tha)_/.test(h)) return null;
+  // v3 : myotomes renommes selon la nomenclature ASIA
+  const m = /^(f_biceps|f_quadri|f_releveur)_(D|G)$/.exec(h);
+  if(m) return MYO_MIGR[m[1]]+'_'+m[2];
+  return h;
+}
+const MULTIKEYS = (function(){ const s={}; SPEC.forEach(sec=>sec.f.forEach(f=>{ if(f.t==='multi') s[f.k]=f.o.map(o=>o.v); })); return s; })();
+
+function recFromRow(head0,row){
+  const rec={id:'',created:'',updated:'',d:{}};
+  const head = head0.map(migrateKey);
+  head.forEach((h,i)=>{
+    if(h==null) return;
+    const raw=(row[i]==null?'':String(row[i]).trim());
+    if(h==='fiche_id'){ rec.id=raw; return; }
+    if(h==='created'||h==='updated'){ rec[h]=raw; return; }
+    if(h==='poste') return;
+    if(MULTIKEYS[h]){ if(raw) rec.d[h]=raw.split('|').filter(Boolean); return; }
+    if(Object.keys(MULTIKEYS).some(k=>h.indexOf(k+'_')===0 && MULTIKEYS[k].indexOf(h.slice(k.length+1))>=0)) return;
+    if(raw==='') return;
+    if(NUMKEYS.has(h)){ const n=Number(raw.replace(',','.'));
+      // 0 vaut « absent de cotation » pour les reliefs, les schemas et les qualites de reflexe : on ne le stocke pas.
+      // En revanche 0 est une valeur CLINIQUE pour un metamere (sensibilite absente) : on la conserve.
+      if(!isNaN(n)){ if(n!==0 || !ZERODROP.has(h)) rec.d[h]=n; } }
+    else rec.d[h]=raw;
+  });
+  if(!rec.id) rec.id='F'+Date.now().toString(36).toUpperCase()+Math.random().toString(36).slice(2,6).toUpperCase();
+  if(!rec.created) rec.created=new Date().toISOString();
+  if(!rec.updated) rec.updated=rec.created;
+  return rec;
+}
+
+function openImport(){
+  modalHTML('<h3>Importer et fusionner</h3>'+
+  '<div class="note">Deposez ici un fichier produit par cet outil sur un autre poste : '+
+  'sauvegarde <b>.json</b> (recommandee, sans perte) ou <b>.csv</b> des donnees. '+
+  'La fusion se fait sur <code>fiche_id</code> : une fiche deja presente est remplacee seulement si la version importee est plus recente. '+
+  'Rien n\'est jamais supprime.</div>'+
+  '<input type="file" id="impFile" accept=".json,.csv,.txt" multiple onchange="doImport(this.files)">'+
+  '<div id="impRes" style="margin-top:12px"></div>');
+}
+async function doImport(files){
+  let add=0,upd=0,same=0,err=0,seen=0;
+  for(const file of files){
+    let txt; try{ txt=await file.text(); }catch(e){ err++; continue; }
+    let recs=[];
+    if(/\.json$/i.test(file.name)){
+      try{ const o=JSON.parse(txt); recs=Array.isArray(o)?o:(o.fiches||[]); }catch(e){ err++; continue; }
+    } else {
+      const first=(txt.replace(/^﻿/,'').split(/\r?\n/)[0]||'');
+      const sep = first.split(';').length>first.split(',').length ? ';' : (first.indexOf('\t')>=0?'\t':',');
+      const rows=parseCSV(txt,sep); if(rows.length<2){ err++; continue; }
+      const head=rows[0].map(h=>h.trim());
+      recs=rows.slice(1).filter(r=>r.join('').trim()!=='').map(r=>recFromRow(head,r));
+    }
+    for(const r of recs){
+      if(!r||!r.d){ err++; continue; }
+      seen++;
+      const cur=DB.find(x=>x.id===r.id);
+      if(!cur){ await idbPut(r); add++; }
+      else if((r.updated||'')>(cur.updated||'')){ await idbPut(r); upd++; }
+      else same++;
+    }
+  }
+  DB=await idbAll(); await renumberAll(); await writeDataFiles(true); renderList(); renderForm(); updateBar();
+  const resEl=$('#impRes'); if(!resEl) return;
+  resEl.innerHTML='<div class="note" style="background:#e6f4ec;border-color:#9ccdb3">'+
+    '<b>Fusion terminee.</b><br>'+seen+' fiche(s) lue(s)<br>'+add+' ajoutee(s)<br>'+upd+' mise(s) a jour (version importee plus recente)<br>'+
+    same+' deja a jour, ignoree(s)<br>'+err+' fichier(s) ou ligne(s) illisible(s)<br><br>Base locale : <b>'+DB.length+'</b> fiche(s).</div>';
+}
+
+
+/* =====================================================================
+   RÉGLAGES DOUCHETTE ET PSEUDONYMISATION
+   ===================================================================== */
+function randSalt(){
+  const a = new Uint8Array(24); crypto.getRandomValues(a);
+  return Array.from(a).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+function openScan(){
+  const crypt = !!(window.crypto && crypto.subtle && crypto.subtle.digest);
+  modalHTML('<h3>Douchette code-barres et identifiants</h3>'+
+
+  '<h4 style="margin:14px 0 6px">1. Lecture de la douchette</h4>'+
+  '<label class="cprow"><input type="checkbox" id="setWedge"'+(SET.wedge?' checked':'')+'> '+
+  '<b>Capturer les scans quel que soit le champ actif</b><br>'+
+  '<span style="color:#5a6472">Une douchette USB ou Bluetooth tape le code en quelques dizaines de millisecondes '+
+  'puis envoie Entrée. L\'outil reconnaît cette rafale, la retire du champ où elle est tombée, '+
+  'et la place dans le n° de dossier. Une frappe humaine normale n\'est jamais confondue avec un scan.</span></label>'+
+
+  '<div style="margin-top:10px"><label><b>Règle d\'extraction</b> (expression régulière, facultative)</label><br>'+
+  '<input id="setScanRe" type="text" style="width:100%" placeholder="ex. (\\d{8,12})  pour ne garder que le bloc de chiffres" '+
+  'value="'+esc(SET.scanRe)+'" oninput="testScanRe()"><br>'+
+  '<span style="font-size:11.5px;color:#5a6472">Utile si le bracelet encode plus que l\'identifiant '+
+  '(GS1-128, préfixe, suffixe). Le premier groupe capturant est retenu, sinon la correspondance entière.</span></div>'+
+  '<div style="margin-top:8px"><label>Tester sur un code</label><br>'+
+  '<input id="setScanTest" type="text" style="width:100%" placeholder="collez ou scannez un code d\'essai" oninput="testScanRe()">'+
+  '<div id="scanPrev" style="margin-top:5px;font-size:12px"></div></div>'+
+
+  '<h4 style="margin:18px 0 6px">2. Pseudonymisation de l\'identifiant</h4>'+
+  (crypt ? '' : '<div class="note" style="background:#fbeaea;border-color:#e0a5a5">Ce navigateur n\'expose pas '+
+    '<code>crypto.subtle</code>. La pseudonymisation ne peut pas être activée ici.</div>')+
+  '<label class="cprow"><input type="checkbox" id="setHash"'+(SET.hash?' checked':'')+(crypt?'':' disabled')+'> '+
+  '<b>Remplacer l\'identifiant scanné par une empreinte salée</b><br>'+
+  '<span style="color:#5a6472">Le numéro lu est passé dans SHA-256 avec un sel secret, puis tronqué. '+
+  'Seul le pseudonyme (<code>P-XXXXXXXXXXXX</code>) est enregistré : jamais le numéro d\'origine, '+
+  'ni dans la fiche, ni dans le PDF, ni dans le CSV. Le même patient rescanné redonne le même pseudonyme, '+
+  'donc le lien entre examens répétés est conservé.</span></label>'+
+
+  '<div style="margin-top:10px"><label><b>Sel secret</b></label><br>'+
+  '<input id="setSalt" type="text" style="width:100%;font-family:monospace;font-size:12px" value="'+esc(SET.salt)+'"><br>'+
+  '<div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">'+
+   '<button class="tb" onclick="genSalt()">Générer un sel</button>'+
+   '<button class="tb" onclick="copySalt()">Copier</button>'+
+   '<button class="tb" onclick="dlSalt()">Télécharger le sel</button></div></div>'+
+
+  '<div class="note" style="background:#fbeaea;border-color:#e0a5a5;margin-top:10px">'+
+  '<b>Le sel est la pièce critique.</b><br>'+
+  'Sans sel, une empreinte de numéro à dix chiffres se retrouve par force brute en quelques secondes : '+
+  'la pseudonymisation ne vaudrait rien. Avec un sel secret, elle tient.<br><br>'+
+  '<b>Conservez-le ailleurs que dans le dossier de données</b> (gestionnaire de mots de passe, coffre du service). '+
+  'Il n\'est écrit ni dans <code>donnees_neuro.csv</code>, ni dans <code>sauvegarde_neuro.json</code>.<br><br>'+
+  '<b>Saisissez le même sel sur chaque poste</b>, sinon un même patient recevra deux pseudonymes différents '+
+  'et la fusion ne reliera plus ses examens.<br><br>'+
+  '<b>Sel perdu, lien perdu.</b> Les fiches déjà enregistrées gardent leur pseudonyme, mais un nouveau scan '+
+  'du même patient produira un pseudonyme différent.</div>'+
+
+  '<div class="note">La colonne <code>dossier_pseudo</code> du fichier de données indique, fiche par fiche, '+
+  'si l\'identifiant est une empreinte (1) ou une valeur saisie telle quelle (0).</div>'+
+
+  '<button class="tb gd" onclick="saveScanSettings()">Enregistrer ces réglages</button>');
+  setTimeout(testScanRe, 40);
+}
+function testScanRe(){
+  const re=$('#setScanRe'), t=$('#setScanTest'), out=$('#scanPrev');
+  if(!re||!t||!out) return;
+  const v=t.value.trim();
+  if(!v){ out.innerHTML='<span style="color:#8a94a3">Saisissez un code pour voir le résultat.</span>'; return; }
+  if(!re.value){ out.innerHTML='Résultat : <b>'+esc(v)+'</b> <span style="color:#5a6472">(aucune règle, code pris tel quel)</span>'; return; }
+  try{
+    const m=new RegExp(re.value).exec(v);
+    out.innerHTML = m ? 'Résultat : <b style="color:#1f7a4d">'+esc(m[1]!=null?m[1]:m[0])+'</b>'
+                      : '<span style="color:#a32020">La règle ne correspond pas à ce code.</span>';
+  }catch(e){ out.innerHTML='<span style="color:#a32020">Expression régulière invalide : '+esc(e.message)+'</span>'; }
+}
+function genSalt(){ const i=$('#setSalt'); if(i){ i.value=randSalt(); toast('Sel généré, pensez à le sauvegarder'); } }
+function copySalt(){ const i=$('#setSalt'); if(!i||!i.value) return;
+  navigator.clipboard.writeText(i.value).then(()=>toast('Sel copié'),()=>toast('Copie impossible')); }
+function dlSalt(){ const i=$('#setSalt'); if(!i||!i.value){ toast('Aucun sel à enregistrer'); return; }
+  dl('sel_fiche_neuro_'+today()+'.txt',
+     "Sel secret de pseudonymisation - fiche d'examen neurologique\n"+
+     "Genere le "+new Date().toISOString()+"\n\n"+i.value+"\n\n"+
+     "A conserver hors du dossier de donnees. A saisir a l'identique sur chaque poste.\n");
+  toast('Sel téléchargé'); }
+async function saveScanSettings(){
+  const w=$('#setWedge'), r=$('#setScanRe'), h=$('#setHash'), sa=$('#setSalt');
+  if(!w||!r||!h||!sa) return;
+  if(r.value){ try{ new RegExp(r.value); }catch(e){ toast("Expression régulière invalide"); return; } }
+  if(h.checked && !sa.value.trim()){ toast('Définissez un sel avant d\'activer la pseudonymisation'); return; }
+  SET.wedge=w.checked; SET.scanRe=r.value.trim(); SET.hash=h.checked; SET.salt=sa.value.trim();
+  await metaSet('settings',{poste:SET.poste,sep:SET.sep,pii:SET.pii,wedge:SET.wedge,scanRe:SET.scanRe,hash:SET.hash,hashLen:SET.hashLen});
+  await metaSet('salt', SET.salt);
+  closeModal(); renderForm(); toast('Réglages enregistrés');
+}
+
+/* ---------- dictionnaire des variables ---------- */
+function openDict(){
+  const C=columns(SET.pii);
+  modalHTML('<h3>Dictionnaire des variables ('+C.length+' colonnes)</h3>'+
+  '<div class="note">Ce tableau est exporte tel quel dans <code>dictionnaire_variables.csv</code>. '+
+  'Une cellule vide dans le fichier de donnees signifie <b>non renseigne</b> et doit etre lue comme valeur manquante (NA) dans votre logiciel de statistiques.</div>'+
+  '<div style="max-height:52vh;overflow:auto"><table><thead><tr><th>Variable</th><th>Libelle</th><th>Codage</th></tr></thead><tbody>'+
+  C.map(c=>'<tr><td><code>'+esc(c.k)+'</code></td><td>'+esc(c.l)+'</td><td>'+esc(c.codes)+'</td></tr>').join('')+
+  '</tbody></table></div>');
+}
+
+/* ---------- menu compact (téléphone) ---------- */
+function openMenu(){
+  const it = (ic,l,fn) => '<button class="tb" style="width:100%;text-align:left;margin-bottom:6px;padding:12px" '+
+    'onclick="closeModal();'+fn+'">'+ic+' &nbsp;'+l+'</button>';
+  modalHTML('<h3>Menu</h3>'+
+    it('&#128100;','Fiches enregistrées','openFiches()')+
+    it('&#43;','Ré-examen du sujet','newFollowUp()')+
+    it('&#128193;','Fichier de données','connectFile()')+
+    it('&#11015;','Exporter','openExport()')+
+    it('&#11014;','Importer / Fusionner','openImport()')+
+    it('&#9906;','Douchette et identifiants','openScan()')+
+    it('&#8505;','Dictionnaire des variables','openDict()')+
+    it('&#128241;','Installation hors ligne','openInstall()')+
+    it('?','Aide','openHelp()'));
+}
+function openFiches(){
+  const recs = sortedDB().slice().reverse();
+  modalHTML('<h3>Fiches enregistrées ('+DB.length+')</h3>'+
+    (recs.length? recs.map(f=>'<button class="tb" style="width:100%;text-align:left;margin-bottom:6px;padding:11px" '+
+      'onclick="closeModal();loadFiche(\''+f.id+'\')"><b>'+esc(f.d.dossier||'(sans numéro)')+'</b>'+
+      (f.d.num_ex?' — examen '+f.d.num_ex:'')+'<br><span style="color:#9fb0c8;font-size:11.5px">'+
+      frDate(f.d.date_ex)+' '+(f.d.heure_ex||'')+(f.d.examinateur?' · '+esc(f.d.examinateur):'')+'</span></button>').join('')
+      : '<div class="note">Aucune fiche enregistrée.</div>'));
+}
+
+/* ---------- aide ---------- */
+function openHelp(){
+  modalHTML('<h3>Mode d\'emploi</h3>'+
+  '<p><b>1. Mettre en place le fichier de donnees (une seule fois, sur le poste principal).</b><br>'+
+  'Cliquez <b>Fichier de donnees</b> et choisissez un dossier. Sur Chrome ou Edge, l\'outil y ecrit et y reecrit '+
+  '<code>donnees_neuro.csv</code> a chaque enregistrement. Ce CSV unique contient toutes les fiches de tous les sujets, '+
+  'une ligne par fiche. Il s\'incremente sans jamais ecraser les fiches precedentes.</p>'+
+  '<p><b>2. Remplir une fiche.</b><br>'+
+  'Saisissez le <b>numero de dossier</b> : c\'est lui qui relie plusieurs examens d\'un meme sujet. '+
+  'Si ce numero est deja connu, l\'identite et les donnees de l\'accident se remplissent seules, et les valeurs '+
+  'de l\'examen precedent apparaissent en grise : cliquez dessus pour les reprendre, ou utilisez le bouton '+
+  '<b>Reprendre tout l\'examen precedent</b>. '+
+  'Cliquez <b>Tout renseigner comme NORMAL</b>, puis ne modifiez que les items anormaux.</p>'+
+  '<p><b>2 bis. Les schemas corporels.</b><br>'+
+  'Choisissez d\'abord la cotation a appliquer (hypoesthesie, hyperesthesie, anesthesie), puis cliquez les zones. '+
+  'Chaque cotation a son propre motif. Re-cliquer une zone avec la meme cotation l\'efface ; la gomme efface aussi. '+
+  'La <b>pallesthesie</b> se cote sur 12 reliefs osseux au lieu du zonage anatomique. '+
+  'Le schema des <b>signes subjectifs</b> fonctionne de la meme facon, avec un motif par ressenti.</p>'+
+  '<p><b>2 ter. Douchette code-barres.</b><br>'+
+  'Une douchette USB ou Bluetooth se declare comme un clavier : branchez-la, scannez, le code part '+
+  'dans le n\' de dossier meme si le curseur etait ailleurs. L\'outil retire la chaine du champ ou elle '+
+  'est tombee. Une frappe humaine n\'est jamais confondue avec un scan. '+
+  'Reglages et pseudonymisation : bouton <b>Douchette</b> de la barre du haut.</p>'+
+  '<p><b>3. Produire le PDF.</b><br>'+
+  'Cliquez <b>PDF / Imprimer</b>, puis choisissez <i>Enregistrer au format PDF</i> (ou <i>Microsoft Print to PDF</i>) '+
+  'comme imprimante. Deux pages A4 : la fiche complete, puis les schemas sensitifs et la synthese redigee.</p>'+
+  '<p><b>4. Re-examiner un sujet.</b><br>'+
+  'Ouvrez une fiche du sujet dans la liste de gauche, puis cliquez <b>Re-examen du sujet</b>. '+
+  'Identite, accident et examinateur sont repris, l\'examen repart vide, et le <code>num_ex</code> s\'incremente automatiquement.</p>'+
+  '<p><b>5. Saisie sur tablette, puis fusion.</b><br>'+
+  'Copiez le fichier HTML sur la tablette et ouvrez-le : il fonctionne hors ligne. En fin de mission, '+
+  '<b>Exporter</b> puis <i>sauvegarde JSON</i>. Sur le poste principal, <b>Importer / Fusionner</b> ce fichier. '+
+  'La fusion se fait sur l\'identifiant de fiche, sans doublon et sans perte.</p>'+
+  '<p><b>6. Analyser.</b><br>'+
+  'Ouvrez <code>donnees_neuro.csv</code> dans Excel, R, Python, SPSS ou Jamovi. '+
+  '<code>dictionnaire_variables.csv</code> donne le codage de chaque colonne. '+
+  'Cellule vide = valeur manquante (NA).</p>'+
+  '<div class="note"><b>Sauvegardez.</b> Les fiches vivent dans la base locale du navigateur en plus du dossier connecte. '+
+  'Vider les donnees de navigation efface cette base. Le dossier connecte et les sauvegardes JSON sont votre filet de securite : '+
+  'copiez-les regulierement ailleurs.</div>');
+}
+
+
+/* =====================================================================
+   PWA : manifeste, service worker, installation
+   Le fichier HTML unique reste utilisable tel quel en double-clic
+   (protocole file://). Les liens vers le manifeste et le service worker
+   ne sont poses que si la page est servie en http(s), sinon le navigateur
+   leverait une erreur sur des ressources absentes.
+   ===================================================================== */
+let PWA_PROMPT = null;      // evenement beforeinstallprompt mis en attente
+let SW_REG     = null;      // enregistrement du service worker
+let SW_WAITING = null;      // version en attente d'activation
+
+function pwaNative(){ return !!(window.Capacitor || window.cordova); }
+function pwaWeb(){
+  if(pwaNative()) return false;   // l'application native embarque deja tout le code
+  return location.protocol === 'http:' || location.protocol === 'https:';
+}
+function pwaInstalled(){
+  return window.matchMedia('(display-mode: standalone)').matches ||
+         window.matchMedia('(display-mode: fullscreen)').matches ||
+         window.navigator.standalone === true;
+}
+function pwaIOS(){
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+         (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+}
+
+function initPWA(){
+  if(!pwaWeb()) return;
+  const head = document.head;
+  const lk = (rel,href,extra) => {
+    const l = document.createElement('link');
+    l.rel = rel; l.href = href;
+    if(extra) Object.keys(extra).forEach(k=>l.setAttribute(k,extra[k]));
+    head.appendChild(l);
+  };
+  lk('manifest','manifest.webmanifest');
+  lk('apple-touch-icon','icons/apple-touch-icon.png',{sizes:'180x180'});
+
+  window.addEventListener('beforeinstallprompt', e=>{
+    e.preventDefault(); PWA_PROMPT = e; updateBar();
+  });
+  window.addEventListener('appinstalled', ()=>{
+    PWA_PROMPT = null; updateBar(); toast('Application installée');
+  });
+
+  if(!('serviceWorker' in navigator)) return;
+  navigator.serviceWorker.register('sw.js').then(reg=>{
+    SW_REG = reg;
+    if(reg.waiting){ SW_WAITING = reg.waiting; updateBar(); }
+    reg.addEventListener('updatefound', ()=>{
+      const nw = reg.installing; if(!nw) return;
+      nw.addEventListener('statechange', ()=>{
+        if(nw.state === 'installed' && navigator.serviceWorker.controller){
+          SW_WAITING = nw; updateBar();
+          toast('Mise à jour disponible — menu « Installation »');
+        }
+      });
+    });
+  }).catch(()=>{ /* hors ligne ou service worker refuse : sans effet */ });
+
+  let reloaded = false;
+  navigator.serviceWorker.addEventListener('controllerchange', ()=>{
+    if(reloaded) return; reloaded = true; location.reload();
+  });
+}
+
+async function pwaInstall(){
+  if(!PWA_PROMPT){ openInstall(); return; }
+  PWA_PROMPT.prompt();
+  try{ await PWA_PROMPT.userChoice; }catch(e){}
+  PWA_PROMPT = null; updateBar();
+}
+function pwaUpdate(){
+  if(!SW_WAITING){ toast('Aucune mise à jour en attente'); return; }
+  SW_WAITING.postMessage({type:'SKIP_WAITING'});
+}
+async function pwaClearCache(){
+  if(!('caches' in window)) { toast('Cache non disponible'); return; }
+  const ks = await caches.keys();
+  await Promise.all(ks.map(k=>caches.delete(k)));
+  if(SW_REG) await SW_REG.unregister();
+  toast('Cache vidé — rechargement');
+  setTimeout(()=>location.reload(true), 700);
+}
+
+function openInstall(){
+  const mode = pwaInstalled() ? 'installée'
+             : (!pwaWeb() ? 'fichier local'
+             : (PWA_PROMPT ? 'installable' : 'navigateur'));
+  let h = '<h3>Installation hors ligne</h3>';
+
+  if(pwaNative()){
+    h += '<div class="note ok"><b>Application native installée.</b> Tout le code est embarqué dans '+
+         'l\'application : elle fonctionne hors ligne sans service worker ni cache navigateur. '+
+         'Les mises à jour passent par le magasin d\'applications ou par une nouvelle installation.</div>';
+    modalHTML(h); return;
+  }
+  if(mode === 'fichier local'){
+    h += '<div class="note"><b>Vous utilisez le fichier HTML seul.</b><br>'+
+         'Il fonctionne déjà entièrement hors ligne : tout le code, la mise en page et la base locale '+
+         'sont contenus dans ce fichier unique. Aucune installation nécessaire.<br><br>'+
+         'Pour obtenir une <b>icône sur l\'écran d\'accueil</b> et une ouverture en plein écran, '+
+         'publiez le dossier <code>web/</code> (voir le README) sur GitHub Pages ou sur un serveur interne, '+
+         'puis ouvrez cette adresse depuis le téléphone ou la tablette.</div>';
+  } else if(mode === 'installée'){
+    h += '<div class="note ok"><b>Application installée.</b> Elle démarre hors ligne et se met à jour '+
+         'automatiquement dès qu\'une connexion est disponible.</div>';
+  } else if(mode === 'installable'){
+    h += '<p>Ce navigateur peut installer la fiche comme une application : icône sur l\'écran d\'accueil, '+
+         'ouverture plein écran, fonctionnement hors ligne complet.</p>'+
+         '<p><button class="tb pri" style="padding:11px 16px" onclick="closeModal();pwaInstall()">'+
+         '&#11015; Installer l\'application</button></p>';
+  } else if(pwaIOS()){
+    h += '<p><b>iPhone / iPad (Safari)</b></p><ol>'+
+         '<li>Touchez le bouton <b>Partager</b> (carré avec flèche vers le haut).</li>'+
+         '<li>Choisissez <b>Sur l\'écran d\'accueil</b>.</li>'+
+         '<li>Validez. L\'icône apparaît avec les autres applications.</li></ol>'+
+         '<div class="note">Safari est le seul navigateur iOS qui installe une application web. '+
+         'Chrome et Firefox sur iPhone ne proposent pas cette option.</div>';
+  } else {
+    h += '<p><b>Android (Chrome, Edge, Samsung Internet)</b><br>'+
+         'Menu &#8942; puis <b>Installer l\'application</b> ou <b>Ajouter à l\'écran d\'accueil</b>.</p>'+
+         '<p><b>Ordinateur (Chrome, Edge)</b><br>'+
+         'Icône d\'installation à droite de la barre d\'adresse, ou menu &#8942; &rsaquo; <b>Installer</b>.</p>'+
+         '<div class="note">Si rien n\'apparaît, la page n\'est pas servie en HTTPS ou l\'application est déjà installée.</div>';
+  }
+
+  if(pwaWeb()){
+    h += '<h4 style="margin:14px 0 6px">Mises à jour</h4>'+
+         '<p>'+ (SW_WAITING
+           ? '<b>Une nouvelle version est prête.</b> '+
+             '<button class="tb pri" onclick="pwaUpdate()">Appliquer maintenant</button>'
+           : 'Aucune mise à jour en attente. L\'application vérifie à chaque ouverture connectée.') + '</p>'+
+         '<p><button class="tb" onclick="pwaClearCache()">Vider le cache et recharger</button> '+
+         '<small style="color:var(--ink2)">Les fiches enregistrées ne sont pas touchées : '+
+         'elles vivent dans la base locale, pas dans le cache.</small></p>';
+  }
+  modalHTML(h);
+}
+
+/* =====================================================================
+   INITIALISATION
+   ===================================================================== */
+async function saveDraft(){ if(DIRTY && REC) await metaSet('draft',JSON.parse(JSON.stringify(REC))); }
+
+(async function init(){
+  $('#patholder').innerHTML = patternDefs();
+  try{ await openDB(); }catch(e){ alert("Impossible d'ouvrir la base locale du navigateur : "+e); }
+  DB = await idbAll();
+  const s = await metaGet('settings');
+  if(s){ SET.poste=s.poste||''; SET.sep=s.sep||';'; SET.pii=!!s.pii;
+         SET.wedge = s.wedge!==false; SET.scanRe=s.scanRe||''; SET.hash=!!s.hash; SET.hashLen=s.hashLen||12; }
+  SET.salt = (await metaGet('salt')) || '';
+  await restoreDir();
+  const wantNew = /[?&]action=new\b/.test(location.search);
+  const draft = await metaGet('draft');
+  if(!wantNew && draft && draft.d && Object.keys(draft.d).length>2){ REC=draft; DIRTY=true; }
+  else REC=blank();
+  renderForm(); renderList(); updateBar();
+  initPWA();
+  setInterval(saveDraft,4000);
+})();
+
+window.addEventListener('beforeprint',()=>{ if(REC){ computeAll(); $('#print-root').innerHTML=buildPrint(); } });
+window.addEventListener('beforeunload',e=>{ if(DIRTY){ e.preventDefault(); e.returnValue=''; } });
+document.addEventListener('keydown',e=>{
+  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='s'){ e.preventDefault(); saveFiche(); }
+  if(e.key==='Escape') closeModal();
+});
+</script>
+</body>
+</html>
