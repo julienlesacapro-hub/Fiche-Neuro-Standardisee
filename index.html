@@ -294,6 +294,60 @@ svg.sensmap .zhit:hover{fill:rgba(27,79,143,.16);stroke:var(--sel);stroke-width:
 .bb.ds0.on{background:#8c2020;color:#fff}
 .bb.ds9.on{background:#5a6472;color:#fff}
 
+/* ---------- pièces jointes photographiques ---------- */
+.pjgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.pjcard{margin:0;border:1px solid var(--bd);border-radius:7px;overflow:hidden;background:#fff;
+  display:flex;flex-direction:column}
+.pjcard.notitle{border-color:#e3bd9a;box-shadow:inset 0 0 0 1px #fbeee4}
+.pjcard img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;background:#eef1f5}
+.pjcard figcaption{padding:7px 8px;display:flex;flex-direction:column;gap:5px}
+.pjcard select,.pjcard input[type=text]{width:100%;padding:5px 6px;font-size:12.5px}
+.pjmeta{display:flex;align-items:center;gap:6px;font-size:10.5px;color:var(--ink2);flex-wrap:wrap}
+.pjbtns{margin-left:auto;display:flex;gap:3px}
+.pjbtns .mini{padding:3px 6px;font-size:11px}
+.pjbtns .mini[disabled]{opacity:.35;cursor:default}
+
+/* ---------- saisie des dates et des heures ---------- */
+.dtwrap{display:inline-flex;align-items:stretch;position:relative}
+input.dtxt{width:118px;font-variant-numeric:tabular-nums;letter-spacing:.03em;
+  border-top-right-radius:0;border-bottom-right-radius:0;border-right:0}
+input.dtxt.tm{width:82px}
+input.dtxt.bad{border-color:var(--bad);background:var(--bad-l);color:var(--bad)}
+.dpk{flex:0 0 auto;width:32px;padding:0;border:1px solid var(--bd);background:#eef1f5;
+  border-top-left-radius:0;border-bottom-left-radius:0;border-top-right-radius:6px;
+  border-bottom-right-radius:6px;cursor:pointer;font-size:14px;line-height:1;color:var(--ink2)}
+.dpk:hover{background:var(--acc-l);border-color:var(--acc);color:var(--acc)}
+input.dhid{position:absolute;right:0;bottom:0;width:1px;height:1px;opacity:0;
+  pointer-events:none;border:0;padding:0;margin:0}
+
+/* ---------- pièces jointes photographiques ---------- */
+.pjgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.pjcard{margin:0;border:1px solid var(--bd);border-radius:7px;overflow:hidden;background:#fff;
+  display:flex;flex-direction:column}
+.pjcard.notitle{border-color:#e3bd9a;box-shadow:inset 0 0 0 1px #fbeee4}
+.pjcard img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;background:#eef1f5}
+.pjcard figcaption{padding:7px 8px;display:flex;flex-direction:column;gap:5px}
+.pjcard select,.pjcard input[type=text]{width:100%;padding:5px 6px;font-size:12.5px}
+.pjmeta{display:flex;align-items:center;gap:6px;font-size:10.5px;color:var(--ink2);flex-wrap:wrap}
+.pjbtns{margin-left:auto;display:flex;gap:3px}
+.pjbtns .mini{padding:3px 6px;font-size:11px}
+.pjbtns .mini[disabled]{opacity:.35;cursor:default}
+
+/* ---------- saisie des dates et des heures ---------- */
+.dtwrap{display:inline-flex;align-items:center;gap:0;position:relative}
+input.dtxt{width:130px;font-variant-numeric:tabular-nums;letter-spacing:.02em;
+  border-top-right-radius:0;border-bottom-right-radius:0;border-right:0}
+input.dtxt.tm{width:86px}
+input.dtxt.bad{border-color:var(--bad);background:var(--bad-l)}
+input.dpick{width:34px;padding:0;border:1px solid var(--bd);border-left:1px solid var(--bd);
+  border-top-left-radius:0;border-bottom-left-radius:0;background:#f2f5f9;cursor:pointer;
+  color:transparent;font-size:0}
+input.dpick::-webkit-calendar-picker-indicator{opacity:.75;cursor:pointer;
+  width:100%;height:100%;padding:0;margin:0;position:absolute;right:0;top:0}
+input.dpick:hover{background:var(--acc-l);border-color:var(--acc)}
+input.dpick::-webkit-datetime-edit,input.dpick::-webkit-inner-spin-field,
+input.dpick::-webkit-clear-button{display:none}
+
 /* ---------- aide à l'examen ---------- */
 .hb{display:inline-flex;align-items:center;justify-content:center;width:19px;height:19px;
   margin-left:6px;border:1px solid var(--acc);background:var(--acc-l);color:var(--acc);
@@ -445,6 +499,14 @@ svg.sensmap .zhit:hover{fill:rgba(27,79,143,.16);stroke:var(--sel);stroke-width:
   .pfoot{display:flex;justify-content:space-between;font-size:9.4pt;font-weight:700;
     border-top:1px solid #000;padding-top:1mm;margin-top:1mm}
   .psyn{border:1px solid #000;padding:1mm 1.4mm;font-size:8.2pt;line-height:1.35;white-space:pre-wrap}
+  .pjp{display:grid;grid-template-columns:1fr 1fr;gap:3mm;align-items:start}
+  .pjp figure{margin:0;border:1px solid #000;break-inside:avoid;page-break-inside:avoid}
+  .pjp figcaption{font-size:8.4pt;font-weight:700;padding:.7mm 1.4mm;border-bottom:1px solid #000;
+    background:#e9e9e9;letter-spacing:.03em}
+  .pjp img{display:block;width:100%;max-height:78mm;object-fit:contain;background:#fff}
+  .pjp .pjn{font-size:6.6pt;font-weight:400;font-style:italic;padding:.5mm 1.4mm;border-top:1px solid #000}
+  .pjp.solo{grid-template-columns:1fr}
+  .pjp.solo img{max-height:150mm}
 }
 @media screen{ .pg{display:none} }
 </style>
@@ -522,6 +584,12 @@ const MRC_TXT = 'Échelle MRC (Medical Research Council) — 0 : aucune contract
  '2 : mouvement possible pesanteur éliminée · 3 : mouvement contre pesanteur · 4 : mouvement contre résistance · 5 : force normale';
 const EVA = Array.from({length:11},(_,i)=>({v:i,l:String(i)}));
 const num = n => Array.from({length:n},(_,i)=>({v:i+1,l:String(i+1)}));
+/* Glasgow : les trois modalités acceptent NC quand l'item ne peut pas être coté
+   (œdème palpébral, intubation, aphasie connue). Le total n'a alors pas de sens
+   et n'est pas calculé, mais les modalités cotées restent visibles et exportées. */
+const GCSNC = {v:'NC', l:'NC', c:'v-wn'};
+const gcs = n => num(n).concat([GCSNC]);
+const gcsNum = v => (typeof v === 'number') ? v : null;
 
 /* positions du regard — plusieurs modalités possibles simultanément */
 const REGARD = [
@@ -640,7 +708,8 @@ trep:{t:'Trépidation épileptoïde (clonus) : épuisable ou inépuisable',
    'brusquement vers le bas, puis maintenez.</p>'+
    '<h4>Cotation</h4><ul>'+
    '<li><b>Épuisable</b> — quelques secousses (classiquement moins de cinq à six) puis arrêt malgré '+
-   'la pression maintenue. Peut se voir chez un sujet hypothermique ou hyperréflexique sain. Le côter pathologique jusqu'à preuve du contraire. </li>'+
+   'la pression maintenue. Peut se voir chez un sujet hypothermique ou hyperréflexique sain. '+
+   'La coter pathologique jusqu\'à preuve du contraire.</li>'+
    '<li><b>Inépuisable</b> — les secousses se poursuivent tant que vous maintenez la pression. '+
    '<b>Toujours pathologique</b> : syndrome pyramidal.</li></ul>'+
    '<p>Le caractère se cote séparément à droite et à gauche : une asymétrie vaut autant que la présence.</p>'},
@@ -671,16 +740,17 @@ vac:{t:'Contraction anale volontaire et pression anale profonde',
 
 derm:{t:'Tester les métamères : tact léger et piqûre',
  h:'<h4>Tact léger</h4><p>Effleurez avec un morceau de coton, sans appuyer. Le point de référence est '+
-   'la joue, supposée normale, ou la face externe du bras : montrez-la au sujet d\'abord, puis comparez chaque métamère à cette référence.</p>'+
-   '<h4>Piqûre</h4><p>Pointe mousse d\'un manche de marteau à réflexe.'+
+   'la joue, supposée normale, ou la face externe du bras : montrez-la au sujet d\'abord, '+
+   'puis comparez chaque métamère à cette référence.</p>'+
+   '<h4>Piqûre</h4><p>Pointe mousse d\'un manche de marteau à réflexes.</p>'+
    '<h4>Cotation</h4><ul>'+
    '<li><b>2, normale</b> — perception identique à la joue.</li>'+
    '<li><b>1, hypoesthésie ou hyperesthésie</b> — perception diminuée ou exagérée. Les deux valent 1 '+
    'dans le score ASIA, la distinction est conservée pour le compte rendu.</li>'+
-   '<li><b>0, anesthésie</b> — aucune perception. </li>'+
+   '<li><b>0, anesthésie</b> — aucune perception.</li>'+
    '<li><b>NT</b> — non testable : pansement, plâtre, sujet non coopérant.</li></ul>'+
    '<h4>Méthode</h4><p>Descendez de haut en bas jusqu\'au premier niveau anormal, puis servez-vous '+
-   'du report vers le bas si l\'anomalie se répète sous l\'ensemble du niveau. </p>'},
+   'du report vers le bas si l\'anomalie se répète sous l\'ensemble du niveau.</p>'},
 
 pal:{t:'Pallesthésie au diapason',
  h:'<h4>Manœuvre</h4><p>Diapason 128 Hz mis en vibration, pied posé fermement sur le relief osseux. '+
@@ -688,7 +758,7 @@ pal:{t:'Pallesthésie au diapason',
    'en arrêtant vous-même le diapason à un moment que le sujet ne voit pas.</p>'+
    '<h4>Cotation</h4><ul>'+
    '<li><b>Normale</b> — vibration perçue et fin de vibration correctement annoncée.</li>'+
-   '<li><b>Diminuée</b> — vibration perçue plus brièvement que sur un relief sain de référence ou de manière diminuée.</li>'+
+   '<li><b>Diminuée</b> — vibration perçue plus brièvement que sur un relief sain de référence, ou de manière diminuée.</li>'+
    '<li><b>Exagérée</b> — perception anormalement vive ou désagréable.</li>'+
    '<li><b>Abolie</b> — vibration non perçue.</li></ul>'+
    '<p>La pallesthésie explore les cordons postérieurs. Elle <b>n\'entre pas</b> dans le score ASIA, '+
@@ -818,10 +888,11 @@ const SPEC = [
 
 {id:'consc', t:'Conscience', cols:1, norm:{avpu:1,gcs_y:4,gcs_v:5,gcs_m:6}, f:[
   {k:'avpu', l:'AVPU', t:'choice', o:[{v:1,l:'Alert',c:'v-ok'},{v:2,l:'Verbal',c:'v-wn'},{v:3,l:'Pain',c:'v-ab'},{v:4,l:'Unresponsive',c:'v-ab'}]},
-  {k:'gcs_y', help:'gcs', l:'Glasgow — Ouverture des yeux (Y)', t:'choice', o:num(4)},
-  {k:'gcs_v', help:'gcs', l:'Glasgow — Réponse verbale (V)',    t:'choice', o:num(5)},
-  {k:'gcs_m', help:'gcs', l:'Glasgow — Réponse motrice (M)',    t:'choice', o:num(6)},
-  {k:'gcs_tot', l:'Score de Glasgow total (/15)', t:'calc'}
+  {k:'gcs_y', help:'gcs', l:'Glasgow — Ouverture des yeux (Y)', t:'choice', o:gcs(4)},
+  {k:'gcs_v', help:'gcs', l:'Glasgow — Réponse verbale (V)',    t:'choice', o:gcs(5)},
+  {k:'gcs_m', help:'gcs', l:'Glasgow — Réponse motrice (M)',    t:'choice', o:gcs(6)},
+  {k:'gcs_tot', l:'Score de Glasgow total (/15)', t:'calc',
+   hint:'Non calculé si une modalité est cotée NC'}
 ]},
 
 {id:'fsup', t:'Fonctions supérieures', cols:1,
@@ -1022,6 +1093,8 @@ const SPEC = [
    phr:['Marbrures typiques du tronc','Marbrures des flancs','Prurit isolé','Œdème du membre supérieur','Œdème du membre inférieur','Emphysème sous-cutané cervical','Photographies réalisées']}
 ]},
 
+{id:'pj', t:'Pièces jointes photographiques', custom:'pj', cols:1, f:[]},
+
 {id:'concl', t:'Conclusion', cols:1, f:[
   {k:'conclusion', l:"Conclusion de l'examen", t:'choice',
    o:[{v:1,l:'Examen neurologique normal',c:'v-ok'},{v:2,l:'Examen neurologique anormal',c:'v-ab'},{v:3,l:'À recontrôler',c:'v-wn'}]},
@@ -1033,11 +1106,31 @@ const SPEC = [
       {v:5,l:'Transfert vers une autre structure'}]},
   {k:'orientation_autre', l:'Préciser la structure', t:'txt', wide:1, dep:['orientation',[5]], sub:1, nofill:1},
   {k:'orientation_txt', l:"Précisions sur l'orientation", t:'area', wide:1, nofill:1,
-   phr:['Surveillance neurologique horaire.','Réévaluation à H+1.','Réévaluation à H+4.','Réévaluation à H+24.','Avis neurochirurgical demandé.','Avis ORL demandé.','Imagerie cérébrale demandée.','Imagerie rachidienne demandée.','Consignes de surveillance remises au patient.','Consignes de surveillance remises à l\'entourage.','Sortie contre avis médical.','Transport médicalisé.','Transport non médicalisé.']},
+   phr:['Surveillance neurologique horaire.','Réévaluation à H+1.','Réévaluation à H+4.','Réévaluation à H+24.',
+        'Service d\'USIC.','Service de neurovasculaire.','Service d\'USC.','Service de réanimation.',
+        'Avis réanimateur demandé.','Avis cardiologique demandé.','Avis ORL demandé.',
+        'Imagerie cérébrale demandée.','Imagerie rachidienne demandée.','Imagerie thoracique demandée.',
+        'Transport médicalisé.','Transport non médicalisé.']},
   {k:'notes', l:'Commentaires libres', t:'area', wide:1, nofill:1,
    phr:['Examen limité par la douleur.','Examen limité par la barrière de la langue.','Patient non coopérant.','Aucune anomalie constatée sur l\'ensemble de l\'examen.','Comparaison avec l\'examen précédent : état stationnaire.','Comparaison avec l\'examen précédent : aggravation.','Comparaison avec l\'examen précédent : amélioration.','Prise de traitement antalgique avant l\'examen.','Consommation d\'alcool ou de toxiques suspectée.','Réévaluation programmée.']}
 ]}
 ];
+
+/* =====================================================================
+   PIÈCES JOINTES PHOTOGRAPHIQUES
+   Les images sont réduites puis ré-encodées en JPEG avant d'être rangées
+   dans la fiche : une photo de téléphone pèse plusieurs mégaoctets, la même
+   réduite à 1600 px en pèse quelques centaines de kilooctets, ce qui reste
+   lisible à l'impression sans faire exploser la base ni les sauvegardes.
+   Elles suivent la fiche dans les sauvegardes JSON et sur le PDF.
+   Elles n'entrent jamais dans le fichier de données : un CSV n'est pas un
+   album, et une photo de patient est une donnée identifiante.
+   ===================================================================== */
+const PJ_TITRES = ['Examen cutané','Otoscopie','Lésion cutanée','Schéma annoté',
+                   'Champ visuel','Document remis','Autre'];
+const PJ_MAX_PX = 1600;      // côté le plus long après réduction
+const PJ_QUAL   = 0.82;      // qualité JPEG
+const PJ_MAX_N  = 12;        // nombre maximal de photos par fiche
 
 /* =====================================================================
    SCHÉMAS CORPORELS
@@ -1392,7 +1485,7 @@ function autofillFromDossier(){
   if(n && PREV.id!==before) toast('Dossier connu : identité et accident repris de l\'examen du '+frDate(PREV.d.date_ex));
 }
 /* valeur grisée proposée depuis l'examen précédent */
-const NOGHOST = {date_ex:1,heure_ex:1,num_ex:1,age:1,delai_min:1,gcs_tot:1};
+const NOGHOST = {date_ex:1,heure_ex:1,num_ex:1,age:1,delai_min:1,gcs_tot:1,gcs_nc:1,pj:1};
 function ghostVal(k){
   if(!PREV || NOGHOST[k]) return null;
   const cur = REC.d[k];
@@ -1501,8 +1594,12 @@ function computeAll(){
     const a=new Date(d.date_acc+'T'+d.heure_acc), e=new Date(d.date_ex+'T'+d.heure_ex);
     if(!isNaN(a)&&!isNaN(e)) d.delai_min = Math.round((e-a)/60000); else delete d.delai_min;
   } else delete d.delai_min;
-  if(d.gcs_y!=null && d.gcs_v!=null && d.gcs_m!=null) d.gcs_tot = d.gcs_y+d.gcs_v+d.gcs_m;
+  /* un total calculé sur une modalité manquante ou non cotable n'a pas de sens */
+  const gy=gcsNum(d.gcs_y), gv=gcsNum(d.gcs_v), gm=gcsNum(d.gcs_m);
+  if(gy!=null && gv!=null && gm!=null) d.gcs_tot = gy+gv+gm;
   else delete d.gcs_tot;
+  d.gcs_nc = [d.gcs_y,d.gcs_v,d.gcs_m].filter(v=>v==='NC').length || undefined;
+  if(d.gcs_nc==null) delete d.gcs_nc;
   if(d.dossier){
     const sib = DB.filter(f=>f.d.dossier===d.dossier && f.id!==REC.id).concat([REC])
                   .sort((a,b)=>stamp(a).localeCompare(stamp(b)));
@@ -1762,7 +1859,16 @@ function fieldHTML(f){
       (!arr.length && ga.indexOf(o.v)>=0?' gh':'')+
       '" onclick="toggleMulti(\''+f.k+'\',\''+o.v+'\')">'+esc(o.l)+'</span>').join('')+'</span>';
   } else if(f.t==='calc'){
-    ctl='<span class="calc">'+(v==null||v===''?'—':esc(v))+(f.k==='gcs_tot'?' / 15':'')+'</span>';
+    if(f.k==='gcs_tot' && v==null && REC.d.gcs_nc){
+      /* au moins une modalité non cotable : on affiche le détail plutôt qu'un tiret muet */
+      const par = ['gcs_y','gcs_v','gcs_m'].map(k=>{
+        const x=REC.d[k]; return k.slice(-1).toUpperCase()+' '+(x==null?'—':x); }).join(' · ');
+      ctl='<span class="calc" style="color:#a8500f">non calculable</span>'+
+          '<span style="margin-left:8px;font-size:12px;color:var(--ink2)">'+esc(par)+
+          ' — total sans objet, une modalité est cotée NC</span>';
+    } else {
+      ctl='<span class="calc">'+(v==null||v===''?'—':esc(v))+(f.k==='gcs_tot'?' / 15':'')+'</span>';
+    }
   } else if(f.t==='area'){
     ctl='<textarea id="i_'+f.k+'" oninput="setRaw(\''+f.k+'\',this.value)"'+
         (g?' placeholder="'+esc(String(g).slice(0,120))+'"':'')+'>'+esc(v||'')+'</textarea>'+ghostBtn(f,g);
@@ -1772,11 +1878,14 @@ function fieldHTML(f){
         (g!=null?' placeholder="'+esc(g)+'"':'')+
         ' value="'+esc(v==null?'':v)+'" oninput="setNum(\''+f.k+'\',this.value)">'+
         (f.unit?'<span style="margin-left:5px;color:#5a6472">'+esc(f.unit)+'</span>':'')+ghostBtn(f,g);
+  } else if(f.t==='date'){
+    ctl = dateHTML(f, v, g);
+  } else if(f.t==='time'){
+    ctl = timeHTML(f, v, g);
   } else {
-    const ty = f.t==='date'?'date':f.t==='time'?'time':'text';
-    ctl='<input id="i_'+f.k+'" type="'+ty+'"'+(f.wide?' style="width:min(520px,100%)"':'')+
+    ctl='<input id="i_'+f.k+'" type="text"'+(f.wide?' style="width:min(520px,100%)"':'')+
         (f.list?' list="'+f.list+'"':'')+(f.req&&!v?' class="req"':'')+
-        (g!=null&&ty==='text'?' placeholder="'+esc(g)+'"':'')+
+        (g!=null?' placeholder="'+esc(g)+'"':'')+
         ' value="'+esc(v||'')+'" oninput="setRaw(\''+f.k+'\',this.value)">'+ghostBtn(f,g);
   }
   if(f.k==='dossier'){
@@ -1794,6 +1903,126 @@ function fieldHTML(f){
     (f.hint?'<small>'+esc(f.hint)+'</small>':'')+'</span>'+
     '<span style="flex:1;min-width:0">'+ctl+phr+'</span></div>';
 }
+
+/* =====================================================================
+   SAISIE DES DATES ET DES HEURES AU CLAVIER
+   Le champ natif <input type="date"> impose l'ordre de saisie du navigateur
+   et ouvre un calendrier sur tablette. On saisit donc dans un champ texte,
+   au format français, avec les séparateurs posés automatiquement. Le bouton
+   calendrier reste disponible pour ceux qui le préfèrent.
+   La valeur stockée reste au format ISO AAAA-MM-JJ : rien ne change dans le
+   fichier de données ni dans les fiches déjà enregistrées.
+   ===================================================================== */
+const isoToFr = s => {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(s||''));
+  return m ? m[3]+'/'+m[2]+'/'+m[1] : '';
+};
+const frToIso = s => {
+  const d = String(s||'').replace(/\D/g,'');
+  if(d.length !== 8) return null;
+  let J = +d.slice(0,2), M = +d.slice(2,4), A = +d.slice(4,8);
+  if(M < 1 || M > 12 || J < 1 || A < 1900 || A > 2200) return null;
+  const max = new Date(A, M, 0).getDate();
+  if(J > max) return null;
+  return A+'-'+String(M).padStart(2,'0')+'-'+String(J).padStart(2,'0');
+};
+const normHeure = s => {
+  const d = String(s||'').replace(/\D/g,'');
+  if(d.length !== 3 && d.length !== 4) return null;
+  const H = +d.slice(0, d.length-2), M = +d.slice(-2);
+  if(H > 23 || M > 59) return null;
+  return String(H).padStart(2,'0')+':'+String(M).padStart(2,'0');
+};
+
+function dateHTML(f, v, g){
+  const bad = REC._badDate && REC._badDate[f.k];
+  return '<span class="dtwrap">'+
+    '<input id="i_'+f.k+'" class="dtxt'+(f.req&&!v?' req':'')+(bad?' bad':'')+'" type="text" '+
+      'inputmode="numeric" maxlength="10" autocomplete="off" placeholder="JJ/MM/AAAA" '+
+      'value="'+esc(bad!=null? bad : isoToFr(v))+'" '+
+      'oninput="dateType(\''+f.k+'\',this)" onblur="dateBlur(\''+f.k+'\',this)">'+
+    '<button type="button" class="dpk" tabindex="-1" title="Choisir dans un calendrier" '+
+      'onclick="openPicker(\''+f.k+'\')">&#128197;</button>'+
+    '<input id="p_'+f.k+'" class="dhid" type="date" tabindex="-1" aria-hidden="true" '+
+      'value="'+esc(v||'')+'" onchange="datePick(\''+f.k+'\',this.value)">'+
+    '</span>'+ghostBtn(f,g);
+}
+function timeHTML(f, v, g){
+  const bad = REC._badTime && REC._badTime[f.k];
+  return '<span class="dtwrap">'+
+    '<input id="i_'+f.k+'" class="dtxt tm'+(f.req&&!v?' req':'')+(bad?' bad':'')+'" type="text" '+
+      'inputmode="numeric" maxlength="5" autocomplete="off" placeholder="HH:MM" '+
+      'value="'+esc(bad!=null? bad : (v||''))+'" '+
+      'oninput="timeType(\''+f.k+'\',this)" onblur="timeBlur(\''+f.k+'\',this)">'+
+    '<button type="button" class="dpk" tabindex="-1" title="Choisir une heure" '+
+      'onclick="openPicker(\''+f.k+'\')">&#128339;</button>'+
+    '<input id="p_'+f.k+'" class="dhid" type="time" tabindex="-1" aria-hidden="true" '+
+      'value="'+esc(v||'')+'" onchange="datePick(\''+f.k+'\',this.value)">'+
+    '</span>'+ghostBtn(f,g);
+}
+
+/* Pendant la frappe on pose les séparateurs et on enregistre dès que la date
+   est complète et valide. On ne reconstruit pas le formulaire : le champ
+   garderait sinon le curseur au mauvais endroit. */
+function dateType(k, el){
+  const pos = el.selectionStart, before = el.value;
+  let d = el.value.replace(/\D/g,'').slice(0,8);
+  let out = d.slice(0,2) + (d.length>2 ? '/'+d.slice(2,4) : '') + (d.length>4 ? '/'+d.slice(4,8) : '');
+  el.value = out;
+  if(pos === before.length) el.setSelectionRange(out.length, out.length);
+  const iso = frToIso(out);
+  if(!REC._badDate) REC._badDate = {};
+  if(iso){ delete REC._badDate[k]; el.classList.remove('bad'); setDateVal(k, iso); }
+  else if(d.length === 8){ REC._badDate[k] = out; el.classList.add('bad'); }
+  else { REC._badDate[k] = out; el.classList.remove('bad'); if(REC.d[k]) setDateVal(k, ''); }
+}
+function dateBlur(k, el){
+  const iso = frToIso(el.value);
+  if(!el.value.trim()){ if(REC._badDate) delete REC._badDate[k]; el.classList.remove('bad'); setDateVal(k,''); renderForm(); return; }
+  if(iso){ if(REC._badDate) delete REC._badDate[k]; el.classList.remove('bad'); setDateVal(k, iso); renderForm(); }
+  else { el.classList.add('bad'); toast('Date incomplète ou impossible : attendu JJ/MM/AAAA'); }
+}
+function timeType(k, el){
+  const pos = el.selectionStart, before = el.value;
+  let d = el.value.replace(/\D/g,'').slice(0,4);
+  let out = d.length>2 ? d.slice(0,2)+':'+d.slice(2,4) : d;
+  el.value = out;
+  if(pos === before.length) el.setSelectionRange(out.length, out.length);
+  const hm = normHeure(out);
+  if(!REC._badTime) REC._badTime = {};
+  if(hm){ delete REC._badTime[k]; el.classList.remove('bad'); setDateVal(k, hm); }
+  else { REC._badTime[k] = out; if(d.length>=3) el.classList.add('bad'); else el.classList.remove('bad'); }
+}
+function timeBlur(k, el){
+  const hm = normHeure(el.value);
+  if(!el.value.trim()){ if(REC._badTime) delete REC._badTime[k]; el.classList.remove('bad'); setDateVal(k,''); renderForm(); return; }
+  if(hm){ if(REC._badTime) delete REC._badTime[k]; el.classList.remove('bad'); setDateVal(k, hm); renderForm(); }
+  else { el.classList.add('bad'); toast('Heure impossible : attendu HH:MM'); }
+}
+/* le champ natif reste dans la page, invisible, uniquement pour son sélecteur */
+function openPicker(k){
+  const el = document.getElementById('p_'+k); if(!el) return;
+  if(typeof el.showPicker === 'function'){ try{ el.showPicker(); return; }catch(e){} }
+  el.style.cssText = 'position:static;opacity:1;width:auto;height:auto;pointer-events:auto';
+  el.focus(); el.click();
+}
+function datePick(k, val){
+  if(REC._badDate) delete REC._badDate[k];
+  if(REC._badTime) delete REC._badTime[k];
+  setDateVal(k, val); renderForm();
+}
+/* écriture silencieuse : on met à jour les calculs dérivés sans reconstruire
+   le formulaire, pour ne pas voler le focus au champ en cours de frappe */
+function setDateVal(k, v){
+  if(v==='' || v==null) delete REC.d[k]; else REC.d[k]=v;
+  touch(); computeAll(); updateGlobalFill(); renderSynth();
+  ['age','delai_min'].forEach(c=>{
+    const el = document.querySelector('#r_'+c+' .calc');
+    if(el) el.textContent = (REC.d[c]==null ? '—' : REC.d[c]);
+  });
+  const p = document.getElementById('p_'+k); if(p && p.value!==(REC.d[k]||'')) p.value = REC.d[k]||'';
+}
+
 function ghostBtn(f,g){
   if(g==null) return '';
   const lbl = f.t==='date'? frDate(g) : String(g).slice(0,40);
@@ -1855,6 +2084,7 @@ function renderFormInner(){
     if(s.custom==='sens'){ h += sensBlock(); return; }
     if(s.custom==='asia'){ h += asiaBlock(); return; }
     if(s.custom==='cut'){  h += cutBlock();  return; }
+    if(s.custom==='pj'){   h += pjBlock();   return; }
     const fi = secFill(s), closed = CLOSED[s.id]?' closed':'';
     h+='<div class="sec'+closed+'" id="s_'+s.id+'"><h3 onclick="if(!event.target.closest(\'button\'))toggleSec(\''+s.id+'\')">'+
        '<span class="caret">&#9660;</span>'+esc(s.t)+
@@ -1931,7 +2161,8 @@ function pruneDeps(){
 function setVal(k,v){ REC.d[k] = (REC.d[k]===v)?null:v; if(REC.d[k]==null) delete REC.d[k];
   const limb = Object.keys(LIMB_DEF).find(l=>LIMB_DEF[l]===k);
   if(limb){ limbAnswer(limb); pruneDeps(); touch(); renderForm(); return; }
-  pruneDeps(); touch(); refreshField(k); }
+  pruneDeps(); touch(); refreshField(k);
+  if(ORL_KEYS.indexOf(k)>=0) refreshORL(); }
 let DOSSIER_T=null;
 function setRaw(k,v){
   if(v==='') delete REC.d[k]; else REC.d[k]=v;
@@ -2745,7 +2976,152 @@ function forceBox(){
     ' sont cotés sans déficit. Dépliez le détail et cotez, ou repassez la réponse à NON.</div>';
 }
 
+
+/* =====================================================================
+   PIÈCES JOINTES PHOTOGRAPHIQUES
+   ===================================================================== */
+function pjList(){ return Array.isArray(REC.d.pj) ? REC.d.pj : []; }
+
+/* réduction et ré-encodage : on passe par un canvas, sans dépendance externe */
+function pjShrink(file){
+  return new Promise((res, rej)=>{
+    const fr = new FileReader();
+    fr.onerror = () => rej(new Error('lecture impossible'));
+    fr.onload = () => {
+      const img = new Image();
+      img.onerror = () => rej(new Error('image illisible'));
+      img.onload = () => {
+        const r = Math.min(1, PJ_MAX_PX / Math.max(img.width, img.height));
+        const w = Math.round(img.width * r), h = Math.round(img.height * r);
+        const c = document.createElement('canvas');
+        c.width = w; c.height = h;
+        const ctx = c.getContext('2d');
+        ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, w, h);
+        ctx.drawImage(img, 0, 0, w, h);
+        res({data: c.toDataURL('image/jpeg', PJ_QUAL), w: w, h: h});
+      };
+      img.src = fr.result;
+    };
+    fr.readAsDataURL(file);
+  });
+}
+
+async function pjAdd(input){
+  const files = Array.from(input.files || []);
+  input.value = '';
+  if(!files.length) return;
+  const cur = pjList();
+  if(cur.length + files.length > PJ_MAX_N){
+    toast('Maximum '+PJ_MAX_N+' photos par fiche'); return;
+  }
+  toast(files.length>1 ? 'Traitement de '+files.length+' photos…' : 'Traitement de la photo…');
+  const out = cur.slice();
+  for(const f of files){
+    if(f.type.indexOf('image/') !== 0){ toast('« '+f.name+' » n’est pas une image'); continue; }
+    try{
+      const im = await pjShrink(f);
+      out.push({id:'p'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),
+                titre:'', libre:'', nom:f.name, w:im.w, h:im.h,
+                ko:Math.round(im.data.length*0.75/1024), data:im.data});
+    }catch(e){ toast('« '+f.name+' » : '+e.message); }
+  }
+  REC.d.pj = out;
+  touch(); renderForm();
+  toast(out.length - cur.length + ' photo(s) ajoutée(s)');
+}
+function pjSetTitre(id, t){
+  const L = pjList(); const it = L.find(x=>x.id===id); if(!it) return;
+  it.titre = t; if(t !== 'Autre') it.libre = '';
+  REC.d.pj = L; touch(); renderForm();
+}
+function pjSetLibre(id, v){
+  const L = pjList(); const it = L.find(x=>x.id===id); if(!it) return;
+  it.libre = v; REC.d.pj = L; touch(); softRefresh();
+}
+function pjMove(id, dir){
+  const L = pjList(); const i = L.findIndex(x=>x.id===id);
+  const j = i + dir; if(i<0 || j<0 || j>=L.length) return;
+  const t = L[i]; L[i] = L[j]; L[j] = t;
+  REC.d.pj = L; touch(); renderForm();
+}
+function pjDel(id){
+  const L = pjList(); const it = L.find(x=>x.id===id);
+  if(!confirm('Retirer « '+pjLabel(it)+' » de cette fiche ?')) return;
+  REC.d.pj = L.filter(x=>x.id!==id);
+  if(!REC.d.pj.length) delete REC.d.pj;
+  touch(); renderForm(); toast('Photo retirée');
+}
+function pjLabel(it){
+  if(!it) return '';
+  if(it.titre === 'Autre' && it.libre) return it.libre;
+  return it.titre || '(sans titre)';
+}
+function pjBlock(){
+  const L = pjList(), closed = CLOSED.pj ? ' closed' : '';
+  const poids = L.reduce((s,x)=>s+(x.ko||0),0);
+  const sans = L.filter(x=>!x.titre).length;
+  let h = '<div class="sec'+closed+'" id="s_pj"><h3 onclick="if(!event.target.closest(\'button\')&&!event.target.closest(\'label\'))toggleSec(\'pj\')">'+
+    '<span class="caret">&#9660;</span>Pièces jointes photographiques'+
+    '<span class="fill"><span class="badge'+(L.length?(sans?' ab':' ok'):'')+'">'+
+      (L.length ? L.length+' photo'+(L.length>1?'s':'')+(sans?' · '+sans+' sans titre':'') : 'aucune')+
+    '</span></span></h3><div class="body">';
+
+  h += '<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:10px">'+
+    '<label class="tb pri" style="cursor:pointer;padding:9px 14px">&#128247; Ajouter des photos'+
+    '<input type="file" accept="image/*" multiple style="display:none" onchange="pjAdd(this)"></label>'+
+    '<span style="font-size:11.5px;color:var(--ink2)">'+
+      (L.length ? L.length+' / '+PJ_MAX_N+' · '+(poids>1024 ? (poids/1024).toFixed(1)+' Mo' : poids+' ko')
+                : 'Sur tablette ou téléphone, l\'appareil photo est proposé directement.')+
+    '</span></div>';
+
+  h += '<div class="note">Chaque photo reçoit un titre, qui apparaît au-dessus d\'elle sur le PDF. '+
+    'Les photos sont réduites à '+PJ_MAX_PX+' pixels et enregistrées <b>avec la fiche</b> : '+
+    'elles suivent les sauvegardes JSON et l\'impression. Elles n\'entrent pas dans le fichier de données, '+
+    'qui ne reçoit que leur nombre et leurs titres.<br>'+
+    '<b>Une photo de patient reste une donnée de santé identifiante.</b> Cadrez au plus juste, '+
+    'évitez le visage et les signes distinctifs quand la lésion seule suffit.</div>';
+
+  if(!L.length){
+    h += '<div style="color:var(--ink2);font-size:12.5px;padding:10px 0">Aucune photo pour cette fiche.</div>';
+  } else {
+    h += '<div class="pjgrid">' + L.map((it,i)=>{
+      const opts = PJ_TITRES.map(t=>'<option value="'+esc(t)+'"'+(it.titre===t?' selected':'')+'>'+esc(t)+'</option>').join('');
+      return '<figure class="pjcard'+(it.titre?'':' notitle')+'">'+
+        '<img src="'+it.data+'" alt="'+esc(pjLabel(it))+'">'+
+        '<figcaption>'+
+          '<select onchange="pjSetTitre(\''+it.id+'\',this.value)">'+
+            '<option value=""'+(it.titre?'':' selected')+'>— titre de la photo —</option>'+opts+
+          '</select>'+
+          (it.titre==='Autre'
+            ? '<input type="text" id="i_pj_'+it.id+'" placeholder="Préciser le titre" value="'+esc(it.libre||'')+'" '+
+              'oninput="pjSetLibre(\''+it.id+'\',this.value)">'
+            : '')+
+          '<div class="pjmeta">'+esc(it.nom||'')+' · '+it.w+'×'+it.h+' · '+it.ko+' ko'+
+            '<span class="pjbtns">'+
+              '<button class="mini" onclick="pjMove(\''+it.id+'\',-1)" '+(i===0?'disabled':'')+' title="Monter">&#9650;</button>'+
+              '<button class="mini" onclick="pjMove(\''+it.id+'\',1)" '+(i===L.length-1?'disabled':'')+' title="Descendre">&#9660;</button>'+
+              '<button class="mini" onclick="pjDel(\''+it.id+'\')" title="Retirer">&#10006;</button>'+
+            '</span></div>'+
+        '</figcaption></figure>';
+    }).join('') + '</div>';
+    if(sans) h += '<div class="note" style="background:#fbeee4;border-color:#e3bd9a">'+
+      sans+' photo'+(sans>1?'s n\'ont':' n\'a')+' pas de titre. Le PDF affichera « sans titre ».</div>';
+  }
+  return h + '</div></div>';
+}
+
 /* ---------- encart d'interprétation acoumétrique ---------- */
+/* L'encart se recalcule dès qu'un item ORL change ; le bouton reste là pour
+   forcer le calcul après une saisie faite dans un autre onglet ou après une
+   reprise de l'examen précédent. */
+const ORL_KEYS = ['weber','rinne_D','rinne_G','oto_D','oto_G','valsalva_D','valsalva_G',
+                  'oto_epanch_D','oto_epanch_G'];
+function refreshORL(){
+  computeAll();
+  const box = $('#orlbox');
+  if(box) box.outerHTML = orlBox();
+  renderSynth();
+}
 function orlBox(){
   const a = orlAudio();
   const col = a.cls==='ok' ? {bg:'#e6f4ec',bd:'#a7cfb8',ink:'#1f7a4d'}
@@ -2754,7 +3130,9 @@ function orlBox(){
   const oto = ['D','G'].map(sd=>{ const v=REC.d['oto_'+sd];
       return v==null? null : (sd==='D'?'droite':'gauche')+' : '+(v===0?'normal':'stade '+v+' — '+HAINES_LAB(v)); })
       .filter(Boolean).join(' · ');
-  return '<div class="note" style="background:'+col.bg+';border-color:'+col.bd+';margin:10px 0 0">'+
+  return '<div class="note" id="orlbox" style="background:'+col.bg+';border-color:'+col.bd+';margin:10px 0 0">'+
+    '<button class="mini" style="float:right;margin-left:10px" onclick="refreshORL()" '+
+    'title="Recalculer à partir du Weber et du Rinne actuels">&#8635; Actualiser</button>'+
     '<b style="color:'+col.ink+'">Interprétation de l\'acoumétrie : </b>'+esc(a.txt)+
     (a.note? '<br><span style="color:#5a6472">'+esc(a.note)+'</span>':'')+
     (oto? '<br><span style="color:#5a6472">Otoscopie — '+esc(oto)+'</span>':'')+
@@ -2831,6 +3209,8 @@ function narrative(){
 
   const c=[]; if(has('avpu')) c.push('AVPU '+lab('avpu'));
   if(d.gcs_tot!=null) c.push('Glasgow '+d.gcs_tot+'/15 (Y'+d.gcs_y+' V'+d.gcs_v+' M'+d.gcs_m+')');
+  else if(d.gcs_nc) c.push('Glasgow non calculable, modalité non cotable (Y'+(d.gcs_y==null?'—':d.gcs_y)+
+    ' V'+(d.gcs_v==null?'—':d.gcs_v)+' M'+(d.gcs_m==null?'—':d.gcs_m)+')');
   if(c.length) L.push('CONSCIENCE : '+c.join(', ')+'.');
 
   /* fonctions supérieures */
@@ -3017,6 +3397,9 @@ function narrative(){
   if(has('orientation'))cc.push(lab('orientation')+(d.orientation===5&&d.orientation_autre?' : '+d.orientation_autre:''));
   if(d.orientation_txt)cc.push(d.orientation_txt.replace(/\n+/g,' '));
   if(cc.length) L.push('CONCLUSION : '+cc.join(' — ').replace(/\s*\.\s*$/,'')+'.');
+  const pjn = Array.isArray(d.pj) ? d.pj.length : 0;
+  if(pjn) L.push('PIÈCES JOINTES : '+pjn+' photographie'+(pjn>1?'s':'')+' — '+
+    d.pj.map(x=>pjLabel(x)).join(', ')+'.');
   if(d.notes) L.push('COMMENTAIRES : '+d.notes);
   return L.join('\n');
 }
@@ -3061,8 +3444,11 @@ function buildPrint(){
     pid("N° d'examen",d.num_ex)+'</div>';
 
   h+=box('CONSCIENCE', pline('AVPU',pv('avpu',1))+
-      pline('Glasgow','Y : '+(d.gcs_y==null?'—':d.gcs_y)+'/4 &nbsp; V : '+(d.gcs_v==null?'—':d.gcs_v)+'/5 &nbsp; M : '+(d.gcs_m==null?'—':d.gcs_m)+
-      '/6 &nbsp; <b>Total : '+(d.gcs_tot==null?'—':d.gcs_tot)+'/15</b>'));
+      pline('Glasgow','Y : '+(d.gcs_y==null?'—':d.gcs_y)+(d.gcs_y==='NC'?'':'/4')+
+      ' &nbsp; V : '+(d.gcs_v==null?'—':d.gcs_v)+(d.gcs_v==='NC'?'':'/5')+
+      ' &nbsp; M : '+(d.gcs_m==null?'—':d.gcs_m)+(d.gcs_m==='NC'?'':'/6')+
+      ' &nbsp; <b>Total : '+(d.gcs_tot!=null ? d.gcs_tot+'/15'
+        : (d.gcs_nc ? '<span class="ab">non calculable</span> <span class="pf">modalité non cotable</span>' : '—'))+'</b>'));
 
   h+=box('FONCTIONS SUPÉRIEURES','<div class="p2"><div>'+
       pline('Troubles du comportement',pv('fs_comport',0))+
@@ -3234,6 +3620,27 @@ function buildPrint(){
   h+='<div style="font-size:7pt;text-align:right;margin-top:1.5mm;color:#444">Fiche '+esc(REC.id)+
      ' — éditée le '+frDate(iso(new Date()))+' à '+hhmm(new Date())+'</div>';
   h+='</div>';
+
+  /* ---------- pages de pièces jointes ---------- */
+  const PJ = Array.isArray(d.pj) ? d.pj : [];
+  if(PJ.length){
+    /* six vignettes par page en deux colonnes, une seule si la photo est isolée :
+       au-delà, les images deviennent trop petites pour servir à quoi que ce soit */
+    const parPage = PJ.length === 1 ? 1 : 6;
+    for(let i = 0; i < PJ.length; i += parPage){
+      const lot = PJ.slice(i, i + parPage);
+      const n = Math.ceil(PJ.length / parPage), pg = Math.floor(i / parPage) + 1;
+      h += '<div class="pg"><div class="phead" style="font-size:10.5pt">PIÈCES JOINTES'+
+           (n > 1 ? ' ('+pg+'/'+n+')' : '')+'</div>'+
+           '<div class="pjp'+(lot.length === 1 ? ' solo' : '')+'">'+
+           lot.map(it => '<figure><figcaption>'+esc(pjLabel(it))+'</figcaption>'+
+             '<img src="'+it.data+'" alt="">'+
+             '<div class="pjn">'+esc(it.nom || '')+' · '+it.w+'×'+it.h+' px</div></figure>').join('')+
+           '</div>'+
+           '<div style="font-size:7pt;text-align:right;margin-top:1.5mm;color:#444">Fiche '+esc(REC.id)+
+           ' — '+esc(d.dossier || 'sans dossier')+' — '+frDate(d.date_ex)+'</div></div>';
+    }
+  }
   return h;
 }
 
@@ -3324,6 +3731,18 @@ function columns(pii){
       }
     });
   });
+
+  // ---- pieces jointes photographiques ----
+  // les images elles-memes ne sortent jamais dans le CSV : seulement leur nombre et leurs titres
+  add('pj_nb','Nombre de photographies jointes','entier ; vide = aucune',
+      r=>Array.isArray(r.d.pj)&&r.d.pj.length?r.d.pj.length:'');
+  add('pj_titres','Titres des photographies jointes','texte, separes par |',
+      r=>Array.isArray(r.d.pj)?r.d.pj.map(x=>(x.titre==='Autre'&&x.libre)?x.libre:(x.titre||'(sans titre)')).join('|'):'');
+
+  add('gcs_nc','Glasgow : modalites non cotables',
+      'entier 1 a 3 ; vide = aucune modalite NC. Un total gcs_tot vide avec gcs_nc renseigne '+
+      'signifie score non calculable, et non score manquant',
+      r=>r.d.gcs_nc!=null?r.d.gcs_nc:'');
 
   // ---- interpretation acoumetrique deduite ----
   add('orl_interp','Interpretation acoumetrique (deduite de Weber et Rinne)',
@@ -3452,13 +3871,14 @@ function parseCSV(txt,sep){
    ===================================================================== */
 let idb=null;
 function openDB(){ return new Promise((res,rej)=>{
-  /* version 2 : ajout du magasin "media", qui reçoit les photos et vidéos
-     de démonstration attachées aux aides à l'examen. Les fiches ne bougent pas. */
+  /* La version 2 avait créé un magasin "media" pour les aides à l'examen ;
+     il n'est plus utilisé et n'est plus créé. Une base déjà en version 2 le
+     conserve sans conséquence. */
   const rq=indexedDB.open('fiche_neuro',2);
   rq.onupgradeneeded=e=>{ const db=e.target.result;
     if(!db.objectStoreNames.contains('fiches')) db.createObjectStore('fiches',{keyPath:'id'});
     if(!db.objectStoreNames.contains('meta'))   db.createObjectStore('meta',{keyPath:'k'});
-    if(!db.objectStoreNames.contains('media'))  db.createObjectStore('media',{keyPath:'id'}); };
+ };
   rq.onsuccess=e=>{idb=e.target.result;res();}; rq.onerror=e=>rej(e); }); }
 const tx=(st,mode)=>idb.transaction(st,mode).objectStore(st);
 function idbAll(){ return new Promise(r=>{ const q=tx('fiches','readonly').getAll(); q.onsuccess=()=>r(q.result||[]); q.onerror=()=>r([]); }); }
@@ -3466,10 +3886,7 @@ function idbPut(o){ return new Promise(r=>{ const q=tx('fiches','readwrite').put
 function idbDel(id){ return new Promise(r=>{ const q=tx('fiches','readwrite').delete(id); q.onsuccess=()=>r(1); q.onerror=()=>r(0); }); }
 function metaGet(k){ return new Promise(r=>{ const q=tx('meta','readonly').get(k); q.onsuccess=()=>r(q.result?q.result.v:null); q.onerror=()=>r(null); }); }
 function metaSet(k,v){ return new Promise(r=>{ const q=tx('meta','readwrite').put({k:k,v:v}); q.onsuccess=()=>r(1); q.onerror=()=>r(0); }); }
-/* médias d'aide : images et vidéos attachées à un item d'examen */
-function medAll(){ return new Promise(r=>{ const q=tx('media','readonly').getAll(); q.onsuccess=()=>r(q.result||[]); q.onerror=()=>r([]); }); }
-function medPut(o){ return new Promise(r=>{ const q=tx('media','readwrite').put(o); q.onsuccess=()=>r(1); q.onerror=()=>r(0); }); }
-function medDel(id){ return new Promise(r=>{ const q=tx('media','readwrite').delete(id); q.onsuccess=()=>r(1); q.onerror=()=>r(0); }); }
+
 
 
 /* renumerote num_ex pour chaque dossier, et persiste, apres toute modification de la base */
@@ -3552,7 +3969,10 @@ async function saveFiche(){
   if(!REC.d.dossier){ toast('Le numero de dossier est obligatoire'); const i=$('#i_dossier'); if(i){i.classList.add('req');i.focus();} return; }
   if(!REC.d.date_ex||!REC.d.heure_ex){ toast("Date et heure de l'examen obligatoires"); return; }
   REC.updated=new Date().toISOString();
-  await idbPut(JSON.parse(JSON.stringify(REC)));
+  /* les saisies de dates en cours de frappe sont un état d'affichage, pas une donnée */
+  const snap = JSON.parse(JSON.stringify(REC));
+  delete snap._badDate; delete snap._badTime;
+  await idbPut(snap);
   DB = await idbAll();
   await renumberAll();
   const me = DB.find(x=>x.id===REC.id); if(me) REC.d.num_ex = me.d.num_ex;
@@ -3570,6 +3990,7 @@ function newFiche(){
 function newFollowUp(){
   if(DIRTY && !confirm('Modifications non enregistrees. Continuer ?')) return;
   const src=JSON.parse(JSON.stringify(REC.d));
+  /* les photographies appartiennent à l'examen où elles ont été prises : un ré-examen repart sans elles */
   const keep=['dossier','nom','prenom','sexe','ddn','date_acc','heure_acc','examinateur'];
   const nd={}; keep.forEach(k=>{ if(src[k]!=null) nd[k]=src[k]; });
   const now=new Date(); nd.date_ex=iso(now); nd.heure_ex=hhmm(now);
@@ -3719,6 +4140,9 @@ const NUMKEYS = (function(){
     if(f.t==='choice'||f.t==='calc'||f.t==='num') s.add(f.k);
     if(f.flags) f.flags.forEach(fl=>s.add(f.k+'_'+fl.k));
   }));
+  /* les trois modalités du Glasgow acceptent la valeur texte NC : les convertir
+     en nombre à l'import la ferait disparaître silencieusement */
+  ['gcs_y','gcs_v','gcs_m'].forEach(k=>s.delete(k));
   MODAL.filter(m=>m.mode==='derm').forEach(m=>{
     const p='sens_'+m.k+'_';
     ['score','score_D','score_G','nt','nb'].forEach(x=>s.add(p+x));
@@ -4153,7 +4577,6 @@ async function saveDraft(){ if(DIRTY && REC) await metaSet('draft',JSON.parse(JS
   $('#patholder').innerHTML = patternDefs();
   try{ await openDB(); }catch(e){ alert("Impossible d'ouvrir la base locale du navigateur : "+e); }
   DB = await idbAll();
-  await loadMedia();
   const s = await metaGet('settings');
   if(s){ SET.poste=s.poste||''; SET.sep=s.sep||';'; SET.pii=!!s.pii;
          SET.wedge = s.wedge!==false; SET.scanRe=s.scanRe||''; SET.hash=!!s.hash; SET.hashLen=s.hashLen||12; }
@@ -4181,121 +4604,30 @@ document.addEventListener('keydown',e=>{
    du poste. Elles ne partent dans aucun export de fiches et n'apparaissent
    ni sur le PDF ni dans le CSV.
    ===================================================================== */
-let MEDIA = [];                 // cache mémoire du magasin
-const MURL = {};                // URL d'objet par identifiant de média
-
+/* Aides à l'examen : fiches techniques seules. Le dépôt de photos et de vidéos
+   dans ces fiches a été retiré : les images qui documentent un examen précis
+   appartiennent à la fiche du sujet, pas à une notice générique. Elles se
+   déposent en fin de fiche, dans l'encart « Pièces jointes ». */
 function helpBtn(key){
   if(!key || !HELP[key]) return '';
   return '<button class="hb" title="'+esc(HELP[key].t)+'" onclick="event.stopPropagation();openHelpItem(\''+key+'\')">?</button>';
-}
-async function loadMedia(){ try{ MEDIA = await medAll(); }catch(e){ MEDIA = []; } }
-function mediaFor(key){ return MEDIA.filter(m=>m.key===key); }
-function medURL(m){
-  if(!MURL[m.id]) MURL[m.id] = URL.createObjectURL(m.blob);
-  return MURL[m.id];
-}
-function mediaHTML(key){
-  const ms = mediaFor(key);
-  if(!ms.length) return '';
-  return '<h4 style="margin:14px 0 6px">Vos médias ('+ms.length+')</h4>'+
-    ms.map(m=>'<figure style="margin:0 0 10px">'+
-      (m.type.indexOf('video')===0
-        ? '<video src="'+medURL(m)+'" controls playsinline style="width:100%;max-height:44vh;background:#000;border-radius:6px"></video>'
-        : '<img src="'+medURL(m)+'" alt="'+esc(m.name)+'" style="width:100%;border-radius:6px;border:1px solid var(--bd)">')+
-      '<figcaption style="display:flex;gap:8px;align-items:center;font-size:11.5px;color:var(--ink2);margin-top:3px">'+
-      esc(m.name)+' · '+Math.round(m.size/1024)+' ko'+
-      '<button class="mini" style="margin-left:auto" onclick="delMedia(\''+m.id+'\',\''+key+'\')">supprimer</button>'+
-      '</figcaption></figure>').join('');
 }
 function openHelpItem(key){
   const H = HELP[key]; if(!H){ toast('Aide indisponible'); return; }
   modalHTML('<h3>'+esc(H.t)+'</h3>'+
     '<div class="helpdoc">'+H.h+'</div>'+
-    (H.svg && HELP_SVG[H.svg] ? '<div style="text-align:center;margin:12px 0">'+HELP_SVG[H.svg]+'</div>' : '')+
-    '<div id="helpmedia">'+mediaHTML(key)+'</div>'+
-    '<div class="note" style="margin-top:12px">'+
-    '<b>Ajouter une photo ou une vidéo de démonstration.</b><br>'+
-    '<input type="file" accept="image/*,video/*" id="mfile" style="margin-top:6px" onchange="addMedia(\''+key+'\')">'+
-    '<br><span style="color:var(--ink2)">Le fichier reste sur ce poste, dans la base locale du navigateur. '+
-    'Il n\'entre ni dans le PDF, ni dans le fichier de données, ni dans les sauvegardes de fiches. '+
-    'Le menu <b>Aides à l\'examen</b> permet d\'exporter la médiathèque pour la copier sur un autre poste.</span></div>');
-}
-async function addMedia(key){
-  const el = $('#mfile'); if(!el || !el.files || !el.files[0]) return;
-  const f = el.files[0];
-  if(f.size > 80*1024*1024){ toast('Fichier trop lourd (80 Mo maximum)'); el.value=''; return; }
-  const rec = {id:'m'+Date.now().toString(36)+Math.random().toString(36).slice(2,7),
-               key:key, name:f.name, type:f.type||'application/octet-stream', size:f.size,
-               added:new Date().toISOString(), blob:f};
-  await medPut(rec); await loadMedia();
-  const box = $('#helpmedia'); if(box) box.innerHTML = mediaHTML(key);
-  el.value=''; toast('Média ajouté');
-}
-async function delMedia(id,key){
-  if(!confirm('Supprimer ce média ?')) return;
-  await medDel(id);
-  if(MURL[id]){ URL.revokeObjectURL(MURL[id]); delete MURL[id]; }
-  await loadMedia();
-  const box = $('#helpmedia'); if(box) box.innerHTML = mediaHTML(key);
-  const lib = $('#liblist'); if(lib) lib.innerHTML = libList();
-  toast('Média supprimé');
-}
-
-/* ---------- médiathèque ---------- */
-function libList(){
-  const keys = Object.keys(HELP);
-  return '<table class="ptab" style="width:100%;font-size:12.5px"><thead><tr>'+
-    '<th>Item d\'examen</th><th style="width:70px">Médias</th><th style="width:90px"></th></tr></thead><tbody>'+
-    keys.map(k=>{ const n=mediaFor(k).length;
-      return '<tr><td>'+esc(HELP[k].t)+'</td>'+
-        '<td style="text-align:center">'+(n? '<b>'+n+'</b>' : '—')+'</td>'+
-        '<td><button class="mini" onclick="openHelpItem(\''+k+'\')">ouvrir</button></td></tr>'; }).join('')+
-    '</tbody></table>';
+    (H.svg && HELP_SVG[H.svg] ? '<div style="text-align:center;margin:12px 0">'+HELP_SVG[H.svg]+'</div>' : ''));
 }
 function openHelpLib(){
-  const tot = MEDIA.reduce((s,m)=>s+m.size,0);
+  const keys = Object.keys(HELP);
   modalHTML('<h3>Aides à l\'examen</h3>'+
     '<p style="margin:0 0 10px;color:var(--ink2);font-size:12.5px">'+
-    Object.keys(HELP).length+' fiches techniques. Le bouton <b>?</b> à côté d\'un item ouvre la sienne. '+
-    'Vous pouvez y attacher vos propres photos et vidéos de signes positifs.</p>'+
-    '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">'+
-    '<button class="tb" onclick="exportMedia()">&#11015; Exporter la médiathèque</button>'+
-    '<label class="tb" style="cursor:pointer">&#11014; Importer une médiathèque'+
-    '<input type="file" accept="application/json,.json" style="display:none" onchange="importMedia(this)"></label>'+
-    '<span style="font-size:11.5px;color:var(--ink2);align-self:center">'+
-    MEDIA.length+' média'+(MEDIA.length>1?'s':'')+' · '+(tot/1048576).toFixed(1)+' Mo</span></div>'+
-    '<div id="liblist" style="max-height:52vh;overflow:auto">'+libList()+'</div>');
-}
-const blob2data = b => new Promise(r=>{ const f=new FileReader(); f.onload=()=>r(f.result); f.readAsDataURL(b); });
-async function exportMedia(){
-  if(!MEDIA.length){ toast('Aucun média à exporter'); return; }
-  toast('Préparation de l\'export…');
-  const out = [];
-  for(const m of MEDIA)
-    out.push({id:m.id,key:m.key,name:m.name,type:m.type,size:m.size,added:m.added,data:await blob2data(m.blob)});
-  const txt = JSON.stringify({format:'fiche_neuro_media', v:1, media:out}, null, 0);
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob([txt],{type:'application/json'}));
-  a.download='mediatheque_aides_'+today()+'.json';
-  document.body.appendChild(a); a.click();
-  setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1500);
-}
-async function importMedia(input){
-  const f = input.files && input.files[0]; if(!f) return;
-  try{
-    const o = JSON.parse(await f.text());
-    if(o.format!=='fiche_neuro_media' || !Array.isArray(o.media)) throw new Error('format inattendu');
-    let n=0;
-    for(const m of o.media){
-      const res = await fetch(m.data); const blob = await res.blob();
-      await medPut({id:m.id,key:m.key,name:m.name,type:m.type,size:m.size,added:m.added,blob:blob});
-      n++;
-    }
-    await loadMedia();
-    const lib=$('#liblist'); if(lib) lib.innerHTML=libList();
-    toast(n+' média'+(n>1?'s':'')+' importé'+(n>1?'s':''));
-  }catch(e){ alert('Import impossible : '+e.message); }
-  input.value='';
+    keys.length+' fiches techniques : manœuvre, résultat normal, ce qui compte comme pathologique, '+
+    'et les pièges. Le bouton <b>?</b> à côté d\'un item ouvre la sienne.</p>'+
+    '<div style="max-height:56vh;overflow:auto">'+
+    keys.map(k=>'<button class="tb" style="width:100%;text-align:left;margin-bottom:6px;padding:10px 12px" '+
+      'onclick="openHelpItem(\''+k+'\')">'+esc(HELP[k].t)+'</button>').join('')+
+    '</div>');
 }
 
 </script>
