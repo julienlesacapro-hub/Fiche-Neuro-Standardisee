@@ -545,25 +545,25 @@ const TREP = [{v:1,l:'Épuisable',c:'v-wn'},{v:2,l:'Inépuisable',c:'v-ab'}];
    ===================================================================== */
 const HELP = {
 
-oto:{t:'Otoscopie et classification de Haines et Harris',
+oto:{t:'Otoscopie et classification de Haines et Harris modifiée par RUI et FLOTTES',
  h:'<h4>Manœuvre</h4><p>Tirez le pavillon vers le haut et l\'arrière pour redresser le conduit. '+
    'Repérez d\'abord le manche du marteau et le triangle lumineux, puis balayez les quatre quadrants.</p>'+
    '<h4>Cotation</h4><ul>'+
-   '<li><b>Stade 1</b> — rougeur du manche du marteau, seul signe visible.</li>'+
-   '<li><b>Stade 2</b> — rougeur diffuse du tympan, qui est rétracté.</li>'+
-   '<li><b>Stade 3</b> — épanchement séreux de la caisse : niveau liquide ou bulles derrière un tympan ambré.</li>'+
-   '<li><b>Stade 4</b> — épanchement de sang dans la caisse : tympan bleu-violacé.</li>'+
+   '<li><b>Stade 1</b> — rougeur du manche du marteau, seul signe visible. Triangle lumineux présent.</li>'+
+   '<li><b>Stade 2</b> — rougeur diffuse du tympan, qui est rétracté. Triangle lumineux présent.</li>'+
+   '<li><b>Stade 3</b> — épanchement séreux de la caisse : niveau liquide ou bulles derrière un tympan ambré. Absence de triangle lumineux.</li>'+
+   '<li><b>Stade 4</b> — épanchement de sang dans la caisse : tympan bleu-violacé. Absence de triangle lumineux.</li>'+
    '<li><b>Stade 5</b> — perforation tympanique.</li></ul>'+
    '<h4>Pièges</h4><p>Un bouchon de cérumen fait conclure à tort. Une rougeur du manche du marteau '+
    'peut suivre un simple Valsalva forcé récent, sans barotraumatisme. '+
-   '<b>Devant un stade 5, ne faites pas de Valsalva et n\'instillez rien dans le conduit.</b></p>'},
+   '<b>Devant un stade 5, ne faites pas de Valsalva et n\'instillez aucun médicament ototoxique dans le conduit.</b></p>'},
 
 valsalva:{t:'Perméabilité tubaire — manœuvre de Valsalva',
  h:'<h4>Manœuvre</h4><p>Bouche fermée, narines pincées, le sujet souffle doucement. '+
    'Vous observez le tympan pendant l\'effort.</p>'+
    '<h4>Résultat</h4><ul>'+
    '<li><b>Perméable</b> — le tympan bombe franchement, souvent avec un claquement audible.</li>'+
-   '<li><b>Difficile</b> — mouvement minime, ou obtenu au prix d\'un effort important, ou d\'un seul côté.</li>'+
+   '<li><b>Difficile</b> — mouvement minime ou franchement retardé, ou obtenu au prix d\'un effort important, ou d\'un seul côté.</li>'+
    '<li><b>Impossible</b> — aucun mouvement tympanique.</li></ul>'+
    '<h4>Contre-indications</h4><p>Perforation tympanique, vertige déclenché par la manœuvre, '+
    'suspicion de barotraumatisme de l\'oreille interne. Dans ces cas, notez « non réalisé » en commentaire '+
@@ -626,7 +626,7 @@ rot:{t:'Réflexes ostéotendineux : cotation, diffusion, polycinétisme',
    '<li><b>Très vif</b> — réponse ample et rapide.</li></ul>'+
    '<h4>Les deux qualités complémentaires</h4><ul>'+
    '<li><b>Polycinétique</b> — une seule percussion déclenche plusieurs secousses successives.</li>'+
-   '<li><b>Étendu</b> (ou diffusé) — la réponse déborde le muscle attendu : percuter le bicipital fait '+
+   '<li><b>Étendu</b> (ou diffusé) — la réponse déborde le muscle attendu : par exemple percuter le bicipital fait '+
    'aussi répondre les fléchisseurs des doigts, percuter le rotulien fait répondre les adducteurs, '+
    'parfois du côté opposé.</li></ul>'+
    '<p>Ces deux qualités, avec l\'aire réflexogène élargie, signent un syndrome pyramidal bien avant '+
@@ -640,7 +640,7 @@ trep:{t:'Trépidation épileptoïde (clonus) : épuisable ou inépuisable',
    'brusquement vers le bas, puis maintenez.</p>'+
    '<h4>Cotation</h4><ul>'+
    '<li><b>Épuisable</b> — quelques secousses (classiquement moins de cinq à six) puis arrêt malgré '+
-   'la pression maintenue. Peut se voir chez un sujet anxieux ou hyperréflexique sain.</li>'+
+   'la pression maintenue. Peut se voir chez un sujet hypothermique ou hyperréflexique sain. Le côter pathologique jusqu'à preuve du contraire. </li>'+
    '<li><b>Inépuisable</b> — les secousses se poursuivent tant que vous maintenez la pression. '+
    '<b>Toujours pathologique</b> : syndrome pyramidal.</li></ul>'+
    '<p>Le caractère se cote séparément à droite et à gauche : une asymétrie vaut autant que la présence.</p>'},
@@ -671,18 +671,16 @@ vac:{t:'Contraction anale volontaire et pression anale profonde',
 
 derm:{t:'Tester les métamères : tact léger et piqûre',
  h:'<h4>Tact léger</h4><p>Effleurez avec un morceau de coton, sans appuyer. Le point de référence est '+
-   'la joue, supposée normale : montrez-la au sujet d\'abord, puis comparez chaque métamère à cette référence.</p>'+
-   '<h4>Piqûre</h4><p>Pointe mousse d\'une épingle de sûreté à usage unique. Le sujet doit distinguer '+
-   'la pointe de la tête ronde <b>les yeux fermés</b>. Ne pas savoir distinguer les deux compte comme 0, '+
-   'même si le sujet sent quelque chose.</p>'+
+   'la joue, supposée normale, ou la face externe du bras : montrez-la au sujet d\'abord, puis comparez chaque métamère à cette référence.</p>'+
+   '<h4>Piqûre</h4><p>Pointe mousse d\'un manche de marteau à réflexe.'+
    '<h4>Cotation</h4><ul>'+
    '<li><b>2, normale</b> — perception identique à la joue.</li>'+
    '<li><b>1, hypoesthésie ou hyperesthésie</b> — perception diminuée ou exagérée. Les deux valent 1 '+
    'dans le score ASIA, la distinction est conservée pour le compte rendu.</li>'+
-   '<li><b>0, anesthésie</b> — aucune perception, ou pointe et tête non distinguées.</li>'+
+   '<li><b>0, anesthésie</b> — aucune perception. </li>'+
    '<li><b>NT</b> — non testable : pansement, plâtre, sujet non coopérant.</li></ul>'+
    '<h4>Méthode</h4><p>Descendez de haut en bas jusqu\'au premier niveau anormal, puis servez-vous '+
-   'du report vers le bas. Testez toujours le point de repère anatomique de la norme, indiqué sur chaque ligne.</p>'},
+   'du report vers le bas si l\'anomalie se répète sous l\'ensemble du niveau. </p>'},
 
 pal:{t:'Pallesthésie au diapason',
  h:'<h4>Manœuvre</h4><p>Diapason 128 Hz mis en vibration, pied posé fermement sur le relief osseux. '+
@@ -690,7 +688,7 @@ pal:{t:'Pallesthésie au diapason',
    'en arrêtant vous-même le diapason à un moment que le sujet ne voit pas.</p>'+
    '<h4>Cotation</h4><ul>'+
    '<li><b>Normale</b> — vibration perçue et fin de vibration correctement annoncée.</li>'+
-   '<li><b>Diminuée</b> — vibration perçue plus brièvement que sur un relief sain de référence.</li>'+
+   '<li><b>Diminuée</b> — vibration perçue plus brièvement que sur un relief sain de référence ou de manière diminuée.</li>'+
    '<li><b>Exagérée</b> — perception anormalement vive ou désagréable.</li>'+
    '<li><b>Abolie</b> — vibration non perçue.</li></ul>'+
    '<p>La pallesthésie explore les cordons postérieurs. Elle <b>n\'entre pas</b> dans le score ASIA, '+
@@ -698,7 +696,7 @@ pal:{t:'Pallesthésie au diapason',
 
 nys:{t:'Nystagmus, VNS et NIV',
  h:'<h4>Nystagmus</h4><p>Regard centré puis excursions de 30° environ à droite, à gauche, en haut et en bas. '+
-   'Ne dépassez pas 30° : au-delà, un nystagmus physiologique de fin de course apparaît chez tout le monde. '+
+   'Ne dépassez pas 30° : au-delà, un nystagmus physiologique de fin de course apparaît chez la plupart des sujets sains. '+
    'Le côté noté est celui de la <b>secousse rapide</b>.</p>'+
    '<h4>VNS — vidéonystagmoscopie</h4><p>Sous lunettes occultantes, la fixation étant supprimée, '+
    'un nystagmus d\'origine périphérique apparaît ou s\'amplifie. Un nystagmus qui ne change pas '+
@@ -734,7 +732,7 @@ sphincter:{t:'Troubles sphinctériens et résidu mictionnel',
    '<h4>Méthode</h4><p>Mesurez avant la miction, faites uriner, mesurez à nouveau dans les cinq minutes. '+
    'Un résidu post-mictionnel supérieur à 100 mL est anormal. Au-delà de 300 mL, discutez le sondage.</p>'+
    '<h4>En médecine de plongée</h4><p>Un trouble mictionnel après plongée est un signe d\'accident '+
-   'de désaturation médullaire jusqu\'à preuve du contraire, même isolé.</p>'}
+   'de désaturation médullaire sévère jusqu\'à preuve du contraire, même isolé.</p>'}
 
 };
 
