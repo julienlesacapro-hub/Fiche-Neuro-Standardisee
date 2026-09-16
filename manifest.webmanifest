@@ -8,19 +8,51 @@
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "display_override": [
+    "window-controls-overlay",
+    "standalone",
+    "minimal-ui"
+  ],
   "orientation": "any",
   "theme_color": "#101725",
   "background_color": "#f4f6f9",
-  "categories": ["medical", "health", "productivity"],
+  "categories": [
+    "medical",
+    "health",
+    "productivity"
+  ],
   "prefer_related_applications": false,
   "icons": [
-    { "src": "icons/icon-192.png",          "sizes": "192x192",   "type": "image/png", "purpose": "any" },
-    { "src": "icons/icon-512.png",          "sizes": "512x512",   "type": "image/png", "purpose": "any" },
-    { "src": "icons/icon-192-maskable.png", "sizes": "192x192",   "type": "image/png", "purpose": "maskable" },
-    { "src": "icons/icon-512-maskable.png", "sizes": "512x512",   "type": "image/png", "purpose": "maskable" },
-    { "src": "icons/icon-1024.png",         "sizes": "1024x1024", "type": "image/png", "purpose": "any" },
-    { "src": "icons/favicon-32.png",        "sizes": "32x32",     "type": "image/png", "purpose": "any" }
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-192-maskable.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icons/icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icons/favicon-32.png",
+      "sizes": "32x32",
+      "type": "image/png",
+      "purpose": "any"
+    }
   ],
   "shortcuts": [
     {
@@ -28,7 +60,13 @@
       "short_name": "Nouvelle",
       "description": "Ouvrir une fiche vierge",
       "url": "./?action=new",
-      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+      "icons": [
+        {
+          "src": "icons/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
     }
   ]
 }

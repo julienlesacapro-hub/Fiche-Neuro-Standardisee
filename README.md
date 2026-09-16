@@ -7,7 +7,7 @@ Deux sorties, depuis la même saisie :
 
 1. une fiche A4 imprimable et enregistrable en PDF (3 pages) ;
 2. un fichier `donnees_neuro.csv` unique qui s'incrémente, une ligne par fiche,
-   481 colonnes, prêt pour R, Python, SPSS, Jamovi ou Excel.
+   488 colonnes, prêt pour R, Python, SPSS, Jamovi ou Excel.
 
 Aucune donnée ne quitte l'appareil. Pas de serveur, pas de compte, pas de
 requête réseau. Le code entier tient dans `index.html`.
@@ -40,6 +40,11 @@ l'état du cache.
 
 ## Publier sur GitHub Pages
 
+**La procédure détaillée, pas à pas, est dans [`docs/PUBLIER.md`](docs/PUBLIER.md)** :
+interface web et ligne de commande, authentification par jeton, activation de Pages,
+vérification du déploiement, et les pièges. Ce qui suit en est le résumé.
+
+
 ```bash
 git clone https://github.com/julienlesacapro-hub/Fiche-Neuro-Standardisee.git
 cd Fiche-Neuro-Standardisee
@@ -47,7 +52,7 @@ cd Fiche-Neuro-Standardisee
 # copiez ici le contenu de ce dossier (index.html, icons/, manifest, sw.js, docs/, native/)
 
 git add .
-git commit -m "Fiche neuro standardisée v5.0.0"
+git commit -m "Fiche neuro standardisée v6.0.0"
 git push origin main
 ```
 
@@ -66,12 +71,12 @@ en HTTPS, condition nécessaire pour l'installation et le service worker.
 ### Publier une mise à jour
 
 Modifiez `index.html`, incrémentez `VERSION` en tête de `sw.js`
-(`v5.0.0` → `v5.0.1`), poussez. Sans ce changement de version, les appareils
+(`v6.0.0` → `v6.0.1`), poussez. Sans ce changement de version, les appareils
 déjà installés gardent l'ancienne copie en cache.
 
 ```bash
-sed -i "s/const VERSION = 'v5.0.0'/const VERSION = 'v5.0.1'/" sw.js
-git commit -am "v5.0.1" && git push
+sed -i "s/const VERSION = 'v6.0.0'/const VERSION = 'v6.0.1'/" sw.js
+git commit -am "v6.0.1" && git push
 ```
 
 Au lancement suivant avec réseau, l'application signale la mise à jour et
@@ -93,16 +98,30 @@ serveur interne à l'établissement, ou distribuez `index.html` par clé USB.
 ## Contenu du dépôt
 
 ```
-index.html                 application complète, fichier unique, 190 ko
+index.html                 application complète, fichier unique, 253 ko
 manifest.webmanifest       déclaration d'installation (nom, icônes, plein écran)
 sw.js                      service worker : démarrage hors ligne, mises à jour
 icons/                     icônes 32 à 1024 px, dont deux masquables Android
+brand_logo_source.png      le blason, fichier maître, pour régénérer les icônes
 docs/
-  dictionnaire_variables.csv   481 variables, libellé et codage de chacune
+  PUBLIER.md                   publier et mettre à jour, pas à pas
+  dictionnaire_variables.csv   488 variables, libellé et codage de chacune
   NOTICE.md                    mode d'emploi clinique et technique
 native/                    projet Capacitor pour Android et iOS
 .nojekyll                  désactive le moteur Jekyll de GitHub Pages
 ```
+
+---
+
+## Aides à l'examen et médias
+
+Un bouton **?** ouvre, à côté des items techniques, la manœuvre et son interprétation.
+Vous pouvez y attacher vos propres photos et vidéos de signes positifs : elles restent
+dans la base locale du poste et n'entrent ni dans le PDF ni dans le fichier de données.
+Le menu **Aides à l'examen** exporte cette médiathèque pour la copier sur un autre poste.
+
+Une vidéo d'un signe positif filmée sur un patient reste une donnée de santé identifiante.
+Filmez un volontaire, floutez, ou recueillez et conservez un consentement écrit.
 
 ---
 
@@ -130,7 +149,8 @@ sans doublon ni écrasement.
 ## Score ASIA : lisez ceci
 
 L'outil calcule les totaux ISNCSCI, les niveaux sensitifs et moteurs, le NLI
-et le grade AIS. Ce calcul reste **indicatif**.
+et le grade AIS, à partir des cotations portées sur la silhouette métamérique
+ou dans le tableau des 28 métamères. Ce calcul reste **indicatif**.
 
 Les totaux, le niveau sensitif et le niveau moteur des segments pourvus d'un
 myotome clé suivent la norme. Dans les segments qui en sont dépourvus (C1 à C4,
@@ -146,7 +166,8 @@ publication.
 ## Statut réglementaire
 
 Cet outil calcule un score de Glasgow, un nombre d'anomalies, un indicateur de
-cohérence, une synthèse rédigée et un grade AIS. Le MDCG 2019-11 classe ce
+cohérence, une synthèse rédigée, un grade AIS et une interprétation du couple
+Weber / Rinne. Le MDCG 2019-11 classe ce
 type d'aide à la décision en dispositif médical de classe IIa au minimum
 (règle 11 du règlement UE 2017/745).
 

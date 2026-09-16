@@ -1,4 +1,4 @@
-# Fiche d'examen neurologique standardisé — version 5
+# Fiche d'examen neurologique standardisé — version 6
 
 Fichier unique : `fiche_neuro.html`. Aucun réseau, aucune dépendance externe, aucun compte.
 Double-cliquez dessus, il s'ouvre dans votre navigateur et tout fonctionne.
@@ -15,7 +15,7 @@ plein écran, démarrage sans réseau. Voir *Installer sur téléphone et tablet
 | Fiche imprimable et enregistrable | PDF, 3 pages A4 | Bouton **PDF / Imprimer**, puis *Enregistrer au format PDF* ou *Microsoft Print to PDF* |
 | Fichier exploitable, incrémental | `donnees_neuro.csv` | Réécrit automatiquement à chaque enregistrement de fiche |
 
-Un seul CSV pour tous les sujets et tous les examens. Une ligne = une fiche. 481 colonnes.
+Un seul CSV pour tous les sujets et tous les examens. Une ligne = une fiche. 488 colonnes.
 
 Les trois pages du PDF : examen clinique et ORL, grille ASIA complète, schémas corporels et
 conclusion.
@@ -61,6 +61,23 @@ mises à jour disponibles et permet de vider le cache. Vider le cache n'efface a
 
 Sur iPhone et iPad, l'écriture directe du CSV dans un dossier n'existe pas : Safari n'implémente
 pas cette API. Exportez à la main, puis fusionnez sur le poste principal.
+
+---
+
+## Retrouver un sujet
+
+Trois entrées mènent au même résultat.
+
+1. **Le numéro de dossier.** Tapez-le dans le premier champ : s'il est déjà connu, l'identité et
+   les données de l'accident se remplissent seules, et l'examen précédent est proposé en grisé.
+2. **Le bouton Rechercher**, à côté de ce champ. Une fenêtre accepte un numéro, un nom, un prénom
+   ou une date de naissance, écrite 12/04/1988 ou 1988-04-12 indifféremment. Les accents et la
+   casse sont ignorés. Cliquez le sujet : tout se remplit.
+3. **Le nom saisi directement.** Si vous remplissez le nom ou la date de naissance avant le numéro
+   de dossier et qu'un sujet correspond, un bandeau propose de reprendre son dossier.
+
+La recherche porte sur les fiches présentes dans la base locale de ce poste. Un sujet examiné
+ailleurs n'apparaît qu'après fusion du fichier de données.
 
 ---
 
@@ -138,12 +155,32 @@ Une cellule vide veut toujours dire non testé, dans les deux cas.
 Les sensibilités épicritique et thermoalgique se cotent sur les **28 métamères** de la norme
 ISNCSCI, de C2 à S4-5, côté droit et côté gauche. Chaque case propose quatre boutons :
 
-| Bouton | Valeur | Sens |
-|---|---|---|
-| **2** | 2 | normale |
-| **1** | 1 | altérée (hypo ou hyper) |
-| **0** | 0 | absente |
-| **NT** | 9 | non testable |
+| Bouton | Valeur enregistrée | Sens | Points ASIA |
+|---|---|---|---|
+| **2** | 2 | normale | 2 |
+| **↓** | 1 | hypoesthésie | 1 |
+| **↑** | 3 | hyperesthésie | 1 |
+| **0** | 0 | anesthésie | 0 |
+| **NT** | 9 | non testable | exclu du total |
+
+Hypo- et hyperesthésie valent toutes deux 1 point dans la norme ISNCSCI. L'outil garde la
+distinction pour le compte rendu et n'en fait qu'un seul point pour le score. La pallesthésie
+n'entre pas dans le score ASIA.
+
+Deux façons de remplir, au choix, sur le même écran.
+
+**Le schéma** (vue par défaut). Deux silhouettes, antérieure et postérieure, où les métamères
+sont dessinés. Choisissez la cotation dans la barre, puis cliquez :
+
+- en mode **par zone anatomique**, un clic sur la jambe, le thorax ou la main cote d'un coup
+  tous les métamères de cette zone. C'est la vitesse de la version précédente ;
+- en mode **par métamère**, un clic ne cote qu'une bande. C'est la précision quand elle sert.
+
+Vous voyez immédiatement où passe le niveau : le vert s'arrête, le rose commence.
+
+**Le tableau des 28 métamères**, accessible par l'onglet voisin, reste la vue exhaustive :
+une ligne par niveau, le repère anatomique de la norme rappelé sur chaque ligne, et le chevron
+qui reporte une ligne sur tous les niveaux situés en dessous.
 
 Trois raccourcis rendent la saisie rapide :
 
@@ -175,8 +212,11 @@ toute décision.
 
 L'encart ORL cote, à droite et à gauche :
 
-- **otoscopie** selon la classification de Teed : `0 = normal`, `1` congestion du manche du marteau,
-  `2` congestion diffuse du tympan, `3` hémorragie intratympanique, `4` perforation ;
+- **otoscopie** selon la classification de **Haines et Harris modifiée par Rui et Flottes** :
+  `1` rougeur du manche du marteau, `2` rougeur diffuse du tympan qui est rétracté,
+  `3` épanchement séreux de la caisse, `4` épanchement de sang dans la caisse,
+  `5` perforation tympanique. Le `0` ne fait pas partie de la classification : il est ajouté
+  pour coter un tympan normal, qu'il faut bien pouvoir enregistrer ;
 - **épanchement rétrotympanique** : présent ou absent ;
 - **manœuvre de Valsalva** : `2 = perméable`, `1 = difficile`, `0 = impossible` ;
 - **Weber** : non latéralisé, latéralisé à droite, latéralisé à gauche ;
@@ -212,6 +252,31 @@ Dans le fichier de données, chaque position devient une colonne binaire (`nys_r
 
 Le caractère **épuisable ou inépuisable** se cote séparément à droite et à gauche. Les deux champs
 apparaissent quand la trépidation est bilatérale, un seul quand elle est unilatérale.
+
+---
+
+## Aides à l'examen
+
+Un bouton **?** apparaît à côté des items techniquement délicats : Hoffmann, Babinski,
+trépidations, réflexes polycinétiques et étendus, Weber, Rinne, Valsalva, otoscopie, cotation MRC,
+VAC et DAP, nystagmus, VNS, NIV, Barré, Mingazzini, Glasgow, test des métamères, pallesthésie,
+résidu mictionnel.
+
+Chaque fiche donne la manœuvre, le résultat normal, ce qui compte comme pathologique et les pièges
+courants. Quatre d'entre elles portent un schéma au trait.
+
+### Ajouter vos propres photos et vidéos
+
+Dans une fiche technique, le champ en bas accepte une image ou une vidéo. Le fichier est stocké
+dans la base locale du navigateur de ce poste. Il n'entre **ni dans le PDF, ni dans le fichier de
+données, ni dans les sauvegardes de fiches**.
+
+Le menu **Aides à l'examen** liste toutes les fiches et le nombre de médias attachés, et permet
+d'exporter la médiathèque en un seul fichier JSON pour la copier sur un autre poste.
+
+Une réserve sur le contenu : une vidéo d'un signe positif filmée sur un patient est une donnée de
+santé identifiante. Filmez un volontaire, ou floutez, ou recueillez un consentement écrit et
+conservez-le. L'outil ne gère pas ce consentement à votre place.
 
 ---
 
@@ -311,7 +376,7 @@ d = pd.read_csv("donnees_neuro.csv", sep=";", encoding="utf-8-sig")
 
 - Séparateur par défaut : point-virgule. Modifiable dans **Exporter** (virgule pour R et Python).
 - **Cellule vide = valeur manquante (NA).** Aucune valeur par défaut n'est inventée.
-- `dictionnaire_variables.csv` donne le libellé et le codage des 481 colonnes.
+- `dictionnaire_variables.csv` donne le libellé et le codage des 488 colonnes.
 
 ### Codages principaux
 
@@ -325,9 +390,11 @@ d = pd.read_csv("donnees_neuro.csv", sep=";", encoding="utf-8-sig")
 | Force motrice | MRC `0` à `5` |
 | Douleur | `eva_type` : `1 = EVA`, `2 = EN`, `3 = non évaluable` ; `eva_score` : `0` à `10` |
 | Reliefs de pallesthésie | `1 = diminuée`, `2 = exagérée`, `3 = abolie`, `0 = normale` |
-| Métamères (ISNCSCI) | `2 = normal`, `1 = altéré`, `0 = absent`, `9 = non testable`. Attention : ici `0` est le maximum de gravité |
+| Métamères (ISNCSCI) | `2 = normale`, `1 = hypoesthésie`, `3 = hyperesthésie`, `0 = anesthésie`, `9 = non testable`. Attention : ici `0` est le maximum de gravité. Le score ASIA compte `1` et `3` pour 1 point |
 | Lésions cutanées | `1 = marbrures`, `2 = érythème`, `3 = œdème`, `4 = prurit`, `5 = emphysème`, `6 = purpura`, `0 = aucune` |
-| Otoscopie | Teed `0` à `4` ; `valsalva_*` : `2 = perméable`, `1 = difficile`, `0 = impossible` |
+| Otoscopie | Haines et Harris modifiée `0` à `5` ; `valsalva_*` : `2 = perméable`, `1 = difficile`, `0 = impossible` |
+| Interprétation acoumétrique | `orl_interp` : `0` symétrique, `1` transmission D, `2` transmission G, `3` transmission bilatérale, `4` perception D, `5` perception G, `8` discordant |
+| Déficit moteur par membre | `def_msd`, `def_msg`, `def_mid`, `def_mig`, `def_sph` : `1 = OUI`, `0 = NON` |
 | Weber, Rinne | `weber` : `0 = non latéralisé`, `1 = droite`, `2 = gauche` ; `rinne_*` : `1 = positif`, `0 = négatif` |
 | Grade AIS | `A` à `E`, texte. `asia_nli` : métamère, texte |
 | Zones des signes subjectifs | `1` à `6` selon le ressenti, `0 = aucun` |
@@ -352,6 +419,49 @@ d = pd.read_csv("donnees_neuro.csv", sep=";", encoding="utf-8-sig")
 
 Pour les analyses courantes, les colonnes de synthèse suffisent. Les colonnes de détail servent
 aux analyses topographiques fines.
+
+---
+
+## Changements de la version 6
+
+- **Recherche d'un sujet** par numéro de dossier, nom, prénom ou date de naissance, avec reprise
+  automatique de l'identité et des données de l'accident. Si vous tapez un nom déjà connu sans
+  numéro de dossier, l'outil propose le dossier correspondant.
+- **Otoscopie** recodée selon Haines et Harris modifiée par Rui et Flottes, cinq stades.
+- **Interprétation automatique du couple Weber / Rinne** : transmission, perception, atteinte
+  bilatérale, ou signalement d'une discordance entre les deux tests. Affichée dans l'encart ORL,
+  imprimée et versée au fichier de données.
+- **Aides à l'examen** : un bouton **?** à côté des items techniques ouvre la manœuvre, le résultat
+  normal, ce qui compte comme pathologique et les pièges. Seize fiches, avec des schémas au trait
+  pour le Weber, le Rinne, le Hoffmann et le Babinski.
+- **Vos propres photos et vidéos** peuvent être attachées à chaque fiche technique. Elles restent
+  sur le poste, dans la base locale, et n'entrent ni dans le PDF ni dans le fichier de données.
+  Le menu **Aides à l'examen** permet d'exporter la médiathèque pour la copier sur un autre poste.
+- **Force motrice par membre** : on demande d'abord s'il existe un déficit, membre par membre.
+  Une réponse NON cote les cinq myotomes clés à 5 et referme le détail, qui reste ouvrable pour
+  corriger un item isolé. Même principe pour le sphincter anal. Un membre déclaré déficitaire
+  mais coté sans déficit déclenche un avertissement.
+- **Motricité globale** (paralysie faciale, Barré, Mingazzini) déplacée en tête de l'encart force :
+  c'est le dépistage qui passe avant le testing segmentaire.
+- **Sensibilités sur silhouette métamérique** : les métamères sont dessinés sur les figures
+  antérieure et postérieure. Remplissage par zone anatomique ou métamère par métamère, avec une
+  cotation clinique (normale, hypoesthésie, hyperesthésie, anesthésie, non testable) qui alimente
+  directement le score ASIA.
+- **Page 2 du PDF** : la grille ASIA est complétée par les deux cartes en couleur, tact léger et
+  piqûre, lisibles d'un coup d'œil là où une grille de 112 cases demande un déchiffrage.
+- **Nouvelle icône** : casque de plongée au trait, dessin original.
+
+### Ce qui change dans le fichier de données
+
+| Variable | Changement |
+|---|---|
+| `oto_D`, `oto_G` | échelle Teed 0-4 remplacée par Haines et Harris 0-5. **Les anciennes valeurs ne se traduisent pas automatiquement** : un `3` voulait dire hémorragie intratympanique, il veut maintenant dire épanchement séreux. Si vous aviez déjà des fiches, reprenez ces deux colonnes à la main. |
+| `sens_lt_*`, `sens_pp_*` | le code `3` (hyperesthésie) s'ajoute. Les codes 0, 1, 2 et 9 gardent leur sens. |
+| `orl_interp`, `orl_interp_txt` | nouvelles, déduites du Weber et du Rinne. |
+| `def_msd`, `def_msg`, `def_mid`, `def_mig`, `def_sph` | nouvelles. |
+
+Le fichier passe de 481 à 488 colonnes. Un CSV de la version 5 se fusionne sans perte :
+les colonnes absentes sortent vides.
 
 ---
 
