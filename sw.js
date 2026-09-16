@@ -7,7 +7,7 @@
    Les fiches ne transitent PAS par ce cache : elles vivent dans IndexedDB
    et dans le dossier choisi par l'utilisateur. Vider le cache ne les efface pas.
 */
-const VERSION = 'v6.1.0';
+const VERSION = 'v6.1.2';
 const CACHE   = 'fiche-neuro-' + VERSION;
 
 const SHELL = [
