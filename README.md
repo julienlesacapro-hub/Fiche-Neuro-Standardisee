@@ -1,13 +1,16 @@
-# Fiche d'examen neurologique standardisé
+# ADP — accident de plongée
 
-Outil de saisie pour l'examen neurologique en médecine hyperbare et lors des
-accidents de désaturation. Auteur : Dr Julien Lesaca.
+Outil de saisie pour la prise en charge d'un accident de plongée en médecine
+hyperbare : consultation initiale en urgence, consultations de suivi, compte
+rendu de séjour. Auteur : Dr Julien Lesaca. Version 7.1.0.
 
 Deux sorties, depuis la même saisie :
 
-1. une fiche A4 imprimable et enregistrable en PDF (3 pages) ;
+1. un document A4 imprimable et enregistrable en PDF, dont la forme suit le type
+   de consultation (compte rendu de prise en charge, fiche de suivi, compte rendu
+   de séjour) ;
 2. un fichier `donnees_neuro.csv` unique qui s'incrémente, une ligne par fiche,
-   500 colonnes, prêt pour R, Python, SPSS, Jamovi ou Excel.
+   677 colonnes, prêt pour R, Python, SPSS, Jamovi ou Excel.
 
 Aucune donnée ne quitte l'appareil. Pas de serveur, pas de compte, pas de
 requête réseau. Le code entier tient dans `index.html`.

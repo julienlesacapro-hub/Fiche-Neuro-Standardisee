@@ -37,13 +37,13 @@ souvent, installez git une bonne fois.
 1. Ouvrez `https://github.com/julienlesacapro-hub/Fiche-Neuro-Standardisee`.
 2. Si le dépôt est vide, GitHub affiche un encadré avec un lien **uploading an existing file**.
    Sinon : bouton **Add file** en haut à droite, puis **Upload files**.
-3. **Dézippez d'abord** `Fiche-Neuro-Standardisee-v6.zip` sur votre bureau. Vous obtenez un
+3. **Dézippez d'abord** `Fiche-Neuro-Standardisee-v6.3.zip` sur votre bureau. Vous obtenez un
    dossier contenant `index.html`, `manifest.webmanifest`, `sw.js`, `icons/`, `docs/`, `native/`,
    `README.md`, `.gitignore`, `.nojekyll`.
 4. Ouvrez ce dossier, **sélectionnez tout son contenu** (Ctrl+A) et glissez-le dans la zone
    de dépôt de GitHub. Ne glissez pas le dossier parent : ses fichiers se retrouveraient
    dans un sous-dossier et l'adresse publique ne fonctionnerait pas.
-5. En bas, dans **Commit changes**, écrivez un message : `Fiche neuro v6.1.0`.
+5. En bas, dans **Commit changes**, écrivez un message : `Fiche neuro v6.3.0`.
 6. Laissez **Commit directly to the main branch** coché. Cliquez **Commit changes**.
 
 > Le fichier `.nojekyll` commence par un point. Certains systèmes le cachent.
@@ -70,10 +70,10 @@ cd ~/Documents
 git clone https://github.com/julienlesacapro-hub/Fiche-Neuro-Standardisee.git
 cd Fiche-Neuro-Standardisee
 
-# copiez ici le contenu dézippé de Fiche-Neuro-Standardisee-v6.zip
+# copiez ici le contenu dézippé de Fiche-Neuro-Standardisee-v6.3.zip
 
 git add -A
-git commit -m "Fiche neuro v6.1.0"
+git commit -m "Fiche neuro v6.3.0"
 git push origin main
 ```
 
@@ -141,22 +141,69 @@ copie et ne va pas voir si vous avez publié autre chose.
 Ouvrez `sw.js`, ligne 10 :
 
 ```js
-const VERSION = 'v6.1.0';
+const VERSION = 'v6.3.0';
 ```
 
-Changez-la à chaque publication : `v6.1.1`, `v6.2.0`, peu importe la convention, du moment
+Changez-la à chaque publication : `v6.3.1`, `v6.3.0`, peu importe la convention, du moment
 que la chaîne change.
 
 En ligne de commande :
 
 ```bash
-sed -i "s/const VERSION = 'v6.1.0'/const VERSION = 'v6.1.1'/" sw.js
+sed -i "s/const VERSION = 'v6.3.0'/const VERSION = 'v6.3.1'/" sw.js
 ```
 
 Dans l'interface web : ouvrez `sw.js` dans le dépôt, cliquez le **crayon** en haut à droite,
 modifiez la ligne, **Commit changes**.
 
-## 2.2 Remplacer les fichiers — voie git
+## 2.2 Faut-il redéposer tout le dossier ?
+
+**Non.** Seuls les fichiers qui ont changé. GitHub compare fichier par fichier : un fichier
+redéposé à l'identique ne produit aucune modification, il n'apparaît même pas dans le commit.
+
+Voici ce qui bouge réellement d'une version à l'autre de ce projet.
+
+| Fichier | Change quand |
+|---|---|
+| `index.html` | à chaque version : c'est l'application entière, en un seul fichier |
+| `sw.js` | à chaque publication, pour le numéro de version |
+| `docs/NOTICE.md` | quand le mode d'emploi évolue |
+| `docs/dictionnaire_variables.csv` | quand des variables sont ajoutées ou recodées |
+| `icons/`, `brand_logo_source.png` | uniquement si le logo change |
+| `manifest.webmanifest` | rarement : nom, couleurs, liste des icônes |
+| `native/` | uniquement si vous compilez l'application native |
+| `README.md`, `docs/PUBLIER.md` | rarement |
+
+**La mise à jour courante, c'est donc deux fichiers : `index.html` et `sw.js`.**
+
+### Le piège des sous-dossiers, voie web
+
+Quand vous glissez un fichier seul dans **Upload files**, il atterrit **à la racine du dépôt**,
+quel que soit son emplacement d'origine. Glisser `NOTICE.md` créerait un `NOTICE.md` à la racine
+et laisserait `docs/NOTICE.md` inchangé.
+
+Trois façons correctes de modifier un fichier rangé dans un sous-dossier :
+
+1. **Glisser le dossier entier** (`docs`) plutôt que le fichier. Les navigateurs transmettent
+   l'arborescence, GitHub la reconstitue.
+2. **Naviguer d'abord.** Ouvrez `docs` dans le dépôt, puis **Add file → Upload files** depuis
+   cet emplacement : le dépôt se fait dans `docs`.
+3. **Éditer en ligne.** Ouvrez le fichier, cliquez le crayon, modifiez, **Commit changes**.
+   C'est la voie la plus rapide pour `sw.js`, où une seule ligne change.
+
+Les fichiers à la racine — `index.html`, `sw.js`, `manifest.webmanifest`, `README.md` — n'ont
+pas ce problème : glissez-les directement.
+
+### Et si je redépose tout quand même ?
+
+Rien de grave. GitHub n'enregistre que les différences, le commit reste propre. Vous payez
+seulement le temps de téléversement, ici environ 8 Mo dont l'essentiel est `native/` et le
+fichier maître du logo. Sur une connexion correcte, une minute.
+
+C'est même la voie à préférer quand vous recevez une archive complète : vous êtes certain de
+ne rien oublier. Réservez le dépôt sélectif aux corrections ponctuelles.
+
+## 2.3 Remplacer les fichiers — voie git
 
 ```bash
 cd ~/Documents/Fiche-Neuro-Standardisee
@@ -166,20 +213,20 @@ git pull                       # récupère ce qui aurait été modifié en lign
 
 git status                     # LISEZ CETTE LISTE (voir partie 3)
 git add -A
-git commit -m "v6.1.1 : correction de l'encart ORL"
+git commit -m "v6.3.1 : correction de l'encart ORL"
 git push origin main
 ```
 
 `git add -A` prend en compte les ajouts, les modifications **et les suppressions**.
 C'est ce qui manque à la voie web.
 
-## 2.3 Remplacer les fichiers — voie web, avec sa précaution
+## 2.4 Remplacer les fichiers — voie web, avec sa précaution
 
 **Add file → Upload files**, glissez les nouveaux fichiers, commit. GitHub écrase les fichiers
 de même nom.
 
 **Mais GitHub ne supprime pas les fichiers que vous n'avez pas re-déposés.** Si une version
-retire un fichier — c'est le cas de `icons/icon-1024.png`, sorti du dossier web en v6.1 —
+retire un fichier — c'est le cas de `icons/icon-1024.png`, sorti du dossier web depuis la v6.1 —
 il restera en ligne indéfiniment.
 
 Pour supprimer un fichier : ouvrez-le dans le dépôt, bouton **⋯** en haut à droite du cadre,
@@ -189,7 +236,7 @@ Tant que vous ne supprimez rien, un fichier orphelin est sans gravité : il occu
 et n'est jamais chargé. Mais si vous renommez quelque chose auquel `index.html` fait référence,
 vérifiez que l'ancien nom disparaît.
 
-## 2.4 Vérifier que la mise à jour est passée
+## 2.5 Vérifier que la mise à jour est passée
 
 **Sur le serveur.** Onglet **Actions** du dépôt : une coche verte « pages build and deployment »
 signifie que c'est publié. Une croix rouge, cliquez dessus pour lire l'erreur.
@@ -277,12 +324,24 @@ Sans ce dernier point, les appareils déjà installés garderont l'ancienne icô
 cd ~/Documents/Fiche-Neuro-Standardisee
 git pull
 # ... copier les nouveaux fichiers ...
-sed -i "s/const VERSION = 'v6.1.0'/const VERSION = 'v6.1.1'/" sw.js
+sed -i "s/const VERSION = 'v6.3.0'/const VERSION = 'v6.3.1'/" sw.js
 git status
 git add -A
-git commit -m "v6.1.1"
+git commit -m "v6.3.1"
 git push origin main
 ```
+
+### La mise à jour minimale, en trois gestes
+
+1. Ouvrez `sw.js` dans le dépôt, crayon, changez la ligne `VERSION`, **Commit changes**.
+2. **Add file → Upload files** à la racine, glissez le nouveau `index.html`, **Commit changes**.
+3. Attendez la coche verte dans l'onglet **Actions**.
+
+C'est tout. Le fichier que je vous livre s'appelle `fiche_neuro.html` : renommez-le
+`index.html` avant de le déposer, sinon vous créez un second fichier au lieu de remplacer
+le premier.
+
+---
 
 | Symptôme | Cause la plus fréquente |
 |---|---|
@@ -291,4 +350,5 @@ git push origin main
 | `Authentication failed` au push | mot de passe utilisé au lieu d'un jeton d'accès personnel |
 | `src refspec main does not match any` | la branche s'appelle `master` |
 | Un fichier supprimé reste en ligne | dépôt par l'interface web : supprimez-le à la main |
+| Un doublon apparaît à la racine | fichier d'un sous-dossier glissé sans son dossier, ou `fiche_neuro.html` non renommé en `index.html` |
 | L'installation n'est pas proposée | adresse en `http://` ou en `file://`, ou application déjà installée |

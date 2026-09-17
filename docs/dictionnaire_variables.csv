@@ -10,13 +10,111 @@ poste;Poste de saisie;texte (renseigne dans les reglages, utile a la fusion)
 date_acc;Date de l'accident;AAAA-MM-JJ
 heure_acc;Heure de l'accident;HH:MM
 delai_min;Delai accident vers examen;entier, minutes (calcule)
+fiche_type;Type de consultation;"1 = consultation initiale (prise en charge en urgence) ; 2 = consultation de suivi ; 3 = consultation de sortie / CRH ; vide = non renseigne (a lire comme 1)"
 sexe;Sexe;"1 = M ; 2 = F ; 3 = Autre"
 age;Age a la date de l'examen;entier, annees (calcule)
+ad_num;Accident de plongée n° (Mode d'entrée et prise en charge initiale);texte libre
+date_arr;Date d'arrivée (Mode d'entrée et prise en charge initiale);AAAA-MM-JJ
+heure_arr;Heure d'arrivée (Mode d'entrée et prise en charge initiale);HH:MM
+medecin;Médecin (Mode d'entrée et prise en charge initiale);texte libre
+infirmier;Infirmier(e) (Mode d'entrée et prise en charge initiale);texte libre
+adresse_par;Adressé par (Mode d'entrée et prise en charge initiale);texte libre
+heure_appel;Heure d'appel (Mode d'entrée et prise en charge initiale);HH:MM
+evac_moyen;Moyen d'évacuation (Mode d'entrée et prise en charge initiale);"1 = Moyens propres ; 2 = VSAV / pompiers ; 3 = SMUR ; 4 = Hélicoptère ; 5 = Bateau / SNSM ; 6 = Autre"
+heure_soins;Heure des 1ers soins sur place (Mode d'entrée et prise en charge initiale);HH:MM
+soin_o2;Oxygène normobare sur place (Mode d'entrée et prise en charge initiale);"1 = OUI ; 0 = NON"
+soin_o2_debit;Débit (L/min) (Mode d'entrée et prise en charge initiale);texte libre (L/min)
+soin_o2_duree;Durée (min) (Mode d'entrée et prise en charge initiale);texte libre (min)
+soin_aspirine;Aspirine (Mode d'entrée et prise en charge initiale);"1 = OUI ; 0 = NON"
+soin_hydrat;Hydratation (mL) (Mode d'entrée et prise en charge initiale);texte libre (mL)
+soin_autres;Autres soins sur place (Mode d'entrée et prise en charge initiale);texte libre
+heure_pec;Heure de prise en charge au SMHEP (Mode d'entrée et prise en charge initiale);HH:MM
+delai_symp_pec;Délai 1ers symptômes → prise en charge (min) (Mode d'entrée et prise en charge initiale);texte libre
+pp_parente;Personne à prévenir — lien (Mode d'entrée et prise en charge initiale);texte libre
+pp_nom;Personne à prévenir — nom et prénom (Mode d'entrée et prise en charge initiale);texte libre
+pp_tel;Personne à prévenir — téléphone (Mode d'entrée et prise en charge initiale);texte libre
+mt_nom;Médecin traitant — nom (Mode d'entrée et prise en charge initiale);texte libre
+mt_tel;Médecin traitant — téléphone (Mode d'entrée et prise en charge initiale);texte libre
+nationalite;Nationalité (Le plongeur);texte libre
+profession;Profession (Le plongeur);texte libre
+adresse;Adresse (Le plongeur);texte libre
+tel;Téléphone (Le plongeur);texte libre
+poids;Poids (kg) (Le plongeur);texte libre (kg)
+taille;Taille (cm) (Le plongeur);texte libre (cm)
+imc;IMC (Le plongeur);texte libre
+atcd;Antécédents (Le plongeur);texte libre
+toxiques;Habitudes toxiques (Le plongeur);texte libre
+traitement;Traitement habituel (Le plongeur);texte libre
+allergie;Allergies (Le plongeur);texte libre
+contracept;Contraception orale (Le plongeur);"1 = OUI ; 0 = NON"
+regles;Date des dernières règles (Le plongeur);AAAA-MM-JJ
+rachianesth;Rachianesthésie récente (Le plongeur);"1 = OUI ; 0 = NON"
+atcd_plongee;Antécédents en plongée (Le plongeur);texte libre
+niveau;Niveau de plongée (Le plongeur);texte libre
+niveau_date;Date d'obtention du niveau (Le plongeur);AAAA-MM-JJ
+nb_plongees_6m;Nombre de plongées sur 6 mois (Le plongeur);texte libre
+cadre_plongee;Cadre de la plongée (Le plongeur);"1 = Plongée club ; 2 = Plongée hors club ; 3 = Plongée professionnelle"
+auto_encadre;Auto-encadré (Le plongeur);"1 = OUI ; 0 = NON"
+club_nom;Club — nom (Le plongeur);texte libre
+club_tel;Club — téléphone (Le plongeur);texte libre
+club_resp;Club — responsable (Le plongeur);texte libre
+pl_lieu;Lieu / site (Paramètres de la plongée accidentelle);texte libre
+pl_type;Type de plongée (Paramètres de la plongée accidentelle);"1 = Loisir ; 2 = Instruction ; 3 = Professionnelle ; 4 = Militaire ; 5 = Apnée"
+pl_gaz;Mélange respiré (Paramètres de la plongée accidentelle);"1 = Air ; 2 = Nitrox ; 3 = Trimix ; 4 = Héliox ; 5 = Oxygène ; 9 = Autre"
+pl_gaz_autre;Préciser le mélange (Paramètres de la plongée accidentelle);texte libre
+pl_proc;Procédure de décompression (Paramètres de la plongée accidentelle);"1 = Ordinateur ; 2 = MN 90 ; 3 = Tables autres ; 4 = Sans procédure"
+pl_h_immersion;Heure d'immersion (Paramètres de la plongée accidentelle);HH:MM
+pl_h_sortie;Heure de sortie de l'eau (Paramètres de la plongée accidentelle);HH:MM
+pl_prof;Profondeur maximale (m) (Paramètres de la plongée accidentelle);texte libre (m)
+pl_duree_fond;Durée au fond (min) (Paramètres de la plongée accidentelle);texte libre (min)
+pl_duree_tot;Durée totale de la plongée (min) (Paramètres de la plongée accidentelle);texte libre
+pl_paliers;Paliers (Paramètres de la plongée accidentelle);texte libre
+pl_h_symp;Heure des 1ers symptômes (Paramètres de la plongée accidentelle);HH:MM
+pl_delai_symp;Délai sortie de l’eau → 1ers symptômes (min) (Paramètres de la plongée accidentelle);texte libre
+plp_faite;Plongée dans les 24 heures précédentes (Paramètres de la plongée précédente);"1 = OUI ; 0 = NON"
+plp_date;Date (Paramètres de la plongée précédente);AAAA-MM-JJ
+plp_heure;Heure de sortie de l’eau (Paramètres de la plongée précédente);HH:MM
+plp_prof;Profondeur maximale (m) (Paramètres de la plongée précédente);texte libre (m)
+plp_duree_fond;Durée au fond (min) (Paramètres de la plongée précédente);texte libre (min)
+plp_duree_tot;Durée totale (min) (Paramètres de la plongée précédente);texte libre (min)
+plp_paliers;Paliers (Paramètres de la plongée précédente);texte libre
+plp_interval;Intervalle de surface (min) (Paramètres de la plongée précédente);texte libre
+ff_proc;Respect de la procédure de décompression (Facteurs favorisants);"1 = OUI ; 0 = NON"
+ff_entrainement;Manque d’entraînement à la plongée profonde (Facteurs favorisants);"1 = OUI ; 0 = NON"
+ff_ludion;Plongées ludion (yo-yo) (Facteurs favorisants);"1 = OUI ; 0 = NON"
+ff_fatigue;Fatigue (Facteurs favorisants);"1 = OUI ; 0 = NON"
+ff_effort;Travail musculaire intense (Facteurs favorisants);"1 = OUI ; 0 = NON"
+ff_instruction;Plongée d’instruction (Facteurs favorisants);"1 = OUI ; 0 = NON"
+ff_insomnie;Insomnie (Facteurs favorisants);"1 = OUI ; 0 = NON"
+ff_exercice24;Exercice physique dans les 24 h (Facteurs favorisants);"1 = OUI ; 0 = NON"
+ff_froid;Eau froide (Facteurs favorisants);"1 = OUI ; 0 = NON"
+ff_deshydrat;Déshydratation (Facteurs favorisants);"1 = OUI ; 0 = NON"
+ff_env;Conditions environnementales (Facteurs favorisants);texte libre
+histoire;Histoire de la maladie (Anamnèse);texte libre
+sf_arrivee;Signes fonctionnels à l’arrivée (Anamnèse);texte libre
+evol_avant_rec;Évolution avant recompression (Anamnèse);"0 = Amélioré ; 1 = Stable ; 2 = Aggravé"
+ex_cv;Anomalie cardio-vasculaire (Examen clinique général);"1 = OUI ; 0 = NON"
+ex_cv_txt;Préciser (Examen clinique général);texte libre
+ex_pneumo;Anomalie respiratoire (Examen clinique général);"1 = OUI ; 0 = NON"
+ex_pneumo_txt;Préciser (Examen clinique général);texte libre
+ex_abdo;Anomalie abdominale (Examen clinique général);"1 = OUI ; 0 = NON"
+ex_abdo_txt;Préciser (Examen clinique général);texte libre
+ex_loco;Anomalie locomotrice (Examen clinique général);"1 = OUI ; 0 = NON"
+ex_loco_txt;Préciser (Examen clinique général);texte libre
 avpu;AVPU (Conscience);"1 = Alert ; 2 = Verbal ; 3 = Pain ; 4 = Unresponsive"
-gcs_y;Glasgow — Ouverture des yeux (Y) (Conscience);"1 = 1 ; 2 = 2 ; 3 = 3 ; 4 = 4"
-gcs_v;Glasgow — Réponse verbale (V) (Conscience);"1 = 1 ; 2 = 2 ; 3 = 3 ; 4 = 4 ; 5 = 5"
-gcs_m;Glasgow — Réponse motrice (M) (Conscience);"1 = 1 ; 2 = 2 ; 3 = 3 ; 4 = 4 ; 5 = 5 ; 6 = 6"
+gcs_y;Glasgow — Ouverture des yeux (Y) (Conscience);"1 = 1 ; 2 = 2 ; 3 = 3 ; 4 = 4 ; NC = NC"
+gcs_v;Glasgow — Réponse verbale (V) (Conscience);"1 = 1 ; 2 = 2 ; 3 = 3 ; 4 = 4 ; 5 = 5 ; NC = NC"
+gcs_m;Glasgow — Réponse motrice (M) (Conscience);"1 = 1 ; 2 = 2 ; 3 = 3 ; 4 = 4 ; 5 = 5 ; 6 = 6 ; NC = NC"
 gcs_tot;Score de Glasgow total (/15) (Conscience);texte libre
+pup_sym;Pupilles symétriques (Fonctions supérieures);"1 = OUI ; 0 = NON"
+pup_aniso;Anisocorie (Fonctions supérieures);"1 = OUI ; 0 = NON"
+pup_aniso_cote;Pupille la plus large (Fonctions supérieures);"1 = D ; 2 = G"
+pup_myd;Mydriase (Fonctions supérieures);"1 = OUI ; 0 = NON"
+pup_myd_cote;Côté (Fonctions supérieures);"1 = D ; 2 = G ; 3 = Bilat."
+pup_myo;Myosis (Fonctions supérieures);"1 = OUI ; 0 = NON"
+pup_myo_cote;Côté (Fonctions supérieures);"1 = D ; 2 = G ; 3 = Bilat."
+pup_rpm;Réflexe photomoteur présent (Fonctions supérieures);"1 = OUI ; 0 = NON"
+pup_rpm_cote;Côté déficitaire (Fonctions supérieures);"1 = D ; 2 = G ; 3 = Bilat."
 fs_comport;Troubles du comportement (Fonctions supérieures);"1 = OUI ; 0 = NON"
 fs_dts;Désorientation temporo-spatiale (DTS) (Fonctions supérieures);"1 = OUI ; 0 = NON"
 fs_parole;Troubles de la parole (Fonctions supérieures);"1 = OUI ; 0 = NON"
@@ -172,11 +270,55 @@ cut_present;Lésions cutanées présentes (Lésions cutanées de désaturation);
 cut_delai;Délai d'apparition après émersion (min) (Lésions cutanées de désaturation);texte libre (min)
 cut_evol;Évolution sous oxygène (Lésions cutanées de désaturation);"1 = Régression ; 2 = Stable ; 3 = Extension"
 cut_txt;Commentaire (Lésions cutanées de désaturation);texte libre
+ac_vvp;Voie veineuse périphérique (Actes, biologie et examens complémentaires);"1 = OUI ; 0 = NON"
+ac_ecg;ECG (Actes, biologie et examens complémentaires);"1 = OUI ; 0 = NON"
+ac_sonde;Sonde vésicale (Actes, biologie et examens complémentaires);"1 = OUI ; 0 = NON"
+ac_doppler;Doppler transcrânien (Actes, biologie et examens complémentaires);"1 = OUI ; 0 = NON"
+tb_table;Table utilisée (Actes, biologie et examens complémentaires);texte libre
+tb_h_mep;Heure de mise en pression (Actes, biologie et examens complémentaires);HH:MM
+tb_h_fin;Heure de fin (Actes, biologie et examens complémentaires);HH:MM
+tb_delai;Délai 1ers symptômes → recompression (min) (Actes, biologie et examens complémentaires);texte libre
+tb_nb_seances;Nombre de séances réalisées (Actes, biologie et examens complémentaires);texte libre
+tb_complic;Complication thérapeutique (Actes, biologie et examens complémentaires);"1 = OUI ; 0 = NON"
+tb_complic_txt;Préciser (Actes, biologie et examens complémentaires);texte libre
+bio_add;Bilan accident de plongée prélevé (Actes, biologie et examens complémentaires);"1 = OUI ; 0 = NON"
+bio_opi;Bilan œdème pulmonaire d’immersion prélevé (Actes, biologie et examens complémentaires);"1 = OUI ; 0 = NON"
+bio_etude;Prélèvement pour étude complémentaire (Actes, biologie et examens complémentaires);"1 = OUI ; 0 = NON"
+bio_autre;Autres prélèvements (Actes, biologie et examens complémentaires);texte libre
+bio_res;Résultats marquants (Actes, biologie et examens complémentaires);texte libre
+im_rp;Radiographie thoracique (Actes, biologie et examens complémentaires);"1 = OUI ; 0 = NON"
+im_tdm;Scanner (Actes, biologie et examens complémentaires);"1 = OUI ; 0 = NON"
+im_irm;IRM (Actes, biologie et examens complémentaires);"1 = OUI ; 0 = NON"
+im_eto;Échographie cardiaque / recherche de FOP (Actes, biologie et examens complémentaires);"1 = OUI ; 0 = NON"
+im_autre;Autres examens (Actes, biologie et examens complémentaires);texte libre
+im_res;Résultats des examens réalisés (Actes, biologie et examens complémentaires);texte libre
+im_demande;Examens demandés, en attente (Actes, biologie et examens complémentaires);texte libre
+rx_o2;Oxygène normobare (Traitements prescrits);"1 = OUI ; 0 = NON"
+rx_solu;Méthylprednisolone (Traitements prescrits);"1 = OUI ; 0 = NON"
+rx_solu_dose;Dose (mg) (Traitements prescrits);texte libre (mg)
+rx_solu_h;Heure (Traitements prescrits);HH:MM
+rx_aspi;Aspirine (Traitements prescrits);"1 = OUI ; 0 = NON"
+rx_aspi_dose;Dose (mg) (Traitements prescrits);texte libre (mg)
+rx_aspi_h;Heure (Traitements prescrits);HH:MM
+rx_nacl;Remplissage (Traitements prescrits);"1 = OUI ; 0 = NON"
+rx_nacl_vol;Volume (mL) (Traitements prescrits);texte libre (mL)
+rx_antalg;Antalgiques (Traitements prescrits);texte libre
+rx_autres;Autres traitements (Traitements prescrits);texte libre
+ev_seances;Séances réalisées depuis la dernière consultation (Évolution depuis la consultation précédente);texte libre
+ev_complic;Complication thérapeutique depuis la dernière consultation (Évolution depuis la consultation précédente);"1 = OUI ; 0 = NON"
+ev_complic_txt;Préciser (Évolution depuis la consultation précédente);texte libre
+ev_sens;Évolution clinique (Évolution depuis la consultation précédente);"0 = Amélioré ; 1 = Stable ; 2 = Aggravé"
+ev_txt;Commentaire d’évolution (Évolution depuis la consultation précédente);texte libre
+ev_exam_faits;Examens complémentaires réalisés depuis (Évolution depuis la consultation précédente);texte libre
+ev_exam_demandes;Examens complémentaires demandés (Évolution depuis la consultation précédente);texte libre
 conclusion;Conclusion de l'examen (Conclusion);"1 = Examen neurologique normal ; 2 = Examen neurologique anormal ; 3 = À recontrôler"
 orientation;Orientation (Conclusion);"1 = Retour au domicile ; 2 = Hospitalisation en service de médecine ; 3 = Hospitalisation en surveillance continue ; 4 = Hospitalisation en soins intensifs ; 5 = Transfert vers une autre structure"
 orientation_autre;Préciser la structure (Conclusion);texte libre
 orientation_txt;Précisions sur l'orientation (Conclusion);texte libre
 notes;Commentaires libres (Conclusion);texte libre
+pj_nb;Nombre de photographies jointes;"entier ; vide = aucune"
+pj_titres;Titres des photographies jointes;texte, separes par |
+gcs_nc;Glasgow : modalites non cotables;"entier 1 a 3 ; vide = aucune modalite NC. Un total gcs_tot vide avec gcs_nc renseigne signifie score non calculable, et non score manquant"
 orl_interp;Interpretation acoumetrique (deduite de Weber et Rinne);"0 = acoumetrie symetrique ; 1 = transmission droite ; 2 = transmission gauche ; 3 = transmission bilaterale ; 4 = perception droite ; 5 = perception gauche ; 8 = resultats discordants ; vide = Weber ou Rinne non renseigne"
 orl_interp_txt;Interpretation acoumetrique - phrase;texte (deduit, ne remplace pas l audiometrie)
 sens_obj;Signes objectifs sensitifs;"1 = OUI ; 0 = NON (deduit des cotations) ; vide = sensibilites non examinees"
@@ -485,5 +627,52 @@ cut_post_jambe_D;Lesions cutanees - Mollet D;"1 = Marbrures (cutis marmorata) ; 
 cut_post_jambe_G;Lesions cutanees - Mollet G;"1 = Marbrures (cutis marmorata) ; 2 = Érythème ; 3 = Œdème ; 4 = Prurit ; 5 = Papules, plaques ; 6 = Emphysème sous-cutané ; 0 = aucune ; vide = non renseigne"
 cut_post_pied_D;Lesions cutanees - Plante D;"1 = Marbrures (cutis marmorata) ; 2 = Érythème ; 3 = Œdème ; 4 = Prurit ; 5 = Papules, plaques ; 6 = Emphysème sous-cutané ; 0 = aucune ; vide = non renseigne"
 cut_post_pied_G;Lesions cutanees - Plante G;"1 = Marbrures (cutis marmorata) ; 2 = Érythème ; 3 = Œdème ; 4 = Prurit ; 5 = Papules, plaques ; 6 = Emphysème sous-cutané ; 0 = aucune ; vide = non renseigne"
+cst_nb;Constantes - nombre de releves;"entier ; vide = aucun releve"
+cst_h_debut;Constantes - heure du premier releve;HH:MM
+cst_h_fin;Constantes - heure du dernier releve;HH:MM
+cst_duree;Constantes - duree de surveillance;entier, minutes (calcule du premier au dernier releve)
+cst_pouls_1;Constantes - Pouls : premiere valeur;numerique (/min)
+cst_pouls_n;Constantes - Pouls : derniere valeur;numerique (/min)
+cst_pouls_min;Constantes - Pouls : minimum;numerique (/min)
+cst_pouls_max;Constantes - Pouls : maximum;numerique (/min)
+cst_tas_1;Constantes - PAS : premiere valeur;numerique (mmHg)
+cst_tas_n;Constantes - PAS : derniere valeur;numerique (mmHg)
+cst_tas_min;Constantes - PAS : minimum;numerique (mmHg)
+cst_tas_max;Constantes - PAS : maximum;numerique (mmHg)
+cst_tad_1;Constantes - PAD : premiere valeur;numerique (mmHg)
+cst_tad_n;Constantes - PAD : derniere valeur;numerique (mmHg)
+cst_tad_min;Constantes - PAD : minimum;numerique (mmHg)
+cst_tad_max;Constantes - PAD : maximum;numerique (mmHg)
+cst_temp_1;Constantes - T° : premiere valeur;numerique (°C)
+cst_temp_n;Constantes - T° : derniere valeur;numerique (°C)
+cst_temp_min;Constantes - T° : minimum;numerique (°C)
+cst_temp_max;Constantes - T° : maximum;numerique (°C)
+cst_spo2_1;Constantes - SpO₂ : premiere valeur;numerique (%)
+cst_spo2_n;Constantes - SpO₂ : derniere valeur;numerique (%)
+cst_spo2_min;Constantes - SpO₂ : minimum;numerique (%)
+cst_spo2_max;Constantes - SpO₂ : maximum;numerique (%)
+cst_gcs_1;Constantes - Glasgow : premiere valeur;numerique (/15)
+cst_gcs_n;Constantes - Glasgow : derniere valeur;numerique (/15)
+cst_gcs_min;Constantes - Glasgow : minimum;numerique (/15)
+cst_gcs_max;Constantes - Glasgow : maximum;numerique (/15)
+cst_eva_1;Constantes - EVA : premiere valeur;numerique (/10)
+cst_eva_n;Constantes - EVA : derniere valeur;numerique (/10)
+cst_eva_min;Constantes - EVA : minimum;numerique (/10)
+cst_eva_max;Constantes - EVA : maximum;numerique (/10)
+cst_mict_nb;Constantes - nombre de mictions notees oui;entier
+msh_moment;MEDSUBHYP - moment de la cotation;"t0 = a l'arrivee ; t12 = a 12 heures ; t24 = a 24 heures ; nr = au-dela de 24 heures, score non renseigne ; vide = ni choisi ni deductible. Valeur retenue pour le calcul, choisie ou deduite du delai accident vers examen"
+msh_moment_auto;MEDSUBHYP - moment deduit ou choisi;"1 = deduit du delai accident vers examen ; 0 = choisi par l'examinateur ; vide = aucun moment retenu"
+msh_age;MEDSUBHYP - Age ≥ 42 ans;"0 = Non (0 point) ; 1 = Oui (1 point) ; vide = non cote. Valeur deduite de la fiche sauf cotation manuelle"
+msh_rachis;MEDSUBHYP - Douleur vertebrale;"0 = Non (0 point) ; 1 = Oui (1 point) ; vide = non cote. Valeur deduite de la fiche sauf cotation manuelle"
+msh_evol;MEDSUBHYP - Evolution avant recompression;"0 = Ameliore (0 point) ; 1 = Stable (3 points) ; 2 = Aggrave (5 points) ; vide = non cote. Valeur deduite de la fiche sauf cotation manuelle"
+msh_sens;MEDSUBHYP - Signes sensitifs objectifs;"0 = Non (0 point) ; 1 = Oui (4 points) ; vide = non cote. Valeur deduite de la fiche sauf cotation manuelle"
+msh_mot;MEDSUBHYP - Signes moteurs;"0 = Non (0 point) ; 1 = Paresies (4 points) ; 2 = Paraplegie (5 points) ; vide = non cote. Valeur deduite de la fiche sauf cotation manuelle"
+msh_sphi;MEDSUBHYP - Atteinte du sphincter urinaire;"0 = Non (0 point) ; 1 = Oui (6 points) ; vide = non cote. Valeur deduite de la fiche sauf cotation manuelle"
+msh_total;MEDSUBHYP - score total;"entier 0-22 ; vide = un item au moins sans valeur, ou cotation au-dela de 24 heures"
+msh_grave;MEDSUBHYP - au-dessus du seuil;"1 = score >= 6 ; 0 = score < 6 ; vide = score non calcule"
+msh_manuels;MEDSUBHYP - items cotes a la main;"entier 0-6 ; un item cote a la main diverge de la valeur deduite de la fiche"
+vest_grille;Score vestibulaire - nom de la grille;"texte ; la grille est definie poste par poste et ne provient d aucun referentiel publie"
+vest_total;Score vestibulaire - score total;"entier ; vide = grille absente ou item sans valeur"
+vest_max;Score vestibulaire - score maximal de la grille;entier
 created;Horodatage de creation;ISO 8601
 updated;Horodatage de derniere modification;ISO 8601

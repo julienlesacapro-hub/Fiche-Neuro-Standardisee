@@ -1,7 +1,11 @@
-# Fiche d'examen neurologique standardisé — version 6
+# ADP — accident de plongée, version 7.1.0
 
 Fichier unique : `fiche_neuro.html`. Aucun réseau, aucune dépendance externe, aucun compte.
 Double-cliquez dessus, il s'ouvre dans votre navigateur et tout fonctionne.
+
+ADP couvre la prise en charge complète d'un accident de plongée : la consultation initiale en
+urgence, les consultations de suivi, et le compte rendu de séjour. La fiche d'examen neurologique
+standardisée des versions précédentes en est le cœur, elle n'a pas bougé.
 
 Sur téléphone et tablette, installez-le plutôt comme application : icône sur l'écran d'accueil,
 plein écran, démarrage sans réseau. Voir *Installer sur téléphone et tablette* plus bas.
@@ -12,13 +16,24 @@ plein écran, démarrage sans réseau. Voir *Installer sur téléphone et tablet
 
 | Sortie | Fichier | Comment l'obtenir |
 |---|---|---|
-| Fiche imprimable et enregistrable | PDF, 3 pages A4 | Bouton **PDF / Imprimer**, puis *Enregistrer au format PDF* ou *Microsoft Print to PDF* |
+| Document imprimable et enregistrable | PDF, 5 à 6 pages A4 | Bouton **PDF / Imprimer**, puis *Enregistrer au format PDF* ou *Microsoft Print to PDF* |
 | Fichier exploitable, incrémental | `donnees_neuro.csv` | Réécrit automatiquement à chaque enregistrement de fiche |
 
-Un seul CSV pour tous les sujets et tous les examens. Une ligne = une fiche. 488 colonnes.
+Un seul CSV pour tous les sujets, toutes les consultations et tous les types de document.
+Une ligne = une fiche. 677 colonnes.
 
-Les trois pages du PDF : examen clinique et ORL, grille ASIA complète, schémas corporels et
-conclusion.
+Les pages du PDF, selon le type de consultation :
+
+| Page | Consultation initiale | Consultation de suivi | Consultation de sortie |
+|---|---|---|---|
+| 1 | Accueil, plongée, plongeur, anamnèse | — | Accueil, plongée, plongeur, anamnèse |
+| 2 | Examen clinique et ORL | Examen clinique et ORL | Examen clinique et ORL |
+| 3 | Examen neurologique | Examen neurologique | Examen neurologique |
+| 4 | Grille ASIA | Grille ASIA | Grille ASIA |
+| 5 | Schémas corporels, pallesthésie | Schémas corporels, pallesthésie | Schémas corporels, pallesthésie |
+| 6 | Prise en charge et conclusion | Prise en charge, évolution, conclusion | Prise en charge, évolution, conclusion |
+
+Les photographies jointes s'ajoutent en fin de document, six par page.
 
 ---
 
@@ -61,6 +76,110 @@ mises à jour disponibles et permet de vider le cache. Vider le cache n'efface a
 
 Sur iPhone et iPad, l'écriture directe du CSV dans un dossier n'existe pas : Safari n'implémente
 pas cette API. Exportez à la main, puis fusionnez sur le poste principal.
+
+---
+
+## Trois types de consultation, un seul outil
+
+Le premier champ de la fiche, **Type de consultation**, décide de ce que la fiche demande et de
+ce que le document imprimé raconte.
+
+| Type | Ce que la fiche demande | Ce que le document produit |
+|---|---|---|
+| **Consultation initiale** | Tout : accueil, plongée, plongée précédente, facteurs favorisants, plongeur, anamnèse, examen complet | Un compte rendu de prise en charge en urgence |
+| **Consultation de suivi** | L'examen clinique, l'examen neurologique et un encart d'évolution | Une fiche neurologique standardisée augmentée du paragraphe d'évolution |
+| **Consultation de sortie / CRH** | Tout, plus l'évolution | Un compte rendu de séjour |
+
+Sur une consultation de suivi, les encarts de plongée, de plongée précédente, de facteurs
+favorisants, de plongeur et d'anamnèse **disparaissent** : ces données appartiennent à la fiche
+initiale et ne se ressaisissent pas.
+
+Le type est proposé, jamais imposé : la première fiche d'un dossier part sur *initiale*, les
+suivantes sur *suivi*. Vous changez d'un clic, la fiche se recompose aussitôt.
+
+---
+
+## Les quatre pages de saisie
+
+La fiche est découpée en quatre pages. Les onglets en haut mènent directement à l'une d'elles,
+le bouton **Suivant** avance d'une page, **Précédent** recule. Chaque onglet porte son compte de
+champs remplis, et se borde de vert quand la page est complète.
+
+| Page | Contenu |
+|---|---|
+| 1. Anamnèse et plongée | Identification, accueil et prise en charge initiale, plongeur, plongée, plongée précédente, facteurs favorisants, anamnèse |
+| 2. Examen général | Constantes et surveillance, examen par appareil, conscience, pupilles et fonctions supérieures, ORL, signes fonctionnels, signes subjectifs, lésions cutanées |
+| 3. Examen neurologique | Réflexes, force motrice, miction, coordination, sensibilités, grille ASIA, scores de sévérité |
+| 4. Conclusion | Actes et examens complémentaires, prescriptions, évolution, conclusion, pièces jointes |
+
+La synthèse rédigée reste visible en permanence, quelle que soit la page.
+
+---
+
+## Constantes et surveillance
+
+Un relevé par ligne, horodaté, comme sur la fiche papier. **+ Ajouter un relevé** crée une ligne
+à l'heure courante, la croix la retire. Vingt-quatre relevés au maximum.
+
+Le PDF imprime le tableau complet. Le fichier de données porte une ligne par fiche : il reçoit la
+**première et la dernière valeur**, le **minimum** et le **maximum** de chaque paramètre, la durée
+de surveillance et le nombre de mictions notées. Le détail relevé par relevé reste dans la fiche
+et sur le PDF ; il ne part pas dans le CSV, où une ligne par fiche est la règle.
+
+---
+
+## Scores de sévérité
+
+L'encart se trouve en fin de page 3, après la grille ASIA.
+
+### MEDSUBHYP
+
+Les six items du score se **déduisent de ce que vous avez déjà saisi** : l'âge, la douleur
+vertébrale, l'évolution avant recompression, les signes sensitifs objectifs, les myotomes clés
+des membres inférieurs, et l'atteinte sphinctérienne. La valeur déduite est encadrée de vert.
+Un clic sur une autre modalité tranche à votre place ; l'item passe alors en fond ambré et la
+fiche retient qu'il a été coté à la main.
+
+Le score se cote **à l'arrivée, à 12 heures et à 24 heures**. Le moment est proposé à partir du
+délai accident → examen, vous le corrigez d'un clic. **Au-delà de 24 heures le score n'a plus
+d'intérêt pronostique : il n'est pas renseigné**, et l'encart le dit.
+
+Le seuil de gravité est 6. Le score et le seuil viennent du travail du service publié dans
+*Emergency Medicine Journal* (André *et al.*, 2022, DOI 10.1136/emermed-2021-211227).
+
+> **Un point à confirmer.** Le poids de la modalité « parésies » de l'item moteur ne figure pas
+> sur la fiche A3 du service : la case du barème est vide. La valeur **4** retenue ici est une
+> hypothèse, alignée sur la progression des autres modalités (paraplégie 5, signes sensitifs 4).
+> L'encart et le PDF le signalent. Confirmez-la avant d'exploiter les scores pour une analyse.
+
+### Score vestibulaire
+
+Aucun score vestibulaire consensuel ne figure dans la fiche A3 ni dans le générateur de courriers
+du service, et je n'en ai trouvé aucun publié qui corresponde. Plutôt que d'en inventer un,
+l'outil vous laisse **composer le vôtre** : bouton **Définir la grille**.
+
+Vous y saisissez les items, leurs modalités et leurs poids, au format `Libellé=poids` séparé par
+une barre verticale, par exemple `Absent=0 | Modéré=1 | Sévère=3`. Un modèle de départ est
+proposé, à garder ou à remplacer entièrement.
+
+La grille vit dans les **réglages du poste**, pas dans la fiche : elle s'applique à toutes les
+fiches et part avec l'export des réglages pour être recopiée sur un autre poste. Chaque item
+garde une clé stable (`vest_1`, `vest_2`…) : renommer un libellé ou réordonner la grille ne
+déplace pas les réponses déjà enregistrées, et chaque item devient une colonne du CSV.
+
+Cette grille n'est validée par rien. L'outil la calcule, il ne la cautionne pas.
+
+---
+
+## Le paragraphe d'évolution pour le compte rendu
+
+Sur une consultation de suivi ou de sortie, l'encart **Évolution** demande le nombre de séances,
+la présence de complications thérapeutiques, le sens de l'évolution, les examens réalisés et les
+examens demandés.
+
+Sous l'encart, un cadre bleu assemble ces réponses en un **paragraphe rédigé**, prêt pour le
+compte rendu de sortie. Il se recalcule à chaque frappe. Le bouton **Copier** le met dans le
+presse-papiers.
 
 ---
 
@@ -347,6 +466,11 @@ Pour pseudonymiser un identifiant sans douchette, utilisez le bouton **Scanner /
 Ouvrez une fiche du sujet dans la liste de gauche, puis **Ré-examen du sujet**, ou saisissez
 simplement le numéro de dossier dans une fiche neuve.
 
+**Ré-examen du sujet** ouvre directement une **consultation de suivi** : l'identité, le dossier
+et les données de l'accident sont repris, les encarts de plongée et de plongeur restent sur la
+fiche initiale. Changez le type en *sortie / CRH* pour la dernière consultation, ou pour une
+consultation intermédiaire dont vous voulez un compte rendu de séjour.
+
 `num_ex` classe les examens d'un sujet dans l'ordre chronologique et se recalcule automatiquement,
 y compris si vous saisissez a posteriori un examen antérieur.
 
@@ -376,7 +500,7 @@ d = pd.read_csv("donnees_neuro.csv", sep=";", encoding="utf-8-sig")
 
 - Séparateur par défaut : point-virgule. Modifiable dans **Exporter** (virgule pour R et Python).
 - **Cellule vide = valeur manquante (NA).** Aucune valeur par défaut n'est inventée.
-- `dictionnaire_variables.csv` donne le libellé et le codage des 488 colonnes.
+- `dictionnaire_variables.csv` donne le libellé et le codage des 677 colonnes.
 
 ### Codages principaux
 
@@ -419,6 +543,136 @@ d = pd.read_csv("donnees_neuro.csv", sep=";", encoding="utf-8-sig")
 
 Pour les analyses courantes, les colonnes de synthèse suffisent. Les colonnes de détail servent
 aux analyses topographiques fines.
+
+---
+
+## Changements de la version 7.1.0
+
+L'outil change de nom : **ADP**, pour accident de plongée. Il ne se limite plus à l'examen
+neurologique, il porte le dossier entier.
+
+- **Trois types de consultation** : initiale, suivi, sortie. Le type décide des encarts affichés
+  et du document imprimé. Voir *Trois types de consultation*.
+- **Quatre pages de saisie** avec un bouton **Suivant**, des onglets et un compte de remplissage
+  par page. Voir *Les quatre pages de saisie*.
+- **Sept encarts nouveaux**, transcrits de la fiche A3 du service : mode d'entrée et prise en
+  charge initiale, le plongeur, les paramètres de la plongée, ceux de la plongée précédente, les
+  facteurs favorisants, l'anamnèse, l'examen général par appareil.
+- **Constantes et surveillance** : un relevé horodaté par ligne, agrégé dans le CSV.
+- **Scores de sévérité** : MEDSUBHYP déduit des données déjà saisies, et un score vestibulaire
+  dont vous composez la grille. Voir *Scores de sévérité*.
+- **Calculs automatiques** : IMC, durée totale de plongée, délai sortie → symptômes, délai
+  symptômes → prise en charge, intervalle de surface. Tous passent minuit correctement.
+- **Paragraphe d'évolution** assemblé et copiable pour le compte rendu de sortie.
+- Le fichier de données passe de 500 à **677 colonnes**. Les colonnes existantes n'ont pas changé
+  de nom ni de codage : un CSV de la version 6.3 se fusionne sans retouche.
+- Les deux faces du corps restent **côte à côte** sur les trois schémas — sensibilités, signes
+  subjectifs, lésions cutanées — y compris sur un téléphone de 360 px.
+
+### Ce qui n'est pas encore là
+
+Le compte rendu de sortie reprend pour l'instant la mise en page de l'outil. **L'en-tête du
+service, le bloc signature et les identifiants RPPS du générateur de courriers arrivent en
+version 7.2.0.**
+
+---
+
+## Changements de la version 6.3
+
+- **Correction : le bouton NC du Glasgow ne répondait pas.** La valeur texte `NC` était insérée
+  dans le code de la page avec des guillemets qui refermaient l'attribut trop tôt. Le clic
+  déclenchait une erreur au lieu d'enregistrer la cotation. Corrigé, et couvert par un test
+  qui clique réellement sur le bouton au lieu d'appeler la fonction.
+- **Correction : un clic perdu après une date incomplète.** Quitter un champ de date
+  reconstruisait le formulaire, ce qui détachait le bouton que l'on venait de viser. Il fallait
+  cliquer deux fois. Le formulaire ne se reconstruit plus au départ du champ.
+- **Cutané plantaire** : la réponse indifférente est verte comme la flexion, et ne compte plus
+  comme une anomalie. Seule l'extension est pathologique. La synthèse mentionne la réponse
+  indifférente comme un fait d'examen, pas comme une anomalie.
+- **Réflexe très vif** coté en rouge, comme un réflexe aboli.
+- **Examen pupillaire** ajouté en tête des fonctions supérieures : symétrie, anisocorie avec la
+  pupille la plus large, mydriase, myosis, réflexe photomoteur, chacun avec son côté. Fiche
+  d'aide dédiée, reprise dans la synthèse et sur le PDF.
+- **Encart du score ASIA replié au départ** : c'est un résultat, pas une saisie.
+- **Sensibilités** : les boutons *Tout normal*, *Tout non testable* et *Effacer* sont désormais
+  visibles sur le schéma comme sur le tableau.
+- **Téléphone** : les deux faces du corps restent côte à côte. Une bande dorsale y fait environ
+  7 pixels de haut : pour coter métamère par métamère sur un petit écran, passez par le tableau
+  des 28 métamères, ou tournez le téléphone.
+- **Titres de photos** : onze propositions (examen pupillaire, lésion cutanée, otoscopie droite,
+  otoscopie gauche, paramètres de plongée, ordinateur de plongée, appareil respiratoire de
+  plongée, fiche de prise en charge pré-hospitalière, ordonnance médicamenteuse, document du
+  patient, autre). Le menu ne fait que remplir le champ : chaque titre se modifie ou se complète
+  librement ensuite.
+
+### Ce qui change dans le fichier de données
+
+| Variable | Changement |
+|---|---|
+| `pup_sym`, `pup_aniso`, `pup_aniso_cote`, `pup_myd`, `pup_myd_cote`, `pup_myo`, `pup_myo_cote`, `pup_rpm`, `pup_rpm_cote` | nouvelles |
+
+Le fichier passe de 491 à 500 colonnes. Un CSV de la version 6.2 se fusionne sans perte.
+
+---
+
+## Changements de la version 6.2
+
+- **Glasgow : cotation NC.** Chacune des trois modalités accepte « non cotable » : œdème
+  palpébral, intubation, aphasie connue. Le total n'est alors pas calculé, parce qu'un total
+  amputé d'un item n'a pas de sens, mais les modalités cotées restent visibles, imprimées et
+  exportées. La variable `gcs_nc` compte les modalités NC : un `gcs_tot` vide avec `gcs_nc`
+  renseigné signifie score non calculable, et non score oublié.
+- **Dates et heures au clavier.** Les champs acceptent la frappe directe en JJ/MM/AAAA et
+  HH:MM, séparateurs posés tout seuls. Une date impossible passe en rouge et n'est pas
+  enregistrée. Le bouton calendrier reste disponible à côté.
+- **Pièces jointes photographiques.** Un encart en fin de fiche reçoit jusqu'à douze photos,
+  chacune avec un titre choisi (examen cutané, otoscopie, lésion cutanée, schéma annoté,
+  champ visuel, document remis, ou un titre libre). Elles s'impriment sur une page dédiée du
+  PDF, deux par ligne, titre au-dessus.
+- **Dépôt de fichiers retiré des fiches techniques.** Les images qui documentent un examen
+  précis appartiennent à la fiche du sujet, pas à une notice générique.
+- **Interprétation acoumétrique** recalculée dès qu'un item ORL change, avec un bouton
+  **Actualiser** pour forcer le calcul.
+- **Textes d'orientation revus** : services USIC, neurovasculaire, USC et réanimation ;
+  avis réanimateur, cardiologique et ORL ; imagerie cérébrale, rachidienne et thoracique.
+  Retrait de l'avis neurochirurgical, des consignes de surveillance et de la sortie contre
+  avis médical. Les modes de transport sont conservés.
+- **Fiches techniques revues** selon vos corrections : triangle lumineux dans la stadification
+  otoscopique, Valsalva franchement retardé, trépidation épuisable chez le sujet hypothermique
+  et à coter pathologique jusqu'à preuve du contraire, référence sensitive à la face externe
+  du bras, piqûre au manche du marteau à réflexes, report vers le bas conditionné à la
+  répétition de l'anomalie.
+
+### Les photographies et le règlement
+
+Une photographie de patient est une donnée de santé identifiante au sens de l'article 9 du
+RGPD, même sans le visage. Elle est enregistrée **avec la fiche** : elle suit la base locale,
+les sauvegardes JSON et le PDF. Elle n'entre **jamais** dans le fichier de données, qui ne
+reçoit que `pj_nb` et `pj_titres`.
+
+Trois conséquences pratiques :
+
+1. Cadrez au plus juste. Une lésion cutanée se documente sans le visage et sans les signes
+   distinctifs (tatouages, bijoux, cicatrices sans rapport).
+2. Le consentement du sujet relève de vous. L'outil ne le recueille pas et ne le trace pas.
+3. Une sauvegarde JSON contenant des photos est un fichier de santé identifiant : chiffrez le
+   support, ne l'envoyez pas par messagerie ordinaire.
+
+Les photos sont réduites à 1600 pixels sur le côté le plus long et ré-encodées en JPEG. Une
+photo de téléphone de 4 Mo tombe à quelques centaines de kilooctets, ce qui reste net à
+l'impression sans faire gonfler la base ni les sauvegardes.
+
+### Ce qui change dans le fichier de données
+
+| Variable | Changement |
+|---|---|
+| `gcs_y`, `gcs_v`, `gcs_m` | acceptent la valeur texte `NC` en plus des entiers |
+| `gcs_nc` | nouvelle : nombre de modalités non cotables |
+| `pj_nb`, `pj_titres` | nouvelles : nombre et titres des photographies jointes |
+
+Le fichier passe de 488 à 491 colonnes. Un CSV de la version 6 se fusionne sans perte.
+**Les photographies ne transitent pas par le CSV** : un import CSV ne les restaure pas.
+Pour déplacer des fiches avec leurs photos entre deux postes, utilisez l'export JSON.
 
 ---
 

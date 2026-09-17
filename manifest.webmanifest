@@ -1,7 +1,7 @@
 {
-  "name": "Fiche d'examen neurologique standardisé",
-  "short_name": "Fiche Neuro",
-  "description": "Fiche d'examen neurologique standardisé pour la médecine hyperbare et les accidents de désaturation : saisie structurée, score ASIA indicatif, impression A4 et fichier de données unique. Fonctionne entièrement hors ligne, les données restent sur l'appareil.",
+  "name": "ADP — accident de plongée",
+  "short_name": "ADP",
+  "description": "ADP : prise en charge d'un accident de plongée au SMHEP. Consultation initiale, consultation de suivi et compte rendu de séjour, examen neurologique standardisé, score ASIA indicatif, scores de sévérité, impression A4 et fichier de données unique. Fonctionne entièrement hors ligne, les données restent sur l'appareil.",
   "lang": "fr",
   "dir": "ltr",
   "id": "/Fiche-Neuro-Standardisee/",

@@ -1,7 +1,7 @@
 {
-  "name": "fiche-neuro-standardisee",
-  "version": "6.0.0",
-  "description": "Fiche d'examen neurologique standardisé — médecine hyperbare et accidents de désaturation",
+  "name": "adp-accident-de-plongee",
+  "version": "7.1.0",
+  "description": "ADP — prise en charge d'un accident de plongée : consultation initiale, suivi et compte rendu de séjour",
   "author": "LESACA Julien",
   "license": "UNLICENSED",
   "private": true,

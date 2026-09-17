@@ -1,4 +1,4 @@
-/* Fiche neuro standardisée — service worker
+/* ADP — accident de plongée : service worker
    Stratégie : app shell en cache d'abord, revalidation en arrière-plan.
    L'outil doit s'ouvrir instantanément et fonctionner sans réseau en salle
    d'examen ou en caisson. Le réseau ne sert qu'à récupérer une version plus
@@ -7,8 +7,8 @@
    Les fiches ne transitent PAS par ce cache : elles vivent dans IndexedDB
    et dans le dossier choisi par l'utilisateur. Vider le cache ne les efface pas.
 */
-const VERSION = 'v6.3.0';
-const CACHE   = 'fiche-neuro-' + VERSION;
+const VERSION = 'v7.1.0';
+const CACHE   = 'adp-' + VERSION;
 
 const SHELL = [
   './',
