@@ -1,4 +1,4 @@
-# ADP — accident de plongée, version 7.1.0
+# ADP — accident de plongée, version 7.2.0
 
 Fichier unique : `fiche_neuro.html`. Aucun réseau, aucune dépendance externe, aucun compte.
 Double-cliquez dessus, il s'ouvre dans votre navigateur et tout fonctionne.
@@ -20,7 +20,7 @@ plein écran, démarrage sans réseau. Voir *Installer sur téléphone et tablet
 | Fichier exploitable, incrémental | `donnees_neuro.csv` | Réécrit automatiquement à chaque enregistrement de fiche |
 
 Un seul CSV pour tous les sujets, toutes les consultations et tous les types de document.
-Une ligne = une fiche. 677 colonnes.
+Une ligne = une fiche. 761 colonnes.
 
 Les pages du PDF, selon le type de consultation :
 
@@ -500,7 +500,7 @@ d = pd.read_csv("donnees_neuro.csv", sep=";", encoding="utf-8-sig")
 
 - Séparateur par défaut : point-virgule. Modifiable dans **Exporter** (virgule pour R et Python).
 - **Cellule vide = valeur manquante (NA).** Aucune valeur par défaut n'est inventée.
-- `dictionnaire_variables.csv` donne le libellé et le codage des 677 colonnes.
+- `dictionnaire_variables.csv` donne le libellé et le codage des 761 colonnes.
 
 ### Codages principaux
 
@@ -526,6 +526,12 @@ d = pd.read_csv("donnees_neuro.csv", sep=";", encoding="utf-8-sig")
 | Orientation | `1 = domicile`, `2 = médecine`, `3 = surveillance continue`, `4 = soins intensifs`, `5 = transfert` ; `orientation_txt` : texte libre complémentaire |
 | Position du regard | une colonne binaire par position + une colonne texte (valeurs séparées par `\|`) |
 | Trépidation | `trep_pied_qual_D`, `trep_pied_qual_G` : `1 = épuisable`, `2 = inépuisable` |
+| Adressé par | `adresse_par` : `1 = SAMU 83`, `2 = SCMM`, `3 = autre SAMU`, `4 = autre établissement de santé` ; `adresse_etab_type` : `1 = SAU`, `2 = centre hyperbare`, `3 = non défini` |
+| Moyen d'évacuation | `evac_moyen` : `1` moyens propres, `2` VSAV / pompiers, `3` SMUR route, `7` hélicoptère médicalisé, `8` hélicoptère non médicalisé, `6` autre. Les codes `4` (hélicoptère, non précisé) et `5` (bateau / SNSM) ne sont plus proposés mais restent valides dans les fichiers anciens |
+| Procédure de décompression | `pl_proc` : `1 = ordinateur`, `2 = tables MN 90`, `5 = tables MT 92`, `3 = autres tables`, `4 = sans procédure` |
+| Listes à cases | une colonne binaire par case (`atcd_med_hta`, `tox_tabac`, `atcdp_add`…) et une colonne texte (valeurs séparées par `\|`) |
+| Menus déroulants | `niv_loisir`, `niv_pro`, `niv_ens`, `organisme` : codes numériques listés dans le dictionnaire ; `99 = autre (à préciser)` |
+| Paliers | `pl_pal_nb`, `pl_pal_secu`, `pl_pal_duree`, `pl_pal_prof_max`, `pl_pal_txt`, puis le détail des six premiers (`pl_pal1_gaz`, `pl_pal1_prof`, `pl_pal1_duree`, `pl_pal1_secu`…) |
 
 ### Structure des colonnes
 
@@ -540,9 +546,113 @@ d = pd.read_csv("donnees_neuro.csv", sep=";", encoding="utf-8-sig")
 | Synthèse ASIA | `asia_lt`, `asia_pp`, `asia_uems`, `asia_lems`, `asia_sens_D/G`, `asia_mot_D/G`, `asia_nli`, `asia_sacre`, `asia_ais` |
 | Signes subjectifs | `subj_nb`, un compteur par ressenti, 48 colonnes de zones |
 | Lésions cutanées | `cut_present`, `cut_nb`, un compteur par type, indicateurs de région, 48 colonnes de zones |
+| Plongeur | nationalité, IMC, antécédents (une colonne par case), habitudes toxiques et paquets-années `tabac_pa`, antécédents en plongée, niveaux, organisme, certificat médical |
+| Plongée accidentelle | procédure, heures DS / DF / HS, `pl_prof`, `pl_dt`, `pl_dtr`, `pl_duree_tot`, paliers |
 
 Pour les analyses courantes, les colonnes de synthèse suffisent. Les colonnes de détail servent
 aux analyses topographiques fines.
+
+---
+
+## Changements de la version 7.2.0
+
+Cette version applique les modifications manuscrites du 1er octobre 2026 : l'encart d'alerte et
+d'évacuation, le plongeur, la plongée accidentelle, le profil et les paliers, la synthèse rédigée.
+
+### Alerte et évacuation
+
+- **Adressé par** devient un choix : SAMU 83, SCMM (SAMU de coordination médicale maritime), autre
+  SAMU (à préciser), autre établissement de santé (SAU, centre hyperbare ou non défini, et son nom).
+- **Moyen d'évacuation** : « SMUR » devient *SMUR Route*, « Hélicoptère » se divise en *médicalisé*
+  et *non médicalisé*, « Bateau / SNSM » est retiré, « Autre » ouvre un champ texte.
+- **Oxygène normobare** : répondre OUI propose un débit de **15 L/min**, modifiable. La **durée**
+  n'est plus saisie, elle est calculée entre l'heure des premiers soins sur place et l'heure de
+  prise en charge au SMHEP (à défaut de celle-ci, l'heure de l'examen). Elle passe minuit.
+- **Contacts** réorganisés : la personne à prévenir d'un côté, le médecin traitant de l'autre. Le
+  lien est un choix (conjoint / compagnon, parent, enfant, ami, autre à préciser).
+
+### Le plongeur
+
+- **Nationalité** à choix (neuf réponses, « autre » à préciser). **Adresse e-mail** ajoutée.
+- **IMC** : il se calculait déjà, mais l'affichage ne se rafraîchissait pas quand on tapait le poids
+  ou la taille. Tous les champs calculés (IMC, âge, durées, délais, paquets-années) se mettent
+  maintenant à jour en direct.
+- **Antécédents** par cases : aucun antécédent médical notable, aucun antécédent chirurgical
+  notable, HTA, diabète, asthme, cardiopathie (à préciser), pneumothorax (spontané,
+  post-traumatique ou iatrogène, et date). Une zone libre reste disponible pour le reste.
+- **Habitudes toxiques** : aucune, tabagisme actif (cigarettes par jour, durée en années,
+  **paquets-années calculés**), tabagisme sevré (avec la date), alcool (**évaluation en quatre
+  stades**), cannabis (quotidienne, régulière, festive, exceptionnelle), autre (à préciser).
+- **Antécédents en plongée** : aucun, ADD, OPI, barotraumatisme, biochimique, avec type et date.
+- **Pratique de la plongée** : menus déroulants pour le niveau loisir, professionnel, d'enseignement
+  et pour l'organisme ; plongée depuis (année) ; nombre moyen de plongées par an sur les deux
+  dernières années (le nombre de plongées sur six mois est retiré) ; date du dernier certificat
+  médical et qualification du médecin ; case « aucun certificat médical de moins d'un an » avec
+  son commentaire.
+
+### La plongée accidentelle
+
+- **Procédure de décompression** : ordinateur (marque / modèle, réglage GF), tables MN 90, tables
+  MT 92, autres tables (à préciser), sans procédure.
+- **Profil de plongée** : on saisit DS (heure d'immersion), DF (départ du fond), HS (sortie de
+  l'eau) et Pmax. L'outil calcule **DT = DF − DS**, **DTR = HS − DF** et **DTP = HS − DS**, et
+  dessine le schéma, qui se redessine à chaque frappe et s'imprime sur le PDF. Une alerte signale
+  un DF qui ne tombe pas entre DS et HS.
+- **Paliers** : une ligne par palier, avec le gaz, la profondeur et la durée à la profondeur. La
+  case **paliers de sécurité réalisés (non obligatoires)** propose 1 min à 6 m et 5 min à 3 m, que
+  l'on modifie ensuite à volonté. Le champ « durée au fond » est remplacé par DT.
+
+### La synthèse rédigée
+
+Elle suit désormais le plan d'une observation d'entrée écrite à la main : en-tête (date, heure de
+prise en charge), **Histoire de l'accident**, **Antécédents et terrain**, **Examen clinique
+d'entrée** (constantes, puis « À l'examen : … En revanche, il existe … »), **Au total**,
+**Examens paracliniques** (scores MEDSUBHYP de tout le dossier, ASIA), **Conduite à tenir**.
+Le texte est fait de phrases. Une négation (« pas de déficit moteur », « pas de signe cérébral »)
+n'est écrite que si l'item a été examiné. Les consultations de suivi et de sortie reprennent le même
+plan, avec le paragraphe d'évolution. Les titres sont en gras à l'écran et sur le PDF ; le bouton
+**copier le texte** place dans le presse-papiers le texte brut et le texte enrichi, que Word garde
+tel quel.
+
+### Ce qui change dans le fichier de données
+
+- **677 → 761 colonnes** : 94 colonnes ajoutées, 10 retirées. Les colonnes conservées gardent leur
+  nom et leur codage, sauf précisions de libellé : les champs numériques sont désormais décrits
+  « numérique » dans le dictionnaire au lieu de « texte libre ».
+- **Remplacées** : `pp_parente` → `pp_lien` (choix) ; `niveau` → `niv_loisir`, `niv_pro`, `niv_ens` ;
+  `pl_duree_fond` → `pl_dt` (calculée) ; `nb_plongees_6m` → `nb_plongees_an`. `soin_o2_duree` existe
+  toujours mais est calculée.
+- **Champs devenus des choix codés** : `nationalite`, `adresse_par`. Leurs anciennes valeurs texte
+  sont reconnues à l'import et à la lecture de la base : « SAMU 83 », « Française »… retrouvent leur
+  code, tout le reste va dans le champ « à préciser ». Rien ne se perd, et la conversion est sans effet
+  sur une fiche déjà convertie.
+- **Codes ajoutés** : `evac_moyen` 7 et 8, `pl_proc` 5. Les anciens codes `evac_moyen` 4 et 5 restent
+  valides et lisibles.
+- **Correction : les champs identifiants ne sortent plus dans le CSV.** Jusqu'à la 7.1.0 l'option
+  « inclure l'identité » ne commandait que le nom, le prénom et la date de naissance. L'adresse, le
+  téléphone, la personne à prévenir et le médecin traitant figuraient dans le fichier statistique
+  même option décochée. Ils n'y figurent plus que si l'option est cochée (adresse e-mail
+  comprise). Ils restent sur la fiche, sur le PDF et dans la sauvegarde JSON.
+
+### À valider de votre côté
+
+Ces points viennent d'une interprétation de la note manuscrite ; chacun se modifie dans une
+constante, en tête du script de `index.html`, sans toucher au reste du code.
+
+- **Les quatre stades de l'alcool** (`ALCOOL`) : usage à faible risque, usage à risque, usage nocif,
+  dépendance. La note ne détaillait pas l'échelle.
+- **Les menus de niveaux et d'organismes** (`NIV_LOISIR`, `NIV_PRO`, `NIV_ENS`, `ORGANISMES`) :
+  listes proposées, à corriger selon les brevets que vous rencontrez réellement.
+- **La durée d'oxygénothérapie** se calcule jusqu'à l'**heure de prise en charge au SMHEP**.
+  Si vous préférez l'heure de l'examen, c'est une ligne dans `adpCalc()`.
+- **Le nom de l'établissement d'arrivée** de la synthèse (`HOPITAL_PEC`, « HNIA Sainte-Anne »).
+- **La pagination du PDF** : une fiche initiale très remplie reste à six pages A4 (les cadres sont
+  insécables : un cadre qui ne tient pas passe entier sur la page suivante).
+
+### Ce qui n'est pas encore là
+
+L'en-tête du service, le bloc signature et les identifiants RPPS du générateur de courriers
+passent en version 7.3.0.
 
 ---
 
@@ -573,7 +683,7 @@ neurologique, il porte le dossier entier.
 
 Le compte rendu de sortie reprend pour l'instant la mise en page de l'outil. **L'en-tête du
 service, le bloc signature et les identifiants RPPS du générateur de courriers arrivent en
-version 7.2.0.**
+version 7.3.0** (annoncés pour la 7.2.0 à l'origine : la 7.2.0 a pris les modifications de saisie).
 
 ---
 

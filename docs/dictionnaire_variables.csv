@@ -18,41 +18,89 @@ date_arr;Date d'arrivée (Mode d'entrée et prise en charge initiale);AAAA-MM-JJ
 heure_arr;Heure d'arrivée (Mode d'entrée et prise en charge initiale);HH:MM
 medecin;Médecin (Mode d'entrée et prise en charge initiale);texte libre
 infirmier;Infirmier(e) (Mode d'entrée et prise en charge initiale);texte libre
-adresse_par;Adressé par (Mode d'entrée et prise en charge initiale);texte libre
+adresse_par;Adressé par (Mode d'entrée et prise en charge initiale);"1 = SAMU 83 ; 2 = SCMM ; 3 = Autre SAMU ; 4 = Autre établissement de santé"
+adresse_samu;Autre SAMU — à préciser (Mode d'entrée et prise en charge initiale);texte libre
+adresse_etab_type;Type d’établissement (Mode d'entrée et prise en charge initiale);"1 = SAU (service d’accueil des urgences) ; 2 = Centre hyperbare ; 3 = Non défini"
+adresse_etab;Établissement — à préciser (Mode d'entrée et prise en charge initiale);texte libre
 heure_appel;Heure d'appel (Mode d'entrée et prise en charge initiale);HH:MM
-evac_moyen;Moyen d'évacuation (Mode d'entrée et prise en charge initiale);"1 = Moyens propres ; 2 = VSAV / pompiers ; 3 = SMUR ; 4 = Hélicoptère ; 5 = Bateau / SNSM ; 6 = Autre"
+evac_moyen;Moyen d'évacuation (Mode d'entrée et prise en charge initiale);"1 = Moyens propres ; 2 = VSAV / pompiers ; 3 = SMUR Route ; 7 = Hélicoptère médicalisé ; 8 = Hélicoptère non médicalisé ; 6 = Autre ; 4 = Hélicoptère (non précisé) (ancien code, n'est plus propose) ; 5 = Bateau / SNSM (ancien code, n'est plus propose)"
+evac_autre;Autre moyen — à préciser (Mode d'entrée et prise en charge initiale);texte libre
 heure_soins;Heure des 1ers soins sur place (Mode d'entrée et prise en charge initiale);HH:MM
 soin_o2;Oxygène normobare sur place (Mode d'entrée et prise en charge initiale);"1 = OUI ; 0 = NON"
-soin_o2_debit;Débit (L/min) (Mode d'entrée et prise en charge initiale);texte libre (L/min)
-soin_o2_duree;Durée (min) (Mode d'entrée et prise en charge initiale);texte libre (min)
+soin_o2_debit;Débit (L/min) (Mode d'entrée et prise en charge initiale);numerique (L/min)
+soin_o2_duree;Durée (min) (Mode d'entrée et prise en charge initiale);numerique, calcule (min)
 soin_aspirine;Aspirine (Mode d'entrée et prise en charge initiale);"1 = OUI ; 0 = NON"
-soin_hydrat;Hydratation (mL) (Mode d'entrée et prise en charge initiale);texte libre (mL)
+soin_hydrat;Hydratation (mL) (Mode d'entrée et prise en charge initiale);numerique (mL)
 soin_autres;Autres soins sur place (Mode d'entrée et prise en charge initiale);texte libre
 heure_pec;Heure de prise en charge au SMHEP (Mode d'entrée et prise en charge initiale);HH:MM
-delai_symp_pec;Délai 1ers symptômes → prise en charge (min) (Mode d'entrée et prise en charge initiale);texte libre
-pp_parente;Personne à prévenir — lien (Mode d'entrée et prise en charge initiale);texte libre
-pp_nom;Personne à prévenir — nom et prénom (Mode d'entrée et prise en charge initiale);texte libre
-pp_tel;Personne à prévenir — téléphone (Mode d'entrée et prise en charge initiale);texte libre
-mt_nom;Médecin traitant — nom (Mode d'entrée et prise en charge initiale);texte libre
-mt_tel;Médecin traitant — téléphone (Mode d'entrée et prise en charge initiale);texte libre
-nationalite;Nationalité (Le plongeur);texte libre
+delai_symp_pec;Délai 1ers symptômes → prise en charge (min) (Mode d'entrée et prise en charge initiale);numerique, calcule
+pp_lien;Personne à prévenir — lien (Mode d'entrée et prise en charge initiale);"1 = Conjoint / Compagnon ; 2 = Parent ; 3 = Enfant ; 4 = Ami ; 5 = Autre"
+pp_lien_autre;Lien — à préciser (Mode d'entrée et prise en charge initiale);texte libre
+nationalite;Nationalité (Le plongeur);"1 = Française ; 2 = Belge ; 3 = Allemande ; 4 = Suisse ; 5 = Italienne ; 6 = Espagnole ; 7 = Américaine (US) ; 8 = Anglaise ; 9 = Autre"
+nationalite_autre;Nationalité — à préciser (Le plongeur);texte libre
 profession;Profession (Le plongeur);texte libre
-adresse;Adresse (Le plongeur);texte libre
-tel;Téléphone (Le plongeur);texte libre
-poids;Poids (kg) (Le plongeur);texte libre (kg)
-taille;Taille (cm) (Le plongeur);texte libre (cm)
-imc;IMC (Le plongeur);texte libre
-atcd;Antécédents (Le plongeur);texte libre
-toxiques;Habitudes toxiques (Le plongeur);texte libre
+poids;Poids (kg) (Le plongeur);numerique (kg)
+taille;Taille (cm) (Le plongeur);numerique (cm)
+imc;IMC (Le plongeur);numerique, calcule (kg/m²)
+atcd_med_aucun_med;Antécédents - Aucun antécédent médical notable (Le plongeur);"1 = coche ; 0 = non coche"
+atcd_med_aucun_chir;Antécédents - Aucun antécédent chirurgical notable (Le plongeur);"1 = coche ; 0 = non coche"
+atcd_med_hta;Antécédents - HTA (Le plongeur);"1 = coche ; 0 = non coche"
+atcd_med_diabete;Antécédents - Diabète (Le plongeur);"1 = coche ; 0 = non coche"
+atcd_med_asthme;Antécédents - Asthme (Le plongeur);"1 = coche ; 0 = non coche"
+atcd_med_cardio;Antécédents - Cardiopathie (Le plongeur);"1 = coche ; 0 = non coche"
+atcd_med_pneumo;Antécédents - Pneumothorax (Le plongeur);"1 = coche ; 0 = non coche"
+atcd_med;Antécédents - liste (Le plongeur);texte, valeurs separees par |
+atcd_cardio;Cardiopathie — préciser (Le plongeur);texte libre
+atcd_pneumo_type;Pneumothorax — type (Le plongeur);"1 = Spontané ; 2 = Post-traumatique ; 3 = Iatrogène"
+atcd_pneumo_date;Pneumothorax — date (ou année) (Le plongeur);texte libre
+atcd;Autres antécédents (Le plongeur);texte libre
+tox_aucune;Habitudes toxiques - Aucune (Le plongeur);"1 = coche ; 0 = non coche"
+tox_tabac;Habitudes toxiques - Tabagisme actif (Le plongeur);"1 = coche ; 0 = non coche"
+tox_tabac_sevre;Habitudes toxiques - Tabagisme sevré (Le plongeur);"1 = coche ; 0 = non coche"
+tox_alcool;Habitudes toxiques - Consommation d’alcool (Le plongeur);"1 = coche ; 0 = non coche"
+tox_cannabis;Habitudes toxiques - Cannabis (Le plongeur);"1 = coche ; 0 = non coche"
+tox_autre;Habitudes toxiques - Autre (Le plongeur);"1 = coche ; 0 = non coche"
+tox;Habitudes toxiques - liste (Le plongeur);texte, valeurs separees par |
+tabac_cig;Tabac — cigarettes par jour (Le plongeur);numerique (cig/j)
+tabac_ans;Tabac — depuis (durée en années) (Le plongeur);numerique (ans)
+tabac_pa;Tabac — paquets-années (PA) (Le plongeur);numerique, calcule (PA)
+tabac_sevre_date;Tabagisme sevré depuis le (Le plongeur);AAAA-MM-JJ
+alcool_stade;Alcool — évaluation en 4 stades (Le plongeur);"1 = Stade 1 — usage à faible risque ; 2 = Stade 2 — usage à risque ; 3 = Stade 3 — usage nocif ; 4 = Stade 4 — dépendance"
+cannabis_freq;Cannabis — fréquence (Le plongeur);"1 = Quotidienne ; 2 = Régulière ; 3 = Festive ; 4 = Exceptionnelle"
+tox_autre_txt;Autre toxique — préciser (Le plongeur);texte libre
+toxiques;Habitudes toxiques — précisions (Le plongeur);texte libre
 traitement;Traitement habituel (Le plongeur);texte libre
 allergie;Allergies (Le plongeur);texte libre
 contracept;Contraception orale (Le plongeur);"1 = OUI ; 0 = NON"
 regles;Date des dernières règles (Le plongeur);AAAA-MM-JJ
 rachianesth;Rachianesthésie récente (Le plongeur);"1 = OUI ; 0 = NON"
-atcd_plongee;Antécédents en plongée (Le plongeur);texte libre
-niveau;Niveau de plongée (Le plongeur);texte libre
+atcdp_aucun;Antécédents en plongée - Aucun antécédent en plongée antérieur (Le plongeur);"1 = coche ; 0 = non coche"
+atcdp_add;Antécédents en plongée - ADD (Le plongeur);"1 = coche ; 0 = non coche"
+atcdp_opi;Antécédents en plongée - OPI (Le plongeur);"1 = coche ; 0 = non coche"
+atcdp_baro;Antécédents en plongée - Barotraumatisme (Le plongeur);"1 = coche ; 0 = non coche"
+atcdp_bio;Antécédents en plongée - Biochimique (Le plongeur);"1 = coche ; 0 = non coche"
+atcdp;Antécédents en plongée - liste (Le plongeur);texte, valeurs separees par |
+atcdp_add_txt;ADD — préciser type et date (Le plongeur);texte libre
+atcdp_opi_txt;OPI — préciser la date (Le plongeur);texte libre
+atcdp_baro_txt;Barotraumatisme — préciser type et date (Le plongeur);texte libre
+atcdp_bio_txt;Biochimique — préciser type et date (Le plongeur);texte libre
+atcd_plongee;Antécédents en plongée — précisions (Le plongeur);texte libre
+niv_loisir;Niveau de plongée loisir (Le plongeur);"1 = Baptême / non breveté ; 2 = N1 (1★) ; 3 = N2 (2★) ; 4 = N3 (3★) ; 5 = N4 (4★) — guide de palanquée ; 6 = N5 — directeur de plongée ; 7 = PADI Open Water Diver ; 8 = PADI Advanced Open Water Diver ; 9 = PADI Rescue Diver ; 99 = Autre (préciser)"
+niv_loisir_autre;Niveau loisir — à préciser (Le plongeur);texte libre
+niv_pro;Niveau de plongée professionnel (Le plongeur);"1 = Scaphandrier civil — CAH classe I ; 2 = Scaphandrier civil — CAH classe II ; 3 = Scaphandrier civil — CAH classe III ; 4 = Plongeur de bord (Marine nationale) ; 5 = Plongeur démineur ; 6 = Scaphandrier d’intervention (Marine nationale) ; 7 = Nageur de combat ; 8 = Plongeur sapeur-pompier / sécurité civile ; 9 = Plongeur scientifique ; 10 = Plongeur à saturation / offshore ; 99 = Autre (préciser)"
+niv_pro_autre;Niveau professionnel — à préciser (Le plongeur);texte libre
+niv_ens;Niveau de plongée d’enseignement (Le plongeur);"1 = E1 — initiateur ; 2 = E2 ; 3 = E3 — moniteur fédéral 1er degré (MF1) ; 4 = E4 — moniteur fédéral 2e degré (MF2) ; 5 = BPJEPS plongée subaquatique ; 6 = DEJEPS plongée subaquatique ; 7 = DESJEPS plongée subaquatique ; 8 = PADI Divemaster ; 9 = PADI Instructor ; 99 = Autre (préciser)"
+niv_ens_autre;Niveau d’enseignement — à préciser (Le plongeur);texte libre
+organisme;Organisme (Le plongeur);"1 = FFESSM ; 2 = CMAS ; 3 = PADI ; 4 = SSI ; 5 = NAUI ; 6 = ANMP ; 7 = FSGT ; 8 = UCPA ; 9 = Armées / Marine nationale ; 10 = Sécurité civile / sapeurs-pompiers ; 99 = Autre (préciser)"
+organisme_autre;Organisme — à préciser (Le plongeur);texte libre
 niveau_date;Date d'obtention du niveau (Le plongeur);AAAA-MM-JJ
-nb_plongees_6m;Nombre de plongées sur 6 mois (Le plongeur);texte libre
+plongee_depuis;Plongée depuis (année) (Le plongeur);numerique
+nb_plongees_an;Nombre moyen de plongées par an (Le plongeur);numerique (/an)
+certif_date;Date du dernier certificat médical (Le plongeur);AAAA-MM-JJ
+certif_medecin;Qualification du médecin (Le plongeur);"1 = Médecin fédéral ; 2 = Médecin du sport ; 3 = DIU hyperbare ; 4 = Médecin généraliste ; 5 = Médecin rééducateur ; 9 = Autre"
+certif_medecin_autre;Qualification — à préciser (Le plongeur);texte libre
+certif_absent;Certificat médical (Le plongeur);"1 = coche ; vide = non coche"
+certif_comment;Commentaire (précisions) (Le plongeur);texte libre
 cadre_plongee;Cadre de la plongée (Le plongeur);"1 = Plongée club ; 2 = Plongée hors club ; 3 = Plongée professionnelle"
 auto_encadre;Auto-encadré (Le plongeur);"1 = OUI ; 0 = NON"
 club_nom;Club — nom (Le plongeur);texte libre
@@ -62,23 +110,28 @@ pl_lieu;Lieu / site (Paramètres de la plongée accidentelle);texte libre
 pl_type;Type de plongée (Paramètres de la plongée accidentelle);"1 = Loisir ; 2 = Instruction ; 3 = Professionnelle ; 4 = Militaire ; 5 = Apnée"
 pl_gaz;Mélange respiré (Paramètres de la plongée accidentelle);"1 = Air ; 2 = Nitrox ; 3 = Trimix ; 4 = Héliox ; 5 = Oxygène ; 9 = Autre"
 pl_gaz_autre;Préciser le mélange (Paramètres de la plongée accidentelle);texte libre
-pl_proc;Procédure de décompression (Paramètres de la plongée accidentelle);"1 = Ordinateur ; 2 = MN 90 ; 3 = Tables autres ; 4 = Sans procédure"
-pl_h_immersion;Heure d'immersion (Paramètres de la plongée accidentelle);HH:MM
-pl_h_sortie;Heure de sortie de l'eau (Paramètres de la plongée accidentelle);HH:MM
-pl_prof;Profondeur maximale (m) (Paramètres de la plongée accidentelle);texte libre (m)
-pl_duree_fond;Durée au fond (min) (Paramètres de la plongée accidentelle);texte libre (min)
-pl_duree_tot;Durée totale de la plongée (min) (Paramètres de la plongée accidentelle);texte libre
-pl_paliers;Paliers (Paramètres de la plongée accidentelle);texte libre
+pl_proc;Procédure de décompression (Paramètres de la plongée accidentelle);"1 = Ordinateur ; 2 = Tables MN 90 ; 5 = Tables MT 92 ; 3 = Autres tables (préciser) ; 4 = Sans procédure"
+pl_ordi_modele;Ordinateur — marque / modèle (Paramètres de la plongée accidentelle);texte libre
+pl_ordi_reglage;Ordinateur — réglage (GF, etc.) (Paramètres de la plongée accidentelle);texte libre
+pl_proc_autre;Autres tables — préciser (Paramètres de la plongée accidentelle);texte libre
+pl_h_immersion;Départ surface — DS (heure d'immersion) (Paramètres de la plongée accidentelle);HH:MM
+pl_h_depart_fond;Départ fond — DF (heure) (Paramètres de la plongée accidentelle);HH:MM
+pl_h_sortie;Heure de sortie de l'eau — HS (Paramètres de la plongée accidentelle);HH:MM
+pl_prof;Profondeur maximale atteinte — Pmax (m) (Paramètres de la plongée accidentelle);numerique (m)
+pl_dt;Durée de travail — DT = DF − DS (Paramètres de la plongée accidentelle);numerique, calcule (min)
+pl_dtr;Durée totale de remontée — DTR = HS − DF (Paramètres de la plongée accidentelle);numerique, calcule (min)
+pl_duree_tot;Durée totale de plongée — DTP = HS − DS (Paramètres de la plongée accidentelle);numerique, calcule (min)
+pl_paliers;Commentaire sur les paliers et la remontée (Paramètres de la plongée accidentelle);texte libre
 pl_h_symp;Heure des 1ers symptômes (Paramètres de la plongée accidentelle);HH:MM
-pl_delai_symp;Délai sortie de l’eau → 1ers symptômes (min) (Paramètres de la plongée accidentelle);texte libre
+pl_delai_symp;Délai sortie de l’eau → 1ers symptômes (min) (Paramètres de la plongée accidentelle);numerique, calcule
 plp_faite;Plongée dans les 24 heures précédentes (Paramètres de la plongée précédente);"1 = OUI ; 0 = NON"
 plp_date;Date (Paramètres de la plongée précédente);AAAA-MM-JJ
 plp_heure;Heure de sortie de l’eau (Paramètres de la plongée précédente);HH:MM
-plp_prof;Profondeur maximale (m) (Paramètres de la plongée précédente);texte libre (m)
-plp_duree_fond;Durée au fond (min) (Paramètres de la plongée précédente);texte libre (min)
-plp_duree_tot;Durée totale (min) (Paramètres de la plongée précédente);texte libre (min)
+plp_prof;Profondeur maximale (m) (Paramètres de la plongée précédente);numerique (m)
+plp_duree_fond;Durée au fond (min) (Paramètres de la plongée précédente);numerique (min)
+plp_duree_tot;Durée totale (min) (Paramètres de la plongée précédente);numerique (min)
 plp_paliers;Paliers (Paramètres de la plongée précédente);texte libre
-plp_interval;Intervalle de surface (min) (Paramètres de la plongée précédente);texte libre
+plp_interval;Intervalle de surface (min) (Paramètres de la plongée précédente);numerique, calcule
 ff_proc;Respect de la procédure de décompression (Facteurs favorisants);"1 = OUI ; 0 = NON"
 ff_entrainement;Manque d’entraînement à la plongée profonde (Facteurs favorisants);"1 = OUI ; 0 = NON"
 ff_ludion;Plongées ludion (yo-yo) (Facteurs favorisants);"1 = OUI ; 0 = NON"
@@ -105,7 +158,7 @@ avpu;AVPU (Conscience);"1 = Alert ; 2 = Verbal ; 3 = Pain ; 4 = Unresponsive"
 gcs_y;Glasgow — Ouverture des yeux (Y) (Conscience);"1 = 1 ; 2 = 2 ; 3 = 3 ; 4 = 4 ; NC = NC"
 gcs_v;Glasgow — Réponse verbale (V) (Conscience);"1 = 1 ; 2 = 2 ; 3 = 3 ; 4 = 4 ; 5 = 5 ; NC = NC"
 gcs_m;Glasgow — Réponse motrice (M) (Conscience);"1 = 1 ; 2 = 2 ; 3 = 3 ; 4 = 4 ; 5 = 5 ; 6 = 6 ; NC = NC"
-gcs_tot;Score de Glasgow total (/15) (Conscience);texte libre
+gcs_tot;Score de Glasgow total (/15) (Conscience);numerique, calcule
 pup_sym;Pupilles symétriques (Fonctions supérieures);"1 = OUI ; 0 = NON"
 pup_aniso;Anisocorie (Fonctions supérieures);"1 = OUI ; 0 = NON"
 pup_aniso_cote;Pupille la plus large (Fonctions supérieures);"1 = D ; 2 = G"
@@ -252,8 +305,8 @@ vac;Contraction anale volontaire (VAC) (Motricité et force motrice);"1 = OUI ; 
 dap;Pression anale profonde perçue (DAP) (Motricité et force motrice);"1 = OUI ; 0 = NON"
 mict;Miction depuis l'accident (Miction);"1 = OUI ; 0 = NON"
 mict_type;Caractéristiques (Miction);"1 = Normale ; 2 = Avec effort ; 3 = Rétention"
-mict_residu_pre;Résidu pré-mictionnel (mL) (Miction);texte libre (mL)
-mict_residu_post;Résidu post-mictionnel (mL) (Miction);texte libre (mL)
+mict_residu_pre;Résidu pré-mictionnel (mL) (Miction);numerique (mL)
+mict_residu_post;Résidu post-mictionnel (mL) (Miction);numerique (mL)
 vertic;Verticalisation possible (Coordination);"1 = OUI ; 0 = NON"
 equil_yo;Équilibre statique conservé — yeux OUVERTS (Coordination);"1 = OUI ; 0 = NON"
 equil_yf;Équilibre statique conservé — yeux FERMÉS (Coordination);"1 = OUI ; 0 = NON"
@@ -267,7 +320,7 @@ doigt_nez;Doigt-nez réalisé correctement (Coordination);"1 = OUI ; 0 = NON"
 doigt_nez_cote;Côté déficitaire (Coordination);"1 = D ; 2 = G ; 3 = Bilat."
 sens_examinee;Examen des sensibilités réalisé (Sensibilités);"1 = OUI ; 0 = NON"
 cut_present;Lésions cutanées présentes (Lésions cutanées de désaturation);"1 = OUI ; 0 = NON"
-cut_delai;Délai d'apparition après émersion (min) (Lésions cutanées de désaturation);texte libre (min)
+cut_delai;Délai d'apparition après émersion (min) (Lésions cutanées de désaturation);numerique (min)
 cut_evol;Évolution sous oxygène (Lésions cutanées de désaturation);"1 = Régression ; 2 = Stable ; 3 = Extension"
 cut_txt;Commentaire (Lésions cutanées de désaturation);texte libre
 ac_vvp;Voie veineuse périphérique (Actes, biologie et examens complémentaires);"1 = OUI ; 0 = NON"
@@ -277,8 +330,8 @@ ac_doppler;Doppler transcrânien (Actes, biologie et examens complémentaires);"
 tb_table;Table utilisée (Actes, biologie et examens complémentaires);texte libre
 tb_h_mep;Heure de mise en pression (Actes, biologie et examens complémentaires);HH:MM
 tb_h_fin;Heure de fin (Actes, biologie et examens complémentaires);HH:MM
-tb_delai;Délai 1ers symptômes → recompression (min) (Actes, biologie et examens complémentaires);texte libre
-tb_nb_seances;Nombre de séances réalisées (Actes, biologie et examens complémentaires);texte libre
+tb_delai;Délai 1ers symptômes → recompression (min) (Actes, biologie et examens complémentaires);numerique, calcule
+tb_nb_seances;Nombre de séances réalisées (Actes, biologie et examens complémentaires);numerique
 tb_complic;Complication thérapeutique (Actes, biologie et examens complémentaires);"1 = OUI ; 0 = NON"
 tb_complic_txt;Préciser (Actes, biologie et examens complémentaires);texte libre
 bio_add;Bilan accident de plongée prélevé (Actes, biologie et examens complémentaires);"1 = OUI ; 0 = NON"
@@ -295,16 +348,16 @@ im_res;Résultats des examens réalisés (Actes, biologie et examens complément
 im_demande;Examens demandés, en attente (Actes, biologie et examens complémentaires);texte libre
 rx_o2;Oxygène normobare (Traitements prescrits);"1 = OUI ; 0 = NON"
 rx_solu;Méthylprednisolone (Traitements prescrits);"1 = OUI ; 0 = NON"
-rx_solu_dose;Dose (mg) (Traitements prescrits);texte libre (mg)
+rx_solu_dose;Dose (mg) (Traitements prescrits);numerique (mg)
 rx_solu_h;Heure (Traitements prescrits);HH:MM
 rx_aspi;Aspirine (Traitements prescrits);"1 = OUI ; 0 = NON"
-rx_aspi_dose;Dose (mg) (Traitements prescrits);texte libre (mg)
+rx_aspi_dose;Dose (mg) (Traitements prescrits);numerique (mg)
 rx_aspi_h;Heure (Traitements prescrits);HH:MM
 rx_nacl;Remplissage (Traitements prescrits);"1 = OUI ; 0 = NON"
-rx_nacl_vol;Volume (mL) (Traitements prescrits);texte libre (mL)
+rx_nacl_vol;Volume (mL) (Traitements prescrits);numerique (mL)
 rx_antalg;Antalgiques (Traitements prescrits);texte libre
 rx_autres;Autres traitements (Traitements prescrits);texte libre
-ev_seances;Séances réalisées depuis la dernière consultation (Évolution depuis la consultation précédente);texte libre
+ev_seances;Séances réalisées depuis la dernière consultation (Évolution depuis la consultation précédente);numerique
 ev_complic;Complication thérapeutique depuis la dernière consultation (Évolution depuis la consultation précédente);"1 = OUI ; 0 = NON"
 ev_complic_txt;Préciser (Évolution depuis la consultation précédente);texte libre
 ev_sens;Évolution clinique (Évolution depuis la consultation précédente);"0 = Amélioré ; 1 = Stable ; 2 = Aggravé"
@@ -316,6 +369,37 @@ orientation;Orientation (Conclusion);"1 = Retour au domicile ; 2 = Hospitalisati
 orientation_autre;Préciser la structure (Conclusion);texte libre
 orientation_txt;Précisions sur l'orientation (Conclusion);texte libre
 notes;Commentaires libres (Conclusion);texte libre
+pl_pal_nb;Paliers - nombre de paliers saisis;"entier ; vide = aucun palier saisi"
+pl_pal_secu;Paliers - paliers de securite realises;"1 = au moins un palier de securite ; 0 = paliers saisis, aucun de securite ; vide = aucun palier saisi"
+pl_pal_secu_nb;Paliers - nombre de paliers de securite (non obligatoires);"entier ; vide = aucun palier saisi"
+pl_pal_obl_nb;Paliers - nombre de paliers obligatoires;"entier ; vide = aucun palier saisi"
+pl_pal_duree;Paliers - duree cumulee;"entier, minutes (calcule) ; vide = aucune duree saisie"
+pl_pal_prof_max;Paliers - profondeur du palier le plus profond;"metres ; vide = aucune profondeur saisie"
+pl_pal_txt;Paliers - liste detaillee;texte : duree a profondeur (gaz, obligatoire ou securite), separes par |
+pl_pal1_gaz;Palier 1 - gaz;"1 = Air ; 2 = Nitrox ; 3 = Trimix ; 4 = Heliox ; 5 = Oxygene ; 9 = Autre ; vide = palier non saisi"
+pl_pal1_prof;Palier 1 - profondeur;"metres ; vide = non renseigne"
+pl_pal1_duree;Palier 1 - duree a la profondeur;"minutes ; vide = non renseigne"
+pl_pal1_secu;Palier 1 - palier de securite;"1 = de securite (non obligatoire) ; 0 = obligatoire ; vide = palier non saisi"
+pl_pal2_gaz;Palier 2 - gaz;"1 = Air ; 2 = Nitrox ; 3 = Trimix ; 4 = Heliox ; 5 = Oxygene ; 9 = Autre ; vide = palier non saisi"
+pl_pal2_prof;Palier 2 - profondeur;"metres ; vide = non renseigne"
+pl_pal2_duree;Palier 2 - duree a la profondeur;"minutes ; vide = non renseigne"
+pl_pal2_secu;Palier 2 - palier de securite;"1 = de securite (non obligatoire) ; 0 = obligatoire ; vide = palier non saisi"
+pl_pal3_gaz;Palier 3 - gaz;"1 = Air ; 2 = Nitrox ; 3 = Trimix ; 4 = Heliox ; 5 = Oxygene ; 9 = Autre ; vide = palier non saisi"
+pl_pal3_prof;Palier 3 - profondeur;"metres ; vide = non renseigne"
+pl_pal3_duree;Palier 3 - duree a la profondeur;"minutes ; vide = non renseigne"
+pl_pal3_secu;Palier 3 - palier de securite;"1 = de securite (non obligatoire) ; 0 = obligatoire ; vide = palier non saisi"
+pl_pal4_gaz;Palier 4 - gaz;"1 = Air ; 2 = Nitrox ; 3 = Trimix ; 4 = Heliox ; 5 = Oxygene ; 9 = Autre ; vide = palier non saisi"
+pl_pal4_prof;Palier 4 - profondeur;"metres ; vide = non renseigne"
+pl_pal4_duree;Palier 4 - duree a la profondeur;"minutes ; vide = non renseigne"
+pl_pal4_secu;Palier 4 - palier de securite;"1 = de securite (non obligatoire) ; 0 = obligatoire ; vide = palier non saisi"
+pl_pal5_gaz;Palier 5 - gaz;"1 = Air ; 2 = Nitrox ; 3 = Trimix ; 4 = Heliox ; 5 = Oxygene ; 9 = Autre ; vide = palier non saisi"
+pl_pal5_prof;Palier 5 - profondeur;"metres ; vide = non renseigne"
+pl_pal5_duree;Palier 5 - duree a la profondeur;"minutes ; vide = non renseigne"
+pl_pal5_secu;Palier 5 - palier de securite;"1 = de securite (non obligatoire) ; 0 = obligatoire ; vide = palier non saisi"
+pl_pal6_gaz;Palier 6 - gaz;"1 = Air ; 2 = Nitrox ; 3 = Trimix ; 4 = Heliox ; 5 = Oxygene ; 9 = Autre ; vide = palier non saisi"
+pl_pal6_prof;Palier 6 - profondeur;"metres ; vide = non renseigne"
+pl_pal6_duree;Palier 6 - duree a la profondeur;"minutes ; vide = non renseigne"
+pl_pal6_secu;Palier 6 - palier de securite;"1 = de securite (non obligatoire) ; 0 = obligatoire ; vide = palier non saisi"
 pj_nb;Nombre de photographies jointes;"entier ; vide = aucune"
 pj_titres;Titres des photographies jointes;texte, separes par |
 gcs_nc;Glasgow : modalites non cotables;"entier 1 a 3 ; vide = aucune modalite NC. Un total gcs_tot vide avec gcs_nc renseigne signifie score non calculable, et non score manquant"

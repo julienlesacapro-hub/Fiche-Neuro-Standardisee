@@ -7,7 +7,7 @@
    Les fiches ne transitent PAS par ce cache : elles vivent dans IndexedDB
    et dans le dossier choisi par l'utilisateur. Vider le cache ne les efface pas.
 */
-const VERSION = 'v7.1.0';
+const VERSION = 'v7.2.0';
 const CACHE   = 'adp-' + VERSION;
 
 const SHELL = [
@@ -35,8 +35,10 @@ self.addEventListener('install', e => {
 self.addEventListener('activate', e => {
   e.waitUntil((async () => {
     const keys = await caches.keys();
+    // les caches des versions précédentes (adp-v7.x, et fiche-neuro-v6.x avant le
+    // changement de nom) sont supprimés ; celui de la version courante reste
     await Promise.all(keys
-      .filter(k => k.startsWith('fiche-neuro-') && k !== CACHE)
+      .filter(k => (k.startsWith('adp-') || k.startsWith('fiche-neuro-')) && k !== CACHE)
       .map(k => caches.delete(k)));
     if (self.registration.navigationPreload) {
       try { await self.registration.navigationPreload.enable(); } catch (err) {}
