@@ -281,7 +281,7 @@ l'application implique un dépôt public. Le code de la fiche n'a rien de secret
 données qui le sont, et elles ne quittent jamais l'appareil.
 
 Si vous ne voulez rien exposer : servez le dossier depuis un serveur interne à l'établissement,
-ou distribuez `fiche_neuro.html` par clé USB. Le fichier unique fonctionne seul, hors ligne,
+ou distribuez `index.html` par clé USB. Le fichier unique fonctionne seul, hors ligne,
 sans rien installer. Vous perdez seulement l'icône sur l'écran d'accueil.
 
 ## 3.3 Branche `main` ou `master`
@@ -337,9 +337,8 @@ git push origin main
 2. **Add file → Upload files** à la racine, glissez le nouveau `index.html`, **Commit changes**.
 3. Attendez la coche verte dans l'onglet **Actions**.
 
-C'est tout. Le fichier que je vous livre s'appelle `fiche_neuro.html` : renommez-le
-`index.html` avant de le déposer, sinon vous créez un second fichier au lieu de remplacer
-le premier.
+C'est tout. Le fichier à déposer s'appelle `index.html` : déposez-le sous ce nom, sinon vous créez
+un second fichier au lieu de remplacer le premier.
 
 ---
 
@@ -350,5 +349,5 @@ le premier.
 | `Authentication failed` au push | mot de passe utilisé au lieu d'un jeton d'accès personnel |
 | `src refspec main does not match any` | la branche s'appelle `master` |
 | Un fichier supprimé reste en ligne | dépôt par l'interface web : supprimez-le à la main |
-| Un doublon apparaît à la racine | fichier d'un sous-dossier glissé sans son dossier, ou `fiche_neuro.html` non renommé en `index.html` |
+| Un doublon apparaît à la racine | fichier d'un sous-dossier glissé sans son dossier, ou fichier déposé sous un autre nom que `index.html` |
 | L'installation n'est pas proposée | adresse en `http://` ou en `file://`, ou application déjà installée |

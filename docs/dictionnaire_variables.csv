@@ -18,12 +18,12 @@ date_arr;Date d'arrivée (Mode d'entrée et prise en charge initiale);AAAA-MM-JJ
 heure_arr;Heure d'arrivée (Mode d'entrée et prise en charge initiale);HH:MM
 medecin;Médecin (Mode d'entrée et prise en charge initiale);texte libre
 infirmier;Infirmier(e) (Mode d'entrée et prise en charge initiale);texte libre
-adresse_par;Adressé par (Mode d'entrée et prise en charge initiale);"1 = SAMU 83 ; 2 = SCMM ; 3 = Autre SAMU ; 4 = Autre établissement de santé"
+adresse_par;Adressé par (Mode d'entrée et prise en charge initiale);"1 = SAMU 83 ; 2 = SCMM ; 3 = Autre SAMU ; 4 = Autre"
 adresse_samu;Autre SAMU — à préciser (Mode d'entrée et prise en charge initiale);texte libre
 adresse_etab_type;Type d’établissement (Mode d'entrée et prise en charge initiale);"1 = SAU (service d’accueil des urgences) ; 2 = Centre hyperbare ; 3 = Non défini"
 adresse_etab;Établissement — à préciser (Mode d'entrée et prise en charge initiale);texte libre
 heure_appel;Heure d'appel (Mode d'entrée et prise en charge initiale);HH:MM
-evac_moyen;Moyen d'évacuation (Mode d'entrée et prise en charge initiale);"1 = Moyens propres ; 2 = VSAV / pompiers ; 3 = SMUR Route ; 7 = Hélicoptère médicalisé ; 8 = Hélicoptère non médicalisé ; 6 = Autre ; 4 = Hélicoptère (non précisé) (ancien code, n'est plus propose) ; 5 = Bateau / SNSM (ancien code, n'est plus propose)"
+evac_moyen;Moyen d'évacuation (Mode d'entrée et prise en charge initiale);"1 = Moyens propres ; 2 = VSAV / pompiers ; 3 = SMUR routier ; 7 = Hélicoptère médicalisé ; 8 = Hélicoptère non médicalisé ; 6 = Autre"
 evac_autre;Autre moyen — à préciser (Mode d'entrée et prise en charge initiale);texte libre
 heure_soins;Heure des 1ers soins sur place (Mode d'entrée et prise en charge initiale);HH:MM
 soin_o2;Oxygène normobare sur place (Mode d'entrée et prise en charge initiale);"1 = OUI ; 0 = NON"
@@ -34,8 +34,6 @@ soin_hydrat;Hydratation (mL) (Mode d'entrée et prise en charge initiale);numeri
 soin_autres;Autres soins sur place (Mode d'entrée et prise en charge initiale);texte libre
 heure_pec;Heure de prise en charge au SMHEP (Mode d'entrée et prise en charge initiale);HH:MM
 delai_symp_pec;Délai 1ers symptômes → prise en charge (min) (Mode d'entrée et prise en charge initiale);numerique, calcule
-pp_lien;Personne à prévenir — lien (Mode d'entrée et prise en charge initiale);"1 = Conjoint / Compagnon ; 2 = Parent ; 3 = Enfant ; 4 = Ami ; 5 = Autre"
-pp_lien_autre;Lien — à préciser (Mode d'entrée et prise en charge initiale);texte libre
 nationalite;Nationalité (Le plongeur);"1 = Française ; 2 = Belge ; 3 = Allemande ; 4 = Suisse ; 5 = Italienne ; 6 = Espagnole ; 7 = Américaine (US) ; 8 = Anglaise ; 9 = Autre"
 nationalite_autre;Nationalité — à préciser (Le plongeur);texte libre
 profession;Profession (Le plongeur);texte libre
@@ -58,6 +56,7 @@ tox_aucune;Habitudes toxiques - Aucune (Le plongeur);"1 = coche ; 0 = non coche"
 tox_tabac;Habitudes toxiques - Tabagisme actif (Le plongeur);"1 = coche ; 0 = non coche"
 tox_tabac_sevre;Habitudes toxiques - Tabagisme sevré (Le plongeur);"1 = coche ; 0 = non coche"
 tox_alcool;Habitudes toxiques - Consommation d’alcool (Le plongeur);"1 = coche ; 0 = non coche"
+tox_alcool_sevre;Habitudes toxiques - Alcool sevré (Le plongeur);"1 = coche ; 0 = non coche"
 tox_cannabis;Habitudes toxiques - Cannabis (Le plongeur);"1 = coche ; 0 = non coche"
 tox_autre;Habitudes toxiques - Autre (Le plongeur);"1 = coche ; 0 = non coche"
 tox;Habitudes toxiques - liste (Le plongeur);texte, valeurs separees par |
@@ -66,6 +65,8 @@ tabac_ans;Tabac — depuis (durée en années) (Le plongeur);numerique (ans)
 tabac_pa;Tabac — paquets-années (PA) (Le plongeur);numerique, calcule (PA)
 tabac_sevre_date;Tabagisme sevré depuis le (Le plongeur);AAAA-MM-JJ
 alcool_stade;Alcool — évaluation en 4 stades (Le plongeur);"1 = Stade 1 — usage à faible risque ; 2 = Stade 2 — usage à risque ; 3 = Stade 3 — usage nocif ; 4 = Stade 4 — dépendance"
+alcool_sevre_date;Alcool sevré depuis le (Le plongeur);AAAA-MM-JJ
+alcool_sevre_stade;Alcool sevré — évaluation antérieure en 4 stades (Le plongeur);"1 = Stade 1 — usage à faible risque ; 2 = Stade 2 — usage à risque ; 3 = Stade 3 — usage nocif ; 4 = Stade 4 — dépendance"
 cannabis_freq;Cannabis — fréquence (Le plongeur);"1 = Quotidienne ; 2 = Régulière ; 3 = Festive ; 4 = Exceptionnelle"
 tox_autre_txt;Autre toxique — préciser (Le plongeur);texte libre
 toxiques;Habitudes toxiques — précisions (Le plongeur);texte libre
@@ -87,7 +88,7 @@ atcdp_bio_txt;Biochimique — préciser type et date (Le plongeur);texte libre
 atcd_plongee;Antécédents en plongée — précisions (Le plongeur);texte libre
 niv_loisir;Niveau de plongée loisir (Le plongeur);"1 = Baptême / non breveté ; 2 = N1 (1★) ; 3 = N2 (2★) ; 4 = N3 (3★) ; 5 = N4 (4★) — guide de palanquée ; 6 = N5 — directeur de plongée ; 7 = PADI Open Water Diver ; 8 = PADI Advanced Open Water Diver ; 9 = PADI Rescue Diver ; 99 = Autre (préciser)"
 niv_loisir_autre;Niveau loisir — à préciser (Le plongeur);texte libre
-niv_pro;Niveau de plongée professionnel (Le plongeur);"1 = Scaphandrier civil — CAH classe I ; 2 = Scaphandrier civil — CAH classe II ; 3 = Scaphandrier civil — CAH classe III ; 4 = Plongeur de bord (Marine nationale) ; 5 = Plongeur démineur ; 6 = Scaphandrier d’intervention (Marine nationale) ; 7 = Nageur de combat ; 8 = Plongeur sapeur-pompier / sécurité civile ; 9 = Plongeur scientifique ; 10 = Plongeur à saturation / offshore ; 99 = Autre (préciser)"
+niv_pro;Niveau de plongée professionnel (Le plongeur);"1 = Scaphandrier civil — CAH classe I ; 2 = Scaphandrier civil — CAH classe II ; 3 = Scaphandrier civil — CAH classe III ; 4 = Plongeur de bord ; 5 = Plongeur d’armes (Marine nationale) ; 6 = Plongeur d’armes (armée de terre) ; 7 = Plongeur sapeur-pompier / sécurité civile ; 8 = Plongeur scientifique ; 9 = Plongeur à saturation / offshore ; 99 = Autre (préciser)"
 niv_pro_autre;Niveau professionnel — à préciser (Le plongeur);texte libre
 niv_ens;Niveau de plongée d’enseignement (Le plongeur);"1 = E1 — initiateur ; 2 = E2 ; 3 = E3 — moniteur fédéral 1er degré (MF1) ; 4 = E4 — moniteur fédéral 2e degré (MF2) ; 5 = BPJEPS plongée subaquatique ; 6 = DEJEPS plongée subaquatique ; 7 = DESJEPS plongée subaquatique ; 8 = PADI Divemaster ; 9 = PADI Instructor ; 99 = Autre (préciser)"
 niv_ens_autre;Niveau d’enseignement — à préciser (Le plongeur);texte libre
@@ -110,18 +111,35 @@ pl_lieu;Lieu / site (Paramètres de la plongée accidentelle);texte libre
 pl_type;Type de plongée (Paramètres de la plongée accidentelle);"1 = Loisir ; 2 = Instruction ; 3 = Professionnelle ; 4 = Militaire ; 5 = Apnée"
 pl_gaz;Mélange respiré (Paramètres de la plongée accidentelle);"1 = Air ; 2 = Nitrox ; 3 = Trimix ; 4 = Héliox ; 5 = Oxygène ; 9 = Autre"
 pl_gaz_autre;Préciser le mélange (Paramètres de la plongée accidentelle);texte libre
-pl_proc;Procédure de décompression (Paramètres de la plongée accidentelle);"1 = Ordinateur ; 2 = Tables MN 90 ; 5 = Tables MT 92 ; 3 = Autres tables (préciser) ; 4 = Sans procédure"
+pl_proc;Procédure de décompression (Paramètres de la plongée accidentelle);"1 = Ordinateur ; 2 = Tables MN23 ; 5 = Tables MT 92 ; 3 = Autres tables (préciser) ; 4 = Sans procédure"
 pl_ordi_modele;Ordinateur — marque / modèle (Paramètres de la plongée accidentelle);texte libre
 pl_ordi_reglage;Ordinateur — réglage (GF, etc.) (Paramètres de la plongée accidentelle);texte libre
 pl_proc_autre;Autres tables — préciser (Paramètres de la plongée accidentelle);texte libre
+pl_profil_type;Type de profil (Paramètres de la plongée accidentelle);"1 = Carré ; 2 = Inversé ; 3 = Yoyo ; 4 = Remontée progressive"
 pl_h_immersion;Départ surface — DS (heure d'immersion) (Paramètres de la plongée accidentelle);HH:MM
 pl_h_depart_fond;Départ fond — DF (heure) (Paramètres de la plongée accidentelle);HH:MM
 pl_h_sortie;Heure de sortie de l'eau — HS (Paramètres de la plongée accidentelle);HH:MM
 pl_prof;Profondeur maximale atteinte — Pmax (m) (Paramètres de la plongée accidentelle);numerique (m)
-pl_dt;Durée de travail — DT = DF − DS (Paramètres de la plongée accidentelle);numerique, calcule (min)
-pl_dtr;Durée totale de remontée — DTR = HS − DF (Paramètres de la plongée accidentelle);numerique, calcule (min)
-pl_duree_tot;Durée totale de plongée — DTP = HS − DS (Paramètres de la plongée accidentelle);numerique, calcule (min)
+pl_prof1;Profondeur de la 1re phase (m) (Paramètres de la plongée accidentelle);numerique (m)
+pl_h_inv;Heure du passage à Pmax (Paramètres de la plongée accidentelle);HH:MM
+pl_prof_df;Profondeur au départ du fond (m) (Paramètres de la plongée accidentelle);numerique (m)
+pl_yoyo_nb;Nombre de remontées (Paramètres de la plongée accidentelle);numerique
+pl_yoyo_amp;Amplitude des variations (m) (Paramètres de la plongée accidentelle);numerique (m)
+pl_yoyo_surf;Les remontées atteignent la surface (Paramètres de la plongée accidentelle);"1 = OUI ; 0 = NON"
+pl_yoyo_int;Intervalle de surface le plus long (min) (Paramètres de la plongée accidentelle);numerique (min)
+pl_dt;Durée de travail — DT (Paramètres de la plongée accidentelle);numerique, calcule (min)
+pl_dtr;Durée totale de remontée — DTR (Paramètres de la plongée accidentelle);numerique (min)
+pl_duree_tot;Durée totale de plongée — DTP (Paramètres de la plongée accidentelle);numerique (min)
 pl_paliers;Commentaire sur les paliers et la remontée (Paramètres de la plongée accidentelle);texte libre
+pl_reimm_type;Type de remontée (Paramètres de la plongée accidentelle);"1 = Remontée rapide (RR) ; 2 = Remontée non conforme"
+pl_reimm_faite;Procédure de ré-immersion (Paramètres de la plongée accidentelle);"1 = Réalisée ; 0 = Non réalisée"
+pl_rr_emersion;Émersion (surface atteinte) (Paramètres de la plongée accidentelle);"1 = OUI ; 0 = NON"
+pl_rr_delai;Délai de ré-immersion (min) (Paramètres de la plongée accidentelle);numerique (min)
+pl_rr_prof;Profondeur de ré-immersion (m) (Paramètres de la plongée accidentelle);numerique (m)
+pl_rr_duree;Durée à cette profondeur (min) (Paramètres de la plongée accidentelle);numerique (min)
+pl_rr_pal6;Palier à 6 m (min) (Paramètres de la plongée accidentelle);numerique (min)
+pl_rr_pal3;Palier à 3 m (min) (Paramètres de la plongée accidentelle);numerique (min)
+pl_reimm_txt;Description de la procédure (Paramètres de la plongée accidentelle);texte libre
 pl_h_symp;Heure des 1ers symptômes (Paramètres de la plongée accidentelle);HH:MM
 pl_delai_symp;Délai sortie de l’eau → 1ers symptômes (min) (Paramètres de la plongée accidentelle);numerique, calcule
 plp_faite;Plongée dans les 24 heures précédentes (Paramètres de la plongée précédente);"1 = OUI ; 0 = NON"
@@ -146,6 +164,8 @@ ff_env;Conditions environnementales (Facteurs favorisants);texte libre
 histoire;Histoire de la maladie (Anamnèse);texte libre
 sf_arrivee;Signes fonctionnels à l’arrivée (Anamnèse);texte libre
 evol_avant_rec;Évolution avant recompression (Anamnèse);"0 = Amélioré ; 1 = Stable ; 2 = Aggravé"
+pp_lien;Personne à prévenir — lien (Contacts);"1 = Conjoint / Compagnon ; 2 = Parent ; 3 = Enfant ; 4 = Ami ; 5 = Autre"
+pp_lien_autre;Lien — à préciser (Contacts);texte libre
 ex_cv;Anomalie cardio-vasculaire (Examen clinique général);"1 = OUI ; 0 = NON"
 ex_cv_txt;Préciser (Examen clinique général);texte libre
 ex_pneumo;Anomalie respiratoire (Examen clinique général);"1 = OUI ; 0 = NON"
@@ -319,40 +339,64 @@ talon_genou_cote;Côté déficitaire (Coordination);"1 = D ; 2 = G ; 3 = Bilat."
 doigt_nez;Doigt-nez réalisé correctement (Coordination);"1 = OUI ; 0 = NON"
 doigt_nez_cote;Côté déficitaire (Coordination);"1 = D ; 2 = G ; 3 = Bilat."
 sens_examinee;Examen des sensibilités réalisé (Sensibilités);"1 = OUI ; 0 = NON"
+conclusion;Conclusion de l'examen (Conclusion de l'examen clinique);"1 = Examen neurologique normal ; 2 = Examen neurologique anormal ; 3 = À recontrôler"
 cut_present;Lésions cutanées présentes (Lésions cutanées de désaturation);"1 = OUI ; 0 = NON"
 cut_delai;Délai d'apparition après émersion (min) (Lésions cutanées de désaturation);numerique (min)
 cut_evol;Évolution sous oxygène (Lésions cutanées de désaturation);"1 = Régression ; 2 = Stable ; 3 = Extension"
 cut_txt;Commentaire (Lésions cutanées de désaturation);texte libre
-ac_vvp;Voie veineuse périphérique (Actes, biologie et examens complémentaires);"1 = OUI ; 0 = NON"
-ac_ecg;ECG (Actes, biologie et examens complémentaires);"1 = OUI ; 0 = NON"
-ac_sonde;Sonde vésicale (Actes, biologie et examens complémentaires);"1 = OUI ; 0 = NON"
-ac_doppler;Doppler transcrânien (Actes, biologie et examens complémentaires);"1 = OUI ; 0 = NON"
-tb_table;Table utilisée (Actes, biologie et examens complémentaires);texte libre
-tb_h_mep;Heure de mise en pression (Actes, biologie et examens complémentaires);HH:MM
-tb_h_fin;Heure de fin (Actes, biologie et examens complémentaires);HH:MM
-tb_delai;Délai 1ers symptômes → recompression (min) (Actes, biologie et examens complémentaires);numerique, calcule
-tb_nb_seances;Nombre de séances réalisées (Actes, biologie et examens complémentaires);numerique
-tb_complic;Complication thérapeutique (Actes, biologie et examens complémentaires);"1 = OUI ; 0 = NON"
-tb_complic_txt;Préciser (Actes, biologie et examens complémentaires);texte libre
-bio_add;Bilan accident de plongée prélevé (Actes, biologie et examens complémentaires);"1 = OUI ; 0 = NON"
-bio_opi;Bilan œdème pulmonaire d’immersion prélevé (Actes, biologie et examens complémentaires);"1 = OUI ; 0 = NON"
-bio_etude;Prélèvement pour étude complémentaire (Actes, biologie et examens complémentaires);"1 = OUI ; 0 = NON"
-bio_autre;Autres prélèvements (Actes, biologie et examens complémentaires);texte libre
-bio_res;Résultats marquants (Actes, biologie et examens complémentaires);texte libre
-im_rp;Radiographie thoracique (Actes, biologie et examens complémentaires);"1 = OUI ; 0 = NON"
-im_tdm;Scanner (Actes, biologie et examens complémentaires);"1 = OUI ; 0 = NON"
-im_irm;IRM (Actes, biologie et examens complémentaires);"1 = OUI ; 0 = NON"
-im_eto;Échographie cardiaque / recherche de FOP (Actes, biologie et examens complémentaires);"1 = OUI ; 0 = NON"
-im_autre;Autres examens (Actes, biologie et examens complémentaires);texte libre
-im_res;Résultats des examens réalisés (Actes, biologie et examens complémentaires);texte libre
-im_demande;Examens demandés, en attente (Actes, biologie et examens complémentaires);texte libre
+tb_table;Table utilisée (Recompression);"1 = OHB15 ; 2 = A15IOT ; 3 = A18IOT ; 4 = A18 ; 5 = B18 ; 6 = A18HeOx ; 7 = B18HeOx ; 8 = C18 ; 9 = Autre (préciser)"
+tb_table_autre;Table — à préciser (Recompression);texte libre
+tb_duree;Durée de la table (min) (Recompression);numerique, calcule (min)
+tb_h_mep;Heure de mise en pression (Recompression);HH:MM
+tb_h_fin;Heure de fin (Recompression);HH:MM
+tb_delai;Délai 1ers symptômes → recompression (min) (Recompression);numerique, calcule
+tb_nb_seances;Nombre de séances réalisées (Recompression);numerique
+tb_complic;Complication thérapeutique (Recompression);"1 = OUI ; 0 = NON"
+tb_complic_txt;Préciser (Recompression);texte libre
+ac_vvp;Voie veineuse périphérique (Actes);"1 = OUI ; 0 = NON"
+bio_add;Bilan accident de plongée prélevé (Actes);"1 = OUI ; 0 = NON"
+bio_opi;Bilan œdème pulmonaire d’immersion prélevé (Actes);"1 = OUI ; 0 = NON"
+bio_etude;Prélèvement pour étude complémentaire (Actes);"1 = OUI ; 0 = NON"
+bio_autre;Autres prélèvements (Actes);texte libre
+bio_res;Résultats marquants (Actes);texte libre
+ac_sonde;Sonde vésicale (Actes);"2 = Sonde à demeure ; 3 = Sondage évacuateur ; 0 = NON"
+ac_sonde_vol;Volume initial évacué (mL) (Actes);numerique (mL)
+im_ecg;ECG (Examens complémentaires);"1 = OUI ; 0 = NON"
+ecg_fc;ECG — fréquence cardiaque (Examens complémentaires);numerique (bpm)
+ecg_qtc;ECG — QTc (Examens complémentaires);numerique (ms)
+ecg_txt;ECG — compte rendu (Examens complémentaires);texte libre
+im_rp;Radiographie thoracique (Examens complémentaires);"1 = OUI ; 0 = NON"
+im_rp_res;Résultat (Examens complémentaires);texte libre
+im_tdm_thor;Scanner thoracique (Examens complémentaires);"1 = OUI ; 0 = NON"
+im_tdm_thor_res;Résultat (Examens complémentaires);texte libre
+im_tdm_cer;Scanner cérébral (Examens complémentaires);"1 = OUI ; 0 = NON"
+im_tdm_cer_res;Résultat (Examens complémentaires);texte libre
+im_irm_cer;IRM cérébrale (Examens complémentaires);"1 = OUI ; 0 = NON"
+im_irm_cer_res;Résultat (Examens complémentaires);texte libre
+im_irm_med;IRM médullaire (Examens complémentaires);"1 = OUI ; 0 = NON"
+im_irm_med_res;Résultat (Examens complémentaires);texte libre
+im_eto;Échographie cardiaque / recherche de FOP (Examens complémentaires);"1 = OUI ; 0 = NON"
+im_eto_res;Résultat (Examens complémentaires);texte libre
+im_dtc;Doppler transcrânien (Examens complémentaires);"1 = OUI ; 0 = NON"
+dtc_repos;Sans sensibilisation (Examens complémentaires);"0 = Absence de shunt D-G ; 1 = Shunt de bas grade ; 2 = Shunt de haut grade"
+dtc_sensib;Après sensibilisation allongée (Examens complémentaires);"0 = Absence de shunt D-G ; 1 = Shunt de bas grade ; 2 = Shunt de haut grade"
+dtc_flack;Pendant un test de Flack (Examens complémentaires);"0 = Absence de shunt D-G ; 1 = Shunt de bas grade ; 2 = Shunt de haut grade"
+dtc_txt;Commentaire (Examens complémentaires);texte libre
+im_echopp;Échographie pleuro-pulmonaire (Examens complémentaires);"1 = OUI ; 0 = NON"
+im_autre;Autres examens et résultats (Examens complémentaires);texte libre
+im_demande;Examens demandés, en attente (Examens complémentaires);texte libre
+ech_txt;Commentaire (Échographie pleuro-pulmonaire);texte libre
 rx_o2;Oxygène normobare (Traitements prescrits);"1 = OUI ; 0 = NON"
-rx_solu;Méthylprednisolone (Traitements prescrits);"1 = OUI ; 0 = NON"
-rx_solu_dose;Dose (mg) (Traitements prescrits);numerique (mg)
-rx_solu_h;Heure (Traitements prescrits);HH:MM
-rx_aspi;Aspirine (Traitements prescrits);"1 = OUI ; 0 = NON"
-rx_aspi_dose;Dose (mg) (Traitements prescrits);numerique (mg)
-rx_aspi_h;Heure (Traitements prescrits);HH:MM
+rx_o2_mode;Modalité (Traitements prescrits);"1 = Masque à haute concentration ; 2 = VNI"
+rx_o2_debit;Débit (Traitements prescrits);numerique (L/min)
+rx_vni_pep;PEP (Traitements prescrits);numerique (cmH₂O)
+rx_vni_ai;Aide inspiratoire (AI) (Traitements prescrits);numerique (cmH₂O)
+rx_vni_fr;Fréquence respiratoire (FR) (Traitements prescrits);numerique (/min)
+rx_vni_fio2;FiO₂ (Traitements prescrits);numerique (%)
+rx_solu;(Méthyl)prednisolone (Traitements prescrits);"1 = OUI ; 0 = NON"
+rx_solu_dose;Dose quotidienne (Traitements prescrits);numerique (mg/jour)
+rx_solu_jours;Durée (jours) (Traitements prescrits);numerique (j)
+rx_solu_h;Heure de la 1re dose (Traitements prescrits);HH:MM
 rx_nacl;Remplissage (Traitements prescrits);"1 = OUI ; 0 = NON"
 rx_nacl_vol;Volume (mL) (Traitements prescrits);numerique (mL)
 rx_antalg;Antalgiques (Traitements prescrits);texte libre
@@ -364,11 +408,42 @@ ev_sens;Évolution clinique (Évolution depuis la consultation précédente);"0 
 ev_txt;Commentaire d’évolution (Évolution depuis la consultation précédente);texte libre
 ev_exam_faits;Examens complémentaires réalisés depuis (Évolution depuis la consultation précédente);texte libre
 ev_exam_demandes;Examens complémentaires demandés (Évolution depuis la consultation précédente);texte libre
-conclusion;Conclusion de l'examen (Conclusion);"1 = Examen neurologique normal ; 2 = Examen neurologique anormal ; 3 = À recontrôler"
-orientation;Orientation (Conclusion);"1 = Retour au domicile ; 2 = Hospitalisation en service de médecine ; 3 = Hospitalisation en surveillance continue ; 4 = Hospitalisation en soins intensifs ; 5 = Transfert vers une autre structure"
-orientation_autre;Préciser la structure (Conclusion);texte libre
-orientation_txt;Précisions sur l'orientation (Conclusion);texte libre
-notes;Commentaires libres (Conclusion);texte libre
+dg_liste_add;Diagnostic(s) retenu(s) - Accident de désaturation (Diagnostic retenu);"1 = coche ; 0 = non coche"
+dg_liste_opi;Diagnostic(s) retenu(s) - Œdème pulmonaire d’immersion (Diagnostic retenu);"1 = coche ; 0 = non coche"
+dg_liste_baro;Diagnostic(s) retenu(s) - Barotraumatisme (Diagnostic retenu);"1 = coche ; 0 = non coche"
+dg_liste_bioch;Diagnostic(s) retenu(s) - Accident biochimique (Diagnostic retenu);"1 = coche ; 0 = non coche"
+dg_liste_noyade;Diagnostic(s) retenu(s) - Noyade (Diagnostic retenu);"1 = coche ; 0 = non coche"
+dg_liste;Diagnostic(s) retenu(s) - liste (Diagnostic retenu);texte, valeurs separees par |
+dg_add_types_medullaire;Accident de désaturation — type - Médullaire (Diagnostic retenu);"1 = coche ; 0 = non coche"
+dg_add_types_cerebral;Accident de désaturation — type - Cérébral (Diagnostic retenu);"1 = coche ; 0 = non coche"
+dg_add_types_vestibulaire;Accident de désaturation — type - Vestibulaire (Diagnostic retenu);"1 = coche ; 0 = non coche"
+dg_add_types_cutane;Accident de désaturation — type - Cutané (Diagnostic retenu);"1 = coche ; 0 = non coche"
+dg_add_types_articulaire;Accident de désaturation — type - Ostéo-articulaire (bend) (Diagnostic retenu);"1 = coche ; 0 = non coche"
+dg_add_types_pulmonaire;Accident de désaturation — type - Pulmonaire (chokes) (Diagnostic retenu);"1 = coche ; 0 = non coche"
+dg_add_types;Accident de désaturation — type - liste (Diagnostic retenu);texte, valeurs separees par |
+dg_add_grave;Accident de désaturation — gravité (Diagnostic retenu);"1 = coche ; vide = non coche"
+dg_baro_types_orm;Barotraumatisme — type - Oreille moyenne (Diagnostic retenu);"1 = coche ; 0 = non coche"
+dg_baro_types_ori;Barotraumatisme — type - Oreille interne (Diagnostic retenu);"1 = coche ; 0 = non coche"
+dg_baro_types_sinus;Barotraumatisme — type - Sinus (Diagnostic retenu);"1 = coche ; 0 = non coche"
+dg_baro_types_pulm;Barotraumatisme — type - Surpression pulmonaire (Diagnostic retenu);"1 = coche ; 0 = non coche"
+dg_baro_types_dent;Barotraumatisme — type - Dentaire (Diagnostic retenu);"1 = coche ; 0 = non coche"
+dg_baro_types_masque;Barotraumatisme — type - Plaquage de masque (Diagnostic retenu);"1 = coche ; 0 = non coche"
+dg_baro_types;Barotraumatisme — type - liste (Diagnostic retenu);texte, valeurs separees par |
+dg_bioch_types_hyperoxie;Accident biochimique — type - Hyperoxie (Diagnostic retenu);"1 = coche ; 0 = non coche"
+dg_bioch_types_hypercapnie;Accident biochimique — type - Hypercapnie (Diagnostic retenu);"1 = coche ; 0 = non coche"
+dg_bioch_types_narcose;Accident biochimique — type - Narcose (Diagnostic retenu);"1 = coche ; 0 = non coche"
+dg_bioch_types_co;Accident biochimique — type - Intoxication au monoxyde de carbone (Diagnostic retenu);"1 = coche ; 0 = non coche"
+dg_bioch_types;Accident biochimique — type - liste (Diagnostic retenu);texte, valeurs separees par |
+dg_principal;Diagnostic principal (Diagnostic retenu);"add = Accident de désaturation ; opi = Œdème pulmonaire d’immersion ; baro = Barotraumatisme ; bioch = Accident biochimique ; noyade = Noyade"
+dg_txt;Autre diagnostic ou précisions (Diagnostic retenu);texte libre
+orientation;Orientation (Orientation et commentaires);"1 = Retour au domicile ; 2 = Hospitalisation en service de médecine ; 3 = Hospitalisation en surveillance continue ; 4 = Hospitalisation en soins intensifs ; 5 = Transfert vers une autre structure"
+orientation_autre;Préciser la structure (Orientation et commentaires);texte libre
+orientation_txt;Précisions sur l'orientation (Orientation et commentaires);texte libre
+notes;Commentaires libres (Orientation et commentaires);texte libre
+pl_dtr_src;Origine de la DTR;"1 = calculee d apres les heures DF et HS ; 2 = saisie ; 3 = estimee d apres Pmax et les paliers (DTP seule connue) ; 4 = deduite de DTP - DT ; vide = DTR inconnue"
+pl_dtr_att_min;DTR attendue - minimum;"entier, minutes : remontee a 12 m/min, 10 s par metre entre paliers, arrondie a la minute superieure ; vide = Pmax inconnue"
+pl_dtr_att_max;DTR attendue - maximum;"entier, minutes : remontee a 9 m/min, 10 s par metre entre paliers, arrondie a la minute superieure ; vide = Pmax inconnue"
+pl_vit_remontee;Vitesse de remontee deduite de la DTR;"m/min, une decimale ; vide = DTR estimee, inconnue ou incoherente avec les paliers"
 pl_pal_nb;Paliers - nombre de paliers saisis;"entier ; vide = aucun palier saisi"
 pl_pal_secu;Paliers - paliers de securite realises;"1 = au moins un palier de securite ; 0 = paliers saisis, aucun de securite ; vide = aucun palier saisi"
 pl_pal_secu_nb;Paliers - nombre de paliers de securite (non obligatoires);"entier ; vide = aucun palier saisi"
@@ -711,6 +786,41 @@ cut_post_jambe_D;Lesions cutanees - Mollet D;"1 = Marbrures (cutis marmorata) ; 
 cut_post_jambe_G;Lesions cutanees - Mollet G;"1 = Marbrures (cutis marmorata) ; 2 = Érythème ; 3 = Œdème ; 4 = Prurit ; 5 = Papules, plaques ; 6 = Emphysème sous-cutané ; 0 = aucune ; vide = non renseigne"
 cut_post_pied_D;Lesions cutanees - Plante D;"1 = Marbrures (cutis marmorata) ; 2 = Érythème ; 3 = Œdème ; 4 = Prurit ; 5 = Papules, plaques ; 6 = Emphysème sous-cutané ; 0 = aucune ; vide = non renseigne"
 cut_post_pied_G;Lesions cutanees - Plante G;"1 = Marbrures (cutis marmorata) ; 2 = Érythème ; 3 = Œdème ; 4 = Prurit ; 5 = Papules, plaques ; 6 = Emphysème sous-cutané ; 0 = aucune ; vide = non renseigne"
+pl_yoyo_crit;Plongee a yoyo - criteres remplis;"1 = variations d au moins 10 m et, si la surface est atteinte, intervalle de surface <= 15 min ; 0 = un critere non rempli ; vide = type de profil autre que yoyo ou amplitude non renseignee"
+ech_a_D_s_lat;Echographie pleuro-pulmonaire - poumon droit anterieur superieur lateral;"1 = A (profil A) ; 2 = B (lignes B) ; 3 = B++ (lignes B coalescentes) ; 4 = C (condensation) ; 5 = PNO (pneumothorax) ; vide = zone non examinee"
+ech_a_D_s_mdn;Echographie pleuro-pulmonaire - poumon droit anterieur superieur median;"1 = A (profil A) ; 2 = B (lignes B) ; 3 = B++ (lignes B coalescentes) ; 4 = C (condensation) ; 5 = PNO (pneumothorax) ; vide = zone non examinee"
+ech_a_D_s_mdl;Echographie pleuro-pulmonaire - poumon droit anterieur superieur medial;"1 = A (profil A) ; 2 = B (lignes B) ; 3 = B++ (lignes B coalescentes) ; 4 = C (condensation) ; 5 = PNO (pneumothorax) ; vide = zone non examinee"
+ech_a_D_i_lat;Echographie pleuro-pulmonaire - poumon droit anterieur inferieur lateral;"1 = A (profil A) ; 2 = B (lignes B) ; 3 = B++ (lignes B coalescentes) ; 4 = C (condensation) ; 5 = PNO (pneumothorax) ; vide = zone non examinee"
+ech_a_D_i_mdn;Echographie pleuro-pulmonaire - poumon droit anterieur inferieur median;"1 = A (profil A) ; 2 = B (lignes B) ; 3 = B++ (lignes B coalescentes) ; 4 = C (condensation) ; 5 = PNO (pneumothorax) ; vide = zone non examinee"
+ech_a_D_i_mdl;Echographie pleuro-pulmonaire - poumon droit anterieur inferieur medial;"1 = A (profil A) ; 2 = B (lignes B) ; 3 = B++ (lignes B coalescentes) ; 4 = C (condensation) ; 5 = PNO (pneumothorax) ; vide = zone non examinee"
+ech_a_G_s_lat;Echographie pleuro-pulmonaire - poumon gauche anterieur superieur lateral;"1 = A (profil A) ; 2 = B (lignes B) ; 3 = B++ (lignes B coalescentes) ; 4 = C (condensation) ; 5 = PNO (pneumothorax) ; vide = zone non examinee"
+ech_a_G_s_mdn;Echographie pleuro-pulmonaire - poumon gauche anterieur superieur median;"1 = A (profil A) ; 2 = B (lignes B) ; 3 = B++ (lignes B coalescentes) ; 4 = C (condensation) ; 5 = PNO (pneumothorax) ; vide = zone non examinee"
+ech_a_G_s_mdl;Echographie pleuro-pulmonaire - poumon gauche anterieur superieur medial;"1 = A (profil A) ; 2 = B (lignes B) ; 3 = B++ (lignes B coalescentes) ; 4 = C (condensation) ; 5 = PNO (pneumothorax) ; vide = zone non examinee"
+ech_a_G_i_lat;Echographie pleuro-pulmonaire - poumon gauche anterieur inferieur lateral;"1 = A (profil A) ; 2 = B (lignes B) ; 3 = B++ (lignes B coalescentes) ; 4 = C (condensation) ; 5 = PNO (pneumothorax) ; vide = zone non examinee"
+ech_a_G_i_mdn;Echographie pleuro-pulmonaire - poumon gauche anterieur inferieur median;"1 = A (profil A) ; 2 = B (lignes B) ; 3 = B++ (lignes B coalescentes) ; 4 = C (condensation) ; 5 = PNO (pneumothorax) ; vide = zone non examinee"
+ech_a_G_i_mdl;Echographie pleuro-pulmonaire - poumon gauche anterieur inferieur medial;"1 = A (profil A) ; 2 = B (lignes B) ; 3 = B++ (lignes B coalescentes) ; 4 = C (condensation) ; 5 = PNO (pneumothorax) ; vide = zone non examinee"
+ech_p_D_s_lat;Echographie pleuro-pulmonaire - poumon droit posterieur superieur lateral;"1 = A (profil A) ; 2 = B (lignes B) ; 3 = B++ (lignes B coalescentes) ; 4 = C (condensation) ; 5 = PNO (pneumothorax) ; vide = zone non examinee"
+ech_p_D_s_mdn;Echographie pleuro-pulmonaire - poumon droit posterieur superieur median;"1 = A (profil A) ; 2 = B (lignes B) ; 3 = B++ (lignes B coalescentes) ; 4 = C (condensation) ; 5 = PNO (pneumothorax) ; vide = zone non examinee"
+ech_p_D_s_mdl;Echographie pleuro-pulmonaire - poumon droit posterieur superieur medial;"1 = A (profil A) ; 2 = B (lignes B) ; 3 = B++ (lignes B coalescentes) ; 4 = C (condensation) ; 5 = PNO (pneumothorax) ; vide = zone non examinee"
+ech_p_D_i_lat;Echographie pleuro-pulmonaire - poumon droit posterieur inferieur lateral;"1 = A (profil A) ; 2 = B (lignes B) ; 3 = B++ (lignes B coalescentes) ; 4 = C (condensation) ; 5 = PNO (pneumothorax) ; vide = zone non examinee"
+ech_p_D_i_mdn;Echographie pleuro-pulmonaire - poumon droit posterieur inferieur median;"1 = A (profil A) ; 2 = B (lignes B) ; 3 = B++ (lignes B coalescentes) ; 4 = C (condensation) ; 5 = PNO (pneumothorax) ; vide = zone non examinee"
+ech_p_D_i_mdl;Echographie pleuro-pulmonaire - poumon droit posterieur inferieur medial;"1 = A (profil A) ; 2 = B (lignes B) ; 3 = B++ (lignes B coalescentes) ; 4 = C (condensation) ; 5 = PNO (pneumothorax) ; vide = zone non examinee"
+ech_p_G_s_lat;Echographie pleuro-pulmonaire - poumon gauche posterieur superieur lateral;"1 = A (profil A) ; 2 = B (lignes B) ; 3 = B++ (lignes B coalescentes) ; 4 = C (condensation) ; 5 = PNO (pneumothorax) ; vide = zone non examinee"
+ech_p_G_s_mdn;Echographie pleuro-pulmonaire - poumon gauche posterieur superieur median;"1 = A (profil A) ; 2 = B (lignes B) ; 3 = B++ (lignes B coalescentes) ; 4 = C (condensation) ; 5 = PNO (pneumothorax) ; vide = zone non examinee"
+ech_p_G_s_mdl;Echographie pleuro-pulmonaire - poumon gauche posterieur superieur medial;"1 = A (profil A) ; 2 = B (lignes B) ; 3 = B++ (lignes B coalescentes) ; 4 = C (condensation) ; 5 = PNO (pneumothorax) ; vide = zone non examinee"
+ech_p_G_i_lat;Echographie pleuro-pulmonaire - poumon gauche posterieur inferieur lateral;"1 = A (profil A) ; 2 = B (lignes B) ; 3 = B++ (lignes B coalescentes) ; 4 = C (condensation) ; 5 = PNO (pneumothorax) ; vide = zone non examinee"
+ech_p_G_i_mdn;Echographie pleuro-pulmonaire - poumon gauche posterieur inferieur median;"1 = A (profil A) ; 2 = B (lignes B) ; 3 = B++ (lignes B coalescentes) ; 4 = C (condensation) ; 5 = PNO (pneumothorax) ; vide = zone non examinee"
+ech_p_G_i_mdl;Echographie pleuro-pulmonaire - poumon gauche posterieur inferieur medial;"1 = A (profil A) ; 2 = B (lignes B) ; 3 = B++ (lignes B coalescentes) ; 4 = C (condensation) ; 5 = PNO (pneumothorax) ; vide = zone non examinee"
+ech_nb;Echographie pleuro-pulmonaire - nombre de zones cotees;"entier 0-24 ; vide = echographie non realisee"
+ech_nb_A;Echographie pleuro-pulmonaire - zones cotees A;"entier ; vide = echographie non realisee"
+ech_nb_B;Echographie pleuro-pulmonaire - zones cotees B;"entier ; vide = echographie non realisee"
+ech_nb_Bpp;Echographie pleuro-pulmonaire - zones cotees B++;"entier ; vide = echographie non realisee"
+ech_nb_C;Echographie pleuro-pulmonaire - zones cotees C;"entier ; vide = echographie non realisee"
+ech_nb_PNO;Echographie pleuro-pulmonaire - zones cotees PNO;"entier ; vide = echographie non realisee"
+ech_anom_D;Echographie pleuro-pulmonaire - zones anormales (hors A) du poumon droit;"entier ; vide = echographie non realisee"
+ech_anom_G;Echographie pleuro-pulmonaire - zones anormales (hors A) du poumon gauche;"entier ; vide = echographie non realisee"
+ech_pno;Echographie pleuro-pulmonaire - pneumothorax;"1 = au moins une zone cotee PNO ; 0 = aucune ; vide = echographie non realisee"
+ech_zones;Echographie pleuro-pulmonaire - liste des zones anormales;texte, separees par |
 cst_nb;Constantes - nombre de releves;"entier ; vide = aucun releve"
 cst_h_debut;Constantes - heure du premier releve;HH:MM
 cst_h_fin;Constantes - heure du dernier releve;HH:MM
@@ -755,8 +865,11 @@ msh_sphi;MEDSUBHYP - Atteinte du sphincter urinaire;"0 = Non (0 point) ; 1 = Oui
 msh_total;MEDSUBHYP - score total;"entier 0-22 ; vide = un item au moins sans valeur, ou cotation au-dela de 24 heures"
 msh_grave;MEDSUBHYP - au-dessus du seuil;"1 = score >= 6 ; 0 = score < 6 ; vide = score non calcule"
 msh_manuels;MEDSUBHYP - items cotes a la main;"entier 0-6 ; un item cote a la main diverge de la valeur deduite de la fiche"
-vest_grille;Score vestibulaire - nom de la grille;"texte ; la grille est definie poste par poste et ne provient d aucun referentiel publie"
-vest_total;Score vestibulaire - score total;"entier ; vide = grille absente ou item sans valeur"
-vest_max;Score vestibulaire - score maximal de la grille;entier
+vest_total;Score vestibulaire - score total;"entier 0-19 ; vide = un item au moins sans valeur"
+vest_vertige;Score vestibulaire - Vertige rotatoire;"0 = Absent (0 point) ; 1 = Non permanent ou simple sensation vertigineuse (1 point) ; 2 = Permanent (2 points) ; vide = non cote. Valeur deduite de l examen sauf cotation manuelle"
+vest_nystagmus;Score vestibulaire - Nystagmus;"0 = Absent (0 point) ; 1 = Present dans le regard decentre dans le sens de la secousse rapide (1 point) ; 2 = Present dans le regard centre (2 points) ; 3 = Present dans le regard decentre dans le sens de la secousse lente (3 points) ; vide = non cote. Valeur deduite de l examen sauf cotation manuelle"
+vest_nv;Score vestibulaire - Signes neurovegetatifs;"0 = Absents (0 point) ; 1 = Nausees (1 point) ; 2 = Nausees et rares vomissements, notamment apres mobilisation (2 points) ; 3 = Vomissements frequents (plus de 3) ou permanents (3 points) ; vide = non cote. Valeur deduite de l examen sauf cotation manuelle"
+vest_instab;Score vestibulaire - Instabilite;"0 = Absente (0 point) ; 1 = Presente debout yeux fermes (1 point) ; 2 = Presente debout yeux ouverts (2 points) ; 3 = Verticalisation impossible (3 points) ; vide = non cote. Valeur deduite de l examen sauf cotation manuelle"
+vest_cochl;Score vestibulaire - Symptomes cochleaires (surdite ou acouphenes);"0 = Absents (0 point) ; 1 = Presents (8 points) ; vide = non cote. Valeur deduite de l examen sauf cotation manuelle"
 created;Horodatage de creation;ISO 8601
 updated;Horodatage de derniere modification;ISO 8601

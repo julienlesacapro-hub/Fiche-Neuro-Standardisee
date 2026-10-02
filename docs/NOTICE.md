@@ -1,11 +1,11 @@
-# ADP — accident de plongée, version 7.2.0
+# ADP — accident de plongée, version 7.3.0
 
-Fichier unique : `fiche_neuro.html`. Aucun réseau, aucune dépendance externe, aucun compte.
+Fichier unique : `index.html`. Aucun réseau, aucune dépendance externe, aucun compte.
 Double-cliquez dessus, il s'ouvre dans votre navigateur et tout fonctionne.
 
 ADP couvre la prise en charge complète d'un accident de plongée : la consultation initiale en
-urgence, les consultations de suivi, et le compte rendu de séjour. La fiche d'examen neurologique
-standardisée des versions précédentes en est le cœur, elle n'a pas bougé.
+urgence, les consultations de suivi, et le compte rendu de séjour. L'examen neurologique standardisé
+en est le cœur.
 
 Sur téléphone et tablette, installez-le plutôt comme application : icône sur l'écran d'accueil,
 plein écran, démarrage sans réseau. Voir *Installer sur téléphone et tablette* plus bas.
@@ -20,18 +20,18 @@ plein écran, démarrage sans réseau. Voir *Installer sur téléphone et tablet
 | Fichier exploitable, incrémental | `donnees_neuro.csv` | Réécrit automatiquement à chaque enregistrement de fiche |
 
 Un seul CSV pour tous les sujets, toutes les consultations et tous les types de document.
-Une ligne = une fiche. 761 colonnes.
+Une ligne = une fiche. 874 colonnes.
 
 Les pages du PDF, selon le type de consultation :
 
 | Page | Consultation initiale | Consultation de suivi | Consultation de sortie |
 |---|---|---|---|
-| 1 | Accueil, plongée, plongeur, anamnèse | — | Accueil, plongée, plongeur, anamnèse |
-| 2 | Examen clinique et ORL | Examen clinique et ORL | Examen clinique et ORL |
+| 1 | Accueil, plongée, plongeur, anamnèse et contacts | — | Accueil, plongée, plongeur, anamnèse et contacts |
+| 2 | Examen clinique, ORL, échographie pleuro-pulmonaire | Examen clinique, ORL, échographie pleuro-pulmonaire | Examen clinique, ORL, échographie pleuro-pulmonaire |
 | 3 | Examen neurologique | Examen neurologique | Examen neurologique |
 | 4 | Grille ASIA | Grille ASIA | Grille ASIA |
-| 5 | Schémas corporels, pallesthésie | Schémas corporels, pallesthésie | Schémas corporels, pallesthésie |
-| 6 | Prise en charge et conclusion | Prise en charge, évolution, conclusion | Prise en charge, évolution, conclusion |
+| 5 | Schémas corporels, pallesthésie, scores, conclusion de l'examen clinique | Schémas corporels, pallesthésie, scores, conclusion de l'examen clinique | Schémas corporels, pallesthésie, scores, conclusion de l'examen clinique |
+| 6 | Prise en charge, diagnostic retenu, orientation | Prise en charge, évolution, diagnostic, orientation | Prise en charge, évolution, diagnostic, orientation |
 
 Les photographies jointes s'ajoutent en fin de document, six par page.
 
@@ -39,7 +39,7 @@ Les photographies jointes s'ajoutent en fin de document, six par page.
 
 ## Mise en place, une seule fois
 
-1. Ouvrez `fiche_neuro.html` dans **Chrome** ou **Edge**.
+1. Ouvrez `index.html` dans **Chrome** ou **Edge**.
 2. Cliquez **Fichier de données**, choisissez un dossier de votre disque, autorisez l'écriture.
 
 L'outil y maintient trois fichiers, réécrits à chaque enregistrement :
@@ -92,7 +92,9 @@ ce que le document imprimé raconte.
 
 Sur une consultation de suivi, les encarts de plongée, de plongée précédente, de facteurs
 favorisants, de plongeur et d'anamnèse **disparaissent** : ces données appartiennent à la fiche
-initiale et ne se ressaisissent pas.
+initiale et ne se ressaisissent pas. Seuls l'anamnèse, l'examen général et l'examen neurologique sont
+proposés en grisé depuis l'examen précédent ; les examens complémentaires, les traitements, le
+diagnostic et la conclusion ne sont jamais repris (voir *Consultation de suivi ou de sortie*).
 
 Le type est proposé, jamais imposé : la première fiche d'un dossier part sur *initiale*, les
 suivantes sur *suivi*. Vous changez d'un clic, la fiche se recompose aussitôt.
@@ -107,12 +109,165 @@ champs remplis, et se borde de vert quand la page est complète.
 
 | Page | Contenu |
 |---|---|
-| 1. Anamnèse et plongée | Identification, accueil et prise en charge initiale, plongeur, plongée, plongée précédente, facteurs favorisants, anamnèse |
+| 1. Anamnèse et plongée | Identification, accueil et prise en charge initiale, plongeur (avec photo de l'ordonnance), plongée (profil, durées, paliers, procédure de ré-immersion), plongée précédente, facteurs favorisants, anamnèse, contacts |
 | 2. Examen général | Constantes et surveillance, examen par appareil, conscience, pupilles et fonctions supérieures, ORL, signes fonctionnels, signes subjectifs, lésions cutanées |
-| 3. Examen neurologique | Réflexes, force motrice, miction, coordination, sensibilités, grille ASIA, scores de sévérité |
-| 4. Conclusion | Actes et examens complémentaires, prescriptions, évolution, conclusion, pièces jointes |
+| 3. Examen neurologique | Réflexes, force motrice, miction, coordination, sensibilités, grille ASIA, scores de sévérité, conclusion de l'examen clinique |
+| 4. Conclusion | Recompression, actes, examens complémentaires, échographie pleuro-pulmonaire, traitements prescrits, évolution, diagnostic retenu, orientation, pièces jointes |
 
 La synthèse rédigée reste visible en permanence, quelle que soit la page.
+
+---
+
+## Le profil de plongée et les durées
+
+L'encart « Paramètres de la plongée accidentelle » (page 1) décrit la plongée : heures, profondeur,
+paliers, type de profil et, le cas échéant, la procédure de ré-immersion. Le schéma se dessine seul,
+se redessine à chaque frappe et s'imprime en noir et blanc sur la page 1 du PDF.
+
+### Heures, profondeur et paliers
+
+- **DS** départ surface (heure d'immersion), **DF** départ fond (heure), **HS** heure de sortie de
+  l'eau, **Pmax** profondeur maximale atteinte.
+- **Paliers** : une ligne par palier, avec le gaz, la profondeur et la durée à la profondeur. La case
+  *paliers de sécurité réalisés (non obligatoires)* propose 1 min à 6 m et 5 min à 3 m, modifiables.
+
+### Les quatre types de profil
+
+Un bouton à vignette choisit le type ; sans choix, le profil carré est dessiné. Le titre du type
+est inscrit sur le schéma.
+
+| Type | Ce que dessine le schéma | Données propres au type |
+|---|---|---|
+| **Carré** | descente, séjour au fond, remontée | aucune |
+| **Inversé** | plus profond en fin de plongée : un premier plateau moins profond, puis le passage à Pmax | profondeur de la 1re phase ; heure d'arrivée à Pmax (facultative : sans elle, le passage est dessiné aux deux tiers du séjour au fond) |
+| **Yoyo** | remontées et réimmersions répétées | nombre de remontées, amplitude, remontées jusqu'à la surface ou non, intervalle de surface le plus long |
+| **Remontée progressive** | descente à Pmax, puis remontée lente et ondulée **pendant DT**, jusqu'au départ du fond (DF) ; la remontée finale (DTR) part ensuite de cette profondeur | profondeur au départ du fond ; sans valeur, 40 % de Pmax est dessiné (au moins 3 m au-dessus du premier palier) |
+
+Une plongée à **yoyo** se définit par des remontées et des réimmersions d'**au moins 10 m** de
+variation de profondeur ; si elles atteignent la surface, l'**intervalle de surface** doit être
+**inférieur ou égal à 15 minutes**. Une alerte signale le cas contraire, ainsi que l'absence de coche
+sur le facteur favorisant « Plongées ludion (yo-yo) ». Le CSV porte une colonne calculée
+`pl_yoyo_crit`.
+
+### DT, DTR et DTP : les heures ou les durées
+
+Les relations : **DT = DF − DS**, **DTR = HS − DF**, **DTP = HS − DS = DT + DTR**. Les heures ne sont
+pas obligatoires : la DTR et la DTP sont des champs ordinaires, proposés d'après les heures, que l'on
+peut aussi **saisir directement**. Une valeur saisie n'est plus recalculée.
+
+| Ce que vous renseignez | Ce que l'outil en tire |
+|---|---|
+| DS, DF et HS | DT, DTR et DTP |
+| DTR et DTP | DT = DTP − DTR |
+| DTP seule (avec Pmax et les paliers) | DTR **estimée** d'après le modèle ci-dessous, puis DT = DTP − DTR ; le schéma écrit « (estimée) » |
+| DTR seule | DT inconnue : le schéma dessine un séjour au fond de durée nominale |
+
+La colonne `pl_dtr_src` du CSV dit d'où vient la DTR : `1` d'après les heures, `2` saisie, `3`
+estimée, `4` déduite de DTP − DT.
+
+### Le modèle de remontée
+
+- **Vitesse de remontée standard : entre 9 et 12 m/min** jusqu'au premier palier ;
+- **entre deux paliers, et du dernier palier à la surface : 10 secondes par mètre** ;
+- les durées s'additionnent en secondes, et l'**arrondi à la minute supérieure se fait une seule
+  fois, à la fin de la DTR** (pas à chaque changement de palier).
+
+La **DTR attendue** s'affiche en fourchette : la vitesse la plus rapide (12 m/min) donne le minimum,
+la plus lente (9 m/min) le maximum. Exemple : 40 m, 3 min à 6 m et 5 min à 3 m, soit 12 à 13 min.
+La DTR estimée est le milieu de la fourchette, arrondi à la minute supérieure.
+
+Quand la DTR est connue, l'outil en **déduit la vitesse de remontée** (distance jusqu'au premier
+palier ÷ temps de montée, une fois retirés les paliers et les changements de palier). Au-dessus de
+12 m/min, une alerte indique une remontée plus rapide que la vitesse standard. Le CSV porte
+`pl_dtr_att_min`, `pl_dtr_att_max` et `pl_vit_remontee`.
+
+Pour une remontée progressive, la remontée finale part de la profondeur du départ du fond, et non
+de Pmax : c'est elle qui sert au calcul de la DTR attendue.
+
+### Remontée rapide ou non conforme : procédure de ré-immersion
+
+Un encart décrit la procédure, toujours modifiable. Les valeurs proposées sont celles de la
+procédure usuelle :
+
+- **Remontée rapide (RR)** : ré-immersion **en moins de 3 min** après l'émersion (sans émersion, le
+  plongeur a décidé d'interrompre sa remontée), retour à **mi-profondeur** pendant **5 min**, puis
+  remontée à la vitesse standard (9 à 12 m/min), puis **au minimum 1 min à 6 m et 5 min à 3 m** ;
+- **Remontée non conforme** : au minimum 1 min à 6 m et 5 min à 3 m.
+
+On indique si la procédure a été réalisée, l'émersion et son délai, la profondeur de ré-immersion
+(la moitié de Pmax est proposée), les durées. La description est **rédigée d'après ces paramètres**,
+reste modifiable à la main, et passe dans la synthèse et sur le PDF.
+
+---
+
+## Prise en charge : recompression, actes, examens, traitements, diagnostic
+
+La page 4 suit l'ordre de la prise en charge.
+
+1. **Recompression** : table, heures de mise en pression et de fin, séances, complications. Les tables
+   proposées sont OHB15, A15IOT, A18IOT, A18, B18, A18HeOx, B18HeOx, C18, et « autre » ; **B18** est
+   proposée d'office sur une consultation initiale. L'**heure de fin** est calculée (mise en pression
+   plus durée de la table : 90, 115, 115, 90, 150, 110, 150 et 300 min dans l'ordre ci-dessus) et reste
+   modifiable.
+2. **Actes**, dans cet ordre : voie veineuse périphérique, **bilan biologique** (bilan accident de
+   plongée et bilan œdème pulmonaire d'immersion cochés d'office sur une consultation initiale), puis
+   **sondage vésical** (à demeure, évacuateur, ou non) avec le **volume initial évacué**.
+3. **Examens complémentaires** : chaque examen réalisé (OUI) ouvre son **résultat**. ECG ; radiographie
+   thoracique ; scanner thoracique (le plus fréquent) ou cérébral ; IRM cérébrale (la plus fréquente en
+   consultation initiale) ou médullaire ; échographie cardiaque / recherche de FOP ; doppler
+   transcrânien ; échographie pleuro-pulmonaire ; autres examens ; examens demandés.
+   - **ECG** : fréquence cardiaque (bpm) et QTc (ms) ; le compte rendu est rédigé tout seul
+     (« RSR à xx bpm, d'axe non dévié, sans trouble de la conduction ni de la repolarisation. QTc à xx
+     ms. »), modifiable, et repris dans la synthèse. Il n'est rédigé qu'une fois la fréquence ou le QTc
+     saisi.
+   - **Doppler transcrânien** : le résultat se note pour trois conditions, **sans sensibilisation**,
+     **après sensibilisation allongée** et **pendant un test de Flack** : absence de shunt D-G, shunt
+     de bas grade, shunt de haut grade.
+   - **Échographie pleuro-pulmonaire** : cocher OUI ouvre l'encart du même nom, plus bas.
+4. **Échographie pleuro-pulmonaire** : douze champs par poumon, soit 24, sur deux thorax dessinés (face
+   antérieure, patient vu de face ; face postérieure, patient vu de dos). Chaque poumon porte deux
+   rangées (supérieure, inférieure) de trois champs, de l'extérieur vers la ligne médiane :
+   **latéral, médian, médial**. On choisit une cotation (**A**, **B**, **B++**, **C**, **PNO**) puis on
+   clique les champs ; un second clic avec la même cotation efface le champ. *Champs vides → A* cote A
+   les champs restés vides, *Gomme* efface. Un champ non coté est non examiné. La synthèse et le PDF
+   (page 2) donnent le nombre de zones et la liste des anomalies ; un pneumothorax est signalé en rouge.
+5. **Traitements prescrits** : oxygène normobare, avec sa modalité (**masque à haute concentration**,
+   15 L/min proposés, ou **VNI** avec PEP, aide inspiratoire, fréquence respiratoire et FiO₂),
+   **(méthyl)prednisolone** (dose quotidienne calculée à 1 mg/kg d'après le poids, 3 jours, l'une et
+   l'autre modifiables), remplissage, antalgiques, autres traitements.
+6. **Évolution** (consultations de suivi et de sortie).
+7. **Diagnostic retenu** : un ou plusieurs diagnostics associés, parmi accident de désaturation
+   (types : médullaire, cérébral, vestibulaire, cutané, ostéo-articulaire, pulmonaire ; case *Sévère*),
+   œdème pulmonaire d'immersion, barotraumatisme (oreille moyenne, oreille interne, sinus, surpression
+   pulmonaire, dentaire, plaquage de masque), accident biochimique (hyperoxie, hypercapnie, narcose,
+   intoxication au monoxyde de carbone), noyade. Quand plusieurs diagnostics sont retenus, un **diagnostic
+   principal** peut être désigné, s'il est déterminé. Le diagnostic figure dans la synthèse, entre les
+   examens paracliniques et la conduite à tenir.
+8. **Orientation et commentaires**, puis les **pièces jointes**.
+
+La **conclusion de l'examen clinique** (examen neurologique normal, anormal ou à recontrôler) ferme
+l'onglet « Examen neurologique », en page 3.
+
+### Consultation de suivi ou de sortie
+
+Seuls l'anamnèse, l'examen général et l'examen neurologique sont proposés en grisé depuis l'examen
+précédent. La recompression, les actes, les examens complémentaires, les traitements, le diagnostic et
+la conclusion ne sont **jamais repris** : ils sont nécessairement différents, et un examen coché de
+nouveau est un **nouvel examen**.
+
+---
+
+## Habitudes toxiques et ordonnance
+
+- **Alcool** : *consommation d'alcool* (évaluation en quatre stades) ou *alcool sevré* (depuis le,
+  avec l'évaluation antérieure en quatre stades). Les deux réponses s'excluent. Le bouton **?** ouvre
+  l'aide d'après Santé publique France : repères de consommation à moindre risque, verre standard,
+  pyramide de sévérité et critères CIM-10 de la dépendance. Les définitions des stades « à risque » et
+  « nocif » reprennent la typologie usuelle, la page de Santé publique France ne les détaillant pas.
+- **Ordonnance** : dans l'encart « Antécédents et traitements », le bouton **Photo de l'ordonnance**
+  joint une photographie à la fiche. C'est une pièce jointe comme les autres (titre « Ordonnance
+  médicamenteuse », même limite de douze photos), visible en miniature dans l'encart, mentionnée dans la
+  synthèse et imprimée avec les pièces jointes.
 
 ---
 
@@ -154,20 +309,33 @@ Le seuil de gravité est 6. Le score et le seuil viennent du travail du service 
 
 ### Score vestibulaire
 
-Aucun score vestibulaire consensuel ne figure dans la fiche A3 ni dans le générateur de courriers
-du service, et je n'en ai trouvé aucun publié qui corresponde. Plutôt que d'en inventer un,
-l'outil vous laisse **composer le vôtre** : bouton **Définir la grille**.
+La grille est celle du service, intégrée à l'outil. Cinq items, de 0 à **19 points** :
 
-Vous y saisissez les items, leurs modalités et leurs poids, au format `Libellé=poids` séparé par
-une barre verticale, par exemple `Absent=0 | Modéré=1 | Sévère=3`. Un modèle de départ est
-proposé, à garder ou à remplacer entièrement.
+| Item (colonne) | Modalités et points |
+|---|---|
+| Vertige rotatoire (`vest_vertige`) | absent 0 · non permanent ou simple sensation vertigineuse 1 · permanent 2 |
+| Nystagmus (`vest_nystagmus`) | absent 0 · présent dans le regard décentré dans le sens de la secousse rapide 1 · présent dans le regard centré 2 · présent dans le regard décentré dans le sens de la secousse lente 3 |
+| Signes neurovégétatifs (`vest_nv`) | absents 0 · nausées 1 · nausées et rares vomissements, notamment après mobilisation 2 · vomissements fréquents (plus de 3) ou permanents 3 |
+| Instabilité (`vest_instab`) | absente 0 · présente debout yeux fermés 1 · présente debout yeux ouverts 2 · verticalisation impossible 3 |
+| Symptômes cochléaires, surdité ou acouphènes (`vest_cochl`) | absents 0 · présents 8 |
 
-La grille vit dans les **réglages du poste**, pas dans la fiche : elle s'applique à toutes les
-fiches et part avec l'export des réglages pour être recopiée sur un autre poste. Chaque item
-garde une clé stable (`vest_1`, `vest_2`…) : renommer un libellé ou réordonner la grille ne
-déplace pas les réponses déjà enregistrées, et chaque item devient une colonne du CSV.
+Comme pour MEDSUBHYP, chaque item est **déduit de ce que vous avez déjà saisi**, la valeur déduite
+est encadrée, et un clic sur une autre modalité tranche à votre place :
 
-Cette grille n'est validée par rien. L'outil la calcule, il ne la cautionne pas.
+- **nystagmus** : d'après les positions du regard où il est vu, rapportées au côté de sa secousse
+  rapide (seulement vers la secousse rapide 1, aussi regard centré 2, aussi vers la secousse
+  lente 3) ; « non » à la question *Nystagmus* donne 0 ;
+- **instabilité** : verticalisation impossible 3, équilibre perdu yeux ouverts 2, perdu yeux fermés
+  seulement 1, conservé dans les deux cas 0 ;
+- **symptômes cochléaires** : troubles de l'audition ou acouphènes ;
+- **vertige** : « non » à la question *Vertiges* donne 0 ; « oui » ne dit pas s'il est permanent,
+  vous tranchez ;
+- **signes neurovégétatifs** : rien de ce qui est saisi ne les renseigne, vous les cotez ici.
+
+Le total n'est calculé que si les cinq items ont une valeur. La grille ne définit aucun seuil de
+gravité, l'outil n'en affiche donc pas. Le total (`vest_total`) et les cinq items (valeur
+retenue, cotée ou déduite) sont des colonnes du CSV. L'éditeur de grille des premiers essais est
+retiré : la grille s'écrit dans la constante `VEST`, en tête du script de `index.html`.
 
 ---
 
@@ -189,9 +357,10 @@ Trois entrées mènent au même résultat.
 
 1. **Le numéro de dossier.** Tapez-le dans le premier champ : s'il est déjà connu, l'identité et
    les données de l'accident se remplissent seules, et l'examen précédent est proposé en grisé.
-2. **Le bouton Rechercher**, à côté de ce champ. Une fenêtre accepte un numéro, un nom, un prénom
-   ou une date de naissance, écrite 12/04/1988 ou 1988-04-12 indifféremment. Les accents et la
-   casse sont ignorés. Cliquez le sujet : tout se remplit.
+2. **Le bouton Rechercher**, à côté de ce champ. Une fenêtre accepte un numéro de dossier, un
+   **numéro d'accident de plongée**, un nom, un prénom ou une date de naissance, écrite 12/04/1988 ou
+   1988-04-12 indifféremment. Les accents et la casse sont ignorés. Cliquez le sujet : tout se
+   remplit. La liste de gauche se filtre de la même façon et affiche le numéro d'accident.
 3. **Le nom saisi directement.** Si vous remplissez le nom ou la date de naissance avant le numéro
    de dossier et qu'un sujet correspond, un bandeau propose de reprendre son dossier.
 
@@ -206,10 +375,14 @@ Dès que vous saisissez un **numéro de dossier déjà enregistré** :
 
 - nom, prénom, sexe, date de naissance, date et heure de l'accident se remplissent seuls ;
 - un bandeau rappelle la date de l'examen précédent ;
-- sur chaque champ encore vide, la valeur de cet examen apparaît **en grisé**. Un clic la reprend.
-  Pour les champs texte, un petit bouton `↩` fait la même chose ;
-- le bouton **Reprendre tout l'examen précédent** remplit d'un coup tous les champs vides, schémas
-  corporels et reliefs osseux compris. Les valeurs déjà saisies ne sont jamais écrasées.
+- sur chaque champ encore vide de l'**anamnèse, de l'examen général et de l'examen neurologique**, la
+  valeur de cet examen apparaît **en grisé**. Un clic la reprend. Pour les champs texte, un petit
+  bouton `↩` fait la même chose. La recompression, les actes, les examens complémentaires, les
+  traitements, le diagnostic et la conclusion ne sont jamais proposés : un examen coché de nouveau est
+  un nouvel examen ;
+- le bouton **Reprendre tout l'examen précédent** remplit d'un coup tous les champs vides de ces
+  encarts, schémas corporels et reliefs osseux compris. Les valeurs déjà saisies ne sont jamais
+  écrasées.
 
 L'examinateur, la date et l'heure de l'examen ne sont jamais repris.
 
@@ -379,23 +552,22 @@ apparaissent quand la trépidation est bilatérale, un seul quand elle est unila
 Un bouton **?** apparaît à côté des items techniquement délicats : Hoffmann, Babinski,
 trépidations, réflexes polycinétiques et étendus, Weber, Rinne, Valsalva, otoscopie, cotation MRC,
 VAC et DAP, nystagmus, VNS, NIV, Barré, Mingazzini, Glasgow, test des métamères, pallesthésie,
-résidu mictionnel.
+résidu mictionnel, consommation d'alcool.
 
 Chaque fiche donne la manœuvre, le résultat normal, ce qui compte comme pathologique et les pièges
 courants. Quatre d'entre elles portent un schéma au trait.
 
-### Ajouter vos propres photos et vidéos
+### Photographies
 
-Dans une fiche technique, le champ en bas accepte une image ou une vidéo. Le fichier est stocké
-dans la base locale du navigateur de ce poste. Il n'entre **ni dans le PDF, ni dans le fichier de
-données, ni dans les sauvegardes de fiches**.
+Les fiches techniques sont des textes et des schémas. Les photographies qui documentent un examen
+précis se joignent à la **fiche du sujet**, dans l'encart *Pièces jointes* en fin de page 4 (jusqu'à
+douze photos, chacune avec un titre, réduites à 1600 pixels, enregistrées avec la fiche et imprimées
+sur des pages dédiées du PDF). La photo de l'ordonnance se joint depuis l'encart « Antécédents et
+traitements ». Elles n'entrent pas dans le fichier de données, qui ne reçoit que leur nombre et leurs
+titres.
 
-Le menu **Aides à l'examen** liste toutes les fiches et le nombre de médias attachés, et permet
-d'exporter la médiathèque en un seul fichier JSON pour la copier sur un autre poste.
-
-Une réserve sur le contenu : une vidéo d'un signe positif filmée sur un patient est une donnée de
-santé identifiante. Filmez un volontaire, ou floutez, ou recueillez un consentement écrit et
-conservez-le. L'outil ne gère pas ce consentement à votre place.
+Une photographie de patient reste une donnée de santé identifiante, visage ou pas. Cadrez au plus
+juste, recueillez le consentement, et chiffrez le support de toute sauvegarde JSON qui en contient.
 
 ---
 
@@ -478,7 +650,7 @@ y compris si vous saisissez a posteriori un examen antérieur.
 
 ## Saisie sur tablette, puis fusion
 
-1. Copiez `fiche_neuro.html` sur la tablette, ouvrez-le. Il fonctionne hors ligne.
+1. Copiez `index.html` sur la tablette, ouvrez-le. Il fonctionne hors ligne.
 2. En fin de mission : **Exporter** → *Télécharger la sauvegarde JSON*.
 3. Sur le poste principal : **Importer / Fusionner**, déposez le fichier.
 
@@ -500,7 +672,7 @@ d = pd.read_csv("donnees_neuro.csv", sep=";", encoding="utf-8-sig")
 
 - Séparateur par défaut : point-virgule. Modifiable dans **Exporter** (virgule pour R et Python).
 - **Cellule vide = valeur manquante (NA).** Aucune valeur par défaut n'est inventée.
-- `dictionnaire_variables.csv` donne le libellé et le codage des 761 colonnes.
+- `dictionnaire_variables.csv` donne le libellé et le codage des 874 colonnes.
 
 ### Codages principaux
 
@@ -526,9 +698,24 @@ d = pd.read_csv("donnees_neuro.csv", sep=";", encoding="utf-8-sig")
 | Orientation | `1 = domicile`, `2 = médecine`, `3 = surveillance continue`, `4 = soins intensifs`, `5 = transfert` ; `orientation_txt` : texte libre complémentaire |
 | Position du regard | une colonne binaire par position + une colonne texte (valeurs séparées par `\|`) |
 | Trépidation | `trep_pied_qual_D`, `trep_pied_qual_G` : `1 = épuisable`, `2 = inépuisable` |
-| Adressé par | `adresse_par` : `1 = SAMU 83`, `2 = SCMM`, `3 = autre SAMU`, `4 = autre établissement de santé` ; `adresse_etab_type` : `1 = SAU`, `2 = centre hyperbare`, `3 = non défini` |
-| Moyen d'évacuation | `evac_moyen` : `1` moyens propres, `2` VSAV / pompiers, `3` SMUR route, `7` hélicoptère médicalisé, `8` hélicoptère non médicalisé, `6` autre. Les codes `4` (hélicoptère, non précisé) et `5` (bateau / SNSM) ne sont plus proposés mais restent valides dans les fichiers anciens |
-| Procédure de décompression | `pl_proc` : `1 = ordinateur`, `2 = tables MN 90`, `5 = tables MT 92`, `3 = autres tables`, `4 = sans procédure` |
+| Adressé par | `adresse_par` : `1 = SAMU 83`, `2 = SCMM`, `3 = autre SAMU`, `4 = autre` (établissement, avec son type et son nom) ; `adresse_etab_type` : `1 = SAU`, `2 = centre hyperbare`, `3 = non défini` |
+| Moyen d'évacuation | `evac_moyen` : `1` moyens propres, `2` VSAV / pompiers, `3` SMUR routier, `7` hélicoptère médicalisé, `8` hélicoptère non médicalisé, `6` autre |
+| Sonde vésicale | `ac_sonde` : `2 = sonde à demeure`, `3 = sondage évacuateur`, `0 = non` ; `ac_sonde_vol` : volume initial évacué (mL) |
+| Table de recompression | `tb_table` : `1 = OHB15`, `2 = A15IOT`, `3 = A18IOT`, `4 = A18`, `5 = B18`, `6 = A18HeOx`, `7 = B18HeOx`, `8 = C18`, `9 = autre` (texte dans `tb_table_autre`) ; `tb_duree` : durée de la table en minutes, calculée |
+| ECG | `im_ecg`, `ecg_fc` (bpm), `ecg_qtc` (ms), `ecg_txt` (compte rendu, texte) |
+| (Méthyl)prednisolone | `rx_solu`, `rx_solu_dose` (mg par jour), `rx_solu_jours` (jours), `rx_solu_h` (heure de la 1re dose) |
+| Type de profil de plongée | `pl_profil_type` : `1 = carré`, `2 = inversé`, `3 = yoyo`, `4 = remontée progressive` ; inversé : `pl_prof1`, `pl_h_inv` ; yoyo : `pl_yoyo_nb`, `pl_yoyo_amp`, `pl_yoyo_surf` (`1 = oui`, `0 = non`), `pl_yoyo_int`, et `pl_yoyo_crit` (`1` si les critères du yoyo sont remplis, `0` sinon, calculé) ; remontée progressive : `pl_prof_df` (profondeur au départ du fond) |
+| Score vestibulaire | `vest_vertige`, `vest_nystagmus`, `vest_nv`, `vest_instab` : `0` à `3` ; `vest_cochl` : `0` ou `1` (8 points) ; `vest_total` : `0` à `19` |
+| Échographie pleuro-pulmonaire | 24 colonnes de zones `ech_<a ou p>_<D ou G>_<s ou i>_<lat, mdn ou mdl>` : `1 = A`, `2 = B`, `3 = B++`, `4 = C`, `5 = PNO`, vide = zone non examinée ; `ech_nb` (zones cotées), `ech_nb_A`, `ech_nb_B`, `ech_nb_Bpp`, `ech_nb_C`, `ech_nb_PNO`, `ech_anom_D`, `ech_anom_G` (zones hors A par poumon), `ech_pno`, `ech_zones` (liste), `ech_txt` (commentaire) |
+| Procédure de décompression | `pl_proc` : `1 = ordinateur`, `2 = tables MN23`, `5 = tables MT 92`, `3 = autres tables`, `4 = sans procédure` |
+| Durées du profil | `pl_dt` (DT, calculée), `pl_dtr` (DTR) et `pl_duree_tot` (DTP), en minutes, calculées d'après les heures ou saisies ; `pl_dtr_src` : `1` d'après les heures, `2` saisie, `3` estimée, `4` déduite de DTP − DT ; `pl_dtr_att_min`, `pl_dtr_att_max` : DTR attendue (modèle de remontée) ; `pl_vit_remontee` : vitesse de remontée déduite (m/min) |
+| Procédure de ré-immersion | `pl_reimm_type` : `1 = remontée rapide (RR)`, `2 = remontée non conforme` ; `pl_reimm_faite` : `1 = réalisée`, `0 = non réalisée` ; `pl_rr_emersion` (`1`/`0`), `pl_rr_delai`, `pl_rr_prof`, `pl_rr_duree`, `pl_rr_pal6`, `pl_rr_pal3` (minutes ou mètres) ; `pl_reimm_txt` : description |
+| Alcool sevré | `tox_alcool_sevre` (case), `alcool_sevre_date`, `alcool_sevre_stade` : `1` à `4`, comme `alcool_stade` |
+| Examens complémentaires | `im_rp`, `im_tdm_thor`, `im_tdm_cer`, `im_irm_cer`, `im_irm_med`, `im_eto`, `im_dtc`, `im_echopp` : `1 = OUI`, `0 = NON` ; résultat de chacun dans `<examen>_res` (texte) |
+| Doppler transcrânien | `dtc_repos` (sans sensibilisation), `dtc_sensib` (après sensibilisation allongée), `dtc_flack` (pendant un test de Flack) : `0 = absence de shunt D-G`, `1 = shunt de bas grade`, `2 = shunt de haut grade` ; `dtc_txt` : commentaire |
+| Oxygène prescrit | `rx_o2_mode` : `1 = masque à haute concentration`, `2 = VNI` ; `rx_o2_debit` (L/min) ; `rx_vni_pep`, `rx_vni_ai` (cmH₂O), `rx_vni_fr` (/min), `rx_vni_fio2` (%) |
+| Diagnostic retenu | `dg_liste` (une colonne binaire par diagnostic : `dg_liste_add`, `dg_liste_opi`, `dg_liste_baro`, `dg_liste_bioch`, `dg_liste_noyade`) ; types : `dg_add_types_*`, `dg_baro_types_*`, `dg_bioch_types_*` ; `dg_add_grave` (`1` = sévère) ; `dg_principal` : `add`, `opi`, `baro`, `bioch` ou `noyade` ; `dg_txt` : précisions |
+| Conclusion de l'examen clinique | `conclusion` : `1 = examen neurologique normal`, `2 = anormal`, `3 = à recontrôler` |
 | Listes à cases | une colonne binaire par case (`atcd_med_hta`, `tox_tabac`, `atcdp_add`…) et une colonne texte (valeurs séparées par `\|`) |
 | Menus déroulants | `niv_loisir`, `niv_pro`, `niv_ens`, `organisme` : codes numériques listés dans le dictionnaire ; `99 = autre (à préciser)` |
 | Paliers | `pl_pal_nb`, `pl_pal_secu`, `pl_pal_duree`, `pl_pal_prof_max`, `pl_pal_txt`, puis le détail des six premiers (`pl_pal1_gaz`, `pl_pal1_prof`, `pl_pal1_duree`, `pl_pal1_secu`…) |
@@ -554,352 +741,111 @@ aux analyses topographiques fines.
 
 ---
 
-## Changements de la version 7.2.0
+## Changements de la version 7.3.0
 
-Cette version applique les modifications manuscrites du 1er octobre 2026 : l'encart d'alerte et
-d'évacuation, le plongeur, la plongée accidentelle, le profil et les paliers, la synthèse rédigée.
+Cette version nettoie le code et applique les modifications du 2 octobre 2026. Aucun patient réel
+n'ayant été saisi dans les versions d'essai, **les versions précédentes ne sont plus lues ni
+converties**.
 
-### Alerte et évacuation
+### Nettoyage
 
-- **Adressé par** devient un choix : SAMU 83, SCMM (SAMU de coordination médicale maritime), autre
-  SAMU (à préciser), autre établissement de santé (SAU, centre hyperbare ou non défini, et son nom).
-- **Moyen d'évacuation** : « SMUR » devient *SMUR Route*, « Hélicoptère » se divise en *médicalisé*
-  et *non médicalisé*, « Bateau / SNSM » est retiré, « Autre » ouvre un champ texte.
-- **Oxygène normobare** : répondre OUI propose un débit de **15 L/min**, modifiable. La **durée**
-  n'est plus saisie, elle est calculée entre l'heure des premiers soins sur place et l'heure de
-  prise en charge au SMHEP (à défaut de celle-ci, l'heure de l'examen). Elle passe minuit.
-- **Contacts** réorganisés : la personne à prévenir d'un côté, le médecin traitant de l'autre. Le
-  lien est un choix (conjoint / compagnon, parent, enfant, ami, autre à préciser).
+- Les conversions de fiches des anciennes versions (texte libre devenu choix codé, anciennes colonnes,
+  anciens codes) et les options « historiques » sont supprimées.
+- **Nouvelle base locale** : 7.3.0 ne reprend pas les fiches enregistrées par les versions
+  précédentes dans le navigateur. Elles restent dans leur ancienne base, sans effet. Les **réglages du
+  poste** sont à ressaisir : nom du poste, séparateur, douchette, sel de pseudonymisation, et la
+  reconnexion du dossier de données (un clic sur *Fichier de données*).
+- Le fichier de données ne se fusionne qu'avec des fichiers produits par la même version.
+- L'éditeur de grille du score vestibulaire des premiers essais est retiré (la grille est intégrée).
 
-### Le plongeur
+### Saisie
 
-- **Nationalité** à choix (neuf réponses, « autre » à préciser). **Adresse e-mail** ajoutée.
-- **IMC** : il se calculait déjà, mais l'affichage ne se rafraîchissait pas quand on tapait le poids
-  ou la taille. Tous les champs calculés (IMC, âge, durées, délais, paquets-années) se mettent
-  maintenant à jour en direct.
-- **Antécédents** par cases : aucun antécédent médical notable, aucun antécédent chirurgical
-  notable, HTA, diabète, asthme, cardiopathie (à préciser), pneumothorax (spontané,
-  post-traumatique ou iatrogène, et date). Une zone libre reste disponible pour le reste.
-- **Habitudes toxiques** : aucune, tabagisme actif (cigarettes par jour, durée en années,
-  **paquets-années calculés**), tabagisme sevré (avec la date), alcool (**évaluation en quatre
-  stades**), cannabis (quotidienne, régulière, festive, exceptionnelle), autre (à préciser).
-- **Antécédents en plongée** : aucun, ADD, OPI, barotraumatisme, biochimique, avec type et date.
-- **Pratique de la plongée** : menus déroulants pour le niveau loisir, professionnel, d'enseignement
-  et pour l'organisme ; plongée depuis (année) ; nombre moyen de plongées par an sur les deux
-  dernières années (le nombre de plongées sur six mois est retiré) ; date du dernier certificat
-  médical et qualification du médecin ; case « aucun certificat médical de moins d'un an » avec
-  son commentaire.
+- **Recherche d'un dossier** : le numéro d'**accident de plongée** s'ajoute au numéro de dossier, au
+  nom, au prénom et à la date de naissance. La liste de gauche le filtre aussi et l'affiche.
+- **Habitudes toxiques** : *alcool sevré*, avec la date de sevrage et l'évaluation antérieure en quatre
+  stades.
+- **Antécédents et traitements** : photo de l'ordonnance, jointe à la fiche.
+- **Niveau de plongée professionnel** : « plongeur démineur », « nageur de combat » et
+  « scaphandrier d'intervention » disparaissent ; s'ajoutent *plongeur d'armes (Marine nationale)* et
+  *plongeur d'armes (armée de terre)* ; « plongeur de bord » perd la mention Marine nationale.
+- **Procédure de décompression** : *tables MN23* remplace *tables MN 90*.
+- **Profil** : la remontée progressive se dessine **pendant DT** ; la DTR et la DTP se saisissent
+  directement ; modèle de remontée (9 à 12 m/min, 10 s par mètre entre paliers) ; vitesse déduite et
+  alerte de remontée rapide ; encart de **procédure de ré-immersion** (RR et remontée non conforme).
+  Voir *Le profil de plongée et les durées*.
+- **Facteurs favorisants** : les conditions environnementales ne sont plus classées parmi les facteurs
+  favorisants dans la synthèse (« mer calme » n'est pas un facteur aggravant) : elles forment une
+  phrase à part, *Conditions environnementales*.
+- **Score ASIA** : bouton *Actualiser le calcul* dans l'en-tête de l'encart, qui le déplie ; l'encart
+  se rafraîchit aussi seul quand on cote la page.
+- **Page 3** : la *conclusion de l'examen clinique* ferme l'onglet « Examen neurologique ».
+- **Page 4** réorganisée : *Recompression*, puis *Actes* (voie veineuse, bilan biologique, sondage
+  vésical avec son volume initial évacué), puis *Examens complémentaires* (avec résultat par examen,
+  scanner thoracique ou cérébral, IRM cérébrale ou médullaire, ECG et doppler transcrânien déplacés
+  ici, résultat du doppler par condition d'épreuve), l'*échographie pleuro-pulmonaire* (qui ne
+  s'ouvre que si l'examen est coché), les *traitements prescrits* (oxygène au masque ou en VNI avec
+  PEP, AI, FR et FiO₂), l'évolution, le **diagnostic retenu** (remplace la conclusion de l'examen), puis
+  l'orientation.
+- **Diagnostic retenu** : accident de désaturation (types, case *Sévère*), œdème pulmonaire
+  d'immersion, barotraumatisme (types), accident biochimique (types), noyade ; plusieurs diagnostics
+  possibles, avec un diagnostic principal si déterminé.
+- **Synthèse** : un bloc *Diagnostic retenu* s'insère entre les examens paracliniques et la conduite
+  à tenir.
+- **Consultation de suivi ou de sortie** : seuls l'anamnèse, l'examen général et l'examen neurologique
+  sont proposés en grisé ; les examens complémentaires, les traitements, le diagnostic et la conclusion
+  ne sont jamais repris. *Reprendre tout l'examen précédent* suit la même règle.
 
-### La plongée accidentelle
+### Fichier de données
 
-- **Procédure de décompression** : ordinateur (marque / modèle, réglage GF), tables MN 90, tables
-  MT 92, autres tables (à préciser), sans procédure.
-- **Profil de plongée** : on saisit DS (heure d'immersion), DF (départ du fond), HS (sortie de
-  l'eau) et Pmax. L'outil calcule **DT = DF − DS**, **DTR = HS − DF** et **DTP = HS − DS**, et
-  dessine le schéma, qui se redessine à chaque frappe et s'imprime sur le PDF. Une alerte signale
-  un DF qui ne tombe pas entre DS et HS.
-- **Paliers** : une ligne par palier, avec le gaz, la profondeur et la durée à la profondeur. La
-  case **paliers de sécurité réalisés (non obligatoires)** propose 1 min à 6 m et 5 min à 3 m, que
-  l'on modifie ensuite à volonté. Le champ « durée au fond » est remplacé par DT.
-
-### La synthèse rédigée
-
-Elle suit désormais le plan d'une observation d'entrée écrite à la main : en-tête (date, heure de
-prise en charge), **Histoire de l'accident**, **Antécédents et terrain**, **Examen clinique
-d'entrée** (constantes, puis « À l'examen : … En revanche, il existe … »), **Au total**,
-**Examens paracliniques** (scores MEDSUBHYP de tout le dossier, ASIA), **Conduite à tenir**.
-Le texte est fait de phrases. Une négation (« pas de déficit moteur », « pas de signe cérébral »)
-n'est écrite que si l'item a été examiné. Les consultations de suivi et de sortie reprennent le même
-plan, avec le paragraphe d'évolution. Les titres sont en gras à l'écran et sur le PDF ; le bouton
-**copier le texte** place dans le presse-papiers le texte brut et le texte enrichi, que Word garde
-tel quel.
-
-### Ce qui change dans le fichier de données
-
-- **677 → 761 colonnes** : 94 colonnes ajoutées, 10 retirées. Les colonnes conservées gardent leur
-  nom et leur codage, sauf précisions de libellé : les champs numériques sont désormais décrits
-  « numérique » dans le dictionnaire au lieu de « texte libre ».
-- **Remplacées** : `pp_parente` → `pp_lien` (choix) ; `niveau` → `niv_loisir`, `niv_pro`, `niv_ens` ;
-  `pl_duree_fond` → `pl_dt` (calculée) ; `nb_plongees_6m` → `nb_plongees_an`. `soin_o2_duree` existe
-  toujours mais est calculée.
-- **Champs devenus des choix codés** : `nationalite`, `adresse_par`. Leurs anciennes valeurs texte
-  sont reconnues à l'import et à la lecture de la base : « SAMU 83 », « Française »… retrouvent leur
-  code, tout le reste va dans le champ « à préciser ». Rien ne se perd, et la conversion est sans effet
-  sur une fiche déjà convertie.
-- **Codes ajoutés** : `evac_moyen` 7 et 8, `pl_proc` 5. Les anciens codes `evac_moyen` 4 et 5 restent
-  valides et lisibles.
-- **Correction : les champs identifiants ne sortent plus dans le CSV.** Jusqu'à la 7.1.0 l'option
-  « inclure l'identité » ne commandait que le nom, le prénom et la date de naissance. L'adresse, le
-  téléphone, la personne à prévenir et le médecin traitant figuraient dans le fichier statistique
-  même option décochée. Ils n'y figurent plus que si l'option est cochée (adresse e-mail
-  comprise). Ils restent sur la fiche, sur le PDF et dans la sauvegarde JSON.
+- **810 → 874 colonnes** : 69 ajoutées, 5 retirées.
+- **Retirées** : `ac_ecg` (devient `im_ecg`), `ac_doppler` (devient `im_dtc`), `im_tdm` (scindé en
+  `im_tdm_thor` et `im_tdm_cer`), `im_irm` (scindé en `im_irm_cer` et `im_irm_med`), `im_res` (remplacé
+  par un résultat par examen).
+- **Ajoutées** : alcool sevré (`tox_alcool_sevre`, `alcool_sevre_date`, `alcool_sevre_stade`),
+  profondeur au départ du fond (`pl_prof_df`), procédure de ré-immersion (`pl_reimm_*`, `pl_rr_*`),
+  origine de la DTR et remontée attendue (`pl_dtr_src`, `pl_dtr_att_min`, `pl_dtr_att_max`,
+  `pl_vit_remontee`), volume du sondage (`ac_sonde_vol`), résultats des examens (`im_*_res`), doppler
+  (`im_dtc`, `dtc_*`), `im_echopp`, oxygène prescrit (`rx_o2_mode`, `rx_o2_debit`, `rx_vni_*`) et
+  diagnostic retenu (`dg_*`).
+- **Recodés** : `ac_sonde` (2 à demeure, 3 évacuateur, 0 non) ; `tb_table` (code de la table) ;
+  `niv_pro` (nouvelle liste) ; `pl_proc` 2 devient « tables MN23 ». La colonne `conclusion` garde ses
+  codes ; elle désigne désormais la conclusion de l'examen clinique, le diagnostic étant porté par
+  `dg_*`.
 
 ### À valider de votre côté
 
-Ces points viennent d'une interprétation de la note manuscrite ; chacun se modifie dans une
-constante, en tête du script de `index.html`, sans toucher au reste du code.
+Ces points viennent d'une interprétation de vos notes ; chacun se corrige dans une constante, en tête
+du script de `index.html`.
 
-- **Les quatre stades de l'alcool** (`ALCOOL`) : usage à faible risque, usage à risque, usage nocif,
-  dépendance. La note ne détaillait pas l'échelle.
-- **Les menus de niveaux et d'organismes** (`NIV_LOISIR`, `NIV_PRO`, `NIV_ENS`, `ORGANISMES`) :
-  listes proposées, à corriger selon les brevets que vous rencontrez réellement.
-- **La durée d'oxygénothérapie** se calcule jusqu'à l'**heure de prise en charge au SMHEP**.
-  Si vous préférez l'heure de l'examen, c'est une ligne dans `adpCalc()`.
-- **Le nom de l'établissement d'arrivée** de la synthèse (`HOPITAL_PEC`, « HNIA Sainte-Anne »).
-- **La pagination du PDF** : une fiche initiale très remplie reste à six pages A4 (les cadres sont
-  insécables : un cadre qui ne tient pas passe entier sur la page suivante).
-
-### Ce qui n'est pas encore là
-
-L'en-tête du service, le bloc signature et les identifiants RPPS du générateur de courriers
-passent en version 7.3.0.
-
----
-
-## Changements de la version 7.1.0
-
-L'outil change de nom : **ADP**, pour accident de plongée. Il ne se limite plus à l'examen
-neurologique, il porte le dossier entier.
-
-- **Trois types de consultation** : initiale, suivi, sortie. Le type décide des encarts affichés
-  et du document imprimé. Voir *Trois types de consultation*.
-- **Quatre pages de saisie** avec un bouton **Suivant**, des onglets et un compte de remplissage
-  par page. Voir *Les quatre pages de saisie*.
-- **Sept encarts nouveaux**, transcrits de la fiche A3 du service : mode d'entrée et prise en
-  charge initiale, le plongeur, les paramètres de la plongée, ceux de la plongée précédente, les
-  facteurs favorisants, l'anamnèse, l'examen général par appareil.
-- **Constantes et surveillance** : un relevé horodaté par ligne, agrégé dans le CSV.
-- **Scores de sévérité** : MEDSUBHYP déduit des données déjà saisies, et un score vestibulaire
-  dont vous composez la grille. Voir *Scores de sévérité*.
-- **Calculs automatiques** : IMC, durée totale de plongée, délai sortie → symptômes, délai
-  symptômes → prise en charge, intervalle de surface. Tous passent minuit correctement.
-- **Paragraphe d'évolution** assemblé et copiable pour le compte rendu de sortie.
-- Le fichier de données passe de 500 à **677 colonnes**. Les colonnes existantes n'ont pas changé
-  de nom ni de codage : un CSV de la version 6.3 se fusionne sans retouche.
-- Les deux faces du corps restent **côte à côte** sur les trois schémas — sensibilités, signes
-  subjectifs, lésions cutanées — y compris sur un téléphone de 360 px.
-
-### Ce qui n'est pas encore là
-
-Le compte rendu de sortie reprend pour l'instant la mise en page de l'outil. **L'en-tête du
-service, le bloc signature et les identifiants RPPS du générateur de courriers arrivent en
-version 7.3.0** (annoncés pour la 7.2.0 à l'origine : la 7.2.0 a pris les modifications de saisie).
+- **Modèle de remontée** (`V_REM_MIN`, `V_REM_MAX`, `S_PAR_M`, `dtrSecondes`) : l'arrondi se fait **une
+  seule fois, à la fin de la DTR** ; le trajet du dernier palier à la surface est compté à 10 s par
+  mètre comme un changement de palier ; la DTR estimée est le milieu de la fourchette.
+- **Remontée progressive** : la profondeur au départ du fond est une donnée que vous ne m'aviez pas
+  précisée. Elle se saisit ; à défaut, 40 % de Pmax est dessiné.
+- **Procédure de ré-immersion** : le délai, la profondeur (moitié de Pmax), la durée (5 min) et les
+  paliers (1 min à 6 m, 5 min à 3 m) sont des propositions modifiables (`RR_DELAI_MAX`, `RR_DUREE`,
+  `PAL_RR`). La procédure n'est pas dessinée sur le schéma.
+- **Doppler transcrânien** : les trois conditions (sans sensibilisation, après sensibilisation allongée,
+  pendant un test de Flack) se cotent indépendamment ; la formulation « sensibilisation allongée » est
+  reprise telle quelle.
+- **Types de diagnostic** (`DG_ADD`, `DG_BARO`, `DG_BIOCH`) : listes proposées, à corriger.
+- **Valeurs d'office** d'une consultation initiale (`DEF_INITIALE`) : aspirine NON, table B18, bilans
+  OUI.
+- **Pagination du PDF** : la page de prise en charge (page 6) peut déborder sur une septième page quand
+  la fiche est très remplie, la synthèse reprenant en phrases ce que les encadrés détaillent.
 
 ---
 
-## Changements de la version 6.3
+## Historique
 
-- **Correction : le bouton NC du Glasgow ne répondait pas.** La valeur texte `NC` était insérée
-  dans le code de la page avec des guillemets qui refermaient l'attribut trop tôt. Le clic
-  déclenchait une erreur au lieu d'enregistrer la cotation. Corrigé, et couvert par un test
-  qui clique réellement sur le bouton au lieu d'appeler la fonction.
-- **Correction : un clic perdu après une date incomplète.** Quitter un champ de date
-  reconstruisait le formulaire, ce qui détachait le bouton que l'on venait de viser. Il fallait
-  cliquer deux fois. Le formulaire ne se reconstruit plus au départ du champ.
-- **Cutané plantaire** : la réponse indifférente est verte comme la flexion, et ne compte plus
-  comme une anomalie. Seule l'extension est pathologique. La synthèse mentionne la réponse
-  indifférente comme un fait d'examen, pas comme une anomalie.
-- **Réflexe très vif** coté en rouge, comme un réflexe aboli.
-- **Examen pupillaire** ajouté en tête des fonctions supérieures : symétrie, anisocorie avec la
-  pupille la plus large, mydriase, myosis, réflexe photomoteur, chacun avec son côté. Fiche
-  d'aide dédiée, reprise dans la synthèse et sur le PDF.
-- **Encart du score ASIA replié au départ** : c'est un résultat, pas une saisie.
-- **Sensibilités** : les boutons *Tout normal*, *Tout non testable* et *Effacer* sont désormais
-  visibles sur le schéma comme sur le tableau.
-- **Téléphone** : les deux faces du corps restent côte à côte. Une bande dorsale y fait environ
-  7 pixels de haut : pour coter métamère par métamère sur un petit écran, passez par le tableau
-  des 28 métamères, ou tournez le téléphone.
-- **Titres de photos** : onze propositions (examen pupillaire, lésion cutanée, otoscopie droite,
-  otoscopie gauche, paramètres de plongée, ordinateur de plongée, appareil respiratoire de
-  plongée, fiche de prise en charge pré-hospitalière, ordonnance médicamenteuse, document du
-  patient, autre). Le menu ne fait que remplir le champ : chaque titre se modifie ou se complète
-  librement ensuite.
-
-### Ce qui change dans le fichier de données
-
-| Variable | Changement |
-|---|---|
-| `pup_sym`, `pup_aniso`, `pup_aniso_cote`, `pup_myd`, `pup_myd_cote`, `pup_myo`, `pup_myo_cote`, `pup_rpm`, `pup_rpm_cote` | nouvelles |
-
-Le fichier passe de 491 à 500 colonnes. Un CSV de la version 6.2 se fusionne sans perte.
-
----
-
-## Changements de la version 6.2
-
-- **Glasgow : cotation NC.** Chacune des trois modalités accepte « non cotable » : œdème
-  palpébral, intubation, aphasie connue. Le total n'est alors pas calculé, parce qu'un total
-  amputé d'un item n'a pas de sens, mais les modalités cotées restent visibles, imprimées et
-  exportées. La variable `gcs_nc` compte les modalités NC : un `gcs_tot` vide avec `gcs_nc`
-  renseigné signifie score non calculable, et non score oublié.
-- **Dates et heures au clavier.** Les champs acceptent la frappe directe en JJ/MM/AAAA et
-  HH:MM, séparateurs posés tout seuls. Une date impossible passe en rouge et n'est pas
-  enregistrée. Le bouton calendrier reste disponible à côté.
-- **Pièces jointes photographiques.** Un encart en fin de fiche reçoit jusqu'à douze photos,
-  chacune avec un titre choisi (examen cutané, otoscopie, lésion cutanée, schéma annoté,
-  champ visuel, document remis, ou un titre libre). Elles s'impriment sur une page dédiée du
-  PDF, deux par ligne, titre au-dessus.
-- **Dépôt de fichiers retiré des fiches techniques.** Les images qui documentent un examen
-  précis appartiennent à la fiche du sujet, pas à une notice générique.
-- **Interprétation acoumétrique** recalculée dès qu'un item ORL change, avec un bouton
-  **Actualiser** pour forcer le calcul.
-- **Textes d'orientation revus** : services USIC, neurovasculaire, USC et réanimation ;
-  avis réanimateur, cardiologique et ORL ; imagerie cérébrale, rachidienne et thoracique.
-  Retrait de l'avis neurochirurgical, des consignes de surveillance et de la sortie contre
-  avis médical. Les modes de transport sont conservés.
-- **Fiches techniques revues** selon vos corrections : triangle lumineux dans la stadification
-  otoscopique, Valsalva franchement retardé, trépidation épuisable chez le sujet hypothermique
-  et à coter pathologique jusqu'à preuve du contraire, référence sensitive à la face externe
-  du bras, piqûre au manche du marteau à réflexes, report vers le bas conditionné à la
-  répétition de l'anomalie.
-
-### Les photographies et le règlement
-
-Une photographie de patient est une donnée de santé identifiante au sens de l'article 9 du
-RGPD, même sans le visage. Elle est enregistrée **avec la fiche** : elle suit la base locale,
-les sauvegardes JSON et le PDF. Elle n'entre **jamais** dans le fichier de données, qui ne
-reçoit que `pj_nb` et `pj_titres`.
-
-Trois conséquences pratiques :
-
-1. Cadrez au plus juste. Une lésion cutanée se documente sans le visage et sans les signes
-   distinctifs (tatouages, bijoux, cicatrices sans rapport).
-2. Le consentement du sujet relève de vous. L'outil ne le recueille pas et ne le trace pas.
-3. Une sauvegarde JSON contenant des photos est un fichier de santé identifiant : chiffrez le
-   support, ne l'envoyez pas par messagerie ordinaire.
-
-Les photos sont réduites à 1600 pixels sur le côté le plus long et ré-encodées en JPEG. Une
-photo de téléphone de 4 Mo tombe à quelques centaines de kilooctets, ce qui reste net à
-l'impression sans faire gonfler la base ni les sauvegardes.
-
-### Ce qui change dans le fichier de données
-
-| Variable | Changement |
-|---|---|
-| `gcs_y`, `gcs_v`, `gcs_m` | acceptent la valeur texte `NC` en plus des entiers |
-| `gcs_nc` | nouvelle : nombre de modalités non cotables |
-| `pj_nb`, `pj_titres` | nouvelles : nombre et titres des photographies jointes |
-
-Le fichier passe de 488 à 491 colonnes. Un CSV de la version 6 se fusionne sans perte.
-**Les photographies ne transitent pas par le CSV** : un import CSV ne les restaure pas.
-Pour déplacer des fiches avec leurs photos entre deux postes, utilisez l'export JSON.
-
----
-
-## Changements de la version 6
-
-- **Recherche d'un sujet** par numéro de dossier, nom, prénom ou date de naissance, avec reprise
-  automatique de l'identité et des données de l'accident. Si vous tapez un nom déjà connu sans
-  numéro de dossier, l'outil propose le dossier correspondant.
-- **Otoscopie** recodée selon Haines et Harris modifiée par Rui et Flottes, cinq stades.
-- **Interprétation automatique du couple Weber / Rinne** : transmission, perception, atteinte
-  bilatérale, ou signalement d'une discordance entre les deux tests. Affichée dans l'encart ORL,
-  imprimée et versée au fichier de données.
-- **Aides à l'examen** : un bouton **?** à côté des items techniques ouvre la manœuvre, le résultat
-  normal, ce qui compte comme pathologique et les pièges. Seize fiches, avec des schémas au trait
-  pour le Weber, le Rinne, le Hoffmann et le Babinski.
-- **Vos propres photos et vidéos** peuvent être attachées à chaque fiche technique. Elles restent
-  sur le poste, dans la base locale, et n'entrent ni dans le PDF ni dans le fichier de données.
-  Le menu **Aides à l'examen** permet d'exporter la médiathèque pour la copier sur un autre poste.
-- **Force motrice par membre** : on demande d'abord s'il existe un déficit, membre par membre.
-  Une réponse NON cote les cinq myotomes clés à 5 et referme le détail, qui reste ouvrable pour
-  corriger un item isolé. Même principe pour le sphincter anal. Un membre déclaré déficitaire
-  mais coté sans déficit déclenche un avertissement.
-- **Motricité globale** (paralysie faciale, Barré, Mingazzini) déplacée en tête de l'encart force :
-  c'est le dépistage qui passe avant le testing segmentaire.
-- **Sensibilités sur silhouette métamérique** : les métamères sont dessinés sur les figures
-  antérieure et postérieure. Remplissage par zone anatomique ou métamère par métamère, avec une
-  cotation clinique (normale, hypoesthésie, hyperesthésie, anesthésie, non testable) qui alimente
-  directement le score ASIA.
-- **Page 2 du PDF** : la grille ASIA est complétée par les deux cartes en couleur, tact léger et
-  piqûre, lisibles d'un coup d'œil là où une grille de 112 cases demande un déchiffrage.
-- **Nouvelle icône** : casque de plongée au trait, dessin original.
-
-### Ce qui change dans le fichier de données
-
-| Variable | Changement |
-|---|---|
-| `oto_D`, `oto_G` | échelle Teed 0-4 remplacée par Haines et Harris 0-5. **Les anciennes valeurs ne se traduisent pas automatiquement** : un `3` voulait dire hémorragie intratympanique, il veut maintenant dire épanchement séreux. Si vous aviez déjà des fiches, reprenez ces deux colonnes à la main. |
-| `sens_lt_*`, `sens_pp_*` | le code `3` (hyperesthésie) s'ajoute. Les codes 0, 1, 2 et 9 gardent leur sens. |
-| `orl_interp`, `orl_interp_txt` | nouvelles, déduites du Weber et du Rinne. |
-| `def_msd`, `def_msg`, `def_mid`, `def_mig`, `def_sph` | nouvelles. |
-
-Le fichier passe de 481 à 488 colonnes. Un CSV de la version 5 se fusionne sans perte :
-les colonnes absentes sortent vides.
-
----
-
-## Changements de la version 5
-
-- **Encart ORL** : otoscopie cotée selon Teed, épanchement rétrotympanique, perméabilité tubaire
-  par manœuvre de Valsalva, tests de Weber et de Rinne.
-- **Lésions cutanées de désaturation** : schéma corporel dédié, six types, six motifs à l'impression.
-- **Sensibilités par métamère** : le zonage anatomique laisse place aux 28 métamères de la norme
-  ISNCSCI, tact léger et piqûre, droite et gauche, avec report d'une ligne vers tous les niveaux
-  inférieurs.
-- **Force motrice par myotome clé** : les 10 myotomes de la norme remplacent les cinq groupes
-  musculaires de la version 4. Contraction anale volontaire et pression anale profonde ajoutées.
-- **Score ASIA calculé** : totaux, niveaux sensitifs et moteurs, NLI, préservation sacrée, grade
-  AIS. Calcul indicatif, à vérifier sur la grille officielle.
-- **Page 2 du PDF** : grille ASIA complète, présentable telle quelle en réunion ou en transfert.
-- **Saisie sur téléphone** : barre de navigation basse par section, menu compact, tableaux
-  redimensionnés. Vérifié de 360 à 1500 pixels de large, sans débordement horizontal.
-- **Installation hors ligne** : manifeste, service worker, icônes. L'outil s'installe comme une
-  application sur Android, iOS, Windows et macOS.
-- **Projet natif** : enveloppe Capacitor pour Android et iOS, avec plugin d'impression et
-  ressources graphiques prêtes.
-
-### Correspondance des colonnes depuis la version 4
-
-| Version 4 | Version 5 |
-|---|---|
-| `f_biceps_D`, `f_biceps_G` | `f_c5_D`, `f_c5_G` |
-| `f_quadri_D`, `f_quadri_G` | `f_l3_D`, `f_l3_G` |
-| `f_releveur_D`, `f_releveur_G` | `f_l4_D`, `f_l4_G` |
-| `sens_epi_*`, `sens_tha_*` (zones) | sans équivalent, ignorées à l'import |
-
-**Importer / Fusionner** fait la conversion de la force motrice automatiquement. L'ancien zonage
-sensitif n'a pas d'équivalent métamérique fiable : traduire une « face externe de cuisse » en L2
-ou L3 serait une invention. Ces colonnes sont ignorées, vos anciennes fiches gardent tout le reste.
-
----
-
-## Changements de la version 4
-
-- Prise en charge des douchettes code-barres, avec capture globale et règle d'extraction.
-- Pseudonymisation par empreinte salée SHA-256 de l'identifiant scanné, sel conservé hors des exports.
-- Nouvelle colonne `dossier_pseudo`.
-
----
-
-## Changements de la version 3
-
-- Correction du champ **N° de dossier** : la saisie était interrompue après la première lettre.
-  Le formulaire ne se reconstruit plus à chaque frappe, et le curseur reste où vous l'avez laissé.
-- Position du regard en choix multiple, pour le nystagmus, la VNS et le NIV.
-- Report d'un réflexe et de ses qualités vers un ou plusieurs autres réflexes.
-- Caractère de la trépidation coté séparément à droite et à gauche.
-- Pallesthésie : les trois cotations sont proposées directement sur chaque relief, sans mode préalable.
-- Texte libre complémentaire dans l'encart orientation.
-
-Les colonnes `trep_pied_qual` et `trep_rot_qual` de la version 2 deviennent `trep_pied_qual_D`,
-`trep_pied_qual_G`, `trep_rot_qual_D`, `trep_rot_qual_G`. `nys_regard` passe de code numérique à
-liste de positions. Une fiche v2 réimportée conserve tout le reste ; ces quatre variables sont à
-ressaisir si vous aviez déjà des données.
-
----
-
-## Compatibilité avec la version 1
-
-Les noms de colonnes des sensibilités ont changé : `sens_eff_*` devient `sens_epi_*` et
-`sens_dou_*` devient `sens_tha_*`. **Importer / Fusionner** fait la conversion automatiquement,
-y compris depuis un CSV de la version 1.
-
-L'ancien zonage vibratoire (`sens_vib_*`) n'a pas d'équivalent : la pallesthésie se cote désormais
-sur des reliefs osseux. Ces colonnes sont ignorées à l'import.
-
-La cotation des zones est passée de binaire (`1 = hypo-sensible`) à trois états. Une donnée v1
-importée devient donc `1 = hypoesthésie`, ce qui est cohérent.
+- **7.3.0** : nettoyage, nouvelle base locale, profil et durées, procédure de ré-immersion, page 4
+  réorganisée, diagnostic retenu.
+- **7.2** : alerte et évacuation, le plongeur, la plongée accidentelle (profil, paliers), synthèse
+  rédigée, échographie pleuro-pulmonaire, score vestibulaire, ECG, tables de recompression.
+- **7.1** : ADP, trois types de consultation, quatre pages de saisie, constantes, scores de sévérité,
+  fiche A3 du service.
+- **6 et antérieures** : fiche d'examen neurologique standardisée, sensibilités par métamère, score ASIA,
+  signes subjectifs et lésions cutanées, pièces jointes photographiques.
 
 ---
 
