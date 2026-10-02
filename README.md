@@ -10,7 +10,7 @@ Deux sorties, depuis la même saisie :
    de consultation (compte rendu de prise en charge, fiche de suivi, compte rendu
    de séjour) ;
 2. un fichier `donnees_neuro.csv` unique qui s'incrémente, une ligne par fiche,
-   761 colonnes, prêt pour R, Python, SPSS, Jamovi ou Excel.
+   810 colonnes, prêt pour R, Python, SPSS, Jamovi ou Excel.
 
 Aucune donnée ne quitte l'appareil. Pas de serveur, pas de compte, pas de
 requête réseau. Le code entier tient dans `index.html`.
@@ -108,7 +108,7 @@ icons/                     icônes 32 à 1024 px, dont deux masquables Android
 brand_logo_source.png      le blason, fichier maître, pour régénérer les icônes
 docs/
   PUBLIER.md                   publier et mettre à jour, pas à pas
-  dictionnaire_variables.csv   761 variables, libellé et codage de chacune
+  dictionnaire_variables.csv   810 variables, libellé et codage de chacune
   NOTICE.md                    mode d'emploi clinique et technique
 native/                    projet Capacitor pour Android et iOS
 .nojekyll                  désactive le moteur Jekyll de GitHub Pages
@@ -119,7 +119,7 @@ native/                    projet Capacitor pour Android et iOS
 ## Aides à l'examen
 
 Un bouton **?** ouvre, à côté des items techniques, la manœuvre, le résultat normal,
-ce qui compte comme pathologique et les pièges. Seize fiches, quatre avec un schéma au trait.
+ce qui compte comme pathologique et les pièges. Dix-huit fiches, quatre avec un schéma au trait.
 
 ## Pièces jointes photographiques
 
