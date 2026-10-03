@@ -1,4 +1,4 @@
-# ADP — accident de plongée, version 7.3.0
+# ADP — accident de plongée, version 7.3.1
 
 Fichier unique : `index.html`. Aucun réseau, aucune dépendance externe, aucun compte.
 Double-cliquez dessus, il s'ouvre dans votre navigateur et tout fonctionne.
@@ -20,7 +20,7 @@ plein écran, démarrage sans réseau. Voir *Installer sur téléphone et tablet
 | Fichier exploitable, incrémental | `donnees_neuro.csv` | Réécrit automatiquement à chaque enregistrement de fiche |
 
 Un seul CSV pour tous les sujets, toutes les consultations et tous les types de document.
-Une ligne = une fiche. 874 colonnes.
+Une ligne = une fiche. 883 colonnes.
 
 Les pages du PDF, selon le type de consultation :
 
@@ -111,7 +111,7 @@ champs remplis, et se borde de vert quand la page est complète.
 |---|---|
 | 1. Anamnèse et plongée | Identification, accueil et prise en charge initiale, plongeur (avec photo de l'ordonnance), plongée (profil, durées, paliers, procédure de ré-immersion), plongée précédente, facteurs favorisants, anamnèse, contacts |
 | 2. Examen général | Constantes et surveillance, examen par appareil, conscience, pupilles et fonctions supérieures, ORL, signes fonctionnels, signes subjectifs, lésions cutanées |
-| 3. Examen neurologique | Réflexes, force motrice, miction, coordination, sensibilités, grille ASIA, scores de sévérité, conclusion de l'examen clinique |
+| 3. Examen neurologique | Réflexes, force motrice, miction, coordination et examen vestibulaire, sensibilités, grille ASIA, scores de sévérité, conclusion de l'examen clinique |
 | 4. Conclusion | Recompression, actes, examens complémentaires, échographie pleuro-pulmonaire, traitements prescrits, évolution, diagnostic retenu, orientation, pièces jointes |
 
 La synthèse rédigée reste visible en permanence, quelle que soit la page.
@@ -153,7 +153,7 @@ sur le facteur favorisant « Plongées ludion (yo-yo) ». Le CSV porte une colon
 
 Les relations : **DT = DF − DS**, **DTR = HS − DF**, **DTP = HS − DS = DT + DTR**. Les heures ne sont
 pas obligatoires : la DTR et la DTP sont des champs ordinaires, proposés d'après les heures, que l'on
-peut aussi **saisir directement**. Une valeur saisie n'est plus recalculée.
+peut aussi **saisir directement**. Une valeur saisie n'est jamais recalculée.
 
 | Ce que vous renseignez | Ce que l'outil en tire |
 |---|---|
@@ -164,6 +164,30 @@ peut aussi **saisir directement**. Une valeur saisie n'est plus recalculée.
 
 La colonne `pl_dtr_src` du CSV dit d'où vient la DTR : `1` d'après les heures, `2` saisie, `3`
 estimée, `4` déduite de DTP − DT.
+
+### Les heures qui manquent se complètent seules
+
+Dans l'autre sens, **DS, DF et HS se déduisent** quand les autres données suffisent. L'outil part de
+ce qui a été **saisi à la main**, heures et durées, et applique les relations ci-dessus :
+
+| Vous avez saisi | L'outil propose |
+|---|---|
+| HS et DTP | DS = HS − DTP |
+| DS et DTP | HS = DS + DTP |
+| HS et DTR | DF = HS − DTR |
+| DF et DTR | HS = DF + DTR |
+| DS, DTP et DTR | DF = DS + (DTP − DTR) |
+| DF, DTP et DTR | DS = DF − (DTP − DTR) |
+
+Les déductions se combinent (HS, DTR et DTP donnent DS et DF) et passent minuit (HS à 00:10 et DTP de
+30 min donnent DS à 23:40). Les heures proposées se retrouvent dans le schéma, la synthèse, le PDF et
+le CSV.
+
+Elles restent **modifiables** : une heure ou une durée saisie à la main n'est jamais remplacée, même
+quand une autre donnée la contredit (une alerte sous le schéma le signale). Une proposition ne repose
+que sur des valeurs saisies, jamais sur une autre proposition : une heure déduite de la DTP ne
+« confirme » donc pas cette DTP. La **DTR estimée** d'après la profondeur et les paliers n'est qu'une
+estimation, elle ne sert pas à déduire une heure.
 
 ### Le modèle de remontée
 
@@ -214,8 +238,11 @@ La page 4 suit l'ordre de la prise en charge.
    **sondage vésical** (à demeure, évacuateur, ou non) avec le **volume initial évacué**.
 3. **Examens complémentaires** : chaque examen réalisé (OUI) ouvre son **résultat**. ECG ; radiographie
    thoracique ; scanner thoracique (le plus fréquent) ou cérébral ; IRM cérébrale (la plus fréquente en
-   consultation initiale) ou médullaire ; échographie cardiaque / recherche de FOP ; doppler
-   transcrânien ; échographie pleuro-pulmonaire ; autres examens ; examens demandés.
+   consultation initiale) ou médullaire ; échographie cardiaque ; doppler transcrânien ;
+   échographie pleuro-pulmonaire ; autres examens ; examens demandés.
+   - **Échographie cardiaque** : la recherche de shunt droite-gauche se fait au doppler transcrânien.
+     Quand l'échographie est faite pour chercher un FOP, cochez **Recherche de FOP**, qui apparaît dès
+     que l'examen est coché OUI : la mention passe dans la synthèse et sur le PDF.
    - **ECG** : fréquence cardiaque (bpm) et QTc (ms) ; le compte rendu est rédigé tout seul
      (« RSR à xx bpm, d'axe non dévié, sans trouble de la conduction ni de la repolarisation. QTc à xx
      ms. »), modifiable, et repris dans la synthèse. Il n'est rédigé qu'une fois la fréquence ou le QTc
@@ -229,7 +256,9 @@ La page 4 suit l'ordre de la prise en charge.
    rangées (supérieure, inférieure) de trois champs, de l'extérieur vers la ligne médiane :
    **latéral, médian, médial**. On choisit une cotation (**A**, **B**, **B++**, **C**, **PNO**) puis on
    clique les champs ; un second clic avec la même cotation efface le champ. *Champs vides → A* cote A
-   les champs restés vides, *Gomme* efface. Un champ non coté est non examiné. La synthèse et le PDF
+   les champs restés vides, *Gomme* efface, et **Appliquer … aux 24 champs** applique d'un coup la
+   cotation choisie à tous les champs, ceux déjà cotés compris (avec la gomme, le bouton efface les 24
+   champs). Un champ non coté est non examiné. La synthèse et le PDF
    (page 2) donnent le nombre de zones et la liste des anomalies ; un pneumothorax est signalé en rouge.
 5. **Traitements prescrits** : oxygène normobare, avec sa modalité (**masque à haute concentration**,
    15 L/min proposés, ou **VNI** avec PEP, aide inspiratoire, fréquence respiratoire et FiO₂),
@@ -266,8 +295,8 @@ nouveau est un **nouvel examen**.
   « nocif » reprennent la typologie usuelle, la page de Santé publique France ne les détaillant pas.
 - **Ordonnance** : dans l'encart « Antécédents et traitements », le bouton **Photo de l'ordonnance**
   joint une photographie à la fiche. C'est une pièce jointe comme les autres (titre « Ordonnance
-  médicamenteuse », même limite de douze photos), visible en miniature dans l'encart, mentionnée dans la
-  synthèse et imprimée avec les pièces jointes.
+  médicamenteuse », même limite de douze photos), visible en miniature dans l'encart et imprimée avec
+  les pièces jointes. La synthèse ne la mentionne pas.
 
 ---
 
@@ -326,7 +355,7 @@ est encadrée, et un clic sur une autre modalité tranche à votre place :
   rapide (seulement vers la secousse rapide 1, aussi regard centré 2, aussi vers la secousse
   lente 3) ; « non » à la question *Nystagmus* donne 0 ;
 - **instabilité** : verticalisation impossible 3, équilibre perdu yeux ouverts 2, perdu yeux fermés
-  seulement 1, conservé dans les deux cas 0 ;
+  seulement 1 (un **Romberg positif** compte comme tel), conservé dans les deux cas 0 ;
 - **symptômes cochléaires** : troubles de l'audition ou acouphènes ;
 - **vertige** : « non » à la question *Vertiges* donne 0 ; « oui » ne dit pas s'il est permanent,
   vous tranchez ;
@@ -336,6 +365,35 @@ Le total n'est calculé que si les cinq items ont une valeur. La grille ne défi
 gravité, l'outil n'en affiche donc pas. Le total (`vest_total`) et les cinq items (valeur
 retenue, cotée ou déduite) sont des colonnes du CSV. L'éditeur de grille des premiers essais est
 retiré : la grille s'écrit dans la constante `VEST`, en tête du script de `index.html`.
+
+---
+
+## La synthèse rédigée
+
+Elle reste visible sous la fiche, quelle que soit la page, et s'imprime en page 6 du PDF. Elle suit le
+plan d'une observation d'entrée : histoire de l'accident, antécédents, examen clinique, examens
+paracliniques, diagnostic retenu, conduite à tenir. Chaque phrase vient d'un champ renseigné ; une
+négation (« pas de déficit ») n'est écrite que si l'item a été examiné. Le bouton **Copier** la met dans
+le presse-papiers, titres en gras pour un traitement de texte.
+
+Ce texte est destiné à un compte rendu d'hospitalisation : il est **allégé et sans signe spécial**.
+
+- **Aucun exposant, indice, barre verticale, étoile ni flèche.** SpO2, cmH2O et FiO2 s'écrivent en
+  lettres, un niveau de plongée sans ses étoiles (« N2 »), les listes de zones se séparent par des
+  points-virgules, les durées s'écrivent en « min », la température en degrés. Un filtre final
+  (`TXT.clean`) réécrit aussi ceux qui viendraient d'un texte libre : flèche en « puis », degré,
+  signes de comparaison, tirets longs.
+- **Scores** : MEDSUBHYP et score vestibulaire par leur **seule valeur** (« Score MEDSUBHYP : 9 », avec
+  le moment de la cotation quand le dossier en compte plusieurs), sans maximum, sans seuil de gravité,
+  sans le détail des items.
+- **ASIA** : les totaux, puis les niveaux quand l'examen n'est pas normal. La **préservation sacrée
+  n'est écrite que si elle est absente** ; sa présence est la règle et ne se dit pas.
+- **Omis** : la voie veineuse, le numéro de dossier et le rang de l'examen, le club, la photo de
+  l'ordonnance et la liste des pièces jointes.
+- Les épreuves vestibulaires anormales rejoignent les signes vestibulo-cochléaires, avec leur côté ;
+  toutes normales, la synthèse écrit « épreuves vestibulaires normales ».
+
+Chacun de ces choix est une ligne de la fonction `narrativeBlocks`, en fin de script.
 
 ---
 
@@ -399,6 +457,22 @@ Un champ dont la question commandante change de réponse est effacé automatique
 si vous repassez « Nystagmus » de OUI à NON, le côté, la position du regard et le sens du nystagmus
 disparaissent du fichier de données. Aucune valeur fantôme ne subsiste.
 
+### Coordination et examen vestibulaire
+
+L'encart de la page 3 réunit la coordination (verticalisation, équilibre statique, marche,
+talon-genou, doigt-nez) et quatre **épreuves vestibulaires** :
+
+| Épreuve | Réponses | Côté demandé si anormale |
+|---|---|---|
+| **Romberg** (debout, pieds joints, yeux fermés) | négatif, positif | côté de la chute, ou chute non latéralisée |
+| **Fukuda** (piétinement sur place, yeux fermés, bras tendus) | normale, anormale | côté de la rotation ou de la déviation |
+| **Marche en étoile** (marche avant puis arrière, yeux fermés) | normale, anormale | côté de la déviation |
+| **Marche funambule** (sur une ligne, talon contre pointe) | normale, anormale | côté de la déviation |
+
+Une épreuve non réalisée reste vide. *Tout renseigner comme NORMAL* les cote normales. Un Romberg
+positif cote l'instabilité du score vestibulaire « présente debout yeux fermés ». Dans la synthèse, les
+épreuves anormales sont écrites avec les signes vestibulo-cochléaires.
+
 ### Les schémas corporels
 
 Deux schémas restent en topographie libre, là où le métamère n'apporte rien :
@@ -458,6 +532,11 @@ ISNCSCI, de C2 à S4-5, côté droit et côté gauche. Chaque case propose quatr
 Hypo- et hyperesthésie valent toutes deux 1 point dans la norme ISNCSCI. L'outil garde la
 distinction pour le compte rendu et n'en fait qu'un seul point pour le score. La pallesthésie
 n'entre pas dans le score ASIA.
+
+Dans l'en-tête de l'encart *Sensibilités*, à côté de *tout effacer*, le bouton **✓ 3 sensibilités
+normales** cote d'un clic le **tact léger** et la **piqûre** normaux sur les 28 métamères des deux
+côtés, la **pallesthésie** normale sur tous les reliefs, et répond OUI à *Examen des sensibilités
+réalisé*. Il remplace les cotations déjà saisies.
 
 Deux façons de remplir, au choix, sur le même écran.
 
@@ -672,7 +751,7 @@ d = pd.read_csv("donnees_neuro.csv", sep=";", encoding="utf-8-sig")
 
 - Séparateur par défaut : point-virgule. Modifiable dans **Exporter** (virgule pour R et Python).
 - **Cellule vide = valeur manquante (NA).** Aucune valeur par défaut n'est inventée.
-- `dictionnaire_variables.csv` donne le libellé et le codage des 874 colonnes.
+- `dictionnaire_variables.csv` donne le libellé et le codage des 883 colonnes.
 
 ### Codages principaux
 
@@ -711,7 +790,8 @@ d = pd.read_csv("donnees_neuro.csv", sep=";", encoding="utf-8-sig")
 | Durées du profil | `pl_dt` (DT, calculée), `pl_dtr` (DTR) et `pl_duree_tot` (DTP), en minutes, calculées d'après les heures ou saisies ; `pl_dtr_src` : `1` d'après les heures, `2` saisie, `3` estimée, `4` déduite de DTP − DT ; `pl_dtr_att_min`, `pl_dtr_att_max` : DTR attendue (modèle de remontée) ; `pl_vit_remontee` : vitesse de remontée déduite (m/min) |
 | Procédure de ré-immersion | `pl_reimm_type` : `1 = remontée rapide (RR)`, `2 = remontée non conforme` ; `pl_reimm_faite` : `1 = réalisée`, `0 = non réalisée` ; `pl_rr_emersion` (`1`/`0`), `pl_rr_delai`, `pl_rr_prof`, `pl_rr_duree`, `pl_rr_pal6`, `pl_rr_pal3` (minutes ou mètres) ; `pl_reimm_txt` : description |
 | Alcool sevré | `tox_alcool_sevre` (case), `alcool_sevre_date`, `alcool_sevre_stade` : `1` à `4`, comme `alcool_stade` |
-| Examens complémentaires | `im_rp`, `im_tdm_thor`, `im_tdm_cer`, `im_irm_cer`, `im_irm_med`, `im_eto`, `im_dtc`, `im_echopp` : `1 = OUI`, `0 = NON` ; résultat de chacun dans `<examen>_res` (texte) |
+| Examens complémentaires | `im_rp`, `im_tdm_thor`, `im_tdm_cer`, `im_irm_cer`, `im_irm_med`, `im_eto`, `im_dtc`, `im_echopp` : `1 = OUI`, `0 = NON` ; résultat de chacun dans `<examen>_res` (texte) ; `im_eto_fop` : case *recherche de FOP* de l'échographie cardiaque (`1` = cochée, vide sinon) |
+| Épreuves vestibulaires | `romberg` : `0 = négatif`, `1 = positif` ; `fukuda`, `etoile` (marche en étoile), `funambule` : `0 = normale`, `1 = anormale` ; côtés : `romberg_cote` (`1 = D`, `2 = G`, `3 = non latéralisée`), `fukuda_cote`, `etoile_cote`, `funambule_cote` (`1 = D`, `2 = G`) |
 | Doppler transcrânien | `dtc_repos` (sans sensibilisation), `dtc_sensib` (après sensibilisation allongée), `dtc_flack` (pendant un test de Flack) : `0 = absence de shunt D-G`, `1 = shunt de bas grade`, `2 = shunt de haut grade` ; `dtc_txt` : commentaire |
 | Oxygène prescrit | `rx_o2_mode` : `1 = masque à haute concentration`, `2 = VNI` ; `rx_o2_debit` (L/min) ; `rx_vni_pep`, `rx_vni_ai` (cmH₂O), `rx_vni_fr` (/min), `rx_vni_fio2` (%) |
 | Diagnostic retenu | `dg_liste` (une colonne binaire par diagnostic : `dg_liste_add`, `dg_liste_opi`, `dg_liste_baro`, `dg_liste_bioch`, `dg_liste_noyade`) ; types : `dg_add_types_*`, `dg_baro_types_*`, `dg_bioch_types_*` ; `dg_add_grave` (`1` = sévère) ; `dg_principal` : `add`, `opi`, `baro`, `bioch` ou `noyade` ; `dg_txt` : précisions |
@@ -738,6 +818,62 @@ d = pd.read_csv("donnees_neuro.csv", sep=";", encoding="utf-8-sig")
 
 Pour les analyses courantes, les colonnes de synthèse suffisent. Les colonnes de détail servent
 aux analyses topographiques fines.
+
+---
+
+## Changements de la version 7.3.1
+
+Cette version applique les modifications du 3 octobre 2026. Aucune colonne n'est retirée ni recodée :
+**neuf colonnes s'ajoutent** (874 → 883) et les fiches de la 7.3.0 s'ouvrent telles quelles.
+
+### Saisie
+
+- **Coordination et examen vestibulaire** : l'encart « Coordination » prend ce nom et reçoit quatre
+  épreuves, Romberg, Fukuda, marche en étoile et marche funambule (voir *Remplir une fiche*). Un
+  Romberg positif alimente l'item « instabilité » du score vestibulaire.
+- **Sensibilités** : le bouton **✓ 3 sensibilités normales**, à côté de *tout effacer* dans l'en-tête de
+  l'encart, cote tact léger, piqûre et pallesthésie normaux en un clic.
+- **Échographie cardiaque** : l'examen perd la mention « recherche de FOP », la recherche de shunt
+  droite-gauche se faisant au doppler transcrânien. Une case **Recherche de FOP** apparaît quand
+  l'examen est coché OUI, pour les échographies faites dans cette indication.
+- **Échographie pleuro-pulmonaire** : le bouton **Appliquer … aux 24 champs** applique la cotation
+  choisie à tous les champs en une fois.
+- **Profil de plongée** : DS, DF et HS se complètent seules quand les autres heures et durées
+  suffisent (voir *Les heures qui manquent se complètent seules*). La saisie à la main n'est jamais
+  remplacée.
+- **Heure des 1ers symptômes** : déplacée dans l'encart d'accueil (page 1), juste avant l'heure des
+  1ers soins sur place. Le délai entre la sortie de l'eau et les 1ers symptômes reste avec le profil.
+
+### Synthèse rédigée
+
+- Plus aucun exposant, indice, barre verticale, étoile ni flèche (voir *La synthèse rédigée*).
+- Texte allégé : scores MEDSUBHYP et vestibulaire réduits à leur valeur, préservation sacrée de l'ASIA
+  écrite seulement si elle est absente, voie veineuse, numéro de dossier, rang de l'examen, club,
+  ordonnance et pièces jointes omis.
+- Les heures s'écrivent « 10 h 30 », les durées « 25 min », la température en degrés.
+
+### Fichier de données
+
+- **874 → 883 colonnes** : 9 ajoutées, aucune retirée ni recodée.
+- **Ajoutées** : `romberg`, `romberg_cote`, `fukuda`, `fukuda_cote`, `etoile`, `etoile_cote`,
+  `funambule`, `funambule_cote`, `im_eto_fop`.
+- Le **dictionnaire** précise les libellés ambigus : « Radiographie thoracique — résultat » au lieu de
+  « Résultat », « Marche en étoile — côté de la déviation » au lieu de « Côté de la déviation ».
+- `pl_h_symp` change de place dans le CSV, avec son encart (accueil, page 1) ; son nom et son codage ne
+  changent pas.
+
+### À valider de votre côté
+
+Ces points viennent d'une interprétation de vos notes.
+
+- **Les quatre épreuves** : formulation des réponses (Romberg négatif ou positif, les trois autres
+  normales ou anormales), côté demandé, descriptions de la technique. Elles se cotent sans condition de
+  verticalisation ni de marche : une épreuve non réalisée reste vide.
+- **Romberg et instabilité** : un Romberg positif cote l'instabilité « présente debout yeux fermés »
+  du score vestibulaire ; vous pouvez trancher à la main.
+- **Éléments retirés de la synthèse** : chacun est une ligne de `narrativeBlocks`, à rétablir si vous les
+  voulez.
+- **Heures déduites** : relations du tableau ci-dessus ; la DTR estimée n'en fait pas partie.
 
 ---
 
@@ -838,6 +974,9 @@ du script de `index.html`.
 
 ## Historique
 
+- **7.3.1** : coordination et examen vestibulaire, sensibilités normales en un clic, échographie
+  cardiaque et FOP, échographie pleuro-pulmonaire en un clic, profil complété automatiquement,
+  synthèse allégée et sans signe spécial.
 - **7.3.0** : nettoyage, nouvelle base locale, profil et durées, procédure de ré-immersion, page 4
   réorganisée, diagnostic retenu.
 - **7.2** : alerte et évacuation, le plongeur, la plongée accidentelle (profil, paliers), synthèse
