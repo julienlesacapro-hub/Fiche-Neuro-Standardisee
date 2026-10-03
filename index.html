@@ -47,6 +47,9 @@ button,input,select,textarea{font-family:inherit;font-size:13px;color:inherit}
 #dbstate b{color:#eaf1fb}
 .dot{width:8px;height:8px;border-radius:50%;background:#c0392b;display:inline-block}
 .dot.on{background:#27ae60}
+#folderbanner{display:none}
+#folderbanner.on{display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:var(--warn-l);
+  border:1px solid #e3bd9a;border-radius:6px;padding:7px 12px;margin:0 0 10px;font-size:12.5px}
 
 /* ---------- structure ---------- */
 #wrap{display:flex;gap:0;align-items:flex-start;min-width:0;max-width:100%}
@@ -634,7 +637,7 @@ svg.echo rect.z:hover{stroke-width:2.6;filter:brightness(.96)}
 </head>
 <body>
 <div id="topbar">
-  <span class="ttl" title="Accident de plongée — version 7.3.1">ADP <small style="font-weight:400;opacity:.65">7.3.1</small></span>
+  <span class="ttl" title="Accident de plongée — version 7.3.2">ADP <small style="font-weight:400;opacity:.65">7.3.2</small></span>
   <button class="tb nophone" onclick="toggleSide()" title="Afficher / masquer la liste des fiches">&#9776;</button>
   <span class="sep"></span>
   <button class="tb pri" onclick="newFiche()">+<span class="lbl2"> Nouvelle</span> fiche</button>
@@ -644,7 +647,7 @@ svg.echo rect.z:hover{stroke-width:2.6;filter:brightness(.96)}
   <button class="tb pri" onclick="doPrint()">&#128424;<span class="lbl2"> PDF / Imprimer</span></button>
   <span class="sep"></span>
   <span id="tbmore">
-    <button class="tb" onclick="connectFile()" title="Choisir le fichier CSV unique qui s'incrémente sur le disque">&#128193; Fichier de données</button>
+    <button class="tb" onclick="openFolders()" title="Choisir le dossier où chaque fiche est écrite en JSON à l'enregistrement, et relu à l'ouverture pour la recherche">&#128193; Dossier de données</button>
     <button class="tb" onclick="openExport()">&#11015; Exporter</button>
     <button class="tb" onclick="openImport()">&#11014; Importer / Fusionner</button>
     <button class="tb" onclick="openScan()" title="Douchette code-barres et pseudonymisation">&#9906; Douchette</button>
@@ -665,6 +668,7 @@ svg.echo rect.z:hover{stroke-width:2.6;filter:brightness(.96)}
     <div id="list"></div>
   </div>
   <div id="main">
+    <div id="folderbanner"></div>
     <div id="form"></div>
   </div>
 </div>
@@ -3997,7 +4001,7 @@ function openSubjectSearch(pre){
   modalHTML('<h3>Rechercher un sujet</h3>'+
     '<p style="margin:0 0 8px;color:var(--ink2);font-size:12px">'+
     'Numéro de dossier, numéro d’accident de plongée, nom, prénom ou date de naissance. La recherche porte sur les fiches '+
-    'présentes dans la base locale de ce poste.</p>'+
+    'de la base locale de ce poste, dont celles lues dans le dossier de données à l’ouverture.</p>'+
     '<input id="subjq" placeholder="Ex. MARTIN, Claude, 12/04/1988, DEMO-2026-001, accident n° 42" '+
     'style="width:100%;padding:10px" oninput="renderSubjRes()" onkeydown="if(event.key===\'Enter\')renderSubjRes()" '+
     'value="'+esc(q.trim())+'">'+
@@ -5886,8 +5890,12 @@ function narrativeBlocks(){
   if(has('mict')) mi.push(d.mict===1 ? (d.mict_type===3 ? 'miction par regorgement ou rétention' : d.mict_type===2 ? 'miction spontanée avec effort' : 'miction spontanée') : 'pas de miction depuis l’accident');
   if(d.mict_residu_post!=null) mi.push(d.mict_residu_post>100 ? 'résidu post-mictionnel à '+d.mict_residu_post+' mL' : d.mict_residu_post===0 ? 'pas de résidu post-mictionnel' : 'résidu post-mictionnel non significatif ('+d.mict_residu_post+' mL)');
   if(d.mict_residu_pre!=null) mi.push('résidu pré-mictionnel de '+d.mict_residu_pre+' mL');
-  if(has('vac') || has('dap')) mi.push('contraction anale volontaire '+(d.vac===1?'présente':d.vac===0?'absente':'non testée')+
-                                       ', pression anale profonde '+(d.dap===1?'perçue':d.dap===0?'non perçue':'non testée'));
+  /* l'examen anal ne s'écrit que s'il est anormal : contraction volontaire absente, pression profonde non perçue.
+     Normal ou non testé, il ne figure pas dans le texte. */
+  const anal = [];
+  if(d.vac===0) anal.push('contraction anale volontaire absente');
+  if(d.dap===0) anal.push('pression anale profonde non perçue');
+  if(anal.length) mi.push(anal.join(', '));
   if(d.mict===0 || d.mict_type===3 || d.mict_residu_post>100 || d.vac===0 || d.dap===0) ps.push(['troubles sphinctériens', 'des troubles sphinctériens']);
 
   /* l'examen s'écrit « A l'examen : pas de …, GCS 15, … En revanche, il existe … » */
@@ -6671,7 +6679,7 @@ function doPrint(){
 /* =====================================================================
    COLONNES DU FICHIER STATISTIQUE + DICTIONNAIRE
    ===================================================================== */
-const SET = {pii:false, sep:';', poste:'', wedge:true, scanRe:'', hash:false, hashLen:12, salt:''};
+const SET = {pii:false, sep:';', poste:'', wedge:true, scanRe:'', hash:false, hashLen:12, salt:'', searchSame:true};
 
 function codesOf(f){
   if(f.t==='choice' || f.t==='select')
@@ -7020,6 +7028,21 @@ const tx=(st,mode)=>idb.transaction(st,mode).objectStore(st);
 function idbAll(){ return new Promise(r=>{ const q=tx('fiches','readonly').getAll(); q.onsuccess=()=>r(q.result||[]); q.onerror=()=>r([]); }); }
 function idbPut(o){ return new Promise(r=>{ const q=tx('fiches','readwrite').put(o); q.onsuccess=()=>r(1); q.onerror=()=>r(0); }); }
 function idbDel(id){ return new Promise(r=>{ const q=tx('fiches','readwrite').delete(id); q.onsuccess=()=>r(1); q.onerror=()=>r(0); }); }
+/* Écrit la fiche si elle est absente de la base ou plus récente que celle qui s'y trouve, en une seule transaction :
+   une fiche enregistrée pendant la lecture d'un dossier ne peut pas être écrasée par une version plus ancienne.
+   Résultat : add | upd | same | err. */
+function idbMerge(r){
+  return new Promise(res=>{
+    let out = 'same';
+    const t = idb.transaction('fiches','readwrite'), s = t.objectStore('fiches'), g = s.get(r.id);
+    g.onsuccess = ()=>{
+      const cur = g.result;
+      if(!cur){ s.put(r); out = 'add'; }
+      else if((r.updated||'') > (cur.updated||'')){ s.put(r); out = 'upd'; }
+    };
+    t.oncomplete = ()=>res(out); t.onerror = ()=>res('err'); t.onabort = ()=>res('err');
+  });
+}
 function metaGet(k){ return new Promise(r=>{ const q=tx('meta','readonly').get(k); q.onsuccess=()=>r(q.result?q.result.v:null); q.onerror=()=>r(null); }); }
 function metaSet(k,v){ return new Promise(r=>{ const q=tx('meta','readwrite').put({k:k,v:v}); q.onsuccess=()=>r(1); q.onerror=()=>r(0); }); }
 
@@ -7046,56 +7069,499 @@ function sortedDB(){
 }
 
 /* =====================================================================
-   FICHIER DE DONNEES SUR LE DISQUE (File System Access API)
+   DOSSIER DE DONNÉES SUR LE DISQUE (File System Access API)
+   Un dossier, choisi une seule fois, reçoit à chaque enregistrement :
+     fiches/fiche_<id>.json      la fiche entière, un fichier par fiche ; le nom du fichier ne porte
+                                 aucune donnée du patient
+     donnees_neuro.csv           le fichier statistique, une ligne par fiche
+     dictionnaire_variables.csv  le codage des colonnes
+   À l'ouverture, l'outil relit ce dossier (et le dossier de recherche, s'il est distinct) : les fiches
+   qu'il contient et que ce poste ne connaît pas rejoignent la base locale, ce qui rend la recherche par
+   nom, prénom, naissance ou numéro valable pour toutes les fiches du dossier. Un fichier déjà lu et
+   inchangé n'est pas relu (taille et date de modification mémorisées par dossier).
+   Le navigateur mémorise le dossier choisi : il n'est jamais redemandé. Il peut en revanche exiger une
+   autorisation à chaque session ; un clic suffit (bandeau, ou premier clic dans la page), et le choix
+   « autoriser à chaque visite » de Chrome et d'Edge la rend définitive.
+   Une fiche supprimée sur ce poste n'est jamais effacée du disque : son fichier passe dans
+   fiches/supprimees. La suppression est mémorisée (TOMB) pour qu'une relecture ne la ressuscite pas.
    ===================================================================== */
-let DIR=null, DIRSTATE='none';   // none | ok | need | unsupported
+const APP_VERSION = '7.3.2';
 const FSA = typeof window.showDirectoryPicker === 'function';
+/* save : dossier d'enregistrement (lecture et écriture) ; search : dossier de recherche distinct, en lecture
+   seule, facultatif. état : none (rien de choisi) | ok | need (autorisation à redonner) | lost (dossier
+   introuvable) | unsupported (navigateur sans écriture directe) */
+const FD = {save:{h:null, state:FSA?'none':'unsupported'}, search:{h:null, state:FSA?'none':'unsupported'}};
+const DIR_FICHES = 'fiches', DIR_TRASH = 'supprimees';
+let SYNCMAP = {save:{}, search:{}};   // par dossier : chemin -> [taille, date de modification, [[id, updated], ...]]
+let TOMB = {};                        // fiches supprimées sur ce poste : id -> date de suppression (ISO)
+let DIR_ASKED = false;                // le sélecteur de dossier a déjà été proposé à un enregistrement
+let SYNCINFO = '';                    // avancement de la lecture ou de l'écriture, affiché dans la barre
+let LASTSYNC = null;                  // bilan de la dernière lecture
+let FLOCK = Promise.resolve();        // une seule opération sur les dossiers à la fois
+const withFolderLock = fn => { const p = FLOCK.then(fn); FLOCK = p.then(()=>{}, ()=>{}); return p; };
+const roleMode = role => role==='save' ? 'readwrite' : 'read';
+const roleKey  = role => role==='save' ? 'dir' : 'sdir';
+const errTxt   = e => (e && (e.message || e.name)) || String(e);
+const modalOpen = () => $('#mask').classList.contains('on');
 
-async function connectFile(){
-  if(!FSA){ modalHTML('<h3>Ecriture directe non disponible sur ce navigateur</h3>'+
-    '<div class="note">Ce navigateur ne gere pas l\'ecriture directe dans un dossier (API File System Access). '+
+const ficheFile = id => 'fiche_'+String(id).replace(/[^A-Za-z0-9_-]/g,'')+'.json';
+/* Le fichier d'une fiche est une sauvegarde à une seule fiche : la même enveloppe que la sauvegarde JSON
+   complète, donc lisible par « Importer / Fusionner ». Le bloc resume n'est là que pour l'œil. */
+function ficheJSON(rec){
+  const d = rec.d || {};
+  return JSON.stringify({
+    format:'fiche-neuro-v1', app:'ADP '+APP_VERSION, exported:new Date().toISOString(),
+    resume:{dossier:d.dossier||'', nom:d.nom||'', prenom:d.prenom||'', ddn:d.ddn||'', ad_num:d.ad_num||'',
+            date_ex:d.date_ex||'', heure_ex:d.heure_ex||'', fiche_type:d.fiche_type||1},
+    fiches:[rec]}, null, 1);
+}
+/* enveloppes acceptées : une fiche seule, une liste, {fiches:[...]} (sauvegarde, ou fichier d'une fiche) */
+function recsFromJSON(o){
+  if(Array.isArray(o)) return o;
+  if(o && Array.isArray(o.fiches)) return o.fiches;
+  if(o && o.fiche && o.fiche.d) return [o.fiche];
+  if(o && o.d && o.id) return [o];
+  return [];
+}
+const validRec = r => !!(r && typeof r==='object' && typeof r.id==='string' && /^[A-Za-z0-9_.-]{1,80}$/.test(r.id) &&
+                         r.d && typeof r.d==='object' && !Array.isArray(r.d));
+
+async function persistSync(){ try{ await metaSet('syncmap', SYNCMAP); }catch(e){} }
+async function persistTomb(){ try{ await metaSet('deleted', TOMB); }catch(e){} }
+/* tous les réglages dans un seul enregistrement : écrire seulement une partie perdrait les autres */
+async function persistSettings(){
+  await metaSet('settings',{poste:SET.poste, sep:SET.sep, pii:SET.pii, wedge:SET.wedge, scanRe:SET.scanRe,
+                            hash:SET.hash, hashLen:SET.hashLen, searchSame:SET.searchSame});
+}
+
+/* ---------- dossiers : choix, mémorisation, autorisation ---------- */
+function folderFailed(role, e){
+  const n = e && e.name;
+  if(n==='NotAllowedError' || n==='SecurityError') FD[role].state = 'need';
+  else if(n==='NotFoundError') FD[role].state = 'lost';
+  updateBar();
+}
+async function permOf(h, mode){ try{ return await h.queryPermission({mode:mode}); }catch(e){ return 'denied'; } }
+async function restoreDirs(){
+  if(!FSA) return;
+  for(const role of ['save','search']){
+    let h = null; try{ h = await metaGet(roleKey(role)); }catch(e){}
+    if(!h || typeof h.queryPermission!=='function') continue;
+    FD[role].h = h;
+    FD[role].state = (await permOf(h, roleMode(role)))==='granted' ? 'ok' : 'need';
+  }
+}
+function unsupportedModal(){
+  modalHTML('<h3>Écriture directe non disponible sur ce navigateur</h3>'+
+    '<div class="note">Ce navigateur ne gère pas l’écriture directe dans un dossier (API File System Access). '+
     'Elle fonctionne sur <b>Chrome</b> et <b>Edge</b> sur ordinateur.<br><br>'+
-    'Ici, les fiches restent enregistrees dans le navigateur et vous produisez le fichier '+
-    'de donnees avec le bouton <b>Exporter</b>. C\'est le mode prevu pour la saisie sur tablette : '+
-    'vous exportez un CSV partiel, puis vous le fusionnez sur le poste principal.</div>'+
-    '<button class="tb pri" onclick="closeModal();openExport()">Aller a l\'export</button>'); return; }
-  try{
-    DIR = await window.showDirectoryPicker({mode:'readwrite', id:'ficheneuro'});
-    await metaSet('dir',DIR); DIRSTATE='ok';
-    await writeDataFiles(true);
-    toast('Dossier de donnees connecte');
-  }catch(e){ if(e && e.name!=='AbortError') toast('Connexion annulee'); }
+    'Ici, les fiches restent enregistrées dans le navigateur et vous produisez les fichiers avec le bouton '+
+    '<b>Exporter</b>. C’est le mode prévu pour la saisie sur tablette : vous exportez la sauvegarde JSON, '+
+    'puis vous la fusionnez sur le poste principal.</div>'+
+    '<button class="tb pri" onclick="closeModal();openExport()">Aller à l’export</button>');
+}
+/* Le sélecteur ne s'ouvre que sur un geste de l'utilisateur : cette fonction doit donc être appelée avant
+   tout await, depuis un clic ou une touche. */
+async function chooseFolder(role, opt){
+  opt = opt || {};
+  if(!FSA){ unsupportedModal(); return false; }
+  let h;
+  try{ h = await window.showDirectoryPicker({mode:roleMode(role), id:role==='save'?'ficheneuro':'ficherecherche'}); }
+  catch(e){ if(e && e.name!=='AbortError') toast('Choix du dossier impossible : '+errTxt(e)); return false; }
+  FD[role].h = h; FD[role].state = 'ok';
+  try{ await metaSet(roleKey(role), h); }
+  catch(e){ toast('Dossier utilisable pour cette session seulement : ce navigateur ne peut pas le mémoriser'); }
+  SYNCMAP[role] = {}; await persistSync();
+  if(role==='search'){ SET.searchSame = false; await persistSettings(); }
   updateBar();
+  if(!opt.noAfter) await afterConnect({announce:true});
+  return true;
 }
-async function restoreDir(){
-  if(!FSA){ DIRSTATE='unsupported'; return; }
-  const h=await metaGet('dir'); if(!h) return;
-  DIR=h;
-  try{ const p=await h.queryPermission({mode:'readwrite'}); DIRSTATE = p==='granted'?'ok':'need'; }
-  catch(e){ DIRSTATE='need'; }
+/* nouvelle autorisation du dossier déjà choisi : appelée dans le geste de l'utilisateur */
+const REGRANTING = {};
+function regrant(role){
+  role = role==='search' ? 'search' : 'save';
+  if(REGRANTING[role]) return REGRANTING[role];                       // une seule demande à la fois par dossier
+  const o = FD[role];
+  const run = (async()=>{
+    if(!o.h){ const ok = await chooseFolder(role); return ok ? 'granted' : 'denied'; }
+    let p;
+    try{ p = await o.h.requestPermission({mode:roleMode(role)}); }
+    catch(e){ toast('Autorisation impossible : '+errTxt(e)); updateBar(); return 'error'; }
+    if(p!=='granted'){ toast('Accès au dossier refusé'); updateBar(); return 'denied'; }
+    o.state = 'ok'; updateBar();
+    await afterConnect({announce:true});
+    return 'granted';
+  })();
+  REGRANTING[role] = run;
+  const done = () => { delete REGRANTING[role]; };
+  run.then(done, done);
+  return run;
 }
-async function regrant(){
-  if(!DIR) return connectFile();
-  try{ const p=await DIR.requestPermission({mode:'readwrite'});
-    if(p==='granted'){ DIRSTATE='ok'; await writeDataFiles(true); toast('Dossier reconnecte'); }
-  }catch(e){ toast('Acces refuse'); }
-  updateBar();
+const needsGrant = role => !!(FD[role].h && FD[role].state==='need' && (role==='save' || !SET.searchSame));
+function regrantNeeded(){ return regrant(needsGrant('save') ? 'save' : 'search'); }
+/* Au premier clic de la session, le navigateur redemande l'autorisation du dossier : l'utilisateur n'a rien à
+   chercher ni à rechoisir. Le dossier de recherche, s'il est distinct, suit au clic suivant. */
+let RECO_ARMED = false;
+function armReconnect(){
+  if(RECO_ARMED || !(needsGrant('save') || needsGrant('search'))) return;
+  RECO_ARMED = true;
+  const go = ev => {
+    /* pas depuis une fenêtre ouverte, ni depuis le bandeau ou la barre d'état, qui ont leur propre bouton */
+    if(ev && ev.target && ev.target.closest && ev.target.closest('#mask, #folderbanner, #dbstate')) return;
+    /* le navigateur n'accepte la demande que sur un geste valide : à la souris dès l'appui, au toucher au relâchement */
+    if(navigator.userActivation && !navigator.userActivation.isActive) return;
+    document.removeEventListener('pointerdown', go, true); document.removeEventListener('pointerup', go, true); RECO_ARMED = false;
+    const role = needsGrant('save') ? 'save' : 'search';
+    regrant(role).then(r=>{ if(r==='granted' && (needsGrant('save') || needsGrant('search'))) armReconnect(); });
+  };
+  document.addEventListener('pointerdown', go, true);
+  document.addEventListener('pointerup', go, true);
 }
-async function writeFileIn(name,txt){
-  const fh=await DIR.getFileHandle(name,{create:true});
-  const w=await fh.createWritable(); await w.write(new Blob([txt],{type:'text/plain;charset=utf-8'})); await w.close();
+/* À l'enregistrement : dossier prêt, ou à autoriser, ou à choisir pour la première fois. Appelée avant tout
+   await (geste de l'utilisateur). Résultat : {ok, fresh} ; fresh = le dossier vient d'être connecté, il faut
+   donc le lire avant d'y écrire. */
+function ensureFolderOnSave(){
+  const o = FD.save;
+  if(!FSA) return Promise.resolve({ok:false});
+  if(o.state==='ok') return Promise.resolve({ok:true, fresh:false});
+  if(o.state==='need' && o.h){
+    let pr; try{ pr = o.h.requestPermission({mode:'readwrite'}); }catch(e){ return Promise.resolve({ok:false}); }
+    return pr.then(p=>{ if(p==='granted'){ o.state = 'ok'; return {ok:true, fresh:true}; } return {ok:false}; }, ()=>({ok:false}));
+  }
+  if(o.state==='none' && !DIR_ASKED){
+    DIR_ASKED = true; metaSet('dirasked', 1);
+    return chooseFolder('save', {noAfter:true}).then(ok=>({ok:ok, fresh:ok}));
+  }
+  return Promise.resolve({ok:false});
 }
-async function writeDataFiles(silent){
-  if(DIRSTATE!=='ok'||!DIR) return false;
+
+/* ---------- lecture et écriture des fichiers ---------- */
+async function writeIn(dir, name, txt){
+  const fh = await dir.getFileHandle(name, {create:true});
+  const w = await fh.createWritable();
+  await w.write(new Blob([txt], {type:'application/json'})); await w.close();
+  return fh;
+}
+async function writeFicheFile(rec){
+  const dir = await FD.save.h.getDirectoryHandle(DIR_FICHES, {create:true}), name = ficheFile(rec.id);
+  const fh = await writeIn(dir, name, ficheJSON(rec));
+  const f = await fh.getFile();
+  SYNCMAP.save[DIR_FICHES+'/'+name] = [f.size, f.lastModified, [[rec.id, rec.updated||'']]];
+}
+/* le fichier d'une fiche supprimée passe dans fiches/supprimees, avec une copie complète de la fiche */
+async function trashFicheFileLocked(rec){
+  const dir = await FD.save.h.getDirectoryHandle(DIR_FICHES, {create:true}), name = ficheFile(rec.id);
+  let exists = true;
+  try{ await dir.getFileHandle(name); }catch(e){ exists = false; }
+  const td = await dir.getDirectoryHandle(DIR_TRASH, {create:true});
+  await writeIn(td, name, ficheJSON(rec));
+  if(exists) await dir.removeEntry(name);
+  delete SYNCMAP.save[DIR_FICHES+'/'+name];
+}
+/* identifiants des fiches déjà supprimées (par un autre poste, le cas échéant) : id -> date de suppression en ms */
+async function listTrashLocked(){
+  const out = new Map();
   try{
-    const recs=sortedDB();
-    await writeFileIn('donnees_neuro.csv', buildCSV(recs,SET.sep,SET.pii));
-    await writeFileIn('dictionnaire_variables.csv', buildDict(SET.sep,SET.pii));
-    await writeFileIn('sauvegarde_neuro.json', JSON.stringify({format:'fiche-neuro-v1',exported:new Date().toISOString(),fiches:recs},null,1));
-    if(!silent) toast('Fichier de donnees mis a jour');
+    const dir = await FD.save.h.getDirectoryHandle(DIR_FICHES), td = await dir.getDirectoryHandle(DIR_TRASH);
+    for await (const [name, h] of td.entries()){
+      const m = /^fiche_(.+)\.json$/.exec(name);
+      if(m && h.kind==='file'){ const f = await h.getFile(); out.set(m[1], f.lastModified); }
+    }
+  }catch(e){}
+  return out;
+}
+/* les fichiers JSON à la racine (sauvegardes, fiches isolées) et tous ceux du sous-dossier fiches */
+async function listJsonFiles(dir){
+  const out = [];
+  for await (const [name, h] of dir.entries()){
+    if(h.kind==='file' && /^(fiche_|sauvegarde_neuro).*\.json$/i.test(name)) out.push({path:name, h:h});
+    else if(h.kind==='directory' && name===DIR_FICHES){
+      for await (const [n2, h2] of h.entries()) if(h2.kind==='file' && /\.json$/i.test(n2)) out.push({path:DIR_FICHES+'/'+n2, h:h2});
+    }
+  }
+  return out;
+}
+
+/* ---------- fusion des fiches lues dans la base locale ---------- */
+/* Une fiche lue dans un fichier ne doit pas pouvoir injecter du HTML par ses champs d'affichage : les dates et
+   les heures sont contrôlées, les nombres doivent en être. Les textes libres sont échappés à l'affichage. */
+function sanitizeRec(r){
+  const d = r.d;
+  Object.keys(d).forEach(k=>{
+    const f = FIELDS[k]; if(!f) return;
+    const v = d[k];
+    if(f.t==='date' && !(typeof v==='string' && /^\d{4}-\d{2}-\d{2}$/.test(v))) delete d[k];
+    else if(f.t==='time' && !(typeof v==='string' && /^\d{1,2}:\d{2}$/.test(v))) delete d[k];
+    else if((f.t==='num' || f.t==='calc') && typeof v!=='number') delete d[k];
+  });
+  r.created = typeof r.created==='string' ? r.created : '';
+  r.updated = typeof r.updated==='string' ? r.updated : r.created;
+  return r;
+}
+/* Une fiche inconnue est ajoutée ; une fiche connue n'est remplacée que si la version lue est plus récente ;
+   une fiche supprimée ici n'est pas reprise, sauf si elle a été modifiée depuis (force : import manuel). */
+async function mergeOne(r, st, force){
+  sanitizeRec(r);
+  if(!force){ const t = TOMB[r.id]; if(t && (r.updated||'') <= t){ st.ignored++; return 'tomb'; } }
+  const res = await idbMerge(r);
+  if(res==='add') st.add++; else if(res==='upd') st.upd++; else if(res==='same') st.same++; else st.bad++;
+  return res;
+}
+async function scanFolderLocked(role, st){
+  const o = FD[role], map = SYNCMAP[role] || (SYNCMAP[role] = {});
+  let files;
+  try{ files = await listJsonFiles(o.h); }
+  catch(e){ folderFailed(role, e); st.errors.push(role); return; }
+  const seen = {}, trash = [];
+  let i = 0;
+  for(const x of files){
+    seen[x.path] = 1; i++;
+    let f; try{ f = await x.h.getFile(); }catch(e){ st.bad++; continue; }
+    const old = map[x.path];
+    if(old && old[0]===f.size && old[1]===f.lastModified) continue;                  // inchangé depuis la dernière lecture
+    SYNCINFO = 'lecture du dossier : '+i+'/'+files.length; if(i%10===0) updateBar();
+    let recs;
+    try{ recs = recsFromJSON(JSON.parse(await f.text())); }
+    catch(e){ st.bad++; map[x.path] = [f.size, f.lastModified, []]; continue; }
+    const ids = []; let failed = false;
+    for(const r of recs){
+      if(!validRec(r)){ st.bad++; continue; }
+      ids.push([r.id, r.updated||'']);
+      const res = await mergeOne(r, st, false);
+      if(res==='err') failed = true;
+      if(res==='tomb' && role==='save' && x.path.indexOf(DIR_FICHES+'/')===0) trash.push(r);
+    }
+    if(!failed){ map[x.path] = [f.size, f.lastModified, ids]; st.files++; }       // un échec d'écriture fait relire le fichier la fois suivante
+  }
+  Object.keys(map).forEach(p=>{ if(!seen[p]) delete map[p]; });
+  for(const r of trash){ try{ await trashFicheFileLocked(r); }catch(e){} }           // fiche supprimée ici, fichier resté dans le dossier
+}
+/* lit les dossiers prêts (enregistrement, et recherche s'il est distinct) ; null si aucun n'est lisible */
+async function syncLocked(){
+  const roles = ['save','search'].filter(r=>FD[r].state==='ok' && FD[r].h && (r==='save' || !SET.searchSame));
+  if(!roles.length) return null;
+  const st = {files:0, add:0, upd:0, same:0, bad:0, ignored:0, errors:[]};
+  SYNCINFO = 'lecture du dossier…'; updateBar();
+  /* un fichier déjà lu dont une fiche manque à la base locale (données effacées, échec d'écriture) est relu */
+  const have = new Set(DB.map(f=>f.id));
+  Object.keys(SYNCMAP).forEach(role=>Object.keys(SYNCMAP[role]||{}).forEach(p=>{
+    if((SYNCMAP[role][p][2]||[]).some(x=>!have.has(x[0]) && !TOMB[x[0]])) delete SYNCMAP[role][p];
+  }));
+  try{
+    for(const role of roles) await scanFolderLocked(role, st);
+    if(st.add || st.upd){ DB = await idbAll(); await renumberAll(); }
+    await persistSync();
+  }finally{ SYNCINFO = ''; }
+  LASTSYNC = {at:new Date().toISOString(), files:st.files, add:st.add, upd:st.upd, bad:st.bad};
+  return st;
+}
+/* écrit dans le dossier d'enregistrement les fiches qu'il n'a pas, ou qu'il a en version plus ancienne
+   (force : toutes). Une fiche supprimée ailleurs, et non modifiée depuis, n'est pas réécrite. */
+async function exportPendingLocked(force){
+  if(FD.save.state!=='ok' || !FD.save.h) return 0;
+  /* seuls les fichiers du sous-dossier fiches comptent : une fiche qui ne figure que dans une sauvegarde
+     agrégée à la racine reçoit son propre fichier */
+  const fu = new Map();
+  Object.keys(SYNCMAP.save).filter(p=>p.indexOf(DIR_FICHES+'/')===0)
+    .forEach(p=>(SYNCMAP.save[p][2]||[]).forEach(x=>{ if(!fu.has(x[0]) || x[1] > fu.get(x[0])) fu.set(x[0], x[1]); }));
+  const trashed = force ? new Map() : await listTrashLocked();
+  const todo = DB.filter(r=>{
+    if(force) return true;
+    const u = fu.get(r.id);
+    if(u!=null && (r.updated||'') <= u) return false;
+    const t = trashed.get(r.id);
+    if(t!=null && (r.updated||'') <= new Date(t).toISOString()) return false;
     return true;
-  }catch(e){ DIRSTATE='need'; updateBar(); if(!silent) toast('Ecriture impossible : '+e.message); return false; }
+  });
+  let n = 0;
+  try{
+    for(const r of todo){
+      SYNCINFO = 'écriture des fiches : '+(n+1)+'/'+todo.length; if(n%10===0) updateBar();
+      await writeFicheFile(r); n++;
+    }
+  }finally{ SYNCINFO = ''; }
+  return n;
 }
+async function writeDataLocked(silent){
+  if(FD.save.state!=='ok' || !FD.save.h) return false;
+  try{
+    const recs = sortedDB(), dir = FD.save.h;
+    await writeIn(dir, 'donnees_neuro.csv', buildCSV(recs, SET.sep, SET.pii));
+    await writeIn(dir, 'dictionnaire_variables.csv', buildDict(SET.sep, SET.pii));
+    if(!silent) toast('Fichier de données et dictionnaire mis à jour');
+    return true;
+  }catch(e){ folderFailed('save', e); if(!silent) toast('Écriture impossible : '+errTxt(e)); return false; }
+}
+/* le fichier statistique et son dictionnaire (réglages modifiés, fiche supprimée, import) */
+function writeDataFiles(silent){ return withFolderLock(()=>writeDataLocked(silent)); }
+
+/* ---------- enchaînements ---------- */
+function refreshAfterSync(st){
+  if(st && (st.add || st.upd)){
+    /* la fiche ouverte a pu être remplacée par une version plus récente du dossier */
+    if(REC && !DIRTY){ const f = DB.find(x=>x.id===REC.id); if(f && (f.updated||'') > (REC.updated||'')) REC = JSON.parse(JSON.stringify(f)); }
+    if(REC && REC.d && REC.d.dossier) autofillFromDossier();
+    renderList(); renderForm();
+  }
+  updateBar();
+}
+function reportSync(st, nExp, announce){
+  if(!st){ if(announce) toast('Aucun dossier lisible'); return; }
+  const p = [];
+  if(st.add) p.push(st.add+' fiche'+(st.add>1?'s':'')+' ajoutée'+(st.add>1?'s':''));
+  if(st.upd) p.push(st.upd+' mise'+(st.upd>1?'s':'')+' à jour');
+  if(nExp) p.push(nExp+' fiche'+(nExp>1?'s':'')+' écrite'+(nExp>1?'s':'')+' dans le dossier');
+  if(st.bad) p.push(st.bad+' fichier'+(st.bad>1?'s':'')+' illisible'+(st.bad>1?'s':''));
+  if(p.length) toast('Dossier de données : '+p.join(', '));
+  else if(announce) toast('Dossier relu : rien de nouveau');
+}
+/* dossier qui vient d'être connecté ou autorisé, ou relecture demandée : lire, compléter, mettre à jour le CSV */
+function afterConnect(opt){
+  opt = opt || {};
+  return withFolderLock(async()=>{
+    let st = null, n = 0;
+    try{
+      st = await syncLocked();
+      if(FD.save.state==='ok' && FD.save.h){
+        n = await exportPendingLocked(false);
+        if(n || (st && (st.add || st.upd)) || opt.csv) await writeDataLocked(true);
+      }
+      await persistSync();
+    }catch(e){ folderFailed('save', e); }
+    finally{ SYNCINFO = ''; }
+    refreshAfterSync(st);
+    reportSync(st, n, opt.announce);
+    return st;
+  });
+}
+/* après l'enregistrement d'une fiche : son fichier JSON, puis le CSV et le dictionnaire */
+function afterSave(rec, fresh){
+  return withFolderLock(async()=>{
+    if(FD.save.state!=='ok' || !FD.save.h) return false;
+    let st = null;
+    try{
+      if(fresh){ st = await syncLocked(); await exportPendingLocked(false); }         // première connexion : lire avant d'écrire
+      else await writeFicheFile(rec);
+      await writeDataLocked(true);
+      await persistSync();
+    }catch(e){ folderFailed('save', e); return false; }
+    finally{ SYNCINFO = ''; updateBar(); }
+    if(st) refreshAfterSync(st);
+    return true;
+  });
+}
+/* bouton « Réécrire tout le dossier » : relire, réécrire toutes les fiches, le CSV et le dictionnaire */
+function rewriteFolder(){
+  return withFolderLock(async()=>{
+    if(FD.save.state!=='ok' || !FD.save.h){ toast('Dossier d’enregistrement non connecté'); return false; }
+    try{
+      const st = await syncLocked();
+      const n = await exportPendingLocked(true);
+      await writeDataLocked(true); await persistSync();
+      refreshAfterSync(st);
+      toast('Dossier réécrit : '+n+' fiche'+(n>1?'s':'')+', fichier de données et dictionnaire');
+      return true;
+    }catch(e){ folderFailed('save', e); toast('Écriture impossible : '+errTxt(e)); return false; }
+    finally{ SYNCINFO = ''; updateBar(); }
+  });
+}
+/* à l'ouverture : relire le dossier pendant que la fiche s'affiche, ou demander l'autorisation au premier clic */
+async function startupSync(){
+  if(!FSA) return;
+  if(FD.save.state==='ok' || (!SET.searchSame && FD.search.state==='ok')) await afterConnect({});
+  if(needsGrant('save') || needsGrant('search')) armReconnect();
+  updateBar();
+}
+
+/* ---------- affichage : barre d'état, bandeau, fenêtre du dossier ---------- */
+function folderStatusHTML(){
+  const o = FD.save, nm = o.h && o.h.name ? esc(o.h.name) : '';
+  if(!FSA || o.state==='unsupported') return '<span class="dot"></span> export manuel (navigateur sans écriture directe)';
+  if(o.state==='ok') return '<span class="dot on"></span> dossier « '+nm+' »'+(SYNCINFO ? ' · '+esc(SYNCINFO) : '');
+  if(o.state==='need') return '<span class="dot"></span> <a href="#" style="color:#f0b429" onclick="regrantSave();return false">autoriser le dossier « '+nm+' »</a>';
+  if(o.state==='lost') return '<span class="dot"></span> <a href="#" style="color:#f0b429" onclick="openFolders();return false">dossier introuvable</a>';
+  return '<span class="dot"></span> <a href="#" style="color:#f0b429" onclick="openFolders();return false">choisir un dossier de données</a>';
+}
+let BANNER_HTML = null;
+function renderFolderBanner(){
+  const el = $('#folderbanner'); if(!el) return;
+  let h = '';
+  const need = ['save','search'].filter(needsGrant);
+  if(need.length){
+    h = '<span>&#128193; Le dossier de données « '+need.map(r=>esc(FD[r].h.name)).join(' », « ')+' » doit être autorisé pour cette session. '+
+        'Un clic suffit : il n’est pas à rechoisir.</span>'+
+        '<button class="tb pri" onclick="regrantNeeded()">Autoriser</button>';
+  } else if(FSA && FD.save.state==='lost'){
+    h = '<span>&#128193; Le dossier de données « '+esc(FD.save.h ? FD.save.h.name : '')+' » est introuvable (déplacé, renommé ou disque absent).</span>'+
+        '<button class="tb pri" onclick="openFolders()">Choisir un dossier</button>';
+  }
+  if(h !== BANNER_HTML){ BANNER_HTML = h; el.innerHTML = h; el.className = h ? 'on' : ''; }
+}
+function folderLine(role){
+  const o = FD[role];
+  if(!o.h) return '<span style="color:var(--ink2)">aucun dossier choisi</span>';
+  const st = o.state==='ok' ? '<b style="color:var(--ok)">connecté</b>'
+           : o.state==='need' ? '<b style="color:var(--warn)">à autoriser pour cette session</b>'
+           : o.state==='lost' ? '<b style="color:var(--bad)">introuvable</b>' : '';
+  return '« '+esc(o.h.name)+' » — '+st;
+}
+function openFolders(){
+  if(!FSA){ unsupportedModal(); return; }
+  const same = SET.searchSame;
+  const last = LASTSYNC
+    ? 'Dernière lecture, à '+new Date(LASTSYNC.at).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})+' : '+
+      LASTSYNC.files+' fichier'+(LASTSYNC.files>1?'s':'')+' lu'+(LASTSYNC.files>1?'s':'')+', '+
+      LASTSYNC.add+' fiche'+(LASTSYNC.add>1?'s':'')+' ajoutée'+(LASTSYNC.add>1?'s':'')+', '+
+      LASTSYNC.upd+' mise'+(LASTSYNC.upd>1?'s':'')+' à jour.'
+    : 'Aucune lecture du dossier depuis l’ouverture.';
+  modalHTML('<h3>Dossier de données</h3>'+
+    '<div class="note">Choisissez un dossier <b>une seule fois</b>. À chaque enregistrement, l’outil y écrit la fiche au format '+
+    'JSON (sous-dossier <code>fiches</code>), puis <code>donnees_neuro.csv</code> et son dictionnaire. À chaque ouverture, il '+
+    'relit ce dossier : les fiches qu’il contient et que ce poste ne connaît pas encore rejoignent la recherche par nom, '+
+    'prénom, date de naissance, numéro de dossier ou d’accident.</div>'+
+    '<h4 style="margin:14px 0 6px">1. Dossier d’enregistrement</h4>'+
+    '<p style="margin:0 0 8px">'+folderLine('save')+'</p>'+
+    '<div style="display:flex;gap:8px;flex-wrap:wrap">'+
+      '<button class="tb pri" onclick="chooseSave()">'+(FD.save.h ? 'Changer de dossier…' : 'Choisir le dossier…')+'</button>'+
+      (needsGrant('save') ? '<button class="tb gd" onclick="regrantSave()">Autoriser à nouveau</button>' : '')+
+      (FD.save.h ? '<button class="tb" onclick="forgetSave()">Ne plus l’utiliser</button>' : '')+
+    '</div>'+
+    '<p style="margin:8px 0 0;font-size:11.5px;color:var(--ink2)">Choisissez un sous-dossier dédié (par exemple « ADP-fiches »), '+
+    'pas Documents ni Téléchargements : le navigateur refuse les dossiers système.</p>'+
+    '<h4 style="margin:16px 0 6px">2. Dossier de recherche, lu à l’ouverture</h4>'+
+    '<label style="display:block;margin-bottom:4px"><input type="radio" name="sdir"'+(same?' checked':'')+' onclick="setSearchSame(true)"> '+
+      'le même que le dossier d’enregistrement <span style="color:var(--ink2)">(par défaut)</span></label>'+
+    '<label style="display:block"><input type="radio" name="sdir"'+(!same?' checked':'')+' onclick="setSearchSame(false)"> un autre dossier</label>'+
+    (!same ? '<p style="margin:8px 0">'+folderLine('search')+'</p>'+
+      '<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="tb pri" onclick="chooseSearch()">'+(FD.search.h ? 'Changer…' : 'Choisir…')+'</button>'+
+      (needsGrant('search') ? '<button class="tb gd" onclick="regrantSearch()">Autoriser à nouveau</button>' : '')+
+      (FD.search.h ? '<button class="tb" onclick="forgetSearch()">Ne plus l’utiliser</button>' : '')+'</div>'+
+      '<p style="margin:8px 0 0;font-size:11.5px;color:var(--ink2)">Ce dossier n’est que lu : l’outil n’y écrit jamais. Le dossier '+
+      'd’enregistrement est lu aussi.</p>' : '')+
+    '<p style="margin:14px 0 8px;color:var(--ink2);font-size:12px">'+esc(last)+'</p>'+
+    '<div style="display:flex;gap:8px;flex-wrap:wrap">'+
+      '<button class="tb gd" onclick="syncNow()">Relire le dossier maintenant</button>'+
+      '<button class="tb" onclick="rewriteFolder()">Réécrire tout le dossier</button></div>'+
+    '<div class="note" style="margin-top:14px;background:#fbeee4;border-color:#e3bd9a"><b>Données de santé.</b> Les fichiers JSON contiennent '+
+    'la fiche entière, identité comprise : c’est ce qui permet de retrouver un sujet par son nom. Choisissez un dossier protégé '+
+    '(disque chiffré, accès restreint). Si ce dossier est synchronisé avec un service en ligne, les fiches quittent ce poste : '+
+    'vérifiez que cela est compatible avec l’hébergement de données de santé qui vous est imposé.</div>');
+}
+async function chooseSave(){ await chooseFolder('save'); if(modalOpen()) openFolders(); }
+async function chooseSearch(){ await chooseFolder('search'); if(modalOpen()) openFolders(); }
+async function regrantSave(){ await regrant('save'); if(modalOpen()) openFolders(); }
+async function regrantSearch(){ await regrant('search'); if(modalOpen()) openFolders(); }
+async function setSearchSame(v){ SET.searchSame = !!v; await persistSettings(); updateBar(); openFolders(); }
+async function syncNow(){ await afterConnect({announce:true}); if(modalOpen()) openFolders(); }
+async function forgetFolder(role){
+  FD[role].h = null; FD[role].state = FSA ? 'none' : 'unsupported'; SYNCMAP[role] = {};
+  try{ await metaSet(roleKey(role), null); }catch(e){}
+  await persistSync();
+  if(role==='search'){ SET.searchSame = true; await persistSettings(); }
+  updateBar(); if(modalOpen()) openFolders();
+}
+const forgetSave = () => forgetFolder('save'), forgetSearch = () => forgetFolder('search');
 
 /* =====================================================================
    ENREGISTREMENT / NAVIGATION
@@ -7104,6 +7570,9 @@ async function saveFiche(){
   computeAll();
   if(!REC.d.dossier){ toast('Le numero de dossier est obligatoire'); const i=$('#i_dossier'); if(i){i.classList.add('req');i.focus();} return; }
   if(!REC.d.date_ex||!REC.d.heure_ex){ toast("Date et heure de l'examen obligatoires"); return; }
+  /* Dossier de données : prêt, à autoriser, ou à choisir pour la première fois. Lancé avant tout await, car
+     le navigateur n'ouvre le sélecteur ou la demande d'autorisation que sur un geste de l'utilisateur. */
+  const folder = ensureFolderOnSave();
   REC.updated=new Date().toISOString();
   /* les saisies de dates en cours de frappe sont un état d'affichage, pas une donnée */
   const snap = JSON.parse(JSON.stringify(REC));
@@ -7114,9 +7583,22 @@ async function saveFiche(){
   const me = DB.find(x=>x.id===REC.id); if(me) REC.d.num_ex = me.d.num_ex;
   DIRTY=false;
   await metaSet('draft',null);
-  const w = await writeDataFiles(true);
+  renderList(); updateBar();          // la fiche est enregistrée dans le navigateur, même si le sélecteur de dossier est encore ouvert
+  /* le JSON de la fiche, puis le CSV et le dictionnaire, dans le dossier de données */
+  const fo = await folder;
+  const w = (fo && fo.ok) ? await afterSave(me || snap, !!fo.fresh) : false;
   renderList(); renderForm(); updateBar();
-  toast('Fiche enregistree'+(w?' - fichier de donnees mis a jour':''));
+  toast('Fiche enregistrée'+saveNote(w));
+}
+function saveNote(w){
+  if(w) return ' — JSON écrit dans le dossier « '+(FD.save.h ? FD.save.h.name : '')+' »';
+  if(!FSA) return '';
+  switch(FD.save.state){
+    case 'ok':   return ' — écriture dans le dossier impossible';
+    case 'need': return ' — dossier de données à autoriser';
+    case 'lost': return ' — dossier de données introuvable';
+    default:     return ' — aucun dossier de données choisi (bouton « Dossier de données »)';
+  }
 }
 function newFiche(){
   if(DIRTY && !confirm('La fiche en cours contient des modifications non enregistrees. Continuer ?')) return;
@@ -7144,8 +7626,15 @@ function loadFiche(id){
 async function delFiche(id,ev){
   ev.stopPropagation();
   const f=DB.find(x=>x.id===id); if(!f) return;
-  if(!confirm('Supprimer definitivement la fiche du dossier '+(f.d.dossier||'-')+' du '+frDate(f.d.date_ex)+' ?')) return;
-  await idbDel(id); DB=await idbAll(); await renumberAll(); await writeDataFiles(true);
+  if(!confirm('Supprimer la fiche du dossier '+(f.d.dossier||'-')+' du '+frDate(f.d.date_ex)+' ?'+
+              (FD.save.state==='ok' ? '\n\nSon fichier JSON est déplacé dans fiches/supprimees, il n’est pas effacé du disque.' : ''))) return;
+  /* la suppression est mémorisée : une relecture du dossier ne doit pas ressusciter la fiche */
+  TOMB[id] = new Date().toISOString(); await persistTomb();
+  await idbDel(id); DB=await idbAll(); await renumberAll();
+  if(FD.save.state==='ok'){
+    await withFolderLock(async()=>{ try{ await trashFicheFileLocked(f); await persistSync(); }catch(e){ folderFailed('save', e); } });
+  }
+  await writeDataFiles(true);
   if(REC.id===id){ REC=blank(); DIRTY=false; }
   renderList(); renderForm(); updateBar(); toast('Fiche supprimee');
 }
@@ -7166,14 +7655,12 @@ function renderList(){
 }
 function updateBar(){
   const s=$('#dbstate'); if(!s) return;
-  const st = DIRSTATE==='ok' ? '<span class="dot on"></span> fichier de donnees connecte'
-          : DIRSTATE==='need' ? '<span class="dot"></span> <a href="#" style="color:#f0b429" onclick="regrant();return false">autoriser a nouveau le dossier</a>'
-          : DIRSTATE==='unsupported' ? '<span class="dot"></span> export manuel (navigateur sans ecriture directe)'
-          : '<span class="dot"></span> aucun fichier de donnees';
+  const st = folderStatusHTML();
   s.innerHTML = '<b>'+DB.length+'</b> fiche'+(DB.length>1?'s':'')+
     (DIRTY?' <span style="color:#ffcf66">&#9679;<span class="lbl2"> modifications non enregistrees</span></span>':
            ' <span class="lbl2">&middot; a jour</span>')+
     '<span class="lbl2"> &middot; '+st+'</span>';
+  renderFolderBanner();
   const ib = $('#btninstall');
   if(ib){
     const show = (typeof PWA_PROMPT!=='undefined' && PWA_PROMPT) ||
@@ -7229,7 +7716,7 @@ async function saveSettings(){
   const p=$('#setPoste'), sp=$('#setSep'), pi=$('#setPii');
   if(!p||!sp||!pi) return;
   SET.poste = p.value.trim(); SET.sep = sp.value; SET.pii = pi.checked;
-  await metaSet('settings',{poste:SET.poste,sep:SET.sep,pii:SET.pii});
+  await persistSettings();
   await writeDataFiles(true);
   toast('Reglages enregistres');
 }
@@ -7247,7 +7734,7 @@ function openExport(){
      '> inclure les donnees identifiantes dans le fichier de donnees (nom, prenom, date de naissance, adresse, telephone, e-mail, personne a prevenir, medecin traitant)</label>'+
   '</div>'+
   '<div class="note"><b>Donnees de sante.</b> Par defaut le fichier statistique ne contient ni nom, ni prenom, ni date de naissance, ni coordonnees : '+
-   'seuls le numero de dossier que vous saisissez, le sexe et l\'age calcule y figurent. L\'identite complete reste sur le PDF et dans la sauvegarde JSON. '+
+   'seuls le numero de dossier que vous saisissez, le sexe et l\'age calcule y figurent. L\'identite complete reste sur le PDF, dans la sauvegarde JSON et dans les fichiers JSON du dossier de donnees. '+
    'Si vous cochez la case ci-dessus, le fichier devient un traitement de donnees de sante identifiantes : '+
    'RGPD art. 9, registre des traitements, base legale et chiffrement du support relevent alors de votre responsabilite.</div>'+
   '<button class="tb pri" onclick="saveSettings()">Enregistrer ces reglages</button>'+
@@ -7257,12 +7744,14 @@ function openExport(){
    '<button class="tb gd" onclick="expCSV()">Telecharger le CSV des donnees</button>'+
    '<button class="tb" onclick="expDict()">Telecharger le dictionnaire des variables</button>'+
    '<button class="tb" onclick="expJSON()">Telecharger la sauvegarde JSON</button>'+
-   (FSA?'<button class="tb pri" onclick="writeDataFiles(false)">Reecrire le dossier connecte</button>':'')+
+   (FSA?'<button class="tb pri" onclick="rewriteFolder()">Réécrire tout le dossier de données</button>':'')+
   '</div>'+
-  '<div class="note" style="background:#eef4fb;border-color:#bcd4ee"><b>Le fichier unique qui s\'incremente.</b> '+
-   'Sur Chrome ou Edge, le bouton <b>Fichier de donnees</b> de la barre du haut vous fait choisir un dossier une seule fois. '+
-   'A chaque enregistrement de fiche, l\'outil y reecrit <code>donnees_neuro.csv</code>, <code>dictionnaire_variables.csv</code> '+
-   'et <code>sauvegarde_neuro.json</code>. Un seul fichier de donnees, toujours a jour, contenant toutes les fiches de tous les sujets.</div>');
+  '<div class="note" style="background:#eef4fb;border-color:#bcd4ee"><b>Le dossier de données.</b> '+
+   'Sur Chrome ou Edge, le bouton <b>Dossier de données</b> de la barre du haut vous fait choisir un dossier une seule fois. '+
+   'À chaque enregistrement, l’outil y écrit la fiche au format JSON (sous-dossier <code>fiches</code>), puis réécrit '+
+   '<code>donnees_neuro.csv</code> et <code>dictionnaire_variables.csv</code>, qui contiennent toutes les fiches de tous les sujets. '+
+   'À chaque ouverture, il relit ce dossier pour la recherche d’un sujet. La sauvegarde JSON ci-dessus reste le moyen '+
+   'd’emporter toutes les fiches en un seul fichier.</div>');
 }
 function expCSV(){ const recs=sortedDB();
   dl('donnees_neuro_'+today()+'.csv', buildCSV(recs,SET.sep,SET.pii)); toast('CSV telecharge'); }
@@ -7346,41 +7835,44 @@ function recFromRow(head0,row){
 
 function openImport(){
   modalHTML('<h3>Importer et fusionner</h3>'+
-  '<div class="note">Deposez ici un fichier produit par cet outil sur un autre poste : '+
-  'sauvegarde <b>.json</b> (recommandee, sans perte) ou <b>.csv</b> des donnees. '+
-  'La fusion se fait sur <code>fiche_id</code> : une fiche deja presente est remplacee seulement si la version importee est plus recente. '+
-  'Rien n\'est jamais supprime.</div>'+
+  '<div class="note">Déposez ici un fichier produit par cet outil sur un autre poste : '+
+  'sauvegarde <b>.json</b> (recommandée, sans perte), fichiers <b>.json</b> du sous-dossier <code>fiches</code> '+
+  '(plusieurs à la fois) ou <b>.csv</b> des données. '+
+  'La fusion se fait sur <code>fiche_id</code> : une fiche déjà présente est remplacée seulement si la version importée est plus récente. '+
+  'Rien n’est jamais supprimé. Sur Chrome ou Edge avec un dossier de données connecté, ces fichiers n’ont pas besoin d’être importés à la main : '+
+  'le dossier est relu à chaque ouverture.</div>'+
   '<input type="file" id="impFile" accept=".json,.csv,.txt" multiple onchange="doImport(this.files)">'+
   '<div id="impRes" style="margin-top:12px"></div>');
 }
 async function doImport(files){
-  let add=0,upd=0,same=0,err=0,seen=0;
+  const st = {add:0, upd:0, same:0, bad:0, ignored:0};
+  let seen = 0;
   for(const file of files){
-    let txt; try{ txt=await file.text(); }catch(e){ err++; continue; }
+    let txt; try{ txt=await file.text(); }catch(e){ st.bad++; continue; }
     let recs=[];
     if(/\.json$/i.test(file.name)){
-      try{ const o=JSON.parse(txt); recs=Array.isArray(o)?o:(o.fiches||[]); }catch(e){ err++; continue; }
+      try{ recs = recsFromJSON(JSON.parse(txt)); }catch(e){ st.bad++; continue; }
     } else {
       const first=(txt.replace(/^﻿/,'').split(/\r?\n/)[0]||'');
       const sep = first.split(';').length>first.split(',').length ? ';' : (first.indexOf('\t')>=0?'\t':',');
-      const rows=parseCSV(txt,sep); if(rows.length<2){ err++; continue; }
+      const rows=parseCSV(txt,sep); if(rows.length<2){ st.bad++; continue; }
       const head=rows[0].map(h=>h.trim());
       recs=rows.slice(1).filter(r=>r.join('').trim()!=='').map(r=>recFromRow(head,r));
     }
     for(const r of recs){
-      if(!r||!r.d){ err++; continue; }
+      if(!validRec(r)){ st.bad++; continue; }
       seen++;
-      const cur=DB.find(x=>x.id===r.id);
-      if(!cur){ await idbPut(r); add++; }
-      else if((r.updated||'')>(cur.updated||'')){ await idbPut(r); upd++; }
-      else same++;
+      /* un import volontaire l'emporte sur une suppression antérieure */
+      const res = await mergeOne(r, st, true);
+      if(res==='add' || res==='upd') delete TOMB[r.id];
     }
   }
-  DB=await idbAll(); await renumberAll(); await writeDataFiles(true); renderList(); renderForm(); updateBar();
+  await persistTomb();
+  DB=await idbAll(); await renumberAll(); await afterConnect({csv:true}); renderList(); renderForm(); updateBar();
   const resEl=$('#impRes'); if(!resEl) return;
   resEl.innerHTML='<div class="note" style="background:#e6f4ec;border-color:#9ccdb3">'+
-    '<b>Fusion terminee.</b><br>'+seen+' fiche(s) lue(s)<br>'+add+' ajoutee(s)<br>'+upd+' mise(s) a jour (version importee plus recente)<br>'+
-    same+' deja a jour, ignoree(s)<br>'+err+' fichier(s) ou ligne(s) illisible(s)<br><br>Base locale : <b>'+DB.length+'</b> fiche(s).</div>';
+    '<b>Fusion terminée.</b><br>'+seen+' fiche(s) lue(s)<br>'+st.add+' ajoutée(s)<br>'+st.upd+' mise(s) à jour (version importée plus récente)<br>'+
+    st.same+' déjà à jour, ignorée(s)<br>'+st.bad+' fichier(s) ou ligne(s) illisible(s)<br><br>Base locale : <b>'+DB.length+'</b> fiche(s).</div>';
 }
 
 
@@ -7433,7 +7925,7 @@ function openScan(){
   'Sans sel, une empreinte de numéro à dix chiffres se retrouve par force brute en quelques secondes : '+
   'la pseudonymisation ne vaudrait rien. Avec un sel secret, elle tient.<br><br>'+
   '<b>Conservez-le ailleurs que dans le dossier de données</b> (gestionnaire de mots de passe, coffre du service). '+
-  'Il n\'est écrit ni dans <code>donnees_neuro.csv</code>, ni dans <code>sauvegarde_neuro.json</code>.<br><br>'+
+  'Il n\'est écrit ni dans <code>donnees_neuro.csv</code>, ni dans les fichiers JSON des fiches.<br><br>'+
   '<b>Saisissez le même sel sur chaque poste</b>, sinon un même patient recevra deux pseudonymes différents '+
   'et la fusion ne reliera plus ses examens.<br><br>'+
   '<b>Sel perdu, lien perdu.</b> Les fiches déjà enregistrées gardent leur pseudonyme, mais un nouveau scan '+
@@ -7472,7 +7964,7 @@ async function saveScanSettings(){
   if(r.value){ try{ new RegExp(r.value); }catch(e){ toast("Expression régulière invalide"); return; } }
   if(h.checked && !sa.value.trim()){ toast('Définissez un sel avant d\'activer la pseudonymisation'); return; }
   SET.wedge=w.checked; SET.scanRe=r.value.trim(); SET.hash=h.checked; SET.salt=sa.value.trim();
-  await metaSet('settings',{poste:SET.poste,sep:SET.sep,pii:SET.pii,wedge:SET.wedge,scanRe:SET.scanRe,hash:SET.hash,hashLen:SET.hashLen});
+  await persistSettings();
   await metaSet('salt', SET.salt);
   closeModal(); renderForm(); toast('Réglages enregistrés');
 }
@@ -7495,7 +7987,7 @@ function openMenu(){
   modalHTML('<h3>Menu</h3>'+
     it('&#128100;','Fiches enregistrées','openFiches()')+
     it('&#43;','Ré-examen du sujet','newFollowUp()')+
-    it('&#128193;','Fichier de données','connectFile()')+
+    it('&#128193;','Dossier de données','openFolders()')+
     it('&#11015;','Exporter','openExport()')+
     it('&#11014;','Importer / Fusionner','openImport()')+
     it('&#9906;','Douchette et identifiants','openScan()')+
@@ -7517,10 +8009,11 @@ function openFiches(){
 /* ---------- aide ---------- */
 function openHelp(){
   modalHTML('<h3>Mode d\'emploi</h3>'+
-  '<p><b>1. Mettre en place le fichier de donnees (une seule fois, sur le poste principal).</b><br>'+
-  'Cliquez <b>Fichier de donnees</b> et choisissez un dossier. Sur Chrome ou Edge, l\'outil y ecrit et y reecrit '+
-  '<code>donnees_neuro.csv</code> a chaque enregistrement. Ce CSV unique contient toutes les fiches de tous les sujets, '+
-  'une ligne par fiche. Il s\'incremente sans jamais ecraser les fiches precedentes.</p>'+
+  '<p><b>1. Choisir le dossier de données (une seule fois).</b><br>'+
+  'Cliquez <b>Dossier de données</b> et choisissez un dossier, ou laissez l’outil vous le demander au premier enregistrement. '+
+  'Sur Chrome ou Edge, il y écrit la fiche au format JSON à chaque enregistrement, puis réécrit <code>donnees_neuro.csv</code> '+
+  'et son dictionnaire (toutes les fiches de tous les sujets, une ligne par fiche). À chaque ouverture, il relit ce dossier pour '+
+  'la recherche par nom, prénom ou numéro. Le dossier n’est jamais redemandé : au plus un clic pour l’autoriser à nouveau.</p>'+
   '<p><b>2. Remplir une fiche.</b><br>'+
   'Saisissez le <b>numero de dossier</b> : c\'est lui qui relie plusieurs examens d\'un meme sujet. '+
   'Si ce numero est deja connu, l\'identite et les donnees de l\'accident se remplissent seules, et les valeurs '+
@@ -7551,9 +8044,9 @@ function openHelp(){
   'Ouvrez <code>donnees_neuro.csv</code> dans Excel, R, Python, SPSS ou Jamovi. '+
   '<code>dictionnaire_variables.csv</code> donne le codage de chaque colonne. '+
   'Cellule vide = valeur manquante (NA).</p>'+
-  '<div class="note"><b>Sauvegardez.</b> Les fiches vivent dans la base locale du navigateur en plus du dossier connecte. '+
-  'Vider les donnees de navigation efface cette base. Le dossier connecte et les sauvegardes JSON sont votre filet de securite : '+
-  'copiez-les regulierement ailleurs.</div>');
+  '<div class="note"><b>Sauvegardez.</b> Les fiches vivent dans la base locale du navigateur en plus du dossier de données. '+
+  'Vider les données de navigation efface cette base, mais le dossier de données la reconstitue à la prochaine ouverture. '+
+  'Ce dossier et les sauvegardes JSON sont votre filet de sécurité : copiez-les régulièrement ailleurs.</div>');
 }
 
 
@@ -7709,9 +8202,13 @@ async function saveDraft(){ if(DIRTY && REC) await metaSet('draft',JSON.parse(JS
   DB = await idbAll();
   const s = await metaGet('settings');
   if(s){ SET.poste=s.poste||''; SET.sep=s.sep||';'; SET.pii=!!s.pii;
-         SET.wedge = s.wedge!==false; SET.scanRe=s.scanRe||''; SET.hash=!!s.hash; SET.hashLen=s.hashLen||12; }
+         SET.wedge = s.wedge!==false; SET.scanRe=s.scanRe||''; SET.hash=!!s.hash; SET.hashLen=s.hashLen||12;
+         SET.searchSame = s.searchSame!==false; }
   SET.salt = (await metaGet('salt')) || '';
-  await restoreDir();
+  TOMB = (await metaGet('deleted')) || {};
+  SYNCMAP = Object.assign({save:{}, search:{}}, (await metaGet('syncmap')) || {});
+  DIR_ASKED = !!(await metaGet('dirasked'));
+  await restoreDirs();
   const wantNew = /[?&]action=new\b/.test(location.search);
   const draft = await metaGet('draft');
   if(!wantNew && draft && draft.d && Object.keys(draft.d).length>2){ REC=draft; DIRTY=true; }
@@ -7719,6 +8216,7 @@ async function saveDraft(){ if(DIRTY && REC) await metaSet('draft',JSON.parse(JS
   renderForm(); renderList(); updateBar();
   initPWA();
   setInterval(saveDraft,4000);
+  startupSync().catch(e=>console.error('dossier de données :', e));      // sans attendre : le dossier est relu pendant que la fiche s'affiche
 })();
 
 window.addEventListener('beforeprint',()=>{ if(REC){ computeAll(); $('#print-root').innerHTML=buildPrint(); } });

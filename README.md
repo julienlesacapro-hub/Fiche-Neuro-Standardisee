@@ -2,7 +2,7 @@
 
 Outil de saisie pour la prise en charge d'un accident de plongée en médecine
 hyperbare : consultation initiale en urgence, consultations de suivi, compte
-rendu de séjour. Auteur : Dr Julien Lesaca. Version 7.3.1.
+rendu de séjour. Auteur : Dr Julien Lesaca. Version 7.3.2.
 
 Deux sorties, depuis la même saisie :
 
@@ -55,7 +55,7 @@ cd Fiche-Neuro-Standardisee
 # copiez ici le contenu de ce dossier (index.html, icons/, manifest, sw.js, docs/, native/)
 
 git add .
-git commit -m "ADP v7.3.1"
+git commit -m "ADP v7.3.2"
 git push origin main
 ```
 
@@ -74,12 +74,12 @@ en HTTPS, condition nécessaire pour l'installation et le service worker.
 ### Publier une mise à jour
 
 Modifiez `index.html`, incrémentez `VERSION` en tête de `sw.js`
-(`v7.3.1` → `v7.3.2`), poussez. Sans ce changement de version, les appareils
+(`v7.3.2` → `v7.3.3`), poussez. Sans ce changement de version, les appareils
 déjà installés gardent l'ancienne copie en cache.
 
 ```bash
-sed -i "s/const VERSION = 'v7.3.1'/const VERSION = 'v7.3.2'/" sw.js
-git commit -am "v7.3.2" && git push
+sed -i "s/const VERSION = 'v7.3.2'/const VERSION = 'v7.3.3'/" sw.js
+git commit -am "v7.3.3" && git push
 ```
 
 Au lancement suivant avec réseau, l'application signale la mise à jour et
@@ -101,7 +101,7 @@ serveur interne à l'établissement, ou distribuez `index.html` par clé USB.
 ## Contenu du dépôt
 
 ```
-index.html                 application complète, fichier unique, 470 ko
+index.html                 application complète, fichier unique, 510 ko
 manifest.webmanifest       déclaration d'installation (nom, icônes, plein écran)
 sw.js                      service worker : démarrage hors ligne, mises à jour
 icons/                     icônes 32 à 1024 px, dont deux masquables Android
@@ -139,8 +139,11 @@ Les fiches vivent à trois endroits, du plus fragile au plus solide :
 
 1. **la base locale du navigateur** (IndexedDB) : effacée si vous videz les
    données de navigation, perdue si l'appareil l'est ;
-2. **le dossier connecté** via *Fichier de données*, sur Chrome et Edge pour
-   ordinateur : l'outil y réécrit `donnees_neuro.csv` à chaque enregistrement ;
+2. **le dossier de données**, choisi une seule fois (bouton *Dossier de données*
+   ou premier enregistrement), sur Chrome et Edge pour ordinateur : à chaque
+   enregistrement l'outil y écrit la fiche en JSON (un fichier par fiche, sous-dossier
+   `fiches`) et réécrit `donnees_neuro.csv` ; à chaque ouverture il le relit pour la
+   recherche d'un sujet. Les fichiers JSON contiennent l'identité : dossier protégé ;
 3. **l'export manuel** (CSV ou JSON) : disponible partout, y compris sur
    iPhone et Firefox.
 

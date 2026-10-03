@@ -1,4 +1,4 @@
-# ADP — accident de plongée, version 7.3.1
+# ADP — accident de plongée, version 7.3.2
 
 Fichier unique : `index.html`. Aucun réseau, aucune dépendance externe, aucun compte.
 Double-cliquez dessus, il s'ouvre dans votre navigateur et tout fonctionne.
@@ -22,6 +22,10 @@ plein écran, démarrage sans réseau. Voir *Installer sur téléphone et tablet
 Un seul CSV pour tous les sujets, toutes les consultations et tous les types de document.
 Une ligne = une fiche. 883 colonnes.
 
+Sans bouton de plus, chaque enregistrement écrit aussi la fiche entière au format **JSON** dans le
+dossier de données (un fichier par fiche), et chaque ouverture relit ce dossier pour la recherche d'un
+sujet : voir *Mise en place, une seule fois*.
+
 Les pages du PDF, selon le type de consultation :
 
 | Page | Consultation initiale | Consultation de suivi | Consultation de sortie |
@@ -40,13 +44,70 @@ Les photographies jointes s'ajoutent en fin de document, six par page.
 ## Mise en place, une seule fois
 
 1. Ouvrez `index.html` dans **Chrome** ou **Edge**.
-2. Cliquez **Fichier de données**, choisissez un dossier de votre disque, autorisez l'écriture.
+2. Cliquez **Enregistrer** sur votre première fiche : l'outil vous demande un dossier de votre
+   disque. Choisissez-le et autorisez l'écriture. On peut aussi le choisir à l'avance avec le bouton
+   **Dossier de données**.
 
-L'outil y maintient trois fichiers, réécrits à chaque enregistrement :
+Le dossier n'est ensuite **jamais redemandé** : le navigateur le mémorise. À chaque enregistrement,
+l'outil y écrit :
 
-- `donnees_neuro.csv` — vos données, toutes fiches confondues
-- `dictionnaire_variables.csv` — le codage de chaque colonne
-- `sauvegarde_neuro.json` — sauvegarde intégrale, sans perte
+- `fiches/fiche_<identifiant>.json` — la fiche entière, **un fichier par fiche**. Le nom du fichier ne
+  porte aucune donnée du patient ; le contenu reprend l'enveloppe de la sauvegarde JSON, avec un bloc
+  `resume` (dossier, nom, prénom, naissance, dates) pour l'œil ;
+- `donnees_neuro.csv` — vos données, toutes fiches confondues ;
+- `dictionnaire_variables.csv` — le codage de chaque colonne.
+
+Choisissez un **sous-dossier dédié** (par exemple `ADP-fiches`) : Chrome et Edge refusent Documents,
+Téléchargements et les dossiers système.
+
+### À l'ouverture : la recherche lit le dossier
+
+À chaque **ouverture**, l'outil relit ce dossier. Les fiches qu'il contient et que ce poste ne connaît
+pas encore rejoignent la base locale : la recherche par nom, prénom, date de naissance, numéro de
+dossier ou d'accident les retrouve, **y compris celles enregistrées sur un autre poste** qui partage
+le même dossier. Une fiche n'est remplacée que par une version **plus récente** ; un fichier déjà lu
+et inchangé n'est pas relu. Le premier chargement d'un gros dossier peut prendre quelques secondes,
+la barre du haut indique l'avancement.
+
+À l'inverse, une fiche de ce poste qui manque au dossier (enregistrée avant son choix, ou quand il
+n'était pas accessible) y est écrite à la connexion suivante : le dossier rejoint toujours l'état de
+la base locale.
+
+### Une autorisation par session, pas un nouveau choix
+
+Chrome et Edge peuvent redemander, à l'ouverture, l'**autorisation** d'accéder au dossier. Ce n'est
+pas un nouveau choix de dossier. Un bandeau le signale ; le premier clic dans la page, le bouton
+**Autoriser**, ou **Enregistrer** ouvre la demande du navigateur. Choisissez **« Autoriser à chaque
+visite »** pour qu'elle ne revienne plus. Si l'autorisation est refusée ou le dossier introuvable,
+rien n'est perdu : la fiche est enregistrée dans le navigateur, et les fichiers se mettent à jour à
+la prochaine connexion.
+
+### Un dossier de recherche distinct (facultatif)
+
+Par défaut, la recherche lit le dossier où l'outil écrit (« le même », réglage par défaut). Le
+bouton **Dossier de données** permet de désigner un **autre** dossier, par exemple un dossier partagé
+par le service. Il n'est que **lu** : l'outil n'y écrit jamais. Le dossier d'enregistrement reste lu
+aussi.
+
+### Les autres actions de la fenêtre « Dossier de données »
+
+- **Relire le dossier maintenant** : relit sans attendre la prochaine ouverture.
+- **Réécrire tout le dossier** : relit, puis réécrit **toutes** les fiches, le CSV et le dictionnaire.
+- **Ne plus l'utiliser** : oublie le dossier mémorisé, sans rien effacer sur le disque.
+
+### Supprimer une fiche
+
+Supprimer une fiche dans l'outil **n'efface rien sur le disque** : son fichier est déplacé dans
+`fiches/supprimees`, avec une copie complète. La suppression est mémorisée : une relecture du dossier
+ne la ressuscite pas, sauf si la fiche a été modifiée depuis, ou si vous la réimportez à la main.
+Pour retirer vraiment une fiche du dossier, videz `fiches/supprimees` à la main.
+
+### Fichiers lus
+
+Sont lus : tous les `.json` du sous-dossier `fiches`, et à la racine les `sauvegarde_neuro*.json` et
+`fiche_*.json` (les sauvegardes agrégées des versions précédentes, par exemple). Un fichier illisible
+est compté et ignoré. Les dates, heures et nombres d'une fiche lue sont contrôlés avant son
+enregistrement.
 
 Firefox et Safari ne gèrent pas l'écriture directe sur disque. Sur ces navigateurs, et sur tablette,
 passez par **Exporter**, puis fusionnez sur le poste principal.
@@ -390,6 +451,9 @@ Ce texte est destiné à un compte rendu d'hospitalisation : il est **allégé e
   n'est écrite que si elle est absente** ; sa présence est la règle et ne se dit pas.
 - **Omis** : la voie veineuse, le numéro de dossier et le rang de l'examen, le club, la photo de
   l'ordonnance et la liste des pièces jointes.
+- **Examen anal** : écrit **seulement s'il est anormal** (« contraction anale volontaire absente »,
+  « pression anale profonde non perçue »). Normal ou non testé, il n'apparaît pas. Les troubles
+  sphinctériens restent signalés dans les anomalies.
 - Les épreuves vestibulaires anormales rejoignent les signes vestibulo-cochléaires, avec leur côté ;
   toutes normales, la synthèse écrit « épreuves vestibulaires normales ».
 
@@ -422,8 +486,9 @@ Trois entrées mènent au même résultat.
 3. **Le nom saisi directement.** Si vous remplissez le nom ou la date de naissance avant le numéro
    de dossier et qu'un sujet correspond, un bandeau propose de reprendre son dossier.
 
-La recherche porte sur les fiches présentes dans la base locale de ce poste. Un sujet examiné
-ailleurs n'apparaît qu'après fusion du fichier de données.
+La recherche porte sur les fiches de la base locale de ce poste, qui comprend celles **lues dans le
+dossier de données à l'ouverture**. Sans dossier connecté, un sujet examiné ailleurs n'apparaît
+qu'après un import (*Importer / Fusionner*).
 
 ---
 
@@ -736,6 +801,10 @@ y compris si vous saisissez a posteriori un examen antérieur.
 La fusion se fait sur `fiche_id`. Une fiche déjà présente n'est remplacée que si la version
 importée est plus récente. Un double import ne crée pas de doublon.
 
+Les fichiers du sous-dossier `fiches` se déposent de la même façon, plusieurs à la fois. Avec un
+dossier de données connecté, c'est inutile : il est relu à chaque ouverture. Une fiche importée
+rejoint aussi le dossier connecté.
+
 ---
 
 ## Analyser les données
@@ -818,6 +887,50 @@ d = pd.read_csv("donnees_neuro.csv", sep=";", encoding="utf-8-sig")
 
 Pour les analyses courantes, les colonnes de synthèse suffisent. Les colonnes de détail servent
 aux analyses topographiques fines.
+
+---
+
+## Changements de la version 7.3.2
+
+Cette version change la façon dont les fiches vivent sur le disque. Aucune colonne du CSV n'est
+ajoutée, retirée ni recodée : les fiches de la 7.3.1 s'ouvrent telles quelles.
+
+### Dossier de données
+
+- **L'enregistrement écrit un fichier JSON par fiche** dans un dossier choisi **une seule fois**
+  (`fiches/fiche_<identifiant>.json`), puis le CSV et le dictionnaire. Au premier enregistrement, si
+  aucun dossier n'est choisi, le sélecteur s'ouvre ; ensuite, plus rien à renseigner.
+- **L'ouverture relit le dossier** : les fiches qu'il contient rejoignent la base locale, ce qui rend la
+  recherche par nom, prénom, naissance ou numéro valable pour toutes. Le dossier de recherche est
+  **le même que le dossier d'enregistrement par défaut** ; un autre peut être désigné (lecture seule).
+- **Autorisation par session** : un bandeau et le premier clic suffisent ; le dossier n'est jamais
+  rechoisi.
+- **Suppression** : le fichier d'une fiche supprimée passe dans `fiches/supprimees`, il n'est pas
+  effacé. La suppression est mémorisée.
+- `sauvegarde_neuro.json` (une sauvegarde agrégée réécrite à chaque enregistrement) **disparaît** de
+  l'écriture automatique : le dossier `fiches` en tient lieu, sans le risque qu'un poste écrase les
+  fiches d'un autre. L'export manuel *Télécharger la sauvegarde JSON* et la lecture des anciennes
+  sauvegardes restent.
+- Le bouton **Fichier de données** devient **Dossier de données**.
+
+### Synthèse rédigée
+
+- L'**examen anal** (contraction anale volontaire, pression anale profonde) n'est écrit que s'il est
+  anormal.
+
+### Correctif
+
+- Enregistrer les réglages d'export n'efface plus les réglages de douchette et de pseudonymisation :
+  tous les réglages sont écrits dans un seul enregistrement.
+
+### À valider de votre côté
+
+- **Choix du dossier au premier enregistrement** : si vous annulez le sélecteur, il n'est pas reproposé
+  à chaque enregistrement ; le bouton **Dossier de données** le rouvre.
+- **Un fichier par fiche** plutôt qu'un fichier unique : c'est ce qui permet à plusieurs postes de
+  partager un dossier sans s'écraser. Le prix : un dossier de plusieurs centaines de petits fichiers.
+- **Fiches du dossier lues à l'ouverture** : elles rejoignent la base locale du poste, donc ses
+  exports CSV. Données de santé identifiantes : voir *Données personnelles*.
 
 ---
 
@@ -974,6 +1087,8 @@ du script de `index.html`.
 
 ## Historique
 
+- **7.3.2** : un fichier JSON par fiche écrit à l'enregistrement dans un dossier choisi une fois, relu à
+  l'ouverture pour la recherche ; examen anal écrit seulement s'il est anormal.
 - **7.3.1** : coordination et examen vestibulaire, sensibilités normales en un clic, échographie
   cardiaque et FOP, échographie pleuro-pulmonaire en un clic, profil complété automatiquement,
   synthèse allégée et sans signe spécial.
@@ -991,20 +1106,29 @@ du script de `index.html`.
 ## Données personnelles
 
 Par défaut, le CSV ne contient **ni nom, ni prénom, ni date de naissance**. Il contient le numéro
-de dossier que vous saisissez, le sexe et l'âge calculé. L'identité complète ne figure que sur le PDF.
+de dossier que vous saisissez, le sexe et l'âge calculé. L'identité complète ne figure que sur le PDF
+et dans les fichiers JSON des fiches.
 
 La case *inclure nom, prénom et date de naissance* dans **Exporter** lève cette séparation. Si vous
 la cochez, le fichier devient un traitement de données de santé identifiantes au sens du RGPD
 (art. 9) : registre des traitements, base légale, information des personnes et chiffrement du
 support relèvent alors de votre responsabilité.
 
+**Les fichiers JSON du dossier de données contiennent la fiche entière, identité, santé et
+photographies comprises** : c'est ce qui permet de retrouver un sujet par son nom. Ils sont à traiter
+comme des données de santé identifiantes, quels que soient les réglages de l'export CSV. Choisissez
+un dossier protégé (disque chiffré, accès restreint). Si ce dossier est synchronisé avec un service
+en ligne, les fiches quittent le poste : vérifiez que ce service est compatible avec l'hébergement de
+données de santé qui vous est imposé. Le nom de chaque fichier ne porte, lui, aucune donnée du patient.
+
 ---
 
 ## Sauvegarde
 
-Les fiches vivent dans la base locale du navigateur **et** dans le dossier connecté. Vider les
-données de navigation efface la base locale. Le dossier connecté et les sauvegardes JSON sont
-votre filet de sécurité : copiez-les ailleurs régulièrement.
+Les fiches vivent dans la base locale du navigateur **et** dans le dossier de données (un fichier
+JSON par fiche). Vider les données de navigation efface la base locale, mais le dossier la
+reconstitue à l'ouverture suivante, une fois choisi de nouveau. Le dossier de données et les
+sauvegardes JSON sont votre filet de sécurité : copiez-les ailleurs régulièrement.
 
 ---
 
