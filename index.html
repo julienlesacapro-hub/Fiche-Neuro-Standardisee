@@ -637,7 +637,7 @@ svg.echo rect.z:hover{stroke-width:2.6;filter:brightness(.96)}
 </head>
 <body>
 <div id="topbar">
-  <span class="ttl" title="Accident de plongée — version 7.3.2">ADP <small style="font-weight:400;opacity:.65">7.3.2</small></span>
+  <span class="ttl" title="Accident de plongée — version 7.3.3">ADP <small style="font-weight:400;opacity:.65">7.3.3</small></span>
   <button class="tb nophone" onclick="toggleSide()" title="Afficher / masquer la liste des fiches">&#9776;</button>
   <span class="sep"></span>
   <button class="tb pri" onclick="newFiche()">+<span class="lbl2"> Nouvelle</span> fiche</button>
@@ -6679,7 +6679,7 @@ function doPrint(){
 /* =====================================================================
    COLONNES DU FICHIER STATISTIQUE + DICTIONNAIRE
    ===================================================================== */
-const SET = {pii:false, sep:';', poste:'', wedge:true, scanRe:'', hash:false, hashLen:12, salt:'', searchSame:true};
+const SET = {pii:false, sep:';', poste:'', wedge:true, scanRe:'', hash:false, hashLen:12, salt:'', searchSame:true, autoDl:false};
 
 function codesOf(f){
   if(f.t==='choice' || f.t==='select')
@@ -7084,9 +7084,14 @@ function sortedDB(){
    « autoriser à chaque visite » de Chrome et d'Edge la rend définitive.
    Une fiche supprimée sur ce poste n'est jamais effacée du disque : son fichier passe dans
    fiches/supprimees. La suppression est mémorisée (TOMB) pour qu'une relecture ne la ressuscite pas.
+   Ce dossier suppose un navigateur qui offre l'API (Chrome, Edge sur ordinateur). Sur un autre navigateur, l'outil
+   l'explique (diagnostic) et propose ce qui fonctionne : « Exporter tout en JSON » (dossier choisi, ou archive
+   ZIP), téléchargement du JSON à chaque enregistrement, import d'un dossier ou d'une archive.
    ===================================================================== */
-const APP_VERSION = '7.3.2';
-const FSA = typeof window.showDirectoryPicker === 'function';
+const APP_VERSION = '7.3.3';
+/* hasPicker teste une fonction de l'API au moment de s'en servir : une extension ou un réglage du navigateur peut la retirer */
+const hasPicker = name => { try{ return typeof window[name] === 'function'; }catch(e){ return false; } };
+let FSA = hasPicker('showDirectoryPicker');
 /* save : dossier d'enregistrement (lecture et écriture) ; search : dossier de recherche distinct, en lecture
    seule, facultatif. état : none (rien de choisi) | ok | need (autorisation à redonner) | lost (dossier
    introuvable) | unsupported (navigateur sans écriture directe) */
@@ -7131,7 +7136,7 @@ async function persistTomb(){ try{ await metaSet('deleted', TOMB); }catch(e){} }
 /* tous les réglages dans un seul enregistrement : écrire seulement une partie perdrait les autres */
 async function persistSettings(){
   await metaSet('settings',{poste:SET.poste, sep:SET.sep, pii:SET.pii, wedge:SET.wedge, scanRe:SET.scanRe,
-                            hash:SET.hash, hashLen:SET.hashLen, searchSame:SET.searchSame});
+                            hash:SET.hash, hashLen:SET.hashLen, searchSame:SET.searchSame, autoDl:SET.autoDl});
 }
 
 /* ---------- dossiers : choix, mémorisation, autorisation ---------- */
@@ -7151,23 +7156,139 @@ async function restoreDirs(){
     FD[role].state = (await permOf(h, roleMode(role)))==='granted' ? 'ok' : 'need';
   }
 }
-function unsupportedModal(){
-  modalHTML('<h3>Écriture directe non disponible sur ce navigateur</h3>'+
-    '<div class="note">Ce navigateur ne gère pas l’écriture directe dans un dossier (API File System Access). '+
-    'Elle fonctionne sur <b>Chrome</b> et <b>Edge</b> sur ordinateur.<br><br>'+
-    'Ici, les fiches restent enregistrées dans le navigateur et vous produisez les fichiers avec le bouton '+
-    '<b>Exporter</b>. C’est le mode prévu pour la saisie sur tablette : vous exportez la sauvegarde JSON, '+
-    'puis vous la fusionnez sur le poste principal.</div>'+
-    '<button class="tb pri" onclick="closeModal();openExport()">Aller à l’export</button>');
+/* ---------- diagnostic du navigateur ---------- */
+/* Quand le navigateur n'offre pas l'écriture directe, ou que le sélecteur échoue, l'utilisateur doit voir
+   pourquoi, et disposer de ce qui fonctionne malgré tout : archive ZIP, téléchargement automatique du JSON,
+   import d'un dossier. Ce diagnostic ne contient aucune donnée de fiche. */
+function envInfo(){
+  const n = navigator, ua = n.userAgent || '';
+  const tryv = f => { try{ return !!f(); }catch(e){ return false; } };
+  return {
+    ua: ua,
+    brands: ((n.userAgentData && n.userAgentData.brands) || []).filter(b=>!/^Not.{1,3}A.{1,3}Brand/i.test(b.brand))
+              .map(b=>b.brand+' '+b.version).join(', '),
+    mobile: /Android|iPhone|iPad|iPod/i.test(ua) || !!(n.userAgentData && n.userAgentData.mobile),
+    proto: location.protocol,
+    secure: window.isSecureContext !== false,
+    top: tryv(()=>window.top === window),
+    native: pwaNative(),
+    brave: !!n.brave,
+    dir: hasPicker('showDirectoryPicker'),
+    save: hasPicker('showSaveFilePicker'),
+    folderIn: tryv(()=>'webkitdirectory' in document.createElement('input')),
+    zip: typeof CompressionStream === 'function' && typeof DecompressionStream === 'function'
+  };
+}
+function envCause(i){
+  if(i.dir) return 'L’écriture directe dans un dossier est disponible dans ce navigateur.';
+  if(i.native) return 'Cette version est une application native : le système n’y offre pas l’écriture directe dans un dossier.';
+  if(!i.secure) return 'La page est ouverte en connexion non sécurisée ('+esc(i.proto)+'), ce qui masque cette fonction. '+
+    'Ouvrez le fichier <code>index.html</code> directement depuis le disque, ou la page en HTTPS.';
+  if(!i.top) return 'La page est affichée dans un cadre d’une autre page : le navigateur n’y autorise pas le choix d’un dossier. '+
+    'Ouvrez-la dans sa propre fenêtre.';
+  if(i.brave) return 'Brave désactive cette fonction par défaut. Saisissez <code>brave://flags/#file-system-access-api</code> '+
+    'dans la barre d’adresse, choisissez Activé, puis relancez le navigateur.';
+  if(/Firefox\//.test(i.ua)) return 'Firefox ne gère pas l’écriture directe dans un dossier.';
+  if(i.mobile) return 'Sur téléphone et sur tablette, les navigateurs n’offrent pas l’écriture directe dans un dossier.';
+  if(/Safari\//.test(i.ua) && !/Chrome\/|Chromium\/|Edg\/|OPR\//.test(i.ua)) return 'Safari ne gère pas l’écriture directe dans un dossier.';
+  return 'La page ne permet pas d’en connaître la cause : un mode protégé du navigateur, une extension ou une stratégie de '+
+    'l’établissement peut désactiver cette fonction. Chrome et Edge sur ordinateur la proposent normalement.';
+}
+function diagHTML(i){
+  const yes = '<b style="color:var(--ok)">oui</b>', no = '<b style="color:var(--bad)">non</b>', yn = v => v ? yes : no;
+  const rows = [
+    ['Navigateur', esc(i.brands || 'non indiqué')+'<br><span style="color:var(--ink2);font-size:11px">'+esc(i.ua)+'</span>'],
+    ['Adresse de la page', esc(i.proto)+' · contexte sécurisé : '+yn(i.secure)],
+    ['Page dans sa propre fenêtre', yn(i.top)],
+    ['Choisir un dossier (<code>showDirectoryPicker</code>)', yn(i.dir)],
+    ['Enregistrer à l’endroit voulu (<code>showSaveFilePicker</code>)', yn(i.save)],
+    ['Charger un dossier en lecture', yn(i.folderIn)],
+    ['Compression ZIP', i.zip ? yes : '<b style="color:var(--warn)">non</b> : l’archive est alors créée sans compression'],
+    ['Application native', i.native ? 'oui' : 'non']
+  ];
+  return '<table style="margin:8px 0">'+rows.map(r=>'<tr><td>'+r[0]+'</td><td>'+r[1]+'</td></tr>').join('')+'</table>';
+}
+function envText(i){
+  const yn = v => v ? 'oui' : 'non';
+  return ['ADP '+APP_VERSION+' : diagnostic du navigateur',
+    'Navigateur : '+(i.brands || 'non indiqué'), 'Agent : '+i.ua,
+    'Adresse : '+i.proto+' (contexte sécurisé : '+yn(i.secure)+')', 'Fenêtre principale : '+yn(i.top),
+    'showDirectoryPicker : '+yn(i.dir), 'showSaveFilePicker : '+yn(i.save),
+    'Chargement de dossier : '+yn(i.folderIn), 'Compression ZIP : '+yn(i.zip), 'Application native : '+yn(i.native),
+    'Cause probable : '+envCause(i).replace(/<[^>]+>/g, '')].join('\n');
+}
+function copyDiag(){
+  const t = envText(envInfo());
+  (navigator.clipboard && navigator.clipboard.writeText ? navigator.clipboard.writeText(t) : Promise.reject())
+    .then(()=>toast('Diagnostic copié'), ()=>toast('Copie impossible'));
+}
+function openDiag(){
+  const i = envInfo();
+  modalHTML('<h3>Diagnostic du navigateur</h3><div class="note">'+envCause(i)+'</div>'+diagHTML(i)+
+    '<button class="tb" onclick="copyDiag()">Copier le diagnostic</button>');
+}
+/* ce qui reste possible sans écriture directe dans un dossier */
+function altActionsHTML(){
+  const box = h => '<div style="border:1px solid var(--bd2);border-radius:6px;padding:8px 10px;margin-bottom:8px">'+h+'</div>';
+  return box('<b>Exporter tout en JSON</b> : toutes les fiches, une par fichier, réunies dans une archive ZIP enregistrée dans '+
+      'Téléchargements, ou à l’endroit que le navigateur vous laisse choisir.'+
+      '<div style="margin-top:6px"><button class="tb pri" onclick="closeModal();openExportJSON()">Exporter tout en JSON…</button></div>')+
+    box('<label style="cursor:pointer"><input type="checkbox" onchange="setAutoDl(this.checked)"'+(SET.autoDl?' checked':'')+'> '+
+      '<b>Télécharger le JSON de la fiche à chaque enregistrement</b></label><br>'+
+      '<span style="color:var(--ink2)">'+(pwaNative()
+        ? 'Le fichier <code>fiche_….json</code> est enregistré dans les documents de l’application, puis la feuille de partage du système s’ouvre.'
+        : 'Le fichier <code>fiche_….json</code> part dans le dossier de téléchargement du navigateur. '+
+          'Pour le fixer une fois : paramètres du navigateur, Téléchargements, Emplacement, puis désactiver « Demander où enregistrer '+
+          'chaque fichier avant de le télécharger ».')+'</span>')+
+    box('<b>Reprendre des fiches déjà exportées</b> : « Importer / Fusionner » lit un fichier .json, une archive .zip ou un dossier entier.'+
+      '<div style="margin-top:6px"><button class="tb" onclick="closeModal();openImport()">Importer / Fusionner…</button></div>');
+}
+async function setAutoDl(v){
+  SET.autoDl = !!v; await persistSettings(); updateBar();
+  toast(v ? 'Le JSON de chaque fiche sera téléchargé à l’enregistrement' : 'Téléchargement automatique du JSON désactivé');
+}
+/* navigateur sans écriture directe : l'explication, puis les solutions qui fonctionnent quand même */
+function noFolderModal(){
+  const i = envInfo();
+  modalHTML('<h3>Dossier de données : indisponible dans ce navigateur</h3>'+
+    '<div class="note" style="background:#fbeee4;border-color:#e3bd9a"><b>Ce navigateur ne propose pas l’écriture directe dans un dossier</b> '+
+    '(API File System Access). '+envCause(i)+
+    (i.native ? '' : '<br><br>Pour choisir un dossier une seule fois et y retrouver chaque fiche à l’enregistrement, ouvrez ce fichier avec '+
+    '<b>Microsoft Edge</b> ou <b>Google Chrome</b> sur ordinateur (clic droit sur <code>index.html</code>, <i>Ouvrir avec</i>).')+'</div>'+
+    '<h4 style="margin:12px 0 6px">Ce qui fonctionne quand même ici</h4>'+altActionsHTML()+
+    '<h4 style="margin:12px 0 6px">Diagnostic</h4>'+diagHTML(i)+
+    '<button class="tb" onclick="copyDiag()">Copier le diagnostic</button>');
+}
+/* le sélecteur a échoué pour une autre raison que l'annulation par l'utilisateur */
+function pickerErrorModal(e, retry){
+  const n = e && e.name;
+  const why = n==='SecurityError'
+      ? 'Le navigateur a refusé ce dossier ou ce geste : dossier système, Documents, Téléchargements ou Bureau choisis eux-mêmes, '+
+        'ou accès interdit par un réglage du navigateur ou de l’établissement. Choisissez un <b>sous-dossier dédié</b> '+
+        '(par exemple « ADP-fiches »).'
+    : n==='NotAllowedError'
+      ? 'L’accès a été refusé ou bloqué (réglage « Modifier des fichiers » du site, ou stratégie de l’établissement).'
+    : 'Le navigateur n’a pas pu ouvrir le sélecteur de dossier.';
+  modalHTML('<h3>Le choix du dossier a échoué</h3>'+
+    '<div class="note" style="background:#fbeee4;border-color:#e3bd9a">'+why+
+    (envInfo().top ? '' : '<br><br>'+envCause({dir:false, native:false, secure:true, top:false}))+'<br><br>'+
+    '<span style="color:var(--ink2)">Réponse du navigateur : <code>'+esc(n || 'erreur')+'</code> '+esc(errTxt(e))+'</span></div>'+
+    (retry ? '<p style="margin:10px 0 6px"><button class="tb pri" onclick="'+retry+'">Réessayer</button></p>' : '')+
+    '<h4 style="margin:12px 0 6px">Ce qui fonctionne quand même</h4>'+altActionsHTML()+
+    '<p style="margin:8px 0 0;font-size:11.5px"><a href="#" onclick="openDiag();return false">Diagnostic du navigateur</a></p>');
 }
 /* Le sélecteur ne s'ouvre que sur un geste de l'utilisateur : cette fonction doit donc être appelée avant
    tout await, depuis un clic ou une touche. */
 async function chooseFolder(role, opt){
   opt = opt || {};
-  if(!FSA){ unsupportedModal(); return false; }
+  if(!hasPicker('showDirectoryPicker')){ noFolderModal(); return false; }
   let h;
-  try{ h = await window.showDirectoryPicker({mode:roleMode(role), id:role==='save'?'ficheneuro':'ficherecherche'}); }
-  catch(e){ if(e && e.name!=='AbortError') toast('Choix du dossier impossible : '+errTxt(e)); return false; }
+  try{ h = await window.showDirectoryPicker({mode:roleMode(role), id:role==='save'?'ficheneuro':'ficherecherche', startIn:'documents'}); }
+  catch(e){
+    if(e && e.name==='AbortError') return false;
+    pickerErrorModal(e, role==='save' ? 'chooseSave()' : 'chooseSearch()');
+    return false;
+  }
   FD[role].h = h; FD[role].state = 'ok';
   try{ await metaSet(roleKey(role), h); }
   catch(e){ toast('Dossier utilisable pour cette session seulement : ce navigateur ne peut pas le mémoriser'); }
@@ -7237,11 +7358,26 @@ function ensureFolderOnSave(){
 }
 
 /* ---------- lecture et écriture des fichiers ---------- */
+/* Un antivirus ou l'indexation de Windows peut verrouiller un instant le fichier en cours d'écriture : deux nouveaux
+   essais, sauf pour une erreur qui ne se règle pas en attendant. */
 async function writeIn(dir, name, txt){
-  const fh = await dir.getFileHandle(name, {create:true});
-  const w = await fh.createWritable();
-  await w.write(new Blob([txt], {type:'application/json'})); await w.close();
-  return fh;
+  let last;
+  for(let t=0; t<3; t++){
+    let w = null;
+    try{
+      const fh = await dir.getFileHandle(name, {create:true});
+      w = await fh.createWritable();
+      await w.write(new Blob([txt], {type:'application/json'})); await w.close(); w = null;
+      return fh;
+    }catch(e){
+      last = e;
+      if(w){ try{ await w.abort(); }catch(_){} }
+      const n = e && e.name;
+      if(n==='NotAllowedError' || n==='SecurityError' || n==='NotFoundError' || n==='TypeMismatchError' || n==='QuotaExceededError') break;
+      if(t < 2) await new Promise(r=>setTimeout(r, 150*(t+1)));
+    }
+  }
+  throw last;
 }
 async function writeFicheFile(rec){
   const dir = await FD.save.h.getDirectoryHandle(DIR_FICHES, {create:true}), name = ficheFile(rec.id);
@@ -7477,7 +7613,8 @@ async function startupSync(){
 /* ---------- affichage : barre d'état, bandeau, fenêtre du dossier ---------- */
 function folderStatusHTML(){
   const o = FD.save, nm = o.h && o.h.name ? esc(o.h.name) : '';
-  if(!FSA || o.state==='unsupported') return '<span class="dot"></span> export manuel (navigateur sans écriture directe)';
+  if(!FSA || o.state==='unsupported') return '<span class="dot"></span> <a href="#" style="color:#f0b429" onclick="openFolders();return false">'+
+    (SET.autoDl ? 'JSON téléchargé à chaque enregistrement' : 'pas d’écriture directe : export manuel')+'</a>';
   if(o.state==='ok') return '<span class="dot on"></span> dossier « '+nm+' »'+(SYNCINFO ? ' · '+esc(SYNCINFO) : '');
   if(o.state==='need') return '<span class="dot"></span> <a href="#" style="color:#f0b429" onclick="regrantSave();return false">autoriser le dossier « '+nm+' »</a>';
   if(o.state==='lost') return '<span class="dot"></span> <a href="#" style="color:#f0b429" onclick="openFolders();return false">dossier introuvable</a>';
@@ -7507,7 +7644,7 @@ function folderLine(role){
   return '« '+esc(o.h.name)+' » — '+st;
 }
 function openFolders(){
-  if(!FSA){ unsupportedModal(); return; }
+  if(!hasPicker('showDirectoryPicker')){ noFolderModal(); return; }
   const same = SET.searchSame;
   const last = LASTSYNC
     ? 'Dernière lecture, à '+new Date(LASTSYNC.at).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})+' : '+
@@ -7542,11 +7679,13 @@ function openFolders(){
     '<p style="margin:14px 0 8px;color:var(--ink2);font-size:12px">'+esc(last)+'</p>'+
     '<div style="display:flex;gap:8px;flex-wrap:wrap">'+
       '<button class="tb gd" onclick="syncNow()">Relire le dossier maintenant</button>'+
-      '<button class="tb" onclick="rewriteFolder()">Réécrire tout le dossier</button></div>'+
+      '<button class="tb" onclick="rewriteFolder()">Réécrire tout le dossier</button>'+
+      '<button class="tb" onclick="closeModal();openExportJSON()">Exporter tout en JSON…</button></div>'+
     '<div class="note" style="margin-top:14px;background:#fbeee4;border-color:#e3bd9a"><b>Données de santé.</b> Les fichiers JSON contiennent '+
     'la fiche entière, identité comprise : c’est ce qui permet de retrouver un sujet par son nom. Choisissez un dossier protégé '+
     '(disque chiffré, accès restreint). Si ce dossier est synchronisé avec un service en ligne, les fiches quittent ce poste : '+
-    'vérifiez que cela est compatible avec l’hébergement de données de santé qui vous est imposé.</div>');
+    'vérifiez que cela est compatible avec l’hébergement de données de santé qui vous est imposé.</div>'+
+    '<p style="margin:10px 0 0;font-size:11.5px"><a href="#" onclick="openDiag();return false">Diagnostic du navigateur</a></p>');
 }
 async function chooseSave(){ await chooseFolder('save'); if(modalOpen()) openFolders(); }
 async function chooseSearch(){ await chooseFolder('search'); if(modalOpen()) openFolders(); }
@@ -7587,12 +7726,26 @@ async function saveFiche(){
   /* le JSON de la fiche, puis le CSV et le dictionnaire, dans le dossier de données */
   const fo = await folder;
   const w = (fo && fo.ok) ? await afterSave(me || snap, !!fo.fresh) : false;
+  /* pas de dossier de données prêt : le JSON de la fiche est téléchargé si l'option est cochée */
+  const dn = (!w && SET.autoDl) ? downloadFiche(me || snap) : '';
   renderList(); renderForm(); updateBar();
-  toast('Fiche enregistrée'+saveNote(w));
+  toast('Fiche enregistrée'+saveNote(w, dn));
 }
-function saveNote(w){
+/* le JSON d'une fiche, téléchargé : il part dans le dossier de téléchargement du navigateur */
+function downloadFiche(rec){
+  const name = ficheFile(rec.id);
+  dl(name, ficheJSON(rec), 'application/json');
+  return name;
+}
+let NOFSA_HINTED = false;
+function saveNote(w, dn){
   if(w) return ' — JSON écrit dans le dossier « '+(FD.save.h ? FD.save.h.name : '')+' »';
-  if(!FSA) return '';
+  if(dn) return ' — JSON téléchargé ('+dn+')';
+  if(!FSA){
+    if(NOFSA_HINTED) return '';
+    NOFSA_HINTED = true;                                   // dit une fois par session, pas à chaque enregistrement
+    return ' — JSON non écrit : ce navigateur n’écrit pas dans un dossier (bouton « Dossier de données »)';
+  }
   switch(FD.save.state){
     case 'ok':   return ' — écriture dans le dossier impossible';
     case 'need': return ' — dossier de données à autoriser';
@@ -7684,11 +7837,35 @@ function modalHTML(h){ $('#modal').innerHTML=h+'<div style="margin-top:14px;text
 function closeModal(){ $('#mask').classList.remove('on'); }
 let toastT=null;
 function toast(m){ const t=$('#toast'); t.textContent=m; t.classList.add('on');
-  clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('on'),2600); }
-function dl(name,txt){
-  /* Dans un WebView natif, <a download> et les URL blob ne declenchent aucun
-     telechargement. On ecrit alors le fichier dans les documents de
-     l'application puis on ouvre la feuille de partage du systeme. */
+  clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('on'),Math.max(2600,Math.min(9000,String(m).length*60))); }
+/* Dans un WebView natif, <a download> et les URL blob ne declenchent aucun
+   telechargement. On ecrit alors le fichier dans les documents de
+   l'application puis on ouvre la feuille de partage du systeme. */
+function dlBlob(name,blob){
+  const C = window.Capacitor && window.Capacitor.Plugins;
+  if(C && C.Filesystem){
+    const rd = new FileReader();
+    rd.onload = async()=>{
+      try{
+        const r = await C.Filesystem.writeFile({
+          path: name, data: String(rd.result).split(',')[1] || '', directory: 'DOCUMENTS', recursive: true });
+        if(C.Share){
+          await C.Share.share({ title: name, url: r.uri,
+            dialogTitle: 'Enregistrer ou envoyer ' + name });
+        }else{
+          toast('Enregistre dans les documents : ' + name);
+        }
+      }catch(e){ toast('Enregistrement impossible : ' + e); }
+    };
+    rd.readAsDataURL(blob);
+    return;
+  }
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=name; document.body.appendChild(a); a.click();
+  setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},10000);
+}
+function dl(name,txt,type){
   const C = window.Capacitor && window.Capacitor.Plugins;
   if(C && C.Filesystem){
     (async()=>{
@@ -7705,10 +7882,7 @@ function dl(name,txt){
     })();
     return;
   }
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob([txt],{type:'text/csv;charset=utf-8'}));
-  a.download=name; document.body.appendChild(a); a.click();
-  setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1500);
+  dlBlob(name, new Blob([txt],{type:type||'text/csv;charset=utf-8'}));
 }
 const today = () => iso(new Date());
 
@@ -7743,21 +7917,237 @@ function openExport(){
   '<div style="display:flex;gap:8px;flex-wrap:wrap">'+
    '<button class="tb gd" onclick="expCSV()">Telecharger le CSV des donnees</button>'+
    '<button class="tb" onclick="expDict()">Telecharger le dictionnaire des variables</button>'+
-   '<button class="tb" onclick="expJSON()">Telecharger la sauvegarde JSON</button>'+
-   (FSA?'<button class="tb pri" onclick="rewriteFolder()">Réécrire tout le dossier de données</button>':'')+
+   '<button class="tb" onclick="expJSON()" title="Un seul fichier JSON qui réunit toutes les fiches">Telecharger la sauvegarde JSON</button>'+
+   '<button class="tb pri" onclick="openExportJSON()" title="Une fiche par fichier, dans un dossier choisi ou dans une archive ZIP">Exporter tout en JSON…</button>'+
+   (FSA?'<button class="tb" onclick="rewriteFolder()">Réécrire tout le dossier de données</button>':'')+
   '</div>'+
   '<div class="note" style="background:#eef4fb;border-color:#bcd4ee"><b>Le dossier de données.</b> '+
    'Sur Chrome ou Edge, le bouton <b>Dossier de données</b> de la barre du haut vous fait choisir un dossier une seule fois. '+
    'À chaque enregistrement, l’outil y écrit la fiche au format JSON (sous-dossier <code>fiches</code>), puis réécrit '+
    '<code>donnees_neuro.csv</code> et <code>dictionnaire_variables.csv</code>, qui contiennent toutes les fiches de tous les sujets. '+
    'À chaque ouverture, il relit ce dossier pour la recherche d’un sujet. La sauvegarde JSON ci-dessus reste le moyen '+
-   'd’emporter toutes les fiches en un seul fichier.</div>');
+   'd’emporter toutes les fiches en un seul fichier ; <b>Exporter tout en JSON</b> les écrit une par une dans le dossier de votre '+
+   'choix (le sélecteur s’ouvre sur Téléchargements), ou les réunit dans une archive ZIP.</div>');
 }
 function expCSV(){ const recs=sortedDB();
   dl('donnees_neuro_'+today()+'.csv', buildCSV(recs,SET.sep,SET.pii)); toast('CSV telecharge'); }
 function expDict(){ dl('dictionnaire_variables_'+today()+'.csv', buildDict(SET.sep,SET.pii)); toast('Dictionnaire telecharge'); }
 function expJSON(){ dl('sauvegarde_neuro_'+today()+'.json',
   JSON.stringify({format:'fiche-neuro-v1',exported:new Date().toISOString(),fiches:sortedDB()},null,1)); toast('Sauvegarde telechargee'); }
+
+/* =====================================================================
+   ARCHIVE ZIP : écriture et lecture, sans bibliothèque
+   Noms en UTF-8, pas de ZIP64 (65 535 fichiers et 4 Gio au plus). Écriture : compression deflate quand le
+   navigateur la propose (CompressionStream), sinon stockage tel quel. Lecture : stocké et deflate, somme de
+   contrôle vérifiée pour chaque fichier.
+   ===================================================================== */
+const CRC_T = (function(){
+  const t = new Uint32Array(256);
+  for(let n=0; n<256; n++){ let c = n; for(let k=0; k<8; k++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1); t[n] = c >>> 0; }
+  return t;
+})();
+function crc32(u8){
+  let c = 0xFFFFFFFF;
+  for(let i=0; i<u8.length; i++) c = CRC_T[(c ^ u8[i]) & 255] ^ (c >>> 8);
+  return (c ^ 0xFFFFFFFF) >>> 0;
+}
+const hasCompression = () => typeof CompressionStream === 'function' && typeof Blob === 'function' && !!Blob.prototype.stream;
+async function flate(u8, Stream){
+  const s = new Blob([u8]).stream().pipeThrough(new Stream('deflate-raw'));
+  return new Uint8Array(await new Response(s).arrayBuffer());
+}
+async function zipBuild(files){
+  if(files.length > 65000) throw new Error('trop de fichiers pour une archive ZIP');
+  const enc = new TextEncoder(), now = new Date();
+  const dtime = (now.getHours() << 11) | (now.getMinutes() << 5) | (now.getSeconds() >> 1);
+  const ddate = ((Math.max(now.getFullYear(), 1980) - 1980) << 9) | ((now.getMonth() + 1) << 5) | now.getDate();
+  const parts = [], central = [];
+  let off = 0, csize = 0;
+  for(const f of files){
+    const name = enc.encode(f.name), raw = f.data, crc = crc32(raw);
+    let method = 0, body = raw;
+    if(hasCompression() && raw.length > 100){
+      try{ const z = await flate(raw, CompressionStream); if(z.length < raw.length){ method = 8; body = z; } }catch(e){}
+    }
+    const need = method ? 20 : 10;
+    const lh = new DataView(new ArrayBuffer(30));
+    lh.setUint32(0, 0x04034b50, true); lh.setUint16(4, need, true); lh.setUint16(6, 0x0800, true);
+    lh.setUint16(8, method, true); lh.setUint16(10, dtime, true); lh.setUint16(12, ddate, true);
+    lh.setUint32(14, crc, true); lh.setUint32(18, body.length, true); lh.setUint32(22, raw.length, true);
+    lh.setUint16(26, name.length, true); lh.setUint16(28, 0, true);
+    parts.push(lh.buffer, name, body);
+    const ch = new DataView(new ArrayBuffer(46));
+    ch.setUint32(0, 0x02014b50, true); ch.setUint16(4, 20, true); ch.setUint16(6, need, true); ch.setUint16(8, 0x0800, true);
+    ch.setUint16(10, method, true); ch.setUint16(12, dtime, true); ch.setUint16(14, ddate, true);
+    ch.setUint32(16, crc, true); ch.setUint32(20, body.length, true); ch.setUint32(24, raw.length, true);
+    ch.setUint16(28, name.length, true); ch.setUint32(42, off, true);
+    central.push(ch.buffer, name);
+    off += 30 + name.length + body.length; csize += 46 + name.length;
+    if(off + csize + 22 > 0xFFFFFFFF) throw new Error('archive trop volumineuse (4 Gio au plus)');
+  }
+  const end = new DataView(new ArrayBuffer(22));
+  end.setUint32(0, 0x06054b50, true); end.setUint16(8, files.length, true); end.setUint16(10, files.length, true);
+  end.setUint32(12, csize, true); end.setUint32(16, off, true);
+  return new Blob(parts.concat(central, [end.buffer]), {type:'application/zip'});
+}
+/* contenu d'une archive : [{name, bytes, error}] ; bytes est null quand le fichier est illisible (error le dit) */
+async function zipRead(blob){
+  const buf = new Uint8Array(await blob.arrayBuffer()), dv = new DataView(buf.buffer, buf.byteOffset, buf.byteLength);
+  let e = -1;
+  for(let i = buf.length - 22; i >= 0 && i >= buf.length - 22 - 65535; i--){ if(dv.getUint32(i, true) === 0x06054b50){ e = i; break; } }
+  if(e < 0) throw new Error('archive ZIP illisible : fin de l’archive introuvable');
+  const n = dv.getUint16(e + 10, true), dec = new TextDecoder('utf-8'), out = [];
+  let p = dv.getUint32(e + 16, true);
+  for(let k=0; k<n; k++){
+    if(p + 46 > buf.length || dv.getUint32(p, true) !== 0x02014b50) throw new Error('archive ZIP illisible : répertoire central');
+    const flag = dv.getUint16(p + 8, true), method = dv.getUint16(p + 10, true), crc = dv.getUint32(p + 16, true),
+          csz = dv.getUint32(p + 20, true), usz = dv.getUint32(p + 24, true), nl = dv.getUint16(p + 28, true),
+          xl = dv.getUint16(p + 30, true), cl = dv.getUint16(p + 32, true), lo = dv.getUint32(p + 42, true);
+    const name = dec.decode(buf.subarray(p + 46, p + 46 + nl)).replace(/\\/g, '/');
+    p += 46 + nl + xl + cl;
+    if(name.slice(-1) === '/') continue;                                   // entrée de dossier
+    const ent = {name:name, bytes:null, error:''};
+    out.push(ent);
+    try{
+      if(flag & 1) throw new Error('fichier chiffré');
+      if(csz === 0xFFFFFFFF || usz === 0xFFFFFFFF || lo === 0xFFFFFFFF) throw new Error('ZIP64 non géré');
+      if(lo + 30 > buf.length || dv.getUint32(lo, true) !== 0x04034b50) throw new Error('en-tête local absent');
+      const start = lo + 30 + dv.getUint16(lo + 26, true) + dv.getUint16(lo + 28, true);
+      if(start + csz > buf.length) throw new Error('données tronquées');
+      const body = buf.subarray(start, start + csz);
+      let data;
+      if(method === 0) data = body;
+      else if(method === 8){
+        if(typeof DecompressionStream !== 'function') throw new Error('décompression indisponible dans ce navigateur');
+        data = await flate(body, DecompressionStream);
+      }else throw new Error('méthode de compression '+method+' non gérée');
+      if(crc32(data) !== crc) throw new Error('somme de contrôle incorrecte');
+      ent.bytes = data;
+    }catch(err){ ent.error = errTxt(err); }
+  }
+  return out;
+}
+
+/* =====================================================================
+   EXPORTER TOUT EN JSON
+   Un fichier JSON par fiche, au format du dossier de données (fiche_<id>.json, lisible par « Importer / Fusionner ») :
+   soit écrit directement dans un dossier choisi, soit réuni dans une archive ZIP. Dans les deux cas le sélecteur
+   s'ouvre sur Téléchargements. Le nom d'un fichier ne porte aucune donnée du patient.
+   ===================================================================== */
+function exportEntries(){
+  const used = new Set();
+  return sortedDB().map(r=>{
+    let name = ficheFile(r.id), k = 1;
+    while(used.has(name.toLowerCase())) name = ficheFile(r.id).replace(/\.json$/, '_'+(++k)+'.json');   // Windows ignore la casse
+    used.add(name.toLowerCase());
+    return {name:name, rec:r};
+  });
+}
+let EXPORTING = false;
+const expSay = h => { const el = $('#expJsonRes'); if(el) el.innerHTML = h; };
+const expBox = (h, ok) => '<div class="note" style="background:'+(ok?'#e6f4ec':'#fbeaea')+';border-color:'+(ok?'#9ccdb3':'#e0a5a5')+'">'+h+'</div>';
+const nFiches = n => n+' fiche'+(n>1?'s':'');
+function openExportJSON(){
+  const n = DB.length, dirOk = hasPicker('showDirectoryPicker'), dis = n ? '' : ' disabled';
+  modalHTML('<h3>Exporter tout en JSON</h3>'+
+    '<div class="note" style="background:#eef4fb;border-color:#bcd4ee"><b>'+nFiches(n)+'</b>, <b>une par fichier</b> '+
+      '<code>fiche_&lt;identifiant&gt;.json</code> : le format du dossier de données, que « Importer / Fusionner » relit. '+
+      'Chaque fichier contient la fiche entière.</div>'+
+    '<h4 style="margin:14px 0 6px">1. Dans un dossier de votre choix</h4>'+
+    (dirOk
+      ? '<p style="margin:0 0 8px">Le sélecteur s’ouvre sur <b>Téléchargements</b>. Chrome et Edge ne laissent pas choisir Téléchargements '+
+        'lui-même : créez-y un sous-dossier (bouton « Nouveau dossier » du sélecteur), par exemple « ADP-JSON », ou choisissez-en un '+
+        'existant. Les fiches y sont écrites directement ; rien de ce qui s’y trouve déjà n’est supprimé.</p>'+
+        '<button class="tb pri" onclick="expJSONFolder()"'+dis+'>Choisir le dossier et exporter…</button>'
+      : '<p style="margin:0 0 8px;color:var(--ink2)">Indisponible dans ce navigateur : il n’offre pas l’écriture directe dans un dossier. '+
+        '<a href="#" onclick="openDiag();return false">Pourquoi ?</a> L’archive ZIP ci-dessous donne le même résultat en un seul fichier.</p>')+
+    '<h4 style="margin:16px 0 6px">2. Dans une archive ZIP, un seul fichier'+(dirOk?'':' (recommandé ici)')+'</h4>'+
+    '<p style="margin:0 0 8px">Le fichier <code>fiches_neuro_'+today()+'.zip</code> '+(pwaNative()
+      ? 'est enregistré dans les documents de l’application, puis la feuille de partage du système s’ouvre (Fichiers, envoi…). '
+      : 'est proposé dans <b>Téléchargements</b>. Selon le navigateur, vous pouvez choisir un autre emplacement ; sinon il est '+
+        'enregistré directement dans son dossier de téléchargement. ')+
+      'Il se rouvre avec « Importer / Fusionner » ou se décompresse avec l’Explorateur de fichiers.</p>'+
+    '<button class="tb '+(dirOk?'gd':'pri')+'" onclick="expJSONZip()"'+dis+'>Télécharger l’archive ZIP</button>'+
+    '<div id="expJsonRes" style="margin-top:12px"></div>'+
+    '<div class="note" style="background:#fbeee4;border-color:#e3bd9a"><b>Données de santé.</b> Ces fichiers contiennent l’identité des '+
+    'sujets et leurs pièces jointes, sans protection. Gardez-les sur un support chiffré ou à accès restreint, et supprimez-les de '+
+    'Téléchargements une fois copiés.</div>');
+}
+const sizeTxt = n => n < 1048576 ? Math.max(1, Math.round(n / 1024))+' Ko' : (n / 1048576).toFixed(n < 10485760 ? 1 : 0)+' Mo';
+/* Le sélecteur est appelé avant tout await : il n'est accepté que juste après un clic. Un seul export à la fois,
+   sélecteur compris : un double clic n'ouvre pas deux sélecteurs. */
+async function expJSONFolder(){
+  if(EXPORTING) return;
+  if(!DB.length){ toast('Aucune fiche à exporter'); return; }
+  if(!hasPicker('showDirectoryPicker')){ noFolderModal(); return; }
+  EXPORTING = true;
+  try{
+    let dir;
+    try{ dir = await window.showDirectoryPicker({mode:'readwrite', id:'ficheexport', startIn:'downloads'}); }
+    catch(e){ if(!(e && e.name==='AbortError')) pickerErrorModal(e, 'expJSONFolder()'); return; }
+    const list = exportEntries();
+    let n = 0, bad = 0, first = '';
+    for(const x of list){
+      expSay('<span style="color:var(--ink2)">Écriture des fiches : '+(n + bad + 1)+' / '+list.length+'…</span>');
+      try{
+        const txt = ficheJSON(x.rec), fh = await writeIn(dir, x.name, txt), f = await fh.getFile();
+        if(f.size !== new Blob([txt]).size) throw new Error('taille du fichier écrit inattendue');
+        n++;
+      }catch(e){
+        bad++; if(!first) first = errTxt(e);
+        if(!n && bad >= 3) break;                                             // rien ne s'écrit : inutile d'insister
+      }
+    }
+    const nm = esc(dir.name || '');
+    if(n === list.length){
+      expSay(expBox('<b>'+nFiches(n)+'</b> écrite'+(n>1?'s':'')+' dans le dossier « '+nm+' ».', true));
+      toast(nFiches(n)+' exportée'+(n>1?'s':'')+' en JSON');
+    }else{
+      expSay(expBox('<b>'+n+' fiche'+(n>1?'s':'')+' sur '+list.length+'</b> écrite'+(n>1?'s':'')+' dans le dossier « '+nm+' ». '+
+        bad+' échec'+(bad>1?'s':'')+(first ? ' : '+esc(first) : '')+'.', false));
+      toast('Export incomplet : '+n+' sur '+list.length);
+    }
+  }finally{ EXPORTING = false; }
+}
+async function expJSONZip(){
+  if(EXPORTING) return;
+  if(!DB.length){ toast('Aucune fiche à exporter'); return; }
+  EXPORTING = true;
+  try{
+    const name = 'fiches_neuro_'+today()+'.zip';
+    let fh = null;
+    /* le sélecteur d'enregistrement d'abord, avant tout calcul : Téléchargements par défaut, autre dossier au choix */
+    if(hasPicker('showSaveFilePicker')){
+      try{ fh = await window.showSaveFilePicker({suggestedName:name, id:'ficheexportzip', startIn:'downloads',
+                                                types:[{description:'Archive ZIP', accept:{'application/zip':['.zip']}}]}); }
+      catch(e){ if(e && e.name==='AbortError') return; fh = null; }             // sélecteur refusé : téléchargement ordinaire
+    }
+    const list = exportEntries();
+    let blob;
+    try{
+      expSay('<span style="color:var(--ink2)">Préparation de l’archive…</span>');
+      const enc = new TextEncoder(), files = [];
+      for(const x of list) files.push({name:x.name, data:enc.encode(ficheJSON(x.rec))});
+      blob = await zipBuild(files);
+    }catch(e){
+      expSay(expBox('Archive impossible : '+esc(errTxt(e)), false)); toast('Archive impossible'); return;
+    }
+    const sz = sizeTxt(blob.size);
+    if(fh){
+      let w = null;
+      try{
+        w = await fh.createWritable(); await w.write(blob); await w.close(); w = null;
+        expSay(expBox('<b>'+nFiches(list.length)+'</b> dans l’archive « '+esc(fh.name)+' » ('+sz+').', true));
+        toast('Archive enregistrée : '+fh.name); return;
+      }catch(e){ if(w){ try{ await w.abort(); }catch(_){} } }                  // écriture refusée : téléchargement ordinaire
+    }
+    dlBlob(name, blob);
+    expSay(expBox('<b>'+nFiches(list.length)+'</b> dans l’archive « '+esc(name)+' » ('+sz+'), '+(pwaNative()
+      ? 'enregistrée dans les documents de l’application, feuille de partage ouverte.'
+      : 'téléchargée dans le dossier de téléchargement du navigateur (Téléchargements par défaut).'), true));
+    toast('Archive téléchargée : '+name);
+  }finally{ EXPORTING = false; }
+}
 
 /* ---------- import / fusion ---------- */
 const NUMKEYS = (function(){
@@ -7836,29 +8226,42 @@ function recFromRow(head0,row){
 function openImport(){
   modalHTML('<h3>Importer et fusionner</h3>'+
   '<div class="note">Déposez ici un fichier produit par cet outil sur un autre poste : '+
-  'sauvegarde <b>.json</b> (recommandée, sans perte), fichiers <b>.json</b> du sous-dossier <code>fiches</code> '+
-  '(plusieurs à la fois) ou <b>.csv</b> des données. '+
+  'sauvegarde <b>.json</b> (recommandée, sans perte), archive <b>.zip</b> de « Exporter tout en JSON », fichiers <b>.json</b> '+
+  'du sous-dossier <code>fiches</code> (plusieurs à la fois) ou <b>.csv</b> des données. '+
   'La fusion se fait sur <code>fiche_id</code> : une fiche déjà présente est remplacée seulement si la version importée est plus récente. '+
   'Rien n’est jamais supprimé. Sur Chrome ou Edge avec un dossier de données connecté, ces fichiers n’ont pas besoin d’être importés à la main : '+
   'le dossier est relu à chaque ouverture.</div>'+
-  '<input type="file" id="impFile" accept=".json,.csv,.txt" multiple onchange="doImport(this.files)">'+
+  '<input type="file" id="impFile" accept=".json,.csv,.txt,.zip" multiple onchange="doImport(this.files)">'+
+  (envInfo().folderIn
+    ? '<p style="margin:14px 0 4px"><b>Ou un dossier entier</b> : toutes les fiches JSON qu’il contient, sous-dossiers compris. '+
+      'Le sous-dossier <code>supprimees</code> et les fichiers CSV sont ignorés.</p>'+
+      '<input type="file" id="impDir" webkitdirectory multiple onchange="doImport(this.files,{folder:true})">'
+    : '')+
   '<div id="impRes" style="margin-top:12px"></div>');
 }
-async function doImport(files){
+/* les fiches supprimées d'un dossier de données sont rangées dans fiches/supprimees : un import de dossier les ignore */
+const inTrash = p => /(^|\/)supprimees\//i.test(String(p).replace(/\\/g, '/'));
+/* fiches contenues dans un fichier : JSON (toutes enveloppes) ou CSV des données ; null si le fichier est illisible */
+function recsFromText(name, txt){
+  if(/\.json$/i.test(name)){
+    try{ return recsFromJSON(JSON.parse(txt)); }catch(e){ return null; }
+  }
+  const first = (txt.charCodeAt(0) === 0xFEFF ? txt.slice(1) : txt).split(/\r?\n/)[0] || '';
+  const sep = first.split(';').length>first.split(',').length ? ';' : (first.indexOf('\t')>=0?'\t':',');
+  const rows = parseCSV(txt, sep); if(rows.length<2) return null;
+  const head = rows[0].map(h=>h.trim());
+  return rows.slice(1).filter(r=>r.join('').trim()!=='').map(r=>recFromRow(head,r));
+}
+/* files : fichiers choisis ; opt.folder : fichiers d'un dossier entier (JSON seulement, corbeille exclue).
+   Une archive .zip est ouverte : ses fichiers .json sont lus comme des fichiers isolés. */
+async function doImport(files, opt){
+  opt = opt || {};
   const st = {add:0, upd:0, same:0, bad:0, ignored:0};
   let seen = 0;
-  for(const file of files){
-    let txt; try{ txt=await file.text(); }catch(e){ st.bad++; continue; }
-    let recs=[];
-    if(/\.json$/i.test(file.name)){
-      try{ recs = recsFromJSON(JSON.parse(txt)); }catch(e){ st.bad++; continue; }
-    } else {
-      const first=(txt.replace(/^﻿/,'').split(/\r?\n/)[0]||'');
-      const sep = first.split(';').length>first.split(',').length ? ';' : (first.indexOf('\t')>=0?'\t':',');
-      const rows=parseCSV(txt,sep); if(rows.length<2){ st.bad++; continue; }
-      const head=rows[0].map(h=>h.trim());
-      recs=rows.slice(1).filter(r=>r.join('').trim()!=='').map(r=>recFromRow(head,r));
-    }
+  const wait = $('#impRes'); if(wait) wait.innerHTML = '<span style="color:var(--ink2)">Lecture des fichiers…</span>';
+  const take = async (name, txt) => {
+    const recs = recsFromText(name, txt);
+    if(!recs){ st.bad++; return; }
     for(const r of recs){
       if(!validRec(r)){ st.bad++; continue; }
       seen++;
@@ -7866,6 +8269,20 @@ async function doImport(files){
       const res = await mergeOne(r, st, true);
       if(res==='add' || res==='upd') delete TOMB[r.id];
     }
+  };
+  for(const file of Array.from(files || [])){
+    if(/\.zip$/i.test(file.name)){
+      let ents; try{ ents = await zipRead(file); }catch(e){ st.bad++; continue; }
+      for(const z of ents){
+        if(!/\.json$/i.test(z.name) || inTrash(z.name)) continue;
+        if(!z.bytes){ st.bad++; continue; }
+        await take(z.name, new TextDecoder('utf-8').decode(z.bytes));
+      }
+      continue;
+    }
+    if(opt.folder && (!/\.json$/i.test(file.name) || inTrash(file.webkitRelativePath || file.name))) continue;
+    let txt; try{ txt=await file.text(); }catch(e){ st.bad++; continue; }
+    await take(file.name, txt);
   }
   await persistTomb();
   DB=await idbAll(); await renumberAll(); await afterConnect({csv:true}); renderList(); renderForm(); updateBar();
@@ -7989,6 +8406,7 @@ function openMenu(){
     it('&#43;','Ré-examen du sujet','newFollowUp()')+
     it('&#128193;','Dossier de données','openFolders()')+
     it('&#11015;','Exporter','openExport()')+
+    it('&#128230;','Exporter tout en JSON','openExportJSON()')+
     it('&#11014;','Importer / Fusionner','openImport()')+
     it('&#9906;','Douchette et identifiants','openScan()')+
     it('&#8505;','Dictionnaire des variables','openDict()')+
@@ -8013,7 +8431,13 @@ function openHelp(){
   'Cliquez <b>Dossier de données</b> et choisissez un dossier, ou laissez l’outil vous le demander au premier enregistrement. '+
   'Sur Chrome ou Edge, il y écrit la fiche au format JSON à chaque enregistrement, puis réécrit <code>donnees_neuro.csv</code> '+
   'et son dictionnaire (toutes les fiches de tous les sujets, une ligne par fiche). À chaque ouverture, il relit ce dossier pour '+
-  'la recherche par nom, prénom ou numéro. Le dossier n’est jamais redemandé : au plus un clic pour l’autoriser à nouveau.</p>'+
+  'la recherche par nom, prénom ou numéro. Le dossier n’est jamais redemandé : au plus un clic pour l’autoriser à nouveau. '+
+  'Sur un navigateur sans écriture directe (Firefox, Safari, téléphone, tablette), le bouton en explique la raison et propose ce qui '+
+  'reste possible : télécharger le JSON de chaque fiche à l’enregistrement, exporter une archive ZIP, importer un dossier.</p>'+
+  '<p><b>1 bis. Exporter tout en JSON.</b><br>'+
+  'Bouton <b>Exporter</b>, puis <b>Exporter tout en JSON</b> : une fiche par fichier, soit dans le dossier de votre choix (le sélecteur '+
+  's’ouvre sur Téléchargements), soit réunies dans une archive ZIP enregistrée dans Téléchargements par défaut. '+
+  '<b>Importer / Fusionner</b> relit ces fichiers, l’archive ou un dossier entier.</p>'+
   '<p><b>2. Remplir une fiche.</b><br>'+
   'Saisissez le <b>numero de dossier</b> : c\'est lui qui relie plusieurs examens d\'un meme sujet. '+
   'Si ce numero est deja connu, l\'identite et les donnees de l\'accident se remplissent seules, et les valeurs '+
@@ -8038,7 +8462,8 @@ function openHelp(){
   'Identite, accident et examinateur sont repris, l\'examen repart vide, et le <code>num_ex</code> s\'incremente automatiquement.</p>'+
   '<p><b>5. Saisie sur tablette, puis fusion.</b><br>'+
   'Copiez le fichier HTML sur la tablette et ouvrez-le : il fonctionne hors ligne. En fin de mission, '+
-  '<b>Exporter</b> puis <i>sauvegarde JSON</i>. Sur le poste principal, <b>Importer / Fusionner</b> ce fichier. '+
+  '<b>Exporter</b> puis <i>sauvegarde JSON</i> (ou <i>Exporter tout en JSON</i>, une archive ZIP). Sur le poste principal, '+
+  '<b>Importer / Fusionner</b> ce fichier. '+
   'La fusion se fait sur l\'identifiant de fiche, sans doublon et sans perte.</p>'+
   '<p><b>6. Analyser.</b><br>'+
   'Ouvrez <code>donnees_neuro.csv</code> dans Excel, R, Python, SPSS ou Jamovi. '+
@@ -8203,7 +8628,7 @@ async function saveDraft(){ if(DIRTY && REC) await metaSet('draft',JSON.parse(JS
   const s = await metaGet('settings');
   if(s){ SET.poste=s.poste||''; SET.sep=s.sep||';'; SET.pii=!!s.pii;
          SET.wedge = s.wedge!==false; SET.scanRe=s.scanRe||''; SET.hash=!!s.hash; SET.hashLen=s.hashLen||12;
-         SET.searchSame = s.searchSame!==false; }
+         SET.searchSame = s.searchSame!==false; SET.autoDl = !!s.autoDl; }
   SET.salt = (await metaGet('salt')) || '';
   TOMB = (await metaGet('deleted')) || {};
   SYNCMAP = Object.assign({save:{}, search:{}}, (await metaGet('syncmap')) || {});

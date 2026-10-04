@@ -1,4 +1,4 @@
-# ADP — accident de plongée, version 7.3.2
+# ADP — accident de plongée, version 7.3.3
 
 Fichier unique : `index.html`. Aucun réseau, aucune dépendance externe, aucun compte.
 Double-cliquez dessus, il s'ouvre dans votre navigateur et tout fonctionne.
@@ -25,6 +25,10 @@ Une ligne = une fiche. 883 colonnes.
 Sans bouton de plus, chaque enregistrement écrit aussi la fiche entière au format **JSON** dans le
 dossier de données (un fichier par fiche), et chaque ouverture relit ce dossier pour la recherche d'un
 sujet : voir *Mise en place, une seule fois*.
+
+Pour emporter **toutes les fiches en JSON d'un coup**, **Exporter** › **Exporter tout en JSON** les écrit
+une par fichier dans un dossier de votre choix (Téléchargements par défaut), ou les réunit dans une
+archive ZIP : voir *Exporter tout en JSON*.
 
 Les pages du PDF, selon le type de consultation :
 
@@ -109,8 +113,57 @@ Sont lus : tous les `.json` du sous-dossier `fiches`, et à la racine les `sauve
 est compté et ignoré. Les dates, heures et nombres d'une fiche lue sont contrôlés avant son
 enregistrement.
 
-Firefox et Safari ne gèrent pas l'écriture directe sur disque. Sur ces navigateurs, et sur tablette,
-passez par **Exporter**, puis fusionnez sur le poste principal.
+### Quand le navigateur ne propose pas de dossier
+
+Le choix d'un dossier repose sur une fonction de **Chrome et d'Edge pour ordinateur** (API File System
+Access). Firefox, Safari, les navigateurs de téléphone et de tablette ne l'ont pas, et certains réglages la
+retirent : mode protégé du navigateur, extension, stratégie de l'établissement, page ouverte en HTTP ou
+dans un cadre d'une autre page. Le bouton **Dossier de données** ne s'arrête plus sur une erreur sans
+issue : il dit **pourquoi**, affiche un **diagnostic du navigateur** (copiable), et propose ce qui reste
+possible :
+
+- **Exporter tout en JSON** dans une archive ZIP (voir plus bas) ;
+- **Télécharger le JSON de la fiche à chaque enregistrement** : une case à cocher. Le fichier
+  `fiche_<identifiant>.json` part alors dans le dossier de téléchargement du navigateur. Pour le fixer une
+  fois pour toutes, réglez le navigateur (Paramètres › Téléchargements › Emplacement) et désactivez
+  *Demander où enregistrer chaque fichier avant de le télécharger*. Le navigateur numérote les copies d'une
+  même fiche (`fiche_….json`, puis `fiche_… (1).json`) : à l'import, la version la plus récente l'emporte ;
+- **Importer / Fusionner** un fichier, une archive ZIP ou un dossier entier.
+
+Si Windows ouvre `index.html` dans un autre navigateur que Chrome ou Edge, faites un clic droit sur
+`index.html`, **Ouvrir avec**, puis choisissez Edge ou Chrome. Le diagnostic donne le nom du navigateur
+utilisé.
+
+Si le navigateur offre le choix d'un dossier mais **refuse** celui que vous avez désigné (dossier système,
+Documents ou Téléchargements eux-mêmes, accès bloqué), l'erreur est expliquée avec un bouton **Réessayer** :
+choisissez alors un **sous-dossier dédié**.
+
+---
+
+## Exporter tout en JSON
+
+**Exporter** › **Exporter tout en JSON** (ou, sur téléphone, le menu) écrit **toutes les fiches** de ce
+poste au format JSON, **une fiche par fichier** : `fiche_<identifiant>.json`, le format du dossier de
+données. Le nom ne porte aucune donnée du patient. Deux façons de le faire :
+
+- **Dans un dossier de votre choix** (Chrome, Edge sur ordinateur). Le sélecteur s'ouvre sur
+  **Téléchargements**. Chrome et Edge refusent que Téléchargements lui-même soit choisi : créez-y un
+  sous-dossier (bouton *Nouveau dossier* du sélecteur), par exemple `ADP-JSON`, puis validez. Les fiches sont
+  écrites **directement** dans ce dossier. Ce qui s'y trouve déjà n'est jamais supprimé, et un nouvel export
+  met à jour les mêmes fichiers sans créer de doublon. Chaque fichier écrit est contrôlé (taille) et l'écran
+  donne le nombre de fiches écrites, ou la raison de l'échec.
+- **Dans une archive ZIP** (tous les navigateurs). Un seul fichier, `fiches_neuro_AAAA-MM-JJ.zip`, proposé dans
+  **Téléchargements** ; selon le navigateur, vous pouvez choisir un autre emplacement, sinon il est enregistré
+  directement dans son dossier de téléchargement. L'archive contient les mêmes fichiers, se décompresse avec
+  l'Explorateur de fichiers et se réimporte telle quelle.
+
+Pour reprendre ces fichiers sur un autre poste : **Importer / Fusionner** accepte un fichier `.json`, plusieurs
+fichiers à la fois, une archive `.zip`, ou un **dossier entier** (tous les `.json` qu'il contient,
+sous-dossiers compris ; le sous-dossier `supprimees` et les `.csv` sont ignorés). La fusion se fait sur
+l'identifiant de fiche : une fiche n'est remplacée que par une version plus récente.
+
+**Données de santé.** Chaque fichier contient l'identité du sujet et ses pièces jointes, sans protection :
+gardez-les sur un support chiffré ou à accès restreint, et supprimez-les de Téléchargements une fois copiés.
 
 ---
 
@@ -135,8 +188,9 @@ Ensuite, sur l'appareil :
 Le menu **Installation hors ligne** de l'outil affiche ces étapes selon l'appareil, signale les
 mises à jour disponibles et permet de vider le cache. Vider le cache n'efface aucune fiche.
 
-Sur iPhone et iPad, l'écriture directe du CSV dans un dossier n'existe pas : Safari n'implémente
-pas cette API. Exportez à la main, puis fusionnez sur le poste principal.
+Sur iPhone et iPad, l'écriture directe dans un dossier n'existe pas : Safari n'implémente pas cette API.
+Exportez à la main (**Exporter tout en JSON**, ou le téléchargement du JSON de chaque fiche à
+l'enregistrement), puis fusionnez sur le poste principal.
 
 ---
 
@@ -795,8 +849,10 @@ y compris si vous saisissez a posteriori un examen antérieur.
 ## Saisie sur tablette, puis fusion
 
 1. Copiez `index.html` sur la tablette, ouvrez-le. Il fonctionne hors ligne.
-2. En fin de mission : **Exporter** → *Télécharger la sauvegarde JSON*.
-3. Sur le poste principal : **Importer / Fusionner**, déposez le fichier.
+2. En fin de mission : **Exporter** → *Télécharger la sauvegarde JSON* (un seul fichier) ou *Exporter tout
+   en JSON* (une archive ZIP). Au choix, cochez dès le début *Télécharger le JSON de la fiche à chaque
+   enregistrement* (bouton **Dossier de données**) : chaque fiche part alors dans Téléchargements.
+3. Sur le poste principal : **Importer / Fusionner**, déposez le fichier, l'archive ou le dossier.
 
 La fusion se fait sur `fiche_id`. Une fiche déjà présente n'est remplacée que si la version
 importée est plus récente. Un double import ne crée pas de doublon.
@@ -887,6 +943,43 @@ d = pd.read_csv("donnees_neuro.csv", sep=";", encoding="utf-8-sig")
 
 Pour les analyses courantes, les colonnes de synthèse suffisent. Les colonnes de détail servent
 aux analyses topographiques fines.
+
+---
+
+## Changements de la version 7.3.3
+
+Aucune colonne du CSV n'est ajoutée, retirée ni recodée : les fiches de la 7.3.2 s'ouvrent telles quelles.
+
+### Exporter tout en JSON
+
+- **Nouveau bouton** dans **Exporter** (et dans le menu du téléphone) : toutes les fiches, une par fichier, dans
+  un **dossier choisi** (le sélecteur s'ouvre sur **Téléchargements**) ou dans une **archive ZIP** enregistrée
+  dans Téléchargements par défaut. Voir *Exporter tout en JSON*.
+- **Importer / Fusionner** lit désormais aussi une **archive ZIP** et un **dossier entier**.
+
+### Choix du dossier : correction
+
+- Un navigateur sans écriture directe affichait un écran sans issue (« Écriture directe non disponible »).
+  **Dossier de données** explique désormais la cause (page ouverte en HTTP ou dans un cadre, Firefox, Safari,
+  mobile, réglage ou stratégie du navigateur), donne un **diagnostic copiable** et propose ce qui fonctionne :
+  archive ZIP, **téléchargement automatique du JSON à chaque enregistrement** (case à cocher), import d'un
+  dossier. La barre d'état renvoie vers cette explication.
+- Quand le sélecteur de dossier **échoue** (dossier refusé, accès bloqué), l'erreur est expliquée avec un
+  bouton **Réessayer**, au lieu d'un simple message qui disparaît.
+- Le sélecteur s'ouvre sur **Documents** pour le dossier de données, et sur **Téléchargements** pour l'export.
+- L'écriture d'un fichier est **retentée deux fois** en cas de verrouillage passager (antivirus, indexation de
+  Windows), et un fichier abandonné est libéré proprement.
+- Les messages affichés à l'écran restent plus longtemps quand ils sont longs.
+
+### À valider de votre côté
+
+- **Le navigateur qui ouvre `index.html`** : le diagnostic le nomme. Sur ordinateur, Edge ou Chrome permet de
+  choisir le dossier une seule fois ; si Windows ouvre le fichier dans un autre navigateur, faites un clic
+  droit, **Ouvrir avec**.
+- **Téléchargement automatique du JSON** (navigateurs sans dossier) : un fichier par enregistrement dans
+  Téléchargements, les copies d'une même fiche étant numérotées par le navigateur.
+- **Dossier d'export** : un sous-dossier de Téléchargements, car les navigateurs refusent Téléchargements
+  lui-même.
 
 ---
 
@@ -1087,6 +1180,9 @@ du script de `index.html`.
 
 ## Historique
 
+- **7.3.3** : « Exporter tout en JSON » (une fiche par fichier, dans un dossier choisi ou une archive ZIP),
+  import d'archives ZIP et de dossiers entiers, choix du dossier : explication, diagnostic et solutions de
+  repli quand le navigateur n'offre pas l'écriture directe.
 - **7.3.2** : un fichier JSON par fiche écrit à l'enregistrement dans un dossier choisi une fois, relu à
   l'ouverture pour la recherche ; examen anal écrit seulement s'il est anormal.
 - **7.3.1** : coordination et examen vestibulaire, sensibilités normales en un clic, échographie
@@ -1114,8 +1210,9 @@ la cochez, le fichier devient un traitement de données de santé identifiantes 
 (art. 9) : registre des traitements, base légale, information des personnes et chiffrement du
 support relèvent alors de votre responsabilité.
 
-**Les fichiers JSON du dossier de données contiennent la fiche entière, identité, santé et
-photographies comprises** : c'est ce qui permet de retrouver un sujet par son nom. Ils sont à traiter
+**Les fichiers JSON du dossier de données, de l'export en JSON, des archives ZIP et des téléchargements
+automatiques contiennent la fiche entière, identité, santé et photographies comprises** : c'est ce qui permet
+de retrouver un sujet par son nom. Ils sont à traiter
 comme des données de santé identifiantes, quels que soient les réglages de l'export CSV. Choisissez
 un dossier protégé (disque chiffré, accès restreint). Si ce dossier est synchronisé avec un service
 en ligne, les fiches quittent le poste : vérifiez que ce service est compatible avec l'hébergement de
@@ -1128,7 +1225,8 @@ données de santé qui vous est imposé. Le nom de chaque fichier ne porte, lui,
 Les fiches vivent dans la base locale du navigateur **et** dans le dossier de données (un fichier
 JSON par fiche). Vider les données de navigation efface la base locale, mais le dossier la
 reconstitue à l'ouverture suivante, une fois choisi de nouveau. Le dossier de données et les
-sauvegardes JSON sont votre filet de sécurité : copiez-les ailleurs régulièrement.
+sauvegardes JSON sont votre filet de sécurité : copiez-les ailleurs régulièrement. **Exporter tout en
+JSON** en produit une copie complète à tout moment, dans le dossier de votre choix ou dans une archive ZIP.
 
 ---
 

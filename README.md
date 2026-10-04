@@ -2,7 +2,7 @@
 
 Outil de saisie pour la prise en charge d'un accident de plongée en médecine
 hyperbare : consultation initiale en urgence, consultations de suivi, compte
-rendu de séjour. Auteur : Dr Julien Lesaca. Version 7.3.2.
+rendu de séjour. Auteur : Dr Julien Lesaca. Version 7.3.3.
 
 Deux sorties, depuis la même saisie :
 
@@ -55,7 +55,7 @@ cd Fiche-Neuro-Standardisee
 # copiez ici le contenu de ce dossier (index.html, icons/, manifest, sw.js, docs/, native/)
 
 git add .
-git commit -m "ADP v7.3.2"
+git commit -m "ADP v7.3.3"
 git push origin main
 ```
 
@@ -74,12 +74,12 @@ en HTTPS, condition nécessaire pour l'installation et le service worker.
 ### Publier une mise à jour
 
 Modifiez `index.html`, incrémentez `VERSION` en tête de `sw.js`
-(`v7.3.2` → `v7.3.3`), poussez. Sans ce changement de version, les appareils
+(`v7.3.3` → `v7.3.4`), poussez. Sans ce changement de version, les appareils
 déjà installés gardent l'ancienne copie en cache.
 
 ```bash
-sed -i "s/const VERSION = 'v7.3.2'/const VERSION = 'v7.3.3'/" sw.js
-git commit -am "v7.3.3" && git push
+sed -i "s/const VERSION = 'v7.3.3'/const VERSION = 'v7.3.4'/" sw.js
+git commit -am "v7.3.4" && git push
 ```
 
 Au lancement suivant avec réseau, l'application signale la mise à jour et
@@ -101,7 +101,7 @@ serveur interne à l'établissement, ou distribuez `index.html` par clé USB.
 ## Contenu du dépôt
 
 ```
-index.html                 application complète, fichier unique, 510 ko
+index.html                 application complète, fichier unique, 537 ko
 manifest.webmanifest       déclaration d'installation (nom, icônes, plein écran)
 sw.js                      service worker : démarrage hors ligne, mises à jour
 icons/                     icônes 32 à 1024 px, dont deux masquables Android
@@ -144,16 +144,21 @@ Les fiches vivent à trois endroits, du plus fragile au plus solide :
    enregistrement l'outil y écrit la fiche en JSON (un fichier par fiche, sous-dossier
    `fiches`) et réécrit `donnees_neuro.csv` ; à chaque ouverture il le relit pour la
    recherche d'un sujet. Les fichiers JSON contiennent l'identité : dossier protégé ;
-3. **l'export manuel** (CSV ou JSON) : disponible partout, y compris sur
-   iPhone et Firefox.
+3. **l'export manuel**, disponible partout, y compris sur iPhone et Firefox :
+   le CSV, la sauvegarde JSON d'un seul fichier, et **Exporter tout en JSON**, qui écrit
+   une fiche par fichier dans un dossier choisi (le sélecteur s'ouvre sur Téléchargements,
+   Chrome et Edge) ou les réunit dans une archive ZIP enregistrée dans Téléchargements par défaut.
 
 Vider le cache de l'application ne touche pas aux fiches. Effacer les données
 de site, si.
 
-Sur iPhone, iPad et Firefox, l'écriture directe dans un dossier n'existe pas.
-Exportez à la main en fin de vacation, puis fusionnez sur le poste principal
-avec *Importer / Fusionner*. La fusion se fait sur l'identifiant de fiche,
-sans doublon ni écrasement.
+Sur iPhone, iPad et Firefox, l'écriture directe dans un dossier n'existe pas. Le
+bouton *Dossier de données* l'explique (avec un diagnostic du navigateur) et propose
+ce qui reste possible : télécharger le JSON de chaque fiche à chaque enregistrement
+(case à cocher), ou exporter une archive ZIP en fin de vacation. Puis fusionnez sur
+le poste principal avec *Importer / Fusionner*, qui lit un fichier JSON, une archive
+ZIP ou un dossier entier. La fusion se fait sur l'identifiant de fiche, sans doublon
+ni écrasement.
 
 ---
 
