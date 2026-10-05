@@ -97,6 +97,7 @@ organisme;Organisme (Le plongeur);"1 = FFESSM ; 2 = CMAS ; 3 = PADI ; 4 = SSI ; 
 organisme_autre;Organisme — à préciser (Le plongeur);texte libre
 niveau_date;Date d'obtention du niveau (Le plongeur);AAAA-MM-JJ
 plongee_depuis;Plongée depuis (année) (Le plongeur);numerique
+nb_plongees_total;Nombre total de plongées réalisées (Le plongeur);numerique (plongées)
 nb_plongees_an;Nombre moyen de plongées par an (Le plongeur);numerique (/an)
 certif_date;Date du dernier certificat médical (Le plongeur);AAAA-MM-JJ
 certif_medecin;Qualification du médecin (Le plongeur);"1 = Médecin fédéral ; 2 = Médecin du sport ; 3 = DIU hyperbare ; 4 = Médecin généraliste ; 5 = Médecin rééducateur ; 9 = Autre"
@@ -445,6 +446,9 @@ dg_bioch_types_co;Accident biochimique — type - Intoxication au monoxyde de ca
 dg_bioch_types;Accident biochimique — type - liste (Diagnostic retenu);texte, valeurs separees par |
 dg_principal;Diagnostic principal (Diagnostic retenu);"add = Accident de désaturation ; opi = Œdème pulmonaire d’immersion ; baro = Barotraumatisme ; bioch = Accident biochimique ; noyade = Noyade"
 dg_txt;Autre diagnostic ou précisions (Diagnostic retenu);texte libre
+sortie_exam_second;Examens à réaliser secondairement (Sortie : examens à prévoir et aptitude à la plongée);texte libre
+inapt_type;Inaptitude à la plongée (Sortie : examens à prévoir et aptitude à la plongée);"1 = Temporaire (durée en mois) ; 2 = Définitive"
+inapt_mois;Durée de l’inaptitude (mois) (Sortie : examens à prévoir et aptitude à la plongée);numerique (mois)
 orientation;Orientation (Orientation et commentaires);"1 = Retour au domicile ; 2 = Hospitalisation en service de médecine ; 3 = Hospitalisation en surveillance continue ; 4 = Hospitalisation en soins intensifs ; 5 = Transfert vers une autre structure"
 orientation_autre;Préciser la structure (Orientation et commentaires);texte libre
 orientation_txt;Précisions sur l'orientation (Orientation et commentaires);texte libre

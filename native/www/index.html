@@ -27,7 +27,8 @@ body{font:13px/1.45 "Segoe UI",Roboto,system-ui,-apple-system,sans-serif;color:v
 button,input,select,textarea{font-family:inherit;font-size:13px;color:inherit}
 
 /* ---------- barre d'outils ---------- */
-#topbar{position:sticky;top:0;z-index:50;background:#101725;color:#fff;
+#hdr{position:sticky;top:0;z-index:50}
+#topbar{position:relative;background:#101725;color:#fff;
   padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px);
   display:flex;align-items:center;gap:8px;padding:7px 12px;flex-wrap:wrap;
   box-shadow:0 1px 6px rgba(0,0,0,.25)}
@@ -47,6 +48,15 @@ button,input,select,textarea{font-family:inherit;font-size:13px;color:inherit}
 #dbstate b{color:#eaf1fb}
 .dot{width:8px;height:8px;border-radius:50%;background:#c0392b;display:inline-block}
 .dot.on{background:#27ae60}
+/* bandeau patient : nom, prénom, naissance, accident, dossier, sous la barre d'outils, en permanence */
+#patbar{display:flex;flex-wrap:wrap;align-items:flex-end;gap:2px 22px;background:#16396b;color:#fff;cursor:pointer;
+  padding:4px 14px 5px;border-top:1px solid #2a4f86;box-shadow:0 1px 6px rgba(0,0,0,.25);min-height:34px}
+#patbar .pi{display:flex;flex-direction:column;line-height:1.15;min-width:0}
+#patbar .pi small{font-size:9.5px;letter-spacing:.07em;text-transform:uppercase;color:#a9c4e6}
+#patbar .pi b{font-size:13.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:36vw}
+#patbar .pi b.nd{color:#7f9cc3;font-weight:400}
+#patbar .pt{margin-left:auto;align-self:center;font-size:11px;color:#cfe0f5;text-align:right}
+#patbar .pbr{display:none}
 #folderbanner{display:none}
 #folderbanner.on{display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:var(--warn-l);
   border:1px solid #e3bd9a;border-radius:6px;padding:7px 12px;margin:0 0 10px;font-size:12.5px}
@@ -54,7 +64,7 @@ button,input,select,textarea{font-family:inherit;font-size:13px;color:inherit}
 /* ---------- structure ---------- */
 #wrap{display:flex;gap:0;align-items:flex-start;min-width:0;max-width:100%}
 #side{width:250px;flex:0 0 250px;background:#fff;border-right:1px solid var(--bd);
-  height:calc(100vh - 40px);position:sticky;top:40px;overflow:auto;padding:10px}
+  height:calc(100vh - var(--hdr,40px));position:sticky;top:var(--hdr,40px);overflow:auto;padding:10px}
 #side.hide{display:none}
 #main{flex:1;min-width:0;max-width:100%;padding:12px 16px 120px;overflow:hidden}
 #form,.sec,.sec>.body,.grid2,.bodywrap,.dbar,#sensTabs{min-width:0;max-width:100%}
@@ -69,7 +79,8 @@ button,input,select,textarea{font-family:inherit;font-size:13px;color:inherit}
 .fitem .m{font-size:11px;color:var(--ink2)}
 
 /* ---------- sections ---------- */
-.sec{background:var(--card);border:1px solid var(--bd);border-radius:7px;margin-bottom:10px;overflow:hidden}
+.sec{background:var(--card);border:1px solid var(--bd);border-radius:7px;margin-bottom:10px;overflow:hidden;
+  scroll-margin-top:calc(var(--hdr,40px) + 8px)}
 .sec>h3{margin:0;padding:7px 11px;background:#eef2f7;border-bottom:1px solid var(--bd);
   font-size:12px;text-transform:uppercase;letter-spacing:.07em;color:#243247;
   display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none}
@@ -243,10 +254,10 @@ td.lv small{display:block;font-weight:400;color:var(--ink2);font-size:10.5px;max
 .eva-9.on,.eva-10.on{background:var(--bad);border-color:var(--bad)}
 
 /* ---------- synthèse ---------- */
-#synth{background:#fbfcfe;border:1px solid var(--bd2);border-radius:6px;padding:9px 11px;
+#synth,#crh{background:#fbfcfe;border:1px solid var(--bd2);border-radius:6px;padding:9px 11px;
   font-size:12.5px;line-height:1.55}
-#synth p{margin:0 0 .75em}
-#synth p:last-child{margin-bottom:0}
+#synth p,#crh p{margin:0 0 .75em}
+#synth p:last-child,#crh p:last-child{margin-bottom:0}
 
 /* ---------- modale ---------- */
 #mask{position:fixed;inset:0;background:rgba(12,18,28,.55);z-index:100;display:none;
@@ -438,10 +449,10 @@ svg.echo rect.z:hover{stroke-width:2.6;filter:brightness(.96)}
   #dbstate .lbl2{display:none}
 }
 /* ---------- navigation en quatre pages ---------- */
-#pagebar{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:0 0 14px}
+#pagebar{display:grid;grid-template-columns:repeat(var(--np,5),minmax(0,1fr));gap:6px;margin:0 0 14px}
 .wtab{position:relative;text-align:left;background:#fff;border:1px solid var(--bd);border-radius:7px;
   padding:8px 26px 8px 10px;cursor:pointer;color:var(--ink2);min-width:0;font:inherit;line-height:1.25}
-.wtab b{display:block;font-size:12.5px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wtab b{display:block;font-size:12.5px;color:var(--ink);white-space:normal;line-height:1.2;padding-right:2px}
 .wtab small{display:block;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .wtab .pcount{position:absolute;top:6px;right:8px;font-size:10px;font-weight:700;color:var(--ink2)}
 .wtab:hover{border-color:var(--acc)}
@@ -512,10 +523,15 @@ svg.echo rect.z:hover{stroke-width:2.6;filter:brightness(.96)}
   .onlyphone{display:inline-block}
   #side{display:none}
   .tb{padding:9px 10px;font-size:13px}
-  /* les quatre onglets tiennent sur deux rangées sur un écran étroit */
+  /* les onglets tiennent sur deux colonnes sur un écran étroit */
   #pagebar{grid-template-columns:1fr 1fr;gap:5px}
+  #patbar{gap:1px 12px;padding:3px 8px 4px;min-height:30px}
+  #patbar .pi small{font-size:8.5px}
+  #patbar .pi b{font-size:12.5px;max-width:44vw}
+  #patbar .pt{display:none}
+  #patbar .pbr{display:block;flex-basis:100%;height:0}      /* nom et prénom sur une ligne, le reste sur la suivante */
   .wtab small{display:none}
-  .wtab{padding:7px 8px}
+  .wtab{padding:7px 32px 7px 8px}
   .wtab b{font-size:11.5px;white-space:normal}
   #pagenav .tb{flex:1 1 40%;text-align:center}
   #pagenav .pmid{flex-basis:100%;text-align:center;order:-1}
@@ -564,7 +580,7 @@ svg.echo rect.z:hover{stroke-width:2.6;filter:brightness(.96)}
 /* ---------- impression ---------- */
 @media print{
   @page{size:A4 portrait;margin:8mm 9mm}
-  #topbar,#side,#main,#mask,#toast,#navbar{display:none !important}
+  #hdr,#topbar,#side,#main,#mask,#toast,#navbar{display:none !important}
   #patholder{display:block !important;position:absolute;width:0;height:0;overflow:hidden}
   body{background:#fff;font-size:8.3pt}
   #print-root{display:block}
@@ -615,8 +631,8 @@ svg.echo rect.z:hover{stroke-width:2.6;filter:brightness(.96)}
   .pf{font-style:italic;font-weight:400}
   .pfoot{display:flex;justify-content:space-between;font-size:9.4pt;font-weight:700;
     border-top:1px solid #000;padding-top:1mm;margin-top:1mm}
-  .psyn{border:1px solid #000;padding:1mm 1.4mm;font-size:8.2pt;line-height:1.35}
-  .psyn p{margin:0 0 1.1mm}
+  .psyn{border:1px solid #000;padding:1mm 1.4mm;font-size:8.1pt;line-height:1.28}
+  .psyn p{margin:0 0 .8mm}
   .pecho{display:flex;gap:2mm;align-items:flex-start}
   .pecho .efig{flex:0 0 auto}
   .pecho svg.echo{display:block;width:44mm;height:auto;margin:0}
@@ -636,8 +652,9 @@ svg.echo rect.z:hover{stroke-width:2.6;filter:brightness(.96)}
 </style>
 </head>
 <body>
+<div id="hdr">
 <div id="topbar">
-  <span class="ttl" title="Accident de plongée — version 7.3.3">ADP <small style="font-weight:400;opacity:.65">7.3.3</small></span>
+  <span class="ttl" title="Accident de plongée — version 7.4.0">ADP <small style="font-weight:400;opacity:.65">7.4.0</small></span>
   <button class="tb nophone" onclick="toggleSide()" title="Afficher / masquer la liste des fiches">&#9776;</button>
   <span class="sep"></span>
   <button class="tb pri" onclick="newFiche()">+<span class="lbl2"> Nouvelle</span> fiche</button>
@@ -659,6 +676,8 @@ svg.echo rect.z:hover{stroke-width:2.6;filter:brightness(.96)}
   <button class="tb pri" id="btninstall" style="display:none" onclick="openInstall()">&#11015;<span class="lbl2"> Installer</span></button>
   <button class="tb onlyphone" onclick="openMenu()">&#9776;<span class="lbl2"> Menu</span></button>
   <span id="dbstate"></span>
+</div>
+<div id="patbar" onclick="goPage(1)" title="Aller à l’identification"></div>
 </div>
 
 <div id="wrap">
@@ -1358,7 +1377,7 @@ const SPEC = [
   {k:'soin_o2_debit', l:'Débit (L/min)', t:'num', min:0, max:25, unit:'L/min', dep:['soin_o2',[1]], sub:1,
    hint:DEF_O2_DEBIT+' L/min proposés, modifiable'},
   {k:'soin_o2_duree', l:'Durée (min)', t:'calc', unit:'min', dep:['soin_o2',[1]], sub:1,
-   hint:'Calculée : 1ers soins sur place → mise en pression au SMHEP (heure saisie en page 4)'},
+   hint:'Calculée : 1ers soins sur place → mise en pression au SMHEP (heure saisie dans l’onglet Conclusion et évolution)'},
   {k:'soin_aspirine', l:'Aspirine', t:'choice', o:ONA},
   {k:'soin_hydrat', l:'Hydratation (mL)', t:'num', min:0, max:5000, unit:'mL'},
   {k:'soin_autres', l:'Autres soins sur place', t:'txt', wide:1, full:1, nofill:1},
@@ -1367,7 +1386,7 @@ const SPEC = [
   {k:'delai_symp_pec', l:'Délai 1ers symptômes → prise en charge (min)', t:'calc', full:1}
 ]},
 
-{id:'plongeur', t:'Le plongeur', cols:2, page:1, only:[1], f:[
+{id:'plongeur', t:'Le plongeur', cols:2, page:2, only:[1], f:[
   {k:'h_pident', t:'head', l:'Identité et terrain', full:1},
   {k:'nationalite', l:'Nationalité', t:'choice', o:NATIO, full:1},
   {k:'nationalite_autre', l:'Nationalité — à préciser', t:'txt', sub:1, dep:['nationalite',[9]]},
@@ -1429,6 +1448,8 @@ const SPEC = [
   {k:'organisme_autre', l:'Organisme — à préciser', t:'txt', sub:1, dep:['organisme',[99]]},
   {k:'niveau_date', l:"Date d'obtention du niveau", t:'date'},
   {k:'plongee_depuis', l:'Plongée depuis (année)', t:'num', min:1930, max:new Date().getFullYear(), ph:'AAAA'},
+  {k:'nb_plongees_total', l:'Nombre total de plongées réalisées', t:'num', min:0, max:100000, unit:'plongées',
+   hint:'Depuis le début de la pratique, toutes plongées confondues (carnet de plongée)'},
   {k:'nb_plongees_an', l:'Nombre moyen de plongées par an', t:'num', min:0, max:1000, unit:'/an',
    hint:'Moyenne sur les 2 dernières années'},
   {k:'certif_date', l:'Date du dernier certificat médical', t:'date'},
@@ -1443,7 +1464,7 @@ const SPEC = [
   {k:'club_resp', l:'Club — responsable', t:'txt'}
 ]},
 
-{id:'plongee', t:'Paramètres de la plongée accidentelle', cols:2, page:1, only:[1], ptail:()=>profilPrint(), f:[
+{id:'plongee', t:'Paramètres de la plongée accidentelle', cols:2, page:2, only:[1], ptail:()=>profilPrint(), f:[
   {k:'pl_lieu', l:'Lieu / site', t:'txt', wide:1, full:1},
   {k:'pl_type', l:'Type de plongée', t:'choice', o:TYPP},
   {k:'pl_gaz', l:'Mélange respiré', t:'choice', o:GAZ},
@@ -1506,13 +1527,13 @@ const SPEC = [
    hint:'Au minimum '+PAL_RR.p3+' min'},
   {k:'pl_reimm_txt', l:'Description de la procédure', t:'area', wide:1, full:1, sub:1, nofill:1, dep:['pl_reimm_type',[1,2]],
    hint:'Rédigée d’après les paramètres ci-dessus, modifiable à la main ; reprise dans la synthèse'},
-  /* l'heure des 1ers symptômes se saisit dans l'encart d'accueil (page 1), juste avant les 1ers soins ;
+  /* l'heure des 1ers symptômes se saisit dans l'encart d'accueil (onglet Administratif), juste avant les 1ers soins ;
      le délai depuis la sortie de l'eau reste ici, avec HS */
   {k:'pl_delai_symp', l:'Délai sortie de l’eau → 1ers symptômes (min)', t:'calc', full:1,
    hint:'Un délai court est un facteur de gravité. Calculé avec l’heure des 1ers symptômes saisie plus haut'}
 ]},
 
-{id:'plongee_prec', t:'Paramètres de la plongée précédente', cols:2, page:1, only:[1],
+{id:'plongee_prec', t:'Paramètres de la plongée précédente', cols:2, page:2, only:[1],
  norm:{plp_faite:0}, f:[
   {k:'plp_faite', l:'Plongée dans les 24 heures précédentes', t:'choice', o:ON, full:1},
   {k:'plp_date', l:'Date', t:'date', dep:['plp_faite',[1]], sub:1},
@@ -1524,7 +1545,7 @@ const SPEC = [
   {k:'plp_interval', l:'Intervalle de surface (min)', t:'calc', full:1, dep:['plp_faite',[1]], sub:1}
 ]},
 
-{id:'facteurs', t:'Facteurs favorisants', cols:2, page:1, only:[1],
+{id:'facteurs', t:'Facteurs favorisants', cols:2, page:2, only:[1],
  norm:{ff_proc:1,ff_entrainement:0,ff_ludion:0,ff_fatigue:0,ff_effort:0,ff_instruction:0,
        ff_insomnie:0,ff_exercice24:0,ff_froid:0,ff_deshydrat:0}, f:[
   {k:'ff_proc', l:'Respect de la procédure de décompression', t:'choice', o:NO},
@@ -1541,7 +1562,7 @@ const SPEC = [
    phr:['Mer calme.','Mer agitée.','Courant.','Visibilité réduite.','Eau froide.','Plongée sous plafond.']}
 ]},
 
-{id:'anamnese', t:'Anamnèse', cols:1, page:1, only:[1], ptail:()=>pcontacts(), f:[
+{id:'anamnese', t:'Anamnèse', cols:1, page:2, only:[1], ptail:()=>pcontacts(), f:[
   {k:'histoire', l:'Histoire de la maladie', t:'area', wide:1, full:1, nofill:1,
    hint:'Chronologie depuis la sortie de l’eau jusqu’à la prise en charge',
    phr:['Apparition des symptômes à la sortie de l’eau.','Apparition différée après la sortie de l’eau.',
@@ -1567,9 +1588,9 @@ const SPEC = [
   {k:'mt_tel', l:'Médecin traitant — téléphone', t:'txt', pii:1, col:'b'}
 ]},
 
-{id:'constantes', t:'Constantes et surveillance', custom:'cst', cols:1, page:2, f:[]},
+{id:'constantes', t:'Constantes et surveillance', custom:'cst', cols:1, page:3, f:[]},
 
-{id:'general', t:'Examen clinique général', cols:1, page:2,
+{id:'general', t:'Examen clinique général', cols:1, page:3,
  norm:{ex_cv:0,ex_pneumo:0,ex_abdo:0,ex_loco:0}, f:[
   {k:'ex_cv', l:'Anomalie cardio-vasculaire', t:'choice', o:ON},
   {k:'ex_cv_txt', l:'Préciser', t:'txt', wide:1, full:1, nofill:1, dep:['ex_cv',[1]], sub:1,
@@ -1585,7 +1606,7 @@ const SPEC = [
    phr:['Douleur articulaire (bend).','Épaule.','Coude.','Genou.','Hanche.','Impotence fonctionnelle.']}
 ]},
 
-{id:'consc', page:2, t:'Conscience', cols:1, norm:{avpu:1,gcs_y:4,gcs_v:5,gcs_m:6}, f:[
+{id:'consc', page:3, t:'Conscience', cols:1, norm:{avpu:1,gcs_y:4,gcs_v:5,gcs_m:6}, f:[
   {k:'avpu', l:'AVPU', t:'choice', o:[{v:1,l:'Alert',c:'v-ok'},{v:2,l:'Verbal',c:'v-wn'},{v:3,l:'Pain',c:'v-ab'},{v:4,l:'Unresponsive',c:'v-ab'}]},
   {k:'gcs_y', help:'gcs', l:'Glasgow — Ouverture des yeux (Y)', t:'choice', o:gcs(4)},
   {k:'gcs_v', help:'gcs', l:'Glasgow — Réponse verbale (V)',    t:'choice', o:gcs(5)},
@@ -1594,7 +1615,7 @@ const SPEC = [
    hint:'Non calculé si une modalité est cotée NC'}
 ]},
 
-{id:'fsup', page:2, t:'Fonctions supérieures', cols:1,
+{id:'fsup', page:3, t:'Fonctions supérieures', cols:1,
  norm:{fs_comport:0,fs_dts:0,fs_parole:0,fs_visuel:0,fs_audition:0,fs_acouph:0,fs_vertiges:0,nys:0,vns:0,
        pup_sym:1,pup_aniso:0,pup_myd:0,pup_myo:0,pup_rpm:1}, f:[
   {k:'h_pup', t:'head', l:'Examen pupillaire', full:1,
@@ -1635,7 +1656,7 @@ const SPEC = [
   {k:'vns_niv_regard', l:'Position(s) du regard', t:'multi', o:REGARD, dep:['vns_niv',[1]], sub:1}
 ]},
 
-{id:'orl', page:2, t:'ORL et barotraumatisme', cols:2, note:HAINES_TXT, tail:()=>orlBox(),
+{id:'orl', page:3, t:'ORL et barotraumatisme', cols:2, note:HAINES_TXT, tail:()=>orlBox(),
  norm:{oto_D:0,oto_G:0,valsalva_D:2,valsalva_G:2,weber:0,rinne_D:1,rinne_G:1}, f:[
   {k:'oto_D', l:'Otoscopie — oreille DROITE',  t:'choice', o:HAINES, help:'oto'},
   {k:'oto_G', l:'Otoscopie — oreille GAUCHE',  t:'choice', o:HAINES, help:'oto'},
@@ -1650,7 +1671,7 @@ const SPEC = [
    phr:['Otalgie droite','Otalgie gauche','Otorragie droite','Otorragie gauche','Plénitude auriculaire','Autophonie','Vertige positionnel déclenché au Valsalva','Barotraumatisme sinusien','Épistaxis']}
 ]},
 
-{id:'sfonc', page:2, t:'Signes fonctionnels', cols:1, norm:{sf_ceph:0,sf_rachis:0,sf_subj:0,eva_type:2,eva_score:0}, f:[
+{id:'sfonc', page:3, t:'Signes fonctionnels', cols:1, norm:{sf_ceph:0,sf_rachis:0,sf_subj:0,eva_type:2,eva_score:0}, f:[
   {k:'sf_ceph',   l:'Céphalées', t:'choice', o:ON},
   {k:'sf_rachis', l:'Douleur rachidienne', t:'choice', o:ON},
   {k:'sf_rachis_loc', l:'Localisation', t:'multi', o:[{v:'cervicale',l:'Cervicale'},{v:'dorsale',l:'Dorsale'},{v:'lombaire',l:'Lombaire'}], dep:['sf_rachis',[1]], sub:1},
@@ -1663,9 +1684,9 @@ const SPEC = [
   {k:'sf_subj_cote', l:'Côté', t:'choice', o:CO, dep:['sf_subj',[1]], sub:1}
 ]},
 
-{id:'subj', page:2, t:'Signes subjectifs — localisation', custom:'subj', cols:1, f:[]},
+{id:'subj', page:3, t:'Signes subjectifs — localisation', custom:'subj', cols:1, f:[]},
 
-{id:'refsup', page:3, t:'Réflexes — membres supérieurs', cols:2,
+{id:'refsup', page:4, t:'Réflexes — membres supérieurs', cols:2,
  norm:{ref_bicip_D:1,ref_bicip_G:1,ref_tricip_D:1,ref_tricip_G:1,hoffman_D:0,hoffman_G:0}, f:[
   {k:'ref_bicip_D', help:'rot', l:'Bicipital DROIT',  t:'choice', o:REF, flags:RFLAGS, copyref:1},
   {k:'ref_bicip_G', l:'Bicipital GAUCHE', t:'choice', o:REF, flags:RFLAGS, copyref:1},
@@ -1675,7 +1696,7 @@ const SPEC = [
   {k:'hoffman_G', help:'hoffmann', l:'Signe de Hoffmann GAUCHE', t:'choice', o:ON, hint:'OUI = pathologique'}
 ]},
 
-{id:'refinf', page:3, t:'Réflexes — membres inférieurs', cols:2,
+{id:'refinf', page:4, t:'Réflexes — membres inférieurs', cols:2,
  norm:{ref_rot_D:1,ref_rot_G:1,ref_ach_D:1,ref_ach_G:1,bbk_D:0,bbk_G:0,trep_pied:0,trep_rot:0,contract:0}, f:[
   {k:'ref_rot_D', help:'rot', l:'Rotulien DROIT',  t:'choice', o:REF, flags:RFLAGS, copyref:1},
   {k:'ref_rot_G', l:'Rotulien GAUCHE', t:'choice', o:REF, flags:RFLAGS, copyref:1},
@@ -1697,7 +1718,7 @@ const SPEC = [
    phr:['Deltoïde','Biceps brachial','Avant-bras','Éminence thénar','Muscles intercostaux','Paravertébraux lombaires','Quadriceps','Jumeaux / mollet','Loge antéro-externe de jambe','Muscles de la face']}
 ]},
 
-{id:'force', page:3, t:'Motricité et force motrice', cols:2, note:MRC_TXT+
+{id:'force', page:4, t:'Motricité et force motrice', cols:2, note:MRC_TXT+
  ' · Les dix myotomes clés sont ceux de la cotation ASIA (ISNCSCI).',
  tail:()=>forceBox(),
  norm:{par_fac:0,barre:0,ming:0,
@@ -1765,7 +1786,7 @@ const SPEC = [
   {k:'dap', l:'Pression anale profonde perçue (DAP)', t:'choice', o:NO, full:1, vis:'sph', help:'vac'}
 ]},
 
-{id:'mict', page:3, t:'Miction', cols:1, norm:{mict:1,mict_type:1}, f:[
+{id:'mict', page:4, t:'Miction', cols:1, norm:{mict:1,mict_type:1}, f:[
   {k:'mict', l:"Miction depuis l'accident", t:'choice', o:NO},
   {k:'mict_type', l:'Caractéristiques', t:'choice', dep:['mict',[1]], sub:1,
    o:[{v:1,l:'Normale',c:'v-ok'},{v:2,l:'Avec effort',c:'v-wn'},{v:3,l:'Rétention',c:'v-ab'}]},
@@ -1773,7 +1794,7 @@ const SPEC = [
   {k:'mict_residu_post', help:'sphincter', l:'Résidu post-mictionnel (mL)', t:'num', min:0, max:3000, unit:'mL'}
 ]},
 
-{id:'coord', page:3, t:'Coordination et examen vestibulaire', cols:1,
+{id:'coord', page:4, t:'Coordination et examen vestibulaire', cols:1,
  norm:{vertic:1,equil_yo:1,equil_yf:1,marche:1,marche_yo:0,marche_yf:0,talon_genou:1,doigt_nez:1,
        romberg:0,fukuda:0,etoile:0,funambule:0}, f:[
   {k:'vertic', l:'Verticalisation possible', t:'choice', o:NO},
@@ -1799,22 +1820,22 @@ const SPEC = [
   {k:'funambule_cote', l:'Côté de la déviation', dl:'Marche funambule — côté de la déviation', t:'choice', o:CO2, dep:['funambule',[1]], sub:1}
 ]},
 
-{id:'sens', page:3, t:'Sensibilités', custom:'sens', cols:1, norm:{sens_examinee:1}, f:[
+{id:'sens', page:4, t:'Sensibilités', custom:'sens', cols:1, norm:{sens_examinee:1}, f:[
   {k:'sens_examinee', help:'derm', l:'Examen des sensibilités réalisé', t:'choice', o:NO,
    hint:"Si NON, toutes les zones et tous les reliefs osseux sont exportés comme valeurs manquantes, et non comme normaux."}
 ]},
 
-{id:'asia', page:3, t:'Score ASIA (ISNCSCI)', custom:'asia', cols:1, f:[]},
+{id:'asia', page:4, t:'Score ASIA (ISNCSCI)', custom:'asia', cols:1, f:[]},
 
-{id:'scores', t:'Scores de sévérité', custom:'sco', cols:1, page:3, f:[]},
+{id:'scores', t:'Scores de sévérité', custom:'sco', cols:1, page:4, f:[]},
 
 /* La conclusion de l'examen clinique ferme l'onglet « Examen neurologique » */
-{id:'concl_ex', page:3, t:"Conclusion de l'examen clinique", cols:1, noghost:1, f:[
+{id:'concl_ex', page:4, t:"Conclusion de l'examen clinique", cols:1, noghost:1, f:[
   {k:'conclusion', l:"Conclusion de l'examen", t:'choice',
    o:[{v:1,l:'Examen neurologique normal',c:'v-ok'},{v:2,l:'Examen neurologique anormal',c:'v-ab'},{v:3,l:'À recontrôler',c:'v-wn'}]}
 ]},
 
-{id:'cut', page:2, t:'Lésions cutanées de désaturation', custom:'cut', cols:1, norm:{cut_present:0}, f:[
+{id:'cut', page:3, t:'Lésions cutanées de désaturation', custom:'cut', cols:1, norm:{cut_present:0}, f:[
   {k:'cut_present', l:'Lésions cutanées présentes', t:'choice', o:ON,
    hint:'Marbrures (cutis marmorata), érythème, œdème, prurit, papules, emphysème sous-cutané'},
   {k:'cut_delai', l:"Délai d'apparition après émersion (min)", t:'num', min:0, max:2880, unit:'min', dep:['cut_present',[1]], sub:1},
@@ -1829,7 +1850,7 @@ const SPEC = [
    Sur une consultation de suivi ou de sortie, seuls l'anamnèse, l'examen général et
    l'examen neurologique sont repris (en gris) ; les examens complémentaires et la
    conclusion sont nécessairement différents, et un examen coché de nouveau est un nouvel examen. */
-{id:'recomp', t:'Recompression', cols:2, page:4, noghost:1, f:[
+{id:'recomp', t:'Recompression', cols:2, page:5, noghost:1, f:[
   {k:'tb_table', l:'Table utilisée', t:'choice', o:TABLES, full:1, hint:'B18 proposée d’office sur une consultation initiale, modifiable'},
   {k:'tb_table_autre', l:'Table — à préciser', t:'txt', wide:1, full:1, sub:1, dep:['tb_table',[9]]},
   {k:'tb_duree', l:'Durée de la table (min)', t:'calc', unit:'min', dep:['tb_table',[1,2,3,4,5,6,7,8]],
@@ -1846,7 +1867,7 @@ const SPEC = [
 ]},
 
 /* Actes : voie veineuse, bilan biologique, puis sondage, dans cet ordre */
-{id:'actes', t:'Actes', cols:2, page:4, noghost:1, f:[
+{id:'actes', t:'Actes', cols:2, page:5, noghost:1, f:[
   {k:'ac_vvp', l:'Voie veineuse périphérique', t:'choice', o:ONA, full:1},
   {k:'h_bio', t:'head', l:'Bilan biologique', full:1},
   {k:'bio_add', l:'Bilan accident de plongée prélevé', t:'choice', o:ONA,
@@ -1863,7 +1884,7 @@ const SPEC = [
 ]},
 
 /* Examens complémentaires : chaque examen réalisé (OUI) porte son résultat. Une ligne par examen. */
-{id:'examens', t:'Examens complémentaires', cols:1, page:4, noghost:1, f:[
+{id:'examens', t:'Examens complémentaires', cols:1, page:5, noghost:1, f:[
   {k:'im_ecg', l:'ECG', t:'choice', o:ONA},
   {k:'ecg_fc', l:'ECG — fréquence cardiaque', t:'num', min:20, max:250, unit:'bpm', sub:1, dep:['im_ecg',[1]]},
   {k:'ecg_qtc', l:'ECG — QTc', t:'num', min:200, max:700, unit:'ms', sub:1, dep:['im_ecg',[1]]},
@@ -1901,13 +1922,13 @@ const SPEC = [
    dessiné (voir echoBlock). Les zones elles-mêmes sont des clés ech_<partie>_<côté>_<rangée>_<champ>,
    hors SPEC comme les schémas corporels ; seul le commentaire est un champ ordinaire.
    L'encart n'apparaît que si l'examen est coché OUI dans les examens complémentaires. */
-{id:'echo', page:4, t:'Échographie pleuro-pulmonaire', custom:'echo', cols:1, noghost:1, when:()=>REC.d.im_echopp===1, f:[
+{id:'echo', page:5, t:'Échographie pleuro-pulmonaire', custom:'echo', cols:1, noghost:1, when:()=>REC.d.im_echopp===1, f:[
   {k:'ech_txt', l:'Commentaire', t:'txt', wide:1, full:1, nofill:1, dep:['im_echopp',[1]],
    phr:['Glissement pleural présent des deux côtés.','Glissement pleural aboli.','Point poumon retrouvé.',
         'Épanchement pleural.','Examen limité par l’emphysème sous-cutané.']}
 ]},
 
-{id:'prescriptions', t:'Traitements prescrits', cols:2, page:4, noghost:1, f:[
+{id:'prescriptions', t:'Traitements prescrits', cols:2, page:5, noghost:1, f:[
   {k:'rx_o2', l:'Oxygène normobare', t:'choice', o:ONA, full:1},
   {k:'rx_o2_mode', l:'Modalité', t:'choice', o:O2_MODES, full:1, sub:1, dep:['rx_o2',[1]]},
   {k:'rx_o2_debit', l:'Débit', t:'num', min:0, max:25, unit:'L/min', sub:1, dep:['rx_o2_mode',[1]],
@@ -1918,7 +1939,7 @@ const SPEC = [
   {k:'rx_vni_fio2', l:'FiO₂', t:'num', min:21, max:100, unit:'%', sub:1, dep:['rx_o2_mode',[2]]},
   {k:'rx_solu', l:'(Méthyl)prednisolone', t:'choice', o:ONA},
   {k:'rx_solu_dose', l:'Dose quotidienne', t:'num', min:0, max:2000, unit:'mg/jour', dep:['rx_solu',[1]], sub:1,
-   hint:'Calculée : '+DEF_CORTICO_MGKG+' mg/kg d’après le poids saisi page 1, modifiable'},
+   hint:'Calculée : '+DEF_CORTICO_MGKG+' mg/kg d’après le poids saisi dans l’onglet Anamnèse et plongée, modifiable'},
   {k:'rx_solu_jours', l:'Durée (jours)', t:'num', min:1, max:30, unit:'j', dep:['rx_solu',[1]], sub:1,
    hint:DEF_CORTICO_JOURS+' jours proposés, modifiable'},
   {k:'rx_solu_h', l:'Heure de la 1re dose', t:'time', dep:['rx_solu',[1]], sub:1},
@@ -1929,7 +1950,7 @@ const SPEC = [
    phr:['Anticoagulation préventive.','Kinésithérapie.','Antiémétique.','Anxiolytique.']}
 ]},
 
-{id:'evolution', t:"Évolution depuis la consultation précédente", cols:1, page:4, only:[2,3], noghost:1,
+{id:'evolution', t:"Évolution depuis la consultation précédente", cols:1, page:5, only:[2,3], noghost:1,
  tail:()=>evolBox(), f:[
   {k:'ev_seances', l:'Séances réalisées depuis la dernière consultation', t:'num', min:0, max:20},
   {k:'ev_complic', l:'Complication thérapeutique depuis la dernière consultation', t:'choice', o:ON},
@@ -1947,7 +1968,7 @@ const SPEC = [
 
 /* Diagnostic retenu : un ou plusieurs diagnostics associés, avec leurs types, et un diagnostic
    principal quand plusieurs sont retenus et que le principal est déterminé. */
-{id:'diagnostic', page:4, t:'Diagnostic retenu', cols:1, noghost:1, f:[
+{id:'diagnostic', page:5, t:'Diagnostic retenu', cols:1, noghost:1, f:[
   {k:'dg_liste', l:'Diagnostic(s) retenu(s)', t:'multi', o:DG, full:1,
    hint:'Plusieurs diagnostics peuvent être associés'},
   {k:'dg_add_types', l:'Accident de désaturation — type', t:'multi', o:DG_ADD, full:1, sub:1, dep:['dg_liste',['add']]},
@@ -1961,7 +1982,20 @@ const SPEC = [
   {k:'dg_txt', l:'Autre diagnostic ou précisions', t:'txt', wide:1, full:1, nofill:1}
 ]},
 
-{id:'concl', page:4, t:'Orientation et commentaires', cols:1, noghost:1, f:[
+/* Sortie : ce que le compte rendu d'hospitalisation doit encore dire. Consultation de sortie seulement. */
+{id:'sortie', page:5, t:'Sortie : examens à prévoir et aptitude à la plongée', cols:1, only:[3], noghost:1, f:[
+  {k:'sortie_exam_second', l:'Examens à réaliser secondairement', t:'area', wide:1, full:1, nofill:1,
+   hint:'Repris dans le compte rendu d’hospitalisation',
+   phr:['IRM médullaire de contrôle.','Doppler transcrânien de contraste.','Échographie cardiaque de contraste (recherche de FOP).',
+        'Audiométrie tonale et bilan vestibulaire.','Consultation ORL.','Consultation de médecine physique et de réadaptation.',
+        'Bilan neuropsychologique.']},
+  {k:'inapt_type', l:'Inaptitude à la plongée', t:'choice', full:1,
+   o:[{v:1,l:'Temporaire (durée en mois)',c:'v-wn'},{v:2,l:'Définitive',c:'v-ab'}],
+   hint:'Repris dans le compte rendu d’hospitalisation'},
+  {k:'inapt_mois', l:'Durée de l’inaptitude (mois)', t:'num', min:1, max:120, unit:'mois', sub:1, dep:['inapt_type',[1]]}
+]},
+
+{id:'concl', page:5, t:'Orientation et commentaires', cols:1, noghost:1, f:[
   {k:'orientation', l:'Orientation', t:'choice',
    o:[{v:1,l:'Retour au domicile',c:'v-ok'},
       {v:2,l:'Hospitalisation en service de médecine',c:'v-wn'},
@@ -1979,7 +2013,10 @@ const SPEC = [
    phr:['Examen limité par la douleur.','Examen limité par la barrière de la langue.','Patient non coopérant.','Aucune anomalie constatée sur l’ensemble de l’examen.','Comparaison avec l’examen précédent : état stationnaire.','Comparaison avec l’examen précédent : aggravation.','Comparaison avec l’examen précédent : amélioration.','Prise de traitement antalgique avant l’examen.','Consommation d’alcool ou de toxiques suspectée.','Réévaluation programmée.']}
 ]},
 
-{id:'pj', page:4, t:'Pièces jointes photographiques', custom:'pj', cols:1, f:[]},
+/* Compte rendu d'hospitalisation, écrit à partir de toutes les fiches du dossier (consultation de sortie) */
+{id:'crh', page:5, t:'Compte rendu d’hospitalisation (CRH)', custom:'crh', cols:1, only:[3], f:[]},
+
+{id:'pj', page:5, t:'Pièces jointes photographiques', custom:'pj', cols:1, f:[]},
 ];
 
 /* =====================================================================
@@ -3032,6 +3069,8 @@ function renderForm(){
 function renderFormInner(){
   computeAll();
   PREV = prevFiche();
+  /* l'onglet affiché n'existe plus pour ce type de consultation : on passe au plus proche */
+  if(!pageSections(PAGE).length){ const v = visPages(); if(v.length) PAGE = (v.find(p=>p.n>PAGE) || v[v.length-1]).n; }
   const exs = Array.from(new Set(DB.map(f=>f.d.examinateur).filter(Boolean)));
   let h = '<datalist id="exlist">'+exs.map(e=>'<option value="'+esc(e)+'">').join('')+'</datalist>';
   h += '<div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap">'+
@@ -3056,6 +3095,7 @@ function renderFormInner(){
     if(s.custom==='cst'){  h += cstBlock();  return; }
     if(s.custom==='sco'){  h += scoBlock();  return; }
     if(s.custom==='echo'){ h += echoBlock(); return; }
+    if(s.custom==='crh'){  h += crhBlock();  return; }
     const fi = secFill(s), closed = CLOSED[s.id]?' closed':'';
     h+='<div class="sec'+closed+'" id="s_'+s.id+'"><h3 onclick="if(!event.target.closest(\'button\'))toggleSec(\''+s.id+'\')">'+
        '<span class="caret">&#9660;</span>'+esc(s.t)+
@@ -3074,21 +3114,26 @@ function renderFormInner(){
        '<div class="body"><div id="synth"></div></div></div>';
 
   $('#form').innerHTML = h;
-  buildNav(); renderSynth(); updateGlobalFill();
+  buildNav(); renderSynth(); renderCRH(); updateGlobalFill();
 }
 
 /* =====================================================================
-   NAVIGATION EN QUATRE PAGES
-   La fiche est longue : on la découpe en quatre temps qui suivent l'ordre
-   réel de la consultation. Les sections propres à la prise en charge
-   initiale disparaissent des fiches de suivi.
+   NAVIGATION EN CINQ ONGLETS
+   La fiche est longue : on la découpe en cinq temps qui suivent l'ordre
+   réel de la consultation : l'administratif, l'anamnèse et la plongée,
+   l'examen clinique général, l'examen neurologique, puis la conclusion et
+   l'évolution. Les sections propres à la prise en charge initiale
+   disparaissent des fiches de suivi : l'onglet « Anamnèse et plongée », qui
+   n'a plus rien à montrer, disparaît alors lui aussi.
    ===================================================================== */
 const PAGES = [
- {n:1, l:'Anamnèse et plongée',  s:'accueil, plongeur, plongée, facteurs, contacts',
-  l2:'Identification',           s2:'la plongée reste sur la fiche initiale'},
- {n:2, l:'Examen général',       s:'constantes, conscience, ORL, cutané'},
- {n:3, l:'Examen neurologique',  s:'réflexes, force, sensibilités, scores, conclusion'},
- {n:4, l:'Conclusion',           s:'recompression, actes, examens, traitements, diagnostic'}
+ {n:1, l:'Administratif',          s:'identification, entrée, contacts',
+  s2:'identification de la consultation'},
+ {n:2, l:'Anamnèse et plongée',    s:'plongeur, plongée, facteurs, anamnèse'},
+ {n:3, l:'Examen clinique général', s:'constantes, conscience, ORL, cutané'},
+ {n:4, l:'Examen neurologique',    s:'réflexes, force, sensibilités, scores'},
+ {n:5, l:'Conclusion et évolution', s:'recompression, examens, diagnostic',
+  s2:'examens, évolution, diagnostic, sortie'}
 ];
 let PAGE = 1;
 let TYPE_PROPOSE = false;   /* le type a ete deduit du rang de l'examen */
@@ -3100,10 +3145,13 @@ function secForType(s){ return (!s.only || s.only.indexOf(ftype()) >= 0) && (!s.
 function secOnPage(s, n){ return (s.page||1) === n && secForType(s); }
 function pageSections(n){ return SPEC.filter(s=>secOnPage(s,n)); }
 
+/* les onglets qui ont au moins une section pour ce type de consultation */
+function visPages(){ return PAGES.filter(pg=>pageSections(pg.n).length>0); }
 function goPage(n){
-  n = Math.max(1, Math.min(PAGES.length, n));
-  if(n === PAGE) return;
-  PAGE = n; renderForm(); window.scrollTo(0,0);
+  const v = visPages(); if(!v.length) return;
+  const t = v.find(p=>p.n>=n) || v[v.length-1];
+  if(t.n === PAGE) return;
+  PAGE = t.n; renderForm(); window.scrollTo(0,0);
 }
 function pageFill(n){
   let done=0, tot=0;
@@ -3113,23 +3161,25 @@ function pageFill(n){
 function pageLab(pg){ return (ftype()!==1 && pg.l2) ? pg.l2 : pg.l; }
 function pageSub(pg){ return (ftype()!==1 && pg.s2) ? pg.s2 : pg.s; }
 function pageBar(){
-  return '<div id="pagebar">'+PAGES.map(pg=>{
+  const v = visPages();
+  return '<div id="pagebar" style="--np:'+v.length+'">'+v.map((pg,i)=>{
     const f = pageFill(pg.n), plein = f.tot>0 && f.done===f.tot;
     return '<button class="wtab'+(PAGE===pg.n?' on':'')+(plein?' full':'')+'" onclick="goPage('+pg.n+')">'+
-      '<b>'+pg.n+'. '+esc(pageLab(pg))+'</b>'+
+      '<b>'+(i+1)+'. '+esc(pageLab(pg))+'</b>'+
       '<small>'+esc(pageSub(pg))+'</small>'+
       '<span class="pcount">'+f.done+'/'+f.tot+'</span></button>';
   }).join('')+'</div>';
 }
 function pageNav(){
-  const prev = PAGE>1, next = PAGE<PAGES.length;
+  const v = visPages(), i = Math.max(0, v.findIndex(p=>p.n===PAGE));
+  const prev = i>0, next = i<v.length-1;
   return '<div id="pagenav">'+
-    (prev? '<button class="tb" onclick="goPage('+(PAGE-1)+')">&#9668; Précédent'+
-           '<small class="nophone" style="opacity:.7"> · '+esc(pageLab(PAGES[PAGE-2]))+'</small></button>'
+    (prev? '<button class="tb" onclick="goPage('+v[i-1].n+')">&#9668; Précédent'+
+           '<small class="nophone" style="opacity:.7"> · '+esc(pageLab(v[i-1]))+'</small></button>'
          : '<span></span>')+
-    '<span class="pmid">Page '+PAGE+' sur '+PAGES.length+'</span>'+
-    (next? '<button class="tb pri" onclick="goPage('+(PAGE+1)+')">Suivant'+
-           '<small class="nophone" style="opacity:.75"> · '+esc(pageLab(PAGES[PAGE]))+'</small> &#9658;</button>'
+    '<span class="pmid">Onglet '+(i+1)+' sur '+v.length+'</span>'+
+    (next? '<button class="tb pri" onclick="goPage('+v[i+1].n+')">Suivant'+
+           '<small class="nophone" style="opacity:.75"> · '+esc(pageLab(v[i+1]))+'</small> &#9658;</button>'
          : '<button class="tb gd" onclick="saveFiche()">&#128190; Enregistrer la fiche</button>')+
     '</div>';
 }
@@ -3315,7 +3365,7 @@ function refreshField(k){
   if(sec && sec.custom){ renderForm(); return; }
   sec.f.forEach(g=>{ const r=$('#r_'+g.k); if(r) r.outerHTML=fieldHTML(g); });
   refreshBadges(); updateGlobalFill(); renderSynth();
-  if(PAGE===3 && $('#asiabody')) refreshASIA(false);
+  if($('#asiabody')) refreshASIA(false);
 }
 function softRefresh(){ computeAll();
   refreshCalcs();
@@ -5524,6 +5574,367 @@ function terrainTextes(){
   return {atcd:atcd, trait:trait, tox:tox, plongee:plongee, certif:certif, niveaux:niveaux};
 }
 
+/* Mise en gras dans le texte rédigé : deux caractères d'usage privé encadrent ce qui est anormal. Ils traversent les
+   filtres de rédaction (TXT.clean), deviennent <b> et </b> à l'écran, sur le PDF et dans la copie enrichie, et sont
+   retirés du texte brut. */
+const BO = String.fromCharCode(0xE000), BC = String.fromCharCode(0xE001);
+const bold = s => s ? BO+s+BC : s;
+const plainTxt = s => String(s==null?'':s).split(BO).join('').split(BC).join('');
+const boldHTML = s => esc(s).split(BO).join('<b>').split(BC).join('</b>');
+/* un résultat d'examen saisi en texte libre est tenu pour normal s'il commence comme une conclusion normale ; sinon il s'écrit en gras */
+const NORM_RES = /^(normale?s?|sans anomalie|aucune anomalie|absence de|pas d[e’']|rien à signaler|négati(?:f|ve)s?|non contributi(?:f|ve)|bilan sans particularité)\b/i;
+const abnRes = t => { t = String(t==null?'':t).trim(); return !!t && !NORM_RES.test(t); };
+
+/* Lire une autre fiche que la fiche ouverte : les fonctions de rédaction lisent REC. On installe donc une copie de la
+   fiche demandée, on recalcule ses champs calculés (score ASIA compris), puis on remet l'état d'origine. */
+function withRec(rec, fn){
+  const keep = {rec:REC, asia:ASIA, propose:TYPE_PROPOSE, choisi:TYPE_CHOISI};
+  REC = JSON.parse(JSON.stringify(rec));
+  TYPE_CHOISI = true;                 // la fiche garde son type : le calcul ne la reclasse pas en fiche de suivi
+  try{ computeAll(); return fn(); }
+  finally{ REC = keep.rec; ASIA = keep.asia; TYPE_PROPOSE = keep.propose; TYPE_CHOISI = keep.choisi; }
+}
+
+/* =====================================================================
+   L'EXAMEN EN CONSTATS
+   Chaque anomalie de l'examen est un constat : identifiant stable (il sert à comparer deux examens du même
+   dossier), libellé, précision, gravité (0 = normal), groupe, clés de la fiche qu'il lit (chk dit si l'item a été
+   examiné). La synthèse les traduit en syndromes ; le compte rendu d'hospitalisation les compare d'un examen à
+   l'autre. Un domaine « testé » est un domaine où au moins un item a été examiné : seul un domaine testé peut être
+   déclaré normal.
+   ===================================================================== */
+function examFindings(){
+  const d = REC.d, low = TXT.low, flat = TXT.flat;
+  const X = {};
+  const dom = (k, tested) => (X[k] = {tested:!!tested, items:[]});
+  const add = (D, id, lbl, val, sev, grp, keys) => {
+    const it = {id:id, lbl:flat(lbl), val:flat(val||''), sev:(sev==null ? 1 : sev), grp:grp||'', keys:keys||[id]};
+    it.txt = it.val ? it.lbl+' '+it.val : it.lbl;
+    it.chk = dd => it.keys.some(k=>dd[k]!=null);
+    D.items.push(it); return it;
+  };
+  const side = c => c===1 ? 'D' : c===2 ? 'G' : c===3 ? 'DG' : '';
+
+  /* ---------- conscience, signes cérébraux, pupilles ---------- */
+  const cer = dom('cer', ['avpu','fs_comport','fs_dts','fs_parole','fs_visuel','par_fac','pup_sym','pup_rpm'].some(has));
+  if(has('avpu') && d.avpu!==1) add(cer,'avpu','conscience altérée','(AVPU : '+lab('avpu')+')', d.avpu-1,'s');
+  if(d.fs_comport===1) add(cer,'fs_comport','troubles du comportement','',1,'s');
+  if(d.fs_dts===1) add(cer,'fs_dts','désorientation temporo-spatiale','',1,'s');
+  if(d.fs_parole===1) add(cer,'fs_parole','troubles de la parole','',1,'s');
+  if(d.fs_visuel===1) add(cer,'fs_visuel','troubles visuels',cote(d.fs_visuel_cote),1,'s');
+  if(d.par_fac===1) add(cer,'par_fac','paralysie faciale',cote(d.par_fac_cote)+(d.par_oeil===1?', sans fermeture de l’œil':''),1,'s');
+  if(d.pup_sym===0 && d.pup_aniso!==1) add(cer,'pup_sym','pupilles asymétriques','',1,'s',['pup_sym','pup_aniso']);
+  if(d.pup_aniso===1) add(cer,'pup_aniso','anisocorie',d.pup_aniso_cote?'(pupille la plus large '+(d.pup_aniso_cote===1?'à droite':'à gauche')+')':'',1,'s');
+  if(d.pup_myd===1) add(cer,'pup_myd','mydriase',cote(d.pup_myd_cote),1,'s');
+  if(d.pup_myo===1) add(cer,'pup_myo','myosis',cote(d.pup_myo_cote),1,'s');
+  if(d.pup_rpm===0) add(cer,'pup_rpm','réflexe photomoteur aboli',cote(d.pup_rpm_cote),1,'s');
+  if(d.gcs_tot!=null && d.gcs_tot<15) add(cer,'gcs','un score de Glasgow à '+d.gcs_tot,'(Y'+d.gcs_y+' V'+d.gcs_v+' M'+d.gcs_m+')',15-d.gcs_tot,'c',['gcs_tot']);
+  cer.gcs = d.gcs_tot!=null ? d.gcs_tot : null; cer.gcsNc = !!d.gcs_nc;
+
+  /* ---------- vestibulo-cochléaire ---------- */
+  const EPRV = [['romberg','Romberg'],['fukuda','Fukuda'],['etoile','marche en étoile'],['funambule','marche funambule']];
+  const ves = dom('ves', false);
+  ves.tv = ['fs_vertiges','nys'].some(has) || EPRV.some(x=>has(x[0]));
+  ves.tc = ['fs_audition','fs_acouph'].some(has);
+  ves.tested = ves.tv || ves.tc;
+  if(d.fs_vertiges===1) add(ves,'fs_vertiges','vertiges','',1,'v');
+  if(d.nys===1){
+    let n = '';
+    if(d.nys_cote) n += 'à secousse rapide '+cot2(d.nys_cote);
+    if(hasMulti('nys_regard')) n += ', regard '+multiLab('nys_regard',1);
+    if(has('nys_type')) n += ', '+low(lab('nys_type'));
+    add(ves,'nys','nystagmus',n.replace(/^,\s*/,''),1,'v');
+  }
+  if(d.vns===1){
+    if(d.vns_spont===1) add(ves,'vns_spont','nystagmus spontané sous VNS',cot2(d.vns_spont_cote),1,'v');
+    if(d.vns_niv===1) add(ves,'vns_niv','NIV présent',cot2(d.vns_niv_cote),1,'v');
+  }
+  if(d.fs_audition===1) add(ves,'fs_audition','troubles de l’audition',cote(d.fs_audition_cote),1,'c');
+  if(d.fs_acouph===1) add(ves,'fs_acouph','acouphènes',cote(d.fs_acouph_cote),1,'c');
+  EPRV.forEach(x=>{
+    if(d[x[0]]!==1) return;
+    const lbl = x[1]+' '+(x[0]==='romberg' ? 'positif' : (x[0]==='etoile' || x[0]==='funambule') ? 'anormale' : 'anormal');
+    const c = d[x[0]+'_cote'];
+    const val = c ? '('+(x[0]==='romberg' ? ({1:'chute à droite',2:'chute à gauche',3:'chute non latéralisée'}[c]) : 'déviation '+cote(c))+')' : '';
+    add(ves,x[0],lbl,val,1,'v');
+  });
+
+  /* ---------- ORL ---------- */
+  const orl = dom('orl', ['oto_D','oto_G','valsalva_D','valsalva_G','weber','rinne_D','rinne_G'].some(has));
+  ['D','G'].forEach(sd=>{ const v = d['oto_'+sd];
+    if(v>0) add(orl,'oto_'+sd,'otoscopie '+(sd==='D'?'droite':'gauche'),'stade '+v+' ('+HAINES_LAB(v)+')'+(d['oto_epanch_'+sd]===1?' avec épanchement rétro-tympanique':''),v,'',['oto_'+sd]); });
+  ['D','G'].forEach(sd=>{ const v = d['valsalva_'+sd];
+    if(v!=null && v<2) add(orl,'valsalva_'+sd,'Valsalva '+(sd==='D'?'droit':'gauche'),low(lab('valsalva_'+sd)),2-v,'',['valsalva_'+sd]); });
+  if(d.weber>0) add(orl,'weber','Weber',low(lab('weber')),1);
+  ['D','G'].forEach(sd=>{ if(d['rinne_'+sd]===0) add(orl,'rinne_'+sd,'Rinne '+(sd==='D'?'droit':'gauche'),'négatif',1); });
+  if(d.orl_interp_txt && d.orl_interp>0) add(orl,'orl_interp',low(d.orl_interp_txt.replace(/\.$/,'')),'',1,'',['orl_interp']);
+  if(d.orl_txt) add(orl,'orl_txt',d.orl_txt,'',1);
+
+  /* ---------- motricité ---------- */
+  const motTest = MYO.some(m0=>['D','G'].some(sd=>d[myoKey(m0.k,sd)]!=null)) || has('barre') || has('ming');
+  const mot = dom('mot', motTest);
+  const limbOf = k => Object.keys(LIMB_MYO).find(l=>LIMB_MYO[l].indexOf(k)>=0) || '';
+  MYO.forEach(m0=>['D','G'].forEach(sd=>{ const k = myoKey(m0.k,sd), v = d[k];
+    if(v!=null && v<5) add(mot,k,m0.l+' ('+low(m0.m)+') '+(sd==='D'?'droit':'gauche'),'coté '+v+'/5',5-v,limbOf(k)); }));
+  ['f_epaule','f_main'].forEach(b=>['D','G'].forEach(sd=>{ const k = b+'_'+sd, v = d[k];
+    if(v!=null && v<5) add(mot,k,(b==='f_epaule'?'élévation de l’épaule ':'serrage de main ')+(sd==='D'?'droit':'gauche'),'coté '+v+'/5',5-v,limbOf(k)); }));
+  if(d.barre===1) add(mot,'barre','chute au Barré',cote(d.barre_cote),1,'man');
+  if(d.ming===1) add(mot,'ming','chute au Mingazzini',cote(d.ming_cote),1,'man');
+
+  /* ---------- sensibilités ---------- */
+  const sensTest = d.sens_examinee===1 || (d.sens_examinee!==0 && MODAL.filter(m=>m.mode==='derm').some(m=>d['sens_'+m.k+'_nb']!=null));
+  const sen = dom('sen', sensTest);
+  sen.modes = d.sens_examinee===0 ? [] : d.sens_examinee===1 ? MODAL.map(m=>m.k)
+            : MODAL.filter(m=>m.mode==='derm' && d['sens_'+m.k+'_nb']!=null).map(m=>m.k);
+  if(d.sens_examinee!==0){
+    MODAL.forEach(m=>{
+      const n = d['sens_'+m.k+'_nb']||0; if(!n) return;
+      const t = (m.mode==='derm') ? dermResume(m.k) : zonesTxt(d['sens_'+m.k+'_zones']);
+      const keys = m.mode==='derm' ? DERM.reduce((a,lv)=>a.concat([dermKey(m.k,lv.k,'D'),dermKey(m.k,lv.k,'G')]),[])
+                 : LANDMARKS.reduce((a,l)=>a.concat(l.uni?[landKey(l,null)]:[landKey(l,'D'),landKey(l,'G')]),[]);
+      const it = add(sen,'sens_'+m.k,low(m.l),t,n,m.k,keys);
+      it.txt = it.lbl+' : '+t;
+      it.chk = dd => dd.sens_examinee===1 || (dd.sens_examinee!==0 && keys.some(k=>dd[k]!=null));
+    });
+  }
+  if(d.sf_subj===1) add(sen,'subj','signes subjectifs',(cote(d.sf_subj_cote)+(d.subj_nb?' ('+zonesTxt(d.subj_zones)+')':'')).trim(),1,'subj',['sf_subj']);
+
+  /* ---------- douleur ---------- */
+  const dou = dom('dou', ['sf_ceph','sf_rachis'].some(has));
+  if(d.sf_ceph===1) add(dou,'sf_ceph','céphalées','',1);
+  if(d.sf_rachis===1) add(dou,'sf_rachis','douleur rachidienne',d.sf_rachis_loc&&d.sf_rachis_loc.length?'('+d.sf_rachis_loc.join(', ')+')':'',1);
+  if(has('eva_type') && d.eva_type!==3 && d.eva_score>0)
+    add(dou,'eva',d.eva_type===1?'EVA':'EN',d.eva_score+'/10'+(d.eva_loc?' ('+flat(d.eva_loc)+')':''),d.eva_score,'',['eva_score','eva_type']);
+
+  /* ---------- coordination et équilibre ---------- */
+  const coo = dom('coo', ['vertic','marche','talon_genou','doigt_nez'].some(has));
+  coo.tk = has('talon_genou') || has('doigt_nez'); coo.ts = has('vertic') || has('marche');
+  if(d.vertic===0) add(coo,'vertic','verticalisation impossible','',3,'stat');
+  else if(has('vertic')){
+    if(d.equil_yo===0) add(coo,'equil_yo','équilibre statique non conservé','yeux ouverts',2,'stat');
+    if(d.equil_yf===0) add(coo,'equil_yf','équilibre statique non conservé','yeux fermés',1,'stat');
+  }
+  if(d.marche===0) add(coo,'marche','marche impossible','',3,'stat');
+  else if(has('marche')){
+    if(d.marche_yo===1) add(coo,'marche_yo','marche anormale','yeux ouverts',2,'stat');
+    if(d.marche_yf===1) add(coo,'marche_yf','marche anormale','yeux fermés',1,'stat');
+    if(d.devia_cote) add(coo,'devia_cote','déviation',cote(d.devia_cote),1,'stat');
+  }
+  if(d.talon_genou===0) add(coo,'talon_genou','talon-genou déficitaire',cote(d.talon_genou_cote),1,'cin');
+  if(d.doigt_nez===0) add(coo,'doigt_nez','doigt-nez déficitaire',cote(d.doigt_nez_cote),1,'cin');
+
+  /* ---------- réflexes et signes pyramidaux ---------- */
+  const RN = {ref_bicip:['bicipitaux','bicipital'], ref_tricip:['tricipitaux','tricipital'],
+              ref_rot:['rotuliens','rotulien'], ref_ach:['achilléens','achilléen']};
+  const RFL = {poly:'polycinétique', etendu:'diffusé'};
+  const rdesc = k => { const v = d[k]; if(v==null) return null;
+    const fl = ['etendu','poly'].filter(f=>d[k+'_'+f]);
+    return (v===1 && !fl.length) ? null : {v:v, fl:fl}; };
+  const rtxt = (x, pl) => [x.v===0 ? 'aboli' : x.v===2 ? 'vif' : 'présent'].concat(x.fl.map(f=>RFL[f]))
+                            .map(w=>w+(pl?'s':'')).join(', ');
+  const rkey = x => x ? x.v+'|'+x.fl.join(',') : '';
+  const ref = dom('ref', false);
+  let rtest = 0;
+  const rgP = {}, rgA = {}, rsP = [], rsA = [];
+  Object.keys(RN).forEach(b=>{
+    const D1 = rdesc(b+'_D'), G1 = rdesc(b+'_G');
+    if(d[b+'_D']!=null || d[b+'_G']!=null) rtest++;
+    [['D',D1],['G',G1]].forEach(x=>{ if(x[1]){
+      const it = add(ref,b+'_'+x[0],'réflexe '+RN[b][1]+' '+(x[0]==='D'?'droit':'gauche'),rtxt(x[1],false),x[1].v===0?2:1,x[1].v===0?'abo':'pyr');
+      it.side = x[0]; } });
+    if(!D1 && !G1) return;
+    if(D1 && G1 && rkey(D1)===rkey(G1)){ const t = rtxt(D1, true), tg = D1.v===0 ? rgA : rgP; (tg[t] = tg[t]||[]).push(RN[b][0]); }
+    else {
+      if(D1) (D1.v===0 ? rsA : rsP).push(RN[b][1]+' droit '+rtxt(D1, false));
+      if(G1) (G1.v===0 ? rsA : rsP).push(RN[b][1]+' gauche '+rtxt(G1, false));
+    }
+  });
+  ref.detPyr = Object.keys(rgP).map(k=>'ROT '+TXT.lst(rgP[k])+' '+k).concat(rsP.map(x=>'ROT '+x));
+  ref.detAbo = Object.keys(rgA).map(k=>'ROT '+TXT.lst(rgA[k])+' '+k).concat(rsA.map(x=>'ROT '+x));
+  ['D','G'].forEach(s=>{ if(d['hoffman_'+s]===1){
+    const it = add(ref,'hoffman_'+s,'signe de Hoffmann positif','à '+(s==='D'?'droite':'gauche'),1,'pyr'); it.side = s; } });
+  if(d.hoffman_D===1 && d.hoffman_G===1) ref.detPyr.push('signe de Hoffmann positif des deux côtés');
+  else ['D','G'].forEach(s=>{ if(d['hoffman_'+s]===1) ref.detPyr.push('signe de Hoffmann positif à '+(s==='D'?'droite':'gauche')); });
+  const trepTxt = (base, nom) => {
+    const parts = [];
+    ['D','G'].forEach(sd=>{
+      const c = d[base+'_cote'], concerne = (sd==='D' ? (c===1||c===3) : (c===2||c===3));
+      if(!concerne) return;
+      const q = d[base+'_qual_'+sd];
+      parts.push((sd==='D'?'à droite':'à gauche')+(q?' ('+low(lab(base+'_qual_'+sd))+')':''));
+    });
+    return nom+' '+(parts.length ? parts.join(' et ') : cote(d[base+'_cote']));
+  };
+  [['trep_pied','trépidation épileptoïde du pied'],['trep_rot','trépidation épileptoïde de la rotule']].forEach(x=>{
+    if(d[x[0]]!==1) return;
+    const t = trepTxt(x[0], x[1]);
+    const it = add(ref,x[0],x[1],t.slice(x[1].length+1),1,'pyr'); it.side = side(d[x[0]+'_cote']);
+    ref.detPyr.push(t.trim());
+  });
+  ['D','G'].forEach(s=>{ if(d['bbk_'+s]===2){
+    const it = add(ref,'bbk_'+s,'cutané plantaire en extension','à '+(s==='D'?'droite':'gauche'),1,'pyr'); it.side = s; } });
+  if(d.bbk_D===2 && d.bbk_G===2) ref.detPyr.push('cutané plantaire en extension des deux côtés');
+  else ['D','G'].forEach(s=>{ if(d['bbk_'+s]===2) ref.detPyr.push('cutané plantaire en extension à '+(s==='D'?'droite':'gauche')); });
+  const bbkInd = ['D','G'].filter(s=>d['bbk_'+s]===1);
+  if(bbkInd.length && ref.detPyr.length) ref.detPyr.push('cutané plantaire indifférent '+(bbkInd.length===2 ? 'des deux côtés' : (bbkInd[0]==='D'?'à droite':'à gauche')));
+  if(d.contract===1) add(ref,'contract','contractions musculaires spontanées',cote(d.contract_cote)+(d.contract_loc?' ('+flat(d.contract_loc)+')':''),1,'fasc');
+  ref.tested = rtest>0 || ['hoffman_D','hoffman_G','bbk_D','bbk_G','trep_pied','trep_rot'].some(has);
+
+  /* ---------- peau ---------- */
+  const cut = dom('cut', has('cut_present'));
+  if(d.cut_present===1){
+    const c = [];
+    if(d.cut_nb) c.push(zonesTxt(d.cut_zones));
+    if(d.cut_delai!=null) c.push('apparition '+d.cut_delai+'\' après l’émersion');
+    if(has('cut_evol')) c.push('évolution sous oxygène : '+low(lab('cut_evol')));
+    if(d.cut_txt) c.push(flat(d.cut_txt));
+    const it = add(cut,'cut','lésions cutanées de désaturation',c.join(', '),1,'',['cut_present']);
+    it.txt = it.lbl+(c.length ? ' : '+c.join(', ') : '');
+  }
+
+  /* ---------- examen général par appareil ---------- */
+  const GEN = [['ex_cv','cardio-vasculaire'],['ex_pneumo','respiratoire'],['ex_abdo','abdominal'],['ex_loco','locomoteur']];
+  const gen = dom('gen', GEN.some(g=>has(g[0])));
+  GEN.forEach(g=>{ if(d[g[0]]===1) add(gen,g[0],'anomalie '+g[1],d[g[0]+'_txt']?'('+TXT.lc1(flat(d[g[0]+'_txt']).replace(/\.$/,''))+')':'',1); });
+  gen.normaux = GEN.filter(g=>d[g[0]]===0).map(g=>g[1]);
+
+  /* ---------- miction et sphincter anal ---------- */
+  const sph = dom('sph', has('mict') || d.mict_residu_post!=null || d.mict_residu_pre!=null || d.vac!=null || d.dap!=null);
+  if(d.mict===0) add(sph,'mict','pas de miction depuis l’accident','',2);
+  else if(d.mict_type===3) add(sph,'mict_type','miction par regorgement ou rétention','',3);
+  if(d.mict_residu_post>100) add(sph,'mict_residu_post','résidu post-mictionnel','à '+d.mict_residu_post+' mL',1);
+  if(d.vac===0) add(sph,'vac','contraction anale volontaire absente','',2);
+  if(d.dap===0) add(sph,'dap','pression anale profonde non perçue','',2);
+  return X;
+}
+
+/* forme du déficit moteur d'après les membres atteints : para-, tétra-, hémi-, monoparésie (ou plégie quand
+   tous les myotomes atteints sont cotés 0) */
+function motorForm(A){
+  const L = {msd:0, msg:0, mid:0, mig:0};
+  A.forEach(i=>{ if(L.hasOwnProperty(i.grp)) L[i.grp] = 1; });
+  const ul = ['msd','msg'].filter(k=>L[k]), ll = ['mid','mig'].filter(k=>L[k]), n = ul.length+ll.length;
+  if(!n) return '';
+  const pa = A.filter(i=>L.hasOwnProperty(i.grp)).every(i=>i.sev===5) ? 'plégie' : 'parésie';
+  const LAB = {msd:'membre supérieur droit', msg:'membre supérieur gauche', mid:'membre inférieur droit', mig:'membre inférieur gauche'};
+  if(n===4) return ' de type tétra'+pa;
+  if(ll.length===2 && !ul.length) return ' de type para'+pa;
+  if(ul.length===2 && !ll.length) return ' des deux membres supérieurs';
+  if(n===2 && ul.length===1 && ll.length===1 && ul[0].slice(2)===ll[0].slice(2)) return ' de type hémi'+pa+(ul[0]==='msd' ? ' droite' : ' gauche');
+  if(n===1) return ' de type mono'+pa+' du '+LAB[ul[0] || ll[0]];
+  return ' multifocal ('+TXT.lst(ul.concat(ll).map(k=>LAB[k]))+')';
+}
+/* côté d'un syndrome d'après ses constats */
+function sideOfItems(A){
+  const s = A.map(i=>i.side||'').join('');
+  const g = s.indexOf('G')>=0, dr = s.indexOf('D')>=0;
+  return (g && dr) ? 'bilatéral' : dr ? 'droit' : g ? 'gauche' : '';
+}
+
+/* Les constats, traduits en syndromes. gen : examen général, neu : examen neurologique.
+   pos : ce qui est anormal (écrit en gras), neg : ce qui a été examiné et trouvé normal. s : nom court du
+   syndrome, repris dans la conclusion « au total ». */
+function syndromes(X){
+  const lst = TXT.lst, low = TXT.low;
+  const gen = {pos:[], neg:[]}, neu = {pos:[], neg:[]};
+  const ab = D => D.items.filter(i=>i.sev>0);
+  const det = a => a.map(i=>i.txt).join(', ');
+  const P = (S, s, t) => S.pos.push({t:t.trim(), s:s});
+  const N = (S, t) => S.neg.push(t);
+
+  /* conscience et signes cérébraux */
+  { const D = X.cer, A = ab(D).filter(i=>i.grp==='s'), G = ab(D).filter(i=>i.grp==='c');
+    if(A.length) P(neu, 'signes cérébraux', 'des signes cérébraux : '+det(A));
+    if(G.length) P(neu, 'altération de la conscience', G[0].txt);
+    if(!A.length && D.tested) N(neu, 'absence de signe cérébral');
+    if(D.gcs===15) N(neu, 'GCS 15'); else if(D.gcsNc && D.gcs==null) N(neu, 'Glasgow non calculable (modalité non cotable)');
+  }
+  /* vestibulo-cochléaire */
+  { const D = X.ves, V = ab(D).filter(i=>i.grp==='v'), C = ab(D).filter(i=>i.grp==='c');
+    if(V.length && C.length) P(neu, 'syndrome vestibulo-cochléaire', 'un syndrome vestibulo-cochléaire : '+det(V.concat(C)));
+    else if(V.length) P(neu, 'syndrome vestibulaire', 'un syndrome vestibulaire : '+det(V));
+    else if(C.length) P(neu, 'signes cochléaires', 'des signes cochléaires : '+det(C));
+    if(!V.length && D.tv) N(neu, 'absence de syndrome vestibulaire');
+    if(!C.length && D.tc) N(neu, 'absence de signe cochléaire');
+  }
+  /* motricité */
+  { const D = X.mot, A = ab(D);
+    if(A.length) P(neu, 'déficit moteur', 'un déficit moteur'+motorForm(A)+' : '+det(A));
+    else if(D.tested) N(neu, 'absence de déficit moteur');
+  }
+  /* sensibilités : par mode, dissocié ou non */
+  { const D = X.sen, A = ab(D).filter(i=>i.grp!=='subj'), S = ab(D).filter(i=>i.grp==='subj');
+    const NAME = {lt:'tact léger', pp:'piqûre', pal:'pallesthésie'}, DAT = {lt:'au tact léger', pp:'à la piqûre', pal:'à la pallesthésie'};
+    const abm = A.map(i=>i.grp), nm = D.modes.filter(k=>abm.indexOf(k)<0);
+    if(A.length){
+      const grp = {}; A.forEach(i=>{ (grp[i.val] = grp[i.val]||[]).push(i.lbl); });
+      const detail = Object.keys(grp).map(t=>lst(grp[t])+' : '+t).join(' ; ');
+      const form = abm.length===3 ? 'un déficit sensitif aux trois modes' : nm.length ? 'un déficit sensitif dissocié' : 'un déficit sensitif';
+      P(neu, 'déficit sensitif', form+' : '+detail+(nm.length ? ' ; modes épargnés : '+lst(nm.map(k=>NAME[k])) : ''));
+    } else if(D.tested && D.modes.length){
+      N(neu, 'absence de déficit sensitif '+(D.modes.length===3 ? 'aux trois modes (tact léger, piqûre et pallesthésie)' : lst(D.modes.map(k=>DAT[k]))));
+    }
+    if(S.length) P(neu, 'signes subjectifs', 'des signes subjectifs '+S[0].val);
+  }
+  /* réflexes : syndrome pyramidal, abolition, contractions spontanées */
+  { const D = X.ref, Py = ab(D).filter(i=>i.grp==='pyr'), Ab = ab(D).filter(i=>i.grp==='abo'), Fa = ab(D).filter(i=>i.grp==='fasc');
+    if(Py.length){ const sd = sideOfItems(Py); P(neu, 'syndrome pyramidal', 'un syndrome pyramidal'+(sd ? ' '+sd : '')+' : '+D.detPyr.join(', ')); }
+    if(Ab.length) P(neu, 'anomalies des réflexes', 'des anomalies des réflexes : '+D.detAbo.join(', '));
+    if(Fa.length) P(neu, 'contractions spontanées', 'des '+Fa[0].txt);
+    if(!Py.length && D.tested) N(neu, 'absence de syndrome pyramidal');
+  }
+  /* coordination, équilibre, marche */
+  { const D = X.coo, K = ab(D).filter(i=>i.grp==='cin'), S = ab(D).filter(i=>i.grp==='stat');
+    if(K.length && S.length) P(neu, 'syndrome cérébelleux', 'un syndrome cérébelleux cinétique et statique : '+det(K.concat(S)));
+    else if(K.length) P(neu, 'syndrome cérébelleux', 'un syndrome cérébelleux cinétique : '+det(K));
+    else if(S.length) P(neu, 'troubles de l’équilibre et de la marche', 'des troubles de l’équilibre et de la marche : '+det(S));
+    if(!K.length && D.tk) N(neu, 'absence de syndrome cérébelleux');
+    if(!S.length && D.ts) N(neu, 'équilibre et marche normaux');
+  }
+  /* sphincters */
+  { const D = X.sph, A = ab(D);
+    if(A.length) P(neu, 'troubles vésico-sphinctériens', 'des troubles vésico-sphinctériens : '+det(A));
+    else if(D.tested) N(neu, 'absence de trouble vésico-sphinctérien');
+  }
+  /* atteinte médullaire, d'après le score ASIA */
+  if(ASIA && ASIA.ais && 'ABCD'.indexOf(ASIA.ais)>=0)
+    P(neu, 'atteinte médullaire', 'une atteinte médullaire : '+(ASIA.nli ? 'niveau neurologique '+ASIA.nli+', ' : '')+'AIS '+ASIA.ais);
+
+  /* examen général */
+  { const D = X.gen, A = ab(D);
+    A.forEach(i=>P(gen, 'anomalies de l’examen général', 'une '+i.txt));
+    if(D.normaux.length) N(gen, 'examen '+lst(D.normaux)+' sans anomalie');
+  }
+  { const D = X.orl, A = ab(D);
+    if(A.length) P(gen, 'anomalies ORL', 'des anomalies ORL : '+det(A));
+    else if(D.tested) N(gen, 'examen ORL normal');
+  }
+  { const D = X.cut, A = ab(D);
+    if(A.length) P(gen, 'lésions cutanées', 'des '+A[0].txt);
+    else if(D.tested) N(gen, 'pas de lésion cutanée');
+  }
+  { const D = X.dou, A = ab(D);
+    if(A.length) P(gen, 'douleur', 'une symptomatologie douloureuse : '+det(A));
+    else if(D.tested) N(gen, 'pas de céphalée ni de douleur rachidienne');
+  }
+  return {gen:gen, neu:neu};
+}
+/* les lignes d'un paragraphe d'examen : un syndrome par ligne, en gras, puis « En revanche, » ce qui est normal */
+function synLines(S){
+  const L = S.pos.map((x,i)=>bold(x.t)+(i<S.pos.length-1 ? ' ;' : '.'));
+  if(S.neg.length) L.push((S.pos.length ? 'En revanche, ' : '')+S.neg.join(', ')+'.');
+  return L;
+}
+
+/* =====================================================================
+   SYNTHÈSE RÉDIGÉE
+   Elle suit le plan d'une observation d'entrée : le plongeur, la plongée, l'histoire des symptômes, la prise en
+   charge initiale, les antécédents, les constantes, « à l'examen, on retrouve » (général puis neurologique), au
+   total, les examens paracliniques, le diagnostic retenu, la conduite à tenir. Chaque paragraphe a son titre, en
+   gras et souligné. Les anomalies sont en gras ; l'examen est dit en syndromes (absence de déficit moteur,
+   syndrome pyramidal…). Chaque affirmation vient d'un champ renseigné : une négation n'est écrite que si l'item a
+   été examiné, jamais par défaut.
+   ===================================================================== */
 function narrativeBlocks(){
   const d = REC.d, TY = d.fiche_type||1, B = [];
   const F = d.sexe===2;
@@ -5544,7 +5955,7 @@ function narrativeBlocks(){
   if(d.examinateur) hd.push(fin('Examinateur : '+d.examinateur));
   B.push({title:true, lines:hd.map(x=>TXT.clean(x))});
 
-  /* ---------- histoire de l'accident ---------- */
+  /* ---------- le plongeur, la plongée, les symptômes, la prise en charge ---------- */
   if(TY!==2){
     /* le plongeur */
     const pa = [];
@@ -5564,7 +5975,6 @@ function narrativeBlocks(){
                   return 'un autre établissement de santé'+(det?' ('+det+')':''); }
       } return '';
     })();
-    if(adr) pa.push(', '+(F?'adressée':'adressé')+' par '+adr);
     /* niveau, organisme et expérience */
     const nv = [];
     if(d.niv_loisir!=null) nv.push('niveau loisir '+niv('niv_loisir'));
@@ -5573,13 +5983,14 @@ function narrativeBlocks(){
     const ex = [];
     if(d.organisme!=null) ex.push('organisme '+niv('organisme'));
     if(d.plongee_depuis!=null) ex.push('plongeur depuis '+d.plongee_depuis);
+    if(d.nb_plongees_total!=null) ex.push(d.nb_plongees_total+' plongée'+(d.nb_plongees_total>1?'s':'')+' au total');
     if(d.nb_plongees_an!=null) ex.push(d.nb_plongees_an+' plongée'+(d.nb_plongees_an>1?'s':'')+' par an en moyenne sur les 2 dernières années');
     if(nv.length || ex.length) pa.push(', '+(nv.length ? lst(nv) : 'pratique')+(ex.length ? ' ('+ex.join(' ; ')+')' : ''));
     if(d.auto_encadre===1) pa.push(', plongée auto-encadrée');
-    const l1 = [];
-    if(pa.length) l1.push(fin((F ? 'Plongeuse' : 'Plongeur')+pa.join('')));
+    sect('Le plongeur', [pa.length ? fin((F ? 'Plongeuse' : 'Plongeur')+pa.join('')) : ''], true);
 
     /* la plongée */
+    const l1 = [];
     const dv = [];
     const TYPPL = {1:'de loisir',2:'d’instruction',3:'professionnelle',4:'militaire',5:'en apnée'};
     dv.push('Plongée'+(d.pl_type?' '+TYPPL[d.pl_type]:'')+(d.pl_lieu?' ('+flat(d.pl_lieu)+')':''));
@@ -5616,16 +6027,7 @@ function narrativeBlocks(){
     if(d.pl_h_sortie) hs.push('sortie de l’eau à '+hFr(d.pl_h_sortie));
     if(hs.length) dv.push('('+hs.join(', ')+')');
     if(dv.length>1 || d.pl_type || d.pl_lieu) l1.push(fin(dv.join(', ').replace(/, \(/,' (')));
-    if(d.pl_reimm_txt) l1.push(fin(d.pl_reimm_txt));
-
-    /* ce qui s'est passé, puis les premiers signes */
-    if(d.histoire) l1.push(fin(d.histoire));
-    if(d.pl_h_symp){
-      let q = 'Premiers symptômes à '+hFr(d.pl_h_symp);
-      if(d.pl_delai_symp!=null) q += ', soit '+d.pl_delai_symp+' min après la sortie de l’eau';
-      l1.push(fin(q));
-    }
-    if(d.sf_arrivee) l1.push(fin('Signes fonctionnels à l’arrivée : '+lc1(flat(d.sf_arrivee))));
+    if(d.pl_reimm_txt) l1.push(bold(fin(d.pl_reimm_txt)));
     /* plongée précédente et facteurs favorisants */
     if(d.plp_faite===1){
       const pp = [];
@@ -5636,17 +6038,29 @@ function narrativeBlocks(){
       if(d.plp_duree_tot!=null) pp.push('durée totale '+d.plp_duree_tot+' min');
       if(d.plp_paliers) pp.push('paliers : '+flat(d.plp_paliers));
       if(d.plp_interval!=null) pp.push('intervalle de surface '+dureeFr(d.plp_interval));
-      l1.push(fin('Plongée dans les 24 heures précédentes'+(pp.length?' : '+pp.join(', '):'')));
+      l1.push(bold(fin('Plongée dans les 24 heures précédentes'+(pp.length?' : '+pp.join(', '):''))));
     } else if(d.plp_faite===0) l1.push('Pas de plongée dans les 24 heures précédentes.');
     const FS = SPEC.find(x=>x.id==='facteurs') || {f:[], norm:{}}, nrm = FS.norm || {};
     const fr = FS.f.filter(f=>f.o && d[f.k]!=null && d[f.k]!==nrm[f.k])
                    .map(f=>{ if(f.k==='ff_proc') return 'procédure de décompression non respectée';
                              const o = f.o.find(x=>x.v===d[f.k]);
                              return low(f.l)+(o && o.l!=='OUI' ? ' : '+low(o.l) : ''); });
-    if(fr.length) l1.push(fin('Facteurs favorisants : '+fr.join(', ')));
+    if(fr.length) l1.push(bold(fin('Facteurs favorisants : '+fr.join(', '))));
     else if(FS.f.some(f=>f.o && d[f.k]!=null)) l1.push('Pas de facteur favorisant retrouvé, procédure de décompression respectée.');
     /* les conditions environnementales se décrivent à part : « mer calme » n'est pas un facteur favorisant */
     if(d.ff_env) l1.push(fin('Conditions environnementales : '+lc1(flat(d.ff_env))));
+    sect('La plongée', [l1.filter(Boolean).join(' ')], true);
+
+    /* ce qui s'est passé, puis les premiers signes */
+    const ls = [];
+    if(d.histoire) ls.push(fin(d.histoire));
+    if(d.pl_h_symp){
+      let q = 'Premiers symptômes à '+hFr(d.pl_h_symp);
+      if(d.pl_delai_symp!=null) q += ', soit '+d.pl_delai_symp+' min après la sortie de l’eau';
+      ls.push(fin(q));
+    }
+    if(d.sf_arrivee) ls.push(fin('Signes fonctionnels à l’arrivée : '+lc1(flat(d.sf_arrivee))));
+    sect('Histoire des symptômes', [ls.filter(Boolean).join(' ')], true);
 
     /* soins sur place */
     const sp = [];
@@ -5662,9 +6076,13 @@ function narrativeBlocks(){
     if(d.soin_hydrat!=null) sp.push('hydratation de '+d.soin_hydrat+' mL');
     if(d.soin_autres) sp.push(flat(d.soin_autres).replace(/\.$/,''));
     let l2 = sp.join(', ');
-    if(has('evol_avant_rec')) l2 += (l2?'. ':'')+'Évolution avant recompression : '+low(lab('evol_avant_rec'));
+    if(has('evol_avant_rec')){
+      const ea = 'Évolution avant recompression : '+low(lab('evol_avant_rec'));
+      l2 += (l2?'. ':'')+(d.evol_avant_rec===2 ? bold(ea) : ea);
+    }
     /* alerte, évacuation et prise en charge */
     const ev = [];
+    if(adr) ev.push((F?'Adressée':'Adressé')+' par '+adr);
     if(d.heure_appel) ev.push('Alerte à '+hFr(d.heure_appel));
     const evm = {1:'Venu par ses propres moyens', 2:'Transporté par VSAV / pompiers à l’'+HOPITAL_PEC,
                  3:'Transporté par SMUR routier à l’'+HOPITAL_PEC, 7:'Héliporté sur l’'+HOPITAL_PEC+' (hélicoptère médicalisé)',
@@ -5676,7 +6094,7 @@ function narrativeBlocks(){
       if(d.delai_symp_pec!=null) pe += ', '+dureeFr(d.delai_symp_pec)+' après les premiers symptômes';
       ev.push(pe);
     }
-    sect('Histoire de l’accident', [l1.filter(Boolean).join(' '), l2 ? fin(l2) : '', ev.map(fin).join(' ')], true);
+    sect('Prise en charge initiale', [l2 ? fin(l2) : '', ev.map(fin).join(' ')], true);
 
     /* ---------- antécédents, traitement, toxiques ---------- */
     const TX = terrainTextes();
@@ -5692,7 +6110,7 @@ function narrativeBlocks(){
   /* ---------- évolution (suivi et compte rendu de séjour) ---------- */
   if(TY!==1){ const et = evolTexte(); if(et) sect('Évolution depuis la consultation précédente', [et], true); }
 
-  /* ---------- examen clinique ---------- */
+  /* ---------- examen clinique : constantes, puis « à l'examen, on retrouve » ---------- */
   const CS = Array.isArray(d.cst) ? d.cst : [];
   const c0 = TY===1 ? CS[0] : CS[CS.length-1];
   const mes = [];
@@ -5705,205 +6123,11 @@ function narrativeBlocks(){
     if(c0.spo2!=null) mes.push('SpO2 : '+c0.spo2+' %');
     if(c0.temp!=null) mes.push('Température : '+String(c0.temp).replace('.',',')+' degrés');
   }
+  sect('Constantes', [mes.length ? fin(mes.join(' ; ')) : ''], true);
+  const XF = examFindings(), SY = syndromes(XF);
+  sect('À l’examen général, on retrouve', synLines(SY.gen), false);
+  sect('À l’examen neurologique, on retrouve', synLines(SY.neu), false);
 
-  const ng = [], ps = [];            // constats normaux / constats anormaux (domaine, texte)
-  /* conscience, signes cérébraux */
-  const cer = [];
-  if(has('avpu') && d.avpu!==1) cer.push('conscience altérée (AVPU : '+lab('avpu')+')');
-  if(d.fs_comport===1) cer.push('troubles du comportement');
-  if(d.fs_dts===1) cer.push('désorientation temporo-spatiale');
-  if(d.fs_parole===1) cer.push('troubles de la parole');
-  if(d.fs_visuel===1) cer.push('troubles visuels '+cote(d.fs_visuel_cote));
-  if(d.par_fac===1) cer.push('paralysie faciale '+cote(d.par_fac_cote)+(d.par_oeil===1?', sans fermeture de l’œil':''));
-  const pu = [];
-  if(d.pup_sym===0 && d.pup_aniso!==1) pu.push('pupilles asymétriques');
-  if(d.pup_aniso===1) pu.push('anisocorie'+(d.pup_aniso_cote?' (pupille la plus large '+(d.pup_aniso_cote===1?'à droite':'à gauche')+')':''));
-  if(d.pup_myd===1) pu.push('mydriase '+cote(d.pup_myd_cote));
-  if(d.pup_myo===1) pu.push('myosis '+cote(d.pup_myo_cote));
-  if(d.pup_rpm===0) pu.push('réflexe photomoteur aboli '+cote(d.pup_rpm_cote));
-  if(pu.length) cer.push(pu.join(', ').replace(/\s+,/g,','));
-  if(cer.length) ps.push(['signes cérébraux', 'des signes cérébraux : '+cer.map(x=>x.trim()).join(', ')]);
-  else if(['avpu','fs_comport','fs_dts','fs_parole','fs_visuel','par_fac','pup_sym','pup_rpm'].some(has)) ng.push('pas de signe cérébral');
-  if(d.gcs_tot!=null){
-    if(d.gcs_tot===15) ng.push('GCS 15');
-    else ps.push(['conscience', 'un score de Glasgow à '+d.gcs_tot+' (Y'+d.gcs_y+' V'+d.gcs_v+' M'+d.gcs_m+')']);
-  } else if(d.gcs_nc) ng.push('Glasgow non calculable (modalité non cotable)');
-  /* vestibulo-cochléaire et ORL */
-  const ves = [];
-  if(d.fs_vertiges===1) ves.push('vertiges');
-  if(d.nys===1){
-    let n = 'nystagmus';
-    if(d.nys_cote) n += ' à secousse rapide '+cot2(d.nys_cote);
-    if(hasMulti('nys_regard')) n += ', regard '+multiLab('nys_regard',1);
-    if(has('nys_type')) n += ', '+low(lab('nys_type'));
-    ves.push(n);
-  }
-  if(d.vns===1){
-    if(d.vns_spont===1) ves.push(('nystagmus spontané sous VNS '+cot2(d.vns_spont_cote)).trim());
-    if(d.vns_niv===1) ves.push(('NIV présent '+cot2(d.vns_niv_cote)).trim());
-  }
-  if(d.fs_audition===1) ves.push('troubles de l’audition '+cote(d.fs_audition_cote));
-  if(d.fs_acouph===1) ves.push('acouphènes '+cote(d.fs_acouph_cote));
-  /* épreuves vestibulaires anormales, avec leur côté */
-  const epr = (k, nom) => nom+' '+(k==='romberg' ? 'positif' : (k==='etoile' || k==='funambule') ? 'anormale' : 'anormal');
-  const eprCote = k => d[k+'_cote'] ? ' ('+(k==='romberg'
-    ? ({1:'chute à droite',2:'chute à gauche',3:'chute non latéralisée'}[d.romberg_cote])
-    : 'déviation '+cote(d[k+'_cote']))+')' : '';
-  [['romberg','Romberg'],['fukuda','Fukuda'],['etoile','marche en étoile'],['funambule','marche funambule']]
-    .forEach(x=>{ if(d[x[0]]===1) ves.push(epr(x[0], x[1])+eprCote(x[0])); });
-  const eprFaites = ['romberg','fukuda','etoile','funambule'].some(has);
-  if(ves.length) ps.push(['signes vestibulo-cochléaires', 'des signes vestibulo-cochléaires : '+ves.map(x=>x.trim()).join(', ')]);
-  else if(['fs_vertiges','nys','fs_audition','fs_acouph'].some(has)) ng.push('pas de signe vestibulaire ni cochléaire');
-  else if(eprFaites) ng.push('épreuves vestibulaires normales');
-  const orl = [];
-  ['D','G'].forEach(sd=>{ const v = d['oto_'+sd];
-    if(v>0) orl.push('otoscopie '+(sd==='D'?'droite':'gauche')+' stade '+v+' ('+HAINES_LAB(v)+')'+(d['oto_epanch_'+sd]===1?' avec épanchement rétro-tympanique':'')); });
-  ['D','G'].forEach(sd=>{ const v = d['valsalva_'+sd];
-    if(v!=null && v<2) orl.push('Valsalva '+(sd==='D'?'droit':'gauche')+' '+low(lab('valsalva_'+sd))); });
-  if(d.weber>0) orl.push('Weber '+low(lab('weber')));
-  ['D','G'].forEach(sd=>{ if(d['rinne_'+sd]===0) orl.push('Rinne '+(sd==='D'?'droit':'gauche')+' négatif'); });
-  if(d.orl_interp_txt && d.orl_interp>0) orl.push(low(d.orl_interp_txt.replace(/\.$/,'')));
-  if(d.orl_txt) orl.push(flat(d.orl_txt));
-  if(orl.length) ps.push(['anomalies ORL', 'des anomalies ORL : '+orl.join(', ')]);
-  else if(['oto_D','oto_G','valsalva_D','valsalva_G','weber','rinne_D','rinne_G'].some(has)) ng.push('examen ORL normal');
-  /* motricité et sensibilité */
-  const mt = [];
-  const fa = [];
-  MYO.forEach(m0=>['D','G'].forEach(sd=>{ const v = d[myoKey(m0.k,sd)]; if(v!=null && v<5)
-    fa.push(m0.l+' ('+low(m0.m)+') '+(sd==='D'?'droit':'gauche')+' coté '+v+'/5'); }));
-  ['f_epaule','f_main'].forEach(b=>['D','G'].forEach(sd=>{ const v = d[b+'_'+sd]; if(v!=null && v<5)
-    fa.push((b==='f_epaule'?'élévation de l’épaule ':'serrage de main ')+(sd==='D'?'droit':'gauche')+' coté '+v+'/5'); }));
-  if(fa.length) mt.push('un déficit moteur : '+fa.join(', '));
-  if(d.barre===1) mt.push('une chute au Barré '+cote(d.barre_cote));
-  if(d.ming===1) mt.push('une chute au Mingazzini '+cote(d.ming_cote));
-  const motTest = MYO.some(m0=>['D','G'].some(sd=>d[myoKey(m0.k,sd)]!=null)) || has('barre') || has('ming');
-  /* la pallesthésie écrit toujours 0 dans son agrégat : seules le tact léger et la piqûre prouvent que l'examen a eu lieu */
-  const sensTest = d.sens_examinee===1 ||
-                   (d.sens_examinee!==0 && MODAL.filter(m=>m.mode==='derm').some(m=>d['sens_'+m.k+'_nb']!=null));
-  const sn = [];
-  if(d.sens_examinee!==0){
-    /* tact léger et piqûre portent souvent la même anomalie : on les écrit ensemble */
-    const grp = {};
-    MODAL.forEach(m=>{ const n = d['sens_'+m.k+'_nb']||0; if(!n) return;
-      const t = (m.mode==='derm') ? dermResume(m.k) : zonesTxt(d['sens_'+m.k+'_zones']);
-      (grp[t] = grp[t]||[]).push(low(m.l)); });
-    Object.keys(grp).forEach(t=>sn.push(lst(grp[t])+' : '+t));
-  }
-  if(d.sf_subj===1) sn.push('signes subjectifs'+(d.sf_subj_cote?' '+cote(d.sf_subj_cote):'')+(d.subj_nb?' ('+zonesTxt(d.subj_zones)+')':''));
-  mt.forEach(x=>ps.push(['déficit moteur', x.trim()]));
-  if(sn.length) ps.push(['troubles sensitifs', 'des troubles sensitifs : '+sn.join(' ; ')]);
-  if(!mt.length && !sn.length){
-    if(motTest && sensTest) ng.push('pas de déficit sensitivo-moteur');
-    else if(motTest) ng.push('pas de déficit moteur'+(d.sens_examinee===0?', sensibilités non examinées':''));
-    else if(sensTest) ng.push('pas de déficit sensitif');
-  } else if(!mt.length && motTest) ng.push('pas de déficit moteur');
-  else if(!sn.length && sensTest) ng.push('pas de déficit sensitif');
-  /* douleur */
-  const dl = [];
-  if(d.sf_ceph===1) dl.push('céphalées');
-  if(d.sf_rachis===1) dl.push('douleur rachidienne'+(d.sf_rachis_loc&&d.sf_rachis_loc.length?' ('+d.sf_rachis_loc.join(', ')+')':''));
-  if(has('eva_type') && d.eva_type!==3 && d.eva_score>0) dl.push((d.eva_type===1?'EVA ':'EN ')+d.eva_score+'/10'+(d.eva_loc?' ('+flat(d.eva_loc)+')':''));
-  if(dl.length) ps.push(['douleur', 'une douleur : '+dl.join(', ')]);
-  else if(['sf_ceph','sf_rachis'].some(has)) ng.push('pas de céphalée ni de douleur rachidienne');
-  /* coordination */
-  const co = [];
-  if(d.vertic===0) co.push('verticalisation impossible');
-  else if(has('vertic')){
-    if(d.equil_yo===0) co.push('équilibre statique non conservé yeux ouverts');
-    if(d.equil_yf===0) co.push('équilibre statique non conservé yeux fermés');
-  }
-  if(d.marche===0) co.push('marche impossible');
-  else if(has('marche')){
-    if(d.marche_yo===1) co.push('marche anormale yeux ouverts');
-    if(d.marche_yf===1) co.push('marche anormale yeux fermés');
-    if(d.devia_cote) co.push('déviation '+cote(d.devia_cote));
-  }
-  if(d.talon_genou===0) co.push('talon-genou déficitaire '+cote(d.talon_genou_cote));
-  if(d.doigt_nez===0) co.push('doigt-nez déficitaire '+cote(d.doigt_nez_cote));
-  if(co.length) ps.push(['troubles de la coordination', 'des troubles de la coordination : '+co.map(x=>x.trim()).join(', ')]);
-  else if(['vertic','marche','talon_genou','doigt_nez'].some(has)) ng.push('verticalisation, équilibre, marche et épreuves cérébelleuses normaux');
-  /* réflexes, signes pyramidaux */
-  const RN = {ref_bicip:['bicipitaux','bicipital'], ref_tricip:['tricipitaux','tricipital'],
-              ref_rot:['rotuliens','rotulien'], ref_ach:['achilléens','achilléen']};
-  const RFL = {poly:'polycinétique', etendu:'diffusé'};
-  /* description d'un réflexe anormal : null s'il est simplement présent */
-  const rdesc = k => { const v = d[k]; if(v==null) return null;
-    const fl = ['etendu','poly'].filter(f=>d[k+'_'+f]);
-    return (v===1 && !fl.length) ? null : {v:v, fl:fl}; };
-  const rtxt = (x, pl) => [x.v===0 ? 'aboli' : x.v===2 ? 'vif' : 'présent'].concat(x.fl.map(f=>RFL[f]))
-                            .map(w=>w+(pl?'s':'')).join(', ');
-  const rkey = x => x ? x.v+'|'+x.fl.join(',') : '';
-  const rg = {};       // description commune aux deux côtés -> groupes concernés
-  const rside = [];    // réflexes asymétriques
-  let rtest = 0;
-  Object.keys(RN).forEach(b=>{
-    const D = rdesc(b+'_D'), G = rdesc(b+'_G');
-    if(d[b+'_D']!=null || d[b+'_G']!=null) rtest++;
-    if(!D && !G) return;
-    if(D && G && rkey(D)===rkey(G)){ const t = rtxt(D, true); (rg[t] = rg[t]||[]).push(RN[b][0]); }
-    else {
-      if(D) rside.push(RN[b][1]+' droit '+rtxt(D, false));
-      if(G) rside.push(RN[b][1]+' gauche '+rtxt(G, false));
-    }
-  });
-  const rf = [];
-  Object.keys(rg).forEach(k=>rf.push('ROT '+lst(rg[k])+' '+k));
-  rside.forEach(x=>rf.push('ROT '+x));
-  ['D','G'].forEach(s=>{ if(d['hoffman_'+s]===1) rf.push('signe de Hoffmann positif '+(s==='D'?'à droite':'à gauche')); });
-  const trepTxt = (base, nom) => {
-    const parts = [];
-    ['D','G'].forEach(sd=>{
-      const c = d[base+'_cote'], concerne = (sd==='D' ? (c===1||c===3) : (c===2||c===3));
-      if(!concerne) return;
-      const q = d[base+'_qual_'+sd];
-      parts.push((sd==='D'?'à droite':'à gauche')+(q?' ('+low(lab(base+'_qual_'+sd))+')':''));
-    });
-    return nom+' '+(parts.length ? parts.join(' et ') : cote(d[base+'_cote']));
-  };
-  if(d.trep_pied===1) rf.push(trepTxt('trep_pied','trépidation épileptoïde du pied'));
-  if(d.trep_rot===1) rf.push(trepTxt('trep_rot','trépidation épileptoïde de la rotule'));
-  const bbk = {D:d.bbk_D, G:d.bbk_G};
-  ['D','G'].forEach(s=>{ if(bbk[s]===2) rf.push('cutané plantaire en extension '+(s==='D'?'à droite':'à gauche')); });
-  const bbkInd = ['D','G'].filter(s=>bbk[s]===1);
-  if(bbkInd.length && rf.length) rf.push('cutané plantaire indifférent '+(bbkInd.length===2 ? 'des deux côtés' : (bbkInd[0]==='D'?'à droite':'à gauche')));
-  if(d.contract===1) rf.push('contractions musculaires spontanées '+cote(d.contract_cote)+(d.contract_loc?' ('+flat(d.contract_loc)+')':''));
-  if(rf.length) ps.push(['anomalies des réflexes', 'des anomalies des réflexes : '+rf.map(x=>x.trim()).join(', ')]);
-  else if(rtest || ['hoffman_D','hoffman_G','bbk_D','bbk_G','trep_pied','trep_rot'].some(has))
-    ng.push('réflexes ostéotendineux présents et symétriques, pas de signe pyramidal');
-  /* peau, examen général */
-  if(d.cut_present===1){
-    const c = [];
-    if(d.cut_nb) c.push(zonesTxt(d.cut_zones));
-    if(d.cut_delai!=null) c.push('apparition '+d.cut_delai+'\' après l’émersion');
-    if(has('cut_evol')) c.push('évolution sous oxygène : '+low(lab('cut_evol')));
-    if(d.cut_txt) c.push(flat(d.cut_txt));
-    ps.push(['lésions cutanées', 'des lésions cutanées de désaturation'+(c.length?' : '+c.join(', '):'')]);
-  } else if(d.cut_present===0) ng.push('pas de lésion cutanée');
-  const GEN = [['ex_cv','cardio-vasculaire'],['ex_pneumo','respiratoire'],['ex_abdo','abdominal'],['ex_loco','locomoteur']];
-  const gx = GEN.filter(g=>d[g[0]]===1).map(g=>'anomalie '+g[1]+(d[g[0]+'_txt']?' ('+flat(d[g[0]+'_txt']).replace(/\.$/,'')+')':''));
-  if(gx.length) ps.push(['anomalies de l’examen général', 'des anomalies à l’examen général : '+gx.join(', ')]);
-  const gn = GEN.filter(g=>d[g[0]]===0).map(g=>g[1]);
-  if(gn.length) ng.push('examen '+lst(gn)+' sans anomalie');
-
-  /* miction et sphincter */
-  const mi = [];
-  if(has('mict')) mi.push(d.mict===1 ? (d.mict_type===3 ? 'miction par regorgement ou rétention' : d.mict_type===2 ? 'miction spontanée avec effort' : 'miction spontanée') : 'pas de miction depuis l’accident');
-  if(d.mict_residu_post!=null) mi.push(d.mict_residu_post>100 ? 'résidu post-mictionnel à '+d.mict_residu_post+' mL' : d.mict_residu_post===0 ? 'pas de résidu post-mictionnel' : 'résidu post-mictionnel non significatif ('+d.mict_residu_post+' mL)');
-  if(d.mict_residu_pre!=null) mi.push('résidu pré-mictionnel de '+d.mict_residu_pre+' mL');
-  /* l'examen anal ne s'écrit que s'il est anormal : contraction volontaire absente, pression profonde non perçue.
-     Normal ou non testé, il ne figure pas dans le texte. */
-  const anal = [];
-  if(d.vac===0) anal.push('contraction anale volontaire absente');
-  if(d.dap===0) anal.push('pression anale profonde non perçue');
-  if(anal.length) mi.push(anal.join(', '));
-  if(d.mict===0 || d.mict_type===3 || d.mict_residu_post>100 || d.vac===0 || d.dap===0) ps.push(['troubles sphinctériens', 'des troubles sphinctériens']);
-
-  /* l'examen s'écrit « A l'examen : pas de …, GCS 15, … En revanche, il existe … » */
-  const ex1 = [];
-  if(ng.length && ps.length) ex1.push('À l’examen : '+ng.join(', ')+'. En revanche, il existe '+ps.map(x=>x[1]).join(' ; ')+'.');
-  else if(ng.length) ex1.push('À l’examen : '+ng.join(', ')+'.');
-  else if(ps.length) ex1.push('À l’examen : il existe '+ps.map(x=>x[1]).join(' ; ')+'.');
-  if(mi.length) ex1.push(cap(mi.join(', '))+'.');
   /* Score ASIA : les totaux, puis les niveaux quand l'examen n'est pas normal. La préservation sacrée
      ne s'écrit que si elle est absente : sa présence est la règle. */
   const asia = (()=>{
@@ -5920,69 +6144,79 @@ function narrativeBlocks(){
     }
     if(ASIA.sacralKnown && !ASIA.sacral) a.push('absence de préservation sacrée');
     a.push('AIS '+ASIA.ais);
-    return 'Score ASIA : '+a.join(', ')+'.';
+    const t = 'Score ASIA : '+a.join(', ')+'.';
+    return ASIA.ais!=='E' ? bold(t) : t;
   })();
-  sect(TY===1 ? 'Examen clinique d’entrée' : 'Examen clinique', [mes.join(' ; '), ex1.join(' ')], false);
 
   /* ---------- au total ---------- */
   if(has('conclusion')){
-    const doms = ps.map(x=>x[0]).filter((x,i,a)=>x!=='douleur' && a.indexOf(x)===i);
+    const doms = SY.neu.pos.concat(SY.gen.pos).map(x=>x.s).filter((x,i,a)=>x!=='douleur' && a.indexOf(x)===i);
     let t;
     if(d.conclusion===1) t = 'examen neurologique normal';
-    else if(d.conclusion===2) t = 'examen neurologique anormal'+(doms.length?', avec '+lst(doms):'');
-    else t = 'examen à recontrôler'+(doms.length?' ('+lst(doms)+')':'');
+    else if(d.conclusion===2) t = bold('examen neurologique anormal'+(doms.length?', avec '+lst(doms):''));
+    else t = bold('examen à recontrôler'+(doms.length?' ('+lst(doms)+')':''));
     sect('Au total', [fin(t)], true);
   }
 
   /* ---------- actes, biologie, examens complémentaires et scores ---------- */
-  const pc = [];
+  const pc = [], PCE = [];
+  const PC = (cat, text, abn) => { pc.push(text); PCE.push({cat:cat, text:text, abn:!!abn}); };
   const act = [];                    // la voie veineuse ne s'écrit pas : geste courant, sans intérêt dans le compte rendu
   if(d.ac_sonde===2 || d.ac_sonde===3)
     act.push((d.ac_sonde===2 ? 'sonde vésicale à demeure' : 'sondage vésical évacuateur')+
              (d.ac_sonde_vol!=null ? ' (volume initial évacué : '+d.ac_sonde_vol+' mL)' : ''));
-  if(act.length) pc.push('Actes : '+lst(act)+'.');
+  if(act.length) PC('act', 'Actes : '+lst(act)+'.');
   const bio = [];
   if(d.bio_add===1) bio.push('bilan accident de plongée');
   if(d.bio_opi===1) bio.push('bilan d’œdème pulmonaire d’immersion');
   if(d.bio_etude===1) bio.push('prélèvement pour étude complémentaire');
   if(d.bio_autre) bio.push(flat(d.bio_autre).replace(/\.$/,''));
-  if(bio.length || d.bio_res)
-    pc.push('Biologie : '+[bio.length ? lst(bio)+' prélevé'+(bio.length>1?'s':'') : '',
-                           d.bio_res ? 'résultats marquants : '+flat(d.bio_res).replace(/\.$/,'') : ''].filter(Boolean).join(' ; ')+'.');
+  if(bio.length || d.bio_res){
+    const br = d.bio_res ? flat(d.bio_res).replace(/[.;,:\s]+$/,'') : '';
+    const bab = br && abnRes(br);
+    PC('bio', 'Biologie : '+[bio.length ? lst(bio)+' prélevé'+(bio.length>1?'s':'') : '',
+                           br ? 'résultats marquants : '+(bab ? bold(br) : br) : ''].filter(Boolean).join(' ; ')+'.', bab);
+  }
   /* un examen réalisé, avec son résultat quand il est saisi ; e : féminin pour l'accord de « réalisé » */
-  const exam = (k, lib, res, e) => {
+  const exam = (cat, k, lib, res, e) => {
     if(d[k]!==1) return;
-    pc.push(d[res] ? fin(lib+' : '+lc1(flat(d[res]))) : lib+' réalisé'+(e?'e':'')+'.');
+    if(d[res]){
+      const r = lc1(flat(d[res])).replace(/[.;,:\s]+$/,''), ab = abnRes(r);
+      PC(cat, fin(lib+' : '+(ab ? bold(r) : r)), ab);
+    } else PC(cat, lib+' réalisé'+(e?'e':'')+'.');
   };
-  if(d.im_ecg===1) pc.push(d.ecg_txt ? fin('ECG : '+d.ecg_txt) : 'ECG réalisé.');
-  exam('im_rp', 'Radiographie thoracique', 'im_rp_res', 1);
-  exam('im_tdm_thor', 'Scanner thoracique', 'im_tdm_thor_res', 0);
-  exam('im_tdm_cer', 'Scanner cérébral', 'im_tdm_cer_res', 0);
-  exam('im_irm_cer', 'IRM cérébrale', 'im_irm_cer_res', 1);
-  exam('im_irm_med', 'IRM médullaire', 'im_irm_med_res', 1);
-  exam('im_eto', 'Échographie cardiaque'+(d.im_eto_fop ? ' (recherche de FOP)' : ''), 'im_eto_res', 1);
+  if(d.im_ecg===1) PC('ecg', d.ecg_txt ? fin('ECG : '+d.ecg_txt) : 'ECG réalisé.');
+  exam('rp', 'im_rp', 'Radiographie thoracique', 'im_rp_res', 1);
+  exam('tdm_thor', 'im_tdm_thor', 'Scanner thoracique', 'im_tdm_thor_res', 0);
+  exam('tdm_cer', 'im_tdm_cer', 'Scanner cérébral', 'im_tdm_cer_res', 0);
+  exam('irm_cer', 'im_irm_cer', 'IRM cérébrale', 'im_irm_cer_res', 1);
+  exam('irm_med', 'im_irm_med', 'IRM médullaire', 'im_irm_med_res', 1);
+  exam('eto', 'im_eto', 'Échographie cardiaque'+(d.im_eto_fop ? ' (recherche de FOP)' : ''), 'im_eto_res', 1);
   if(d.im_dtc===1){
-    const cond = [['dtc_repos','sans sensibilisation'],['dtc_sensib','après sensibilisation allongée'],['dtc_flack','pendant un test de Flack']]
-                 .filter(x=>d[x[0]]!=null).map(x=>x[1]+', '+lc1(lab(x[0])));
-    pc.push(cond.length || d.dtc_txt ? fin('Doppler transcrânien : '+[cond.join(' ; '), d.dtc_txt ? flat(d.dtc_txt) : ''].filter(Boolean).join(' ; '))
-                                     : 'Doppler transcrânien réalisé.');
+    const cd = [['dtc_repos','sans sensibilisation'],['dtc_sensib','après sensibilisation allongée'],['dtc_flack','pendant un test de Flack']]
+                 .filter(x=>d[x[0]]!=null).map(x=>{ const t = x[1]+', '+lc1(lab(x[0])); return d[x[0]]>0 ? bold(t) : t; });
+    const dab = ['dtc_repos','dtc_sensib','dtc_flack'].some(k=>d[k]>0);
+    PC('dtc', cd.length || d.dtc_txt ? fin('Doppler transcrânien : '+[cd.join(' ; '), d.dtc_txt ? flat(d.dtc_txt) : ''].filter(Boolean).join(' ; '))
+                                     : 'Doppler transcrânien réalisé.', dab);
   }
   if(d.im_echopp===1){
     const e = echoTexte() || 'Échographie pleuro-pulmonaire réalisée.';
-    pc.push(d.ech_txt ? e+' '+flat(d.ech_txt) : e);
+    const eab = echoZones().some(z=>z.v!==1);
+    const t = d.ech_txt ? e+' '+flat(d.ech_txt) : e;
+    PC('echopp', eab ? bold(t) : t, eab);
   }
-  if(d.im_autre) pc.push(fin('Autres examens : '+flat(d.im_autre)));
-  if(d.im_demande) pc.push('Examens demandés : '+flat(d.im_demande).replace(/\.$/,'')+'.');
+  if(d.im_autre) PC('autres', fin('Autres examens : '+flat(d.im_autre)));
+  if(d.im_demande) PC('demande', 'Examens demandés : '+flat(d.im_demande).replace(/\.$/,'')+'.');
   /* les deux scores s'écrivent par leur seule valeur, sans maximum, seuil ni détail des items ;
      le moment de la cotation n'est précisé que quand le dossier en compte plusieurs */
   const Rn = mshCalc();
   if(!Rn.horsFenetre){
     const sr = mshSerie();
-    if(sr.length) pc.push('Score MEDSUBHYP : '+sr.map(x=>x.t+(sr.length>1 ? ' '+x.lab : '')).join(', ')+'.');
+    if(sr.length) PC('score', 'Score MEDSUBHYP : '+sr.map(x=>x.t+(sr.length>1 ? ' '+x.lab : '')).join(', ')+'.');
   }
   const Vn = vestCalc();
-  if(Vn && Vn.total!=null) pc.push(Vn.nom+' : '+Vn.total+'.');
-  if(asia) pc.push(asia);
+  if(Vn && Vn.total!=null) PC('score', Vn.nom+' : '+Vn.total+'.');
+  if(asia) PC('score', asia, ASIA.ais!=='E');
   sect('Examens paracliniques', pc, false);
 
   /* ---------- diagnostic retenu : entre les examens paracliniques et la conduite à tenir ---------- */
@@ -6003,7 +6237,7 @@ function narrativeBlocks(){
     if(d.tb_nb_seances!=null) tb.push(d.tb_nb_seances+' séance'+(d.tb_nb_seances>1?'s':'')+' réalisée'+(d.tb_nb_seances>1?'s':''));
     cat.push(fin('Table '+(tbl ? flat(tbl) : 'de recompression')+(tb.length?' ('+tb.join(', ')+')':'')+(ori?' puis '+ori:'')));
   } else if(ori) cat.push(fin('Orientation : '+ori));
-  if(d.tb_complic===1) cat.push(fin('Complication thérapeutique'+(d.tb_complic_txt?' : '+flat(d.tb_complic_txt):'')));
+  if(d.tb_complic===1) cat.push(bold(fin('Complication thérapeutique'+(d.tb_complic_txt?' : '+flat(d.tb_complic_txt):''))));
   if(d.rx_o2===1){
     let o = 'Oxygénothérapie normobare';
     if(d.rx_o2_mode===1) o += ' au masque à haute concentration'+(d.rx_o2_debit!=null ? ' à '+d.rx_o2_debit+' L/min' : '');
@@ -6032,22 +6266,264 @@ function narrativeBlocks(){
 
   /* ---------- commentaires et pièces jointes ---------- */
   if(d.notes) sect('Commentaires', [flat(d.notes)], true);
+  B.xf = XF; B.sy = SY; B.pce = PCE;
   return B;
 }
 
 /* texte brut : pour le presse-papiers et les traitements de texte sans mise en forme */
-function narrative(){
-  return narrativeBlocks().map(b=>{
+function blocksPlain(B){
+  return plainTxt(B.map(b=>{
     if(b.title) return b.lines.join('\n');
     return b.inline ? b.h+' : '+b.lines.join('\n') : b.h+' :\n'+b.lines.join('\n');
-  }).join('\n\n');
+  }).join('\n\n'));
 }
-/* même texte avec titres en gras, pour l'écran, le PDF et la copie enrichie */
-function narrativeHTML(){
-  return narrativeBlocks().map(b=>{
-    if(b.title) return '<p><b>'+b.lines.map(esc).join('<br>')+'</b></p>';
-    return '<p><b>'+esc(b.h)+' :</b>'+(b.inline ? ' ' : '<br>')+b.lines.map(esc).join('<br>')+'</p>';
+function narrative(){ return blocksPlain(narrativeBlocks()); }
+/* même texte enrichi : titres en gras et soulignés, anomalies en gras ; pour l'écran, le PDF et la copie enrichie */
+function blocksHTML(B){
+  return B.map(b=>{
+    if(b.title) return '<p><b>'+b.lines.map(boldHTML).join('<br>')+'</b></p>';
+    return '<p><b><u>'+esc(b.h)+'</u></b> :'+(b.inline ? ' ' : '<br>')+b.lines.map(boldHTML).join('<br>')+'</p>';
   }).join('');
+}
+function narrativeHTML(){ return blocksHTML(narrativeBlocks()); }
+/* Copie en texte brut ET en texte enrichi : collé dans un traitement de texte ou un dossier patient, le texte garde
+   ses titres soulignés et ses anomalies en gras ; collé dans un champ simple, il reste lisible. Si le navigateur ne
+   sait pas écrire du texte enrichi dans le presse-papiers, on copie un élément temporaire sélectionné. */
+function copyRich(html, txt, okMsg){
+  const ok = () => toast(okMsg), ko = () => toast('Copie impossible');
+  const doc = '<div style="font-family:Calibri,Arial,sans-serif;font-size:11pt">'+html+'</div>';
+  const viaSelection = () => {
+    const el = document.createElement('div');
+    el.contentEditable = 'true'; el.style.cssText = 'position:fixed;left:-9999px;top:0;white-space:pre-wrap';
+    el.innerHTML = doc; document.body.appendChild(el);
+    const sel = window.getSelection(), r = document.createRange();
+    r.selectNodeContents(el); sel.removeAllRanges(); sel.addRange(r);
+    let good = false; try{ good = document.execCommand('copy'); }catch(e){}
+    sel.removeAllRanges(); el.remove();
+    if(good) ok(); else if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(ok, ko); else ko();
+  };
+  if(window.ClipboardItem && navigator.clipboard && navigator.clipboard.write){
+    navigator.clipboard.write([new ClipboardItem({
+      'text/plain': new Blob([txt], {type:'text/plain'}),
+      'text/html':  new Blob([doc],  {type:'text/html'})
+    })]).then(ok, viaSelection);
+  } else viaSelection();
+}
+
+/* =====================================================================
+   COMPTE RENDU D'HOSPITALISATION (CRH)
+   Écrit à partir de toutes les fiches d'un même dossier, de la fiche initiale à la fiche de sortie, en texte
+   enrichi à copier, sans en-tête. Chaque fiche est relue avec les mêmes fonctions que la synthèse (withRec) :
+     histoire, terrain et examen d'admission : fiche initiale ;
+     prise en charge : la fiche initiale, puis chaque fiche qui porte une recompression ou un traitement ;
+     examens paracliniques : tous ceux du dossier, rangés par fiche, avec leur date ;
+     évolution : tout ce qui diffère d'une fiche à l'autre (amélioration, aggravation, autre modification),
+       horodaté, avec ce que dit l'encart d'évolution de la fiche ;
+     examen de sortie : dernière fiche ; diagnostic retenu ; examens à réaliser secondairement ; inaptitude.
+   ===================================================================== */
+function crhFiches(){
+  const doss = REC && REC.d.dossier; if(!doss) return [];
+  const cur = JSON.parse(JSON.stringify(REC));
+  return DB.filter(f=>f.d.dossier===doss && f.id!==REC.id).concat([cur]).sort((a,b)=>stamp(a).localeCompare(stamp(b)));
+}
+/* une précision déjà entre parenthèses ne se met pas entre deux autres */
+const unpar = s => String(s==null?'':s).replace(/^\((.*)\)$/, '$1');
+const crhWhen = f => 'Le '+frDate(f.d.date_ex)+(f.d.heure_ex ? ' à '+TXT.hFr(f.d.heure_ex) : '');
+/* ce que l'encart d'évolution d'une fiche dit, sans l'horodatage (le compte rendu écrit le sien) ; à appeler sous withRec */
+function evolPartsCRH(d){
+  const P = [], s1 = [];
+  if(d.ev_seances!=null)
+    s1.push(d.ev_seances+' séance'+(d.ev_seances>1?'s':'')+' de recompression '+(d.ev_seances>1?'ont été réalisées':'a été réalisée')+' depuis la consultation précédente');
+  if(d.ev_complic===0) s1.push('sans complication thérapeutique');
+  else if(d.ev_complic===1) s1.push(bold('avec une complication thérapeutique'+(d.ev_complic_txt?' : '+TXT.flat(d.ev_complic_txt).replace(/[.;,:\s]+$/,''):'')));
+  if(s1.length) P.push(TXT.cap(s1.join(', '))+'.');
+  if(has('ev_sens')){
+    const F = d.sexe===2, et = lab('ev_sens').toLowerCase();
+    const t = (F ? 'La patiente est ' : 'Le patient est ')+(F && /é$/.test(et) ? et+'e' : et)+'.';
+    P.push(d.ev_sens===2 ? bold(t) : t);
+  }
+  if(d.ev_txt) P.push(TXT.fin(d.ev_txt));
+  return P;
+}
+/* l'état d'une fiche : ses blocs de synthèse, ses constats, son score ASIA, son diagnostic, son encart d'évolution */
+function crhState(f){
+  return withRec(f, ()=>{
+    const bl = narrativeBlocks(), d = REC.d;
+    return {f:f, d:d, bl:bl, X:bl.xf, S:bl.sy, pce:bl.pce,
+            A:(ASIA && ASIA.ais) ? {ais:ASIA.ais, nli:ASIA.nli, lt:ASIA.lt, pp:ASIA.pp, uems:ASIA.uems, lems:ASIA.lems} : null,
+            diag:diagnosticTexte(d), ev:evolPartsCRH(d)};
+  });
+}
+/* Ce qui diffère entre deux examens successifs, constat par constat. Un constat disparu n'est dit normalisé que si
+   l'item a été examiné la seconde fois ; un constat apparu n'est dit aggravation que s'il avait été examiné la première. */
+function diffFindings(Xa, Xb, da, db){
+  const out = {better:[], worse:[], other:[]};
+  ['cer','ves','orl','mot','sen','ref','coo','sph','dou','cut','gen'].forEach(k=>{
+    const a = Xa[k], b = Xb[k]; if(!a || !b) return;
+    const ia = {}, ib = {};
+    a.items.forEach(i=>{ ia[i.id] = i; }); b.items.forEach(i=>{ ib[i.id] = i; });
+    Object.keys(ia).forEach(id=>{
+      const x = ia[id], y = ib[id];
+      if(!y){
+        if(x.chk(db)){
+          const g = /^(msd|msg|mid|mig)$/.test(x.grp) ? 'récupération complète' : (/^sens_/.test(x.id) || x.grp==='pyr' || x.grp==='abo') ? 'normalisation' : 'disparition';
+          out.better.push(x.lbl+' : '+g+(x.val ? ' (auparavant '+unpar(x.val)+')' : ''));
+        }
+        return;
+      }
+      if(y.txt === x.txt) return;
+      const t = y.lbl+' : '+(unpar(y.val) || 'présent')+' (auparavant '+(unpar(x.val) || 'présent')+')';
+      (y.sev < x.sev ? out.better : y.sev > x.sev ? out.worse : out.other).push(t);
+    });
+    Object.keys(ib).forEach(id=>{
+      if(ia[id]) return;
+      const y = ib[id];
+      if(y.chk(da)) out.worse.push(y.lbl+' : apparition'+(y.val ? ' ('+unpar(y.val)+')' : ''));
+      else out.other.push(y.lbl+(y.val ? ' '+y.val : '')+' (non examiné auparavant)');
+    });
+  });
+  return out;
+}
+/* le score ASIA d'un examen à l'autre : sens de la variation (négatif = amélioration) et texte */
+function asiaDiff(a, b){
+  if(!a || !b) return null;
+  if(['ais','nli','lt','pp','uems','lems'].every(x=>a[x]===b[x])) return null;
+  const RK = {A:4, B:3, C:2, D:1, E:0}, sum = z => (z.lt||0)+(z.pp||0)+(z.uems||0)+(z.lems||0);
+  const dir = RK[b.ais]!==RK[a.ais] ? RK[b.ais]-RK[a.ais] : (sum(a) > sum(b) ? 1 : sum(a) < sum(b) ? -1 : 0);
+  const t = z => 'AIS '+z.ais+(z.nli ? ', niveau neurologique '+z.nli : '')+', tact léger '+(z.lt!=null?z.lt:'?')+'/112, piqûre '+
+                 (z.pp!=null?z.pp:'?')+'/112, moteur '+((z.uems||0)+(z.lems||0))+'/100';
+  return {dir:dir, txt:'score ASIA : '+t(b)+' (auparavant '+t(a)+')'};
+}
+
+function crhBlocks(){
+  const FI = crhFiches(); if(!FI.length) return [];
+  const ST = FI.map(crhState);
+  const init = ST.find(s=>(s.d.fiche_type||1)===1) || ST[0], last = ST[ST.length-1], multi = ST.length>1;
+  const B = [];
+  const {fin, flat, lst} = TXT;
+  const sect = (h, lines, inline) => {
+    lines = lines.map(x=>TXT.clean(x).trim()).filter(Boolean);
+    if(lines.length) B.push({h:h, lines:lines, inline:!!inline});
+  };
+  const pick = (st, h) => st.bl.find(b=>b.h===h);
+  const jour = st => { const a = Date.parse(ST[0].d.date_ex), b = Date.parse(st.d.date_ex);
+                       return (isNaN(a) || isNaN(b)) ? '' : ' (J'+Math.round((b-a)/864e5)+')'; };
+
+  /* histoire de l'accident, terrain : fiche initiale */
+  ['Le plongeur','La plongée','Histoire des symptômes','Prise en charge initiale','Antécédents et terrain'].forEach(h=>{
+    const b = pick(init, h); if(b) B.push({h:b.h, lines:b.lines.slice(), inline:b.inline});
+  });
+  /* examen d'admission */
+  const adm = (init===last && !multi) ? '' : 'À l’admission, ';
+  const cs = pick(init, 'Constantes'); if(cs) sect(adm ? 'Constantes à l’admission' : 'Constantes', cs.lines, true);
+  [['À l’examen général, on retrouve', adm+'à l’examen général, on retrouve'], ['À l’examen neurologique, on retrouve', adm+'à l’examen neurologique, on retrouve']].forEach(x=>{
+    const b = pick(init, x[0]); if(b) sect(TXT.cap(x[1]), b.lines, false);
+  });
+
+  /* prise en charge : la fiche initiale, puis chaque fiche qui porte une recompression ou un traitement */
+  const pec = [];
+  const act0 = init.pce.filter(e=>e.cat==='act').map(e=>e.text);
+  const cd0 = pick(init, 'Conduite à tenir'); if(cd0) cd0.lines.forEach(l=>pec.push(l));
+  act0.forEach(l=>pec.push(l));
+  ST.forEach(st=>{ if(st===init) return;
+    const cd = pick(st, 'Conduite à tenir');
+    if(cd && (st.d.tb_table || st.d.tb_h_mep || st.d.rx_o2===1 || st.d.rx_solu===1 || st.d.rx_nacl===1)){
+      pec.push(crhWhen(st.f)+jour(st)+' :'); cd.lines.forEach(l=>pec.push('- '+l));
+    }
+  });
+  sect('Prise en charge', pec, false);
+
+  /* examens paracliniques : tous ceux du dossier, par fiche et par date */
+  const pcl = [];
+  ST.forEach(st=>{
+    const e = st.pce.filter(x=>['act','demande','score'].indexOf(x.cat)<0).map(x=>x.text);
+    if(st.d.ev_exam_faits) e.push(fin('Examens complémentaires réalisés depuis la consultation précédente : '+flat(st.d.ev_exam_faits)));
+    if(e.length){ pcl.push(crhWhen(st.f)+jour(st)+' :'); e.forEach(x=>pcl.push('- '+x)); }
+  });
+  const sc = last.pce.filter(x=>x.cat==='score').map(x=>x.text);
+  sc.forEach(t=>pcl.push(t));
+  sect('Examens paracliniques', pcl, false);
+
+  /* évolution : tout ce qui diffère d'une fiche à l'autre, horodaté */
+  const evo = [];
+  for(let i=1; i<ST.length; i++){
+    const a = ST[i-1], b = ST[i], df = diffFindings(a.X, b.X, a.d, b.d), ad = asiaDiff(a.A, b.A);
+    if(ad) (ad.dir<0 ? df.better : ad.dir>0 ? df.worse : df.other).push(ad.txt);
+    const parts = [];
+    if(df.better.length) parts.push('Amélioration : '+df.better.join(' ; ')+'.');
+    if(df.worse.length) parts.push(bold('Aggravation : '+df.worse.join(' ; ')+'.'));
+    if(df.other.length) parts.push('Autres modifications : '+df.other.join(' ; ')+'.');
+    const examine = Object.keys(b.X).some(k=>b.X[k].tested);
+    if(!df.better.length && !df.worse.length && !df.other.length && examine) parts.push('Examen clinique inchangé.');
+    b.ev.forEach(x=>parts.push(x));
+    if(parts.length){ evo.push(crhWhen(b.f)+jour(b)+' :'); parts.forEach(x=>evo.push('- '+x)); }
+  }
+  sect('Évolution', evo, false);
+
+  /* examen de sortie */
+  if(multi){
+    const cs2 = pick(last, 'Constantes'); if(cs2) sect('Constantes à la sortie', cs2.lines, true);
+    const g = pick(last, 'À l’examen général, on retrouve'), n = pick(last, 'À l’examen neurologique, on retrouve');
+    if(g) sect('À la sortie, à l’examen général, on retrouve', g.lines, false);
+    if(n) sect('À la sortie, à l’examen neurologique, on retrouve', n.lines, false);
+  }
+
+  /* diagnostic retenu : le plus récent */
+  const dg = ST.slice().reverse().find(s=>s.diag);
+  if(dg) sect('Diagnostic retenu', [dg.diag], true);
+
+  /* orientation à la sortie */
+  const ori = (last.d.fiche_type===3 && last.d.orientation!=null) ? (FIELDS.orientation.o.find(o=>o.v===last.d.orientation) || null) : null;
+  if(ori){
+    const o = (ori.v===5 && last.d.orientation_autre) ? 'Transfert vers '+flat(last.d.orientation_autre) : ori.l;
+    sect('Orientation', [fin(o)].concat(last.d.orientation_txt ? String(last.d.orientation_txt).split(/\n+/).map(l=>l.trim() ? fin(l) : '') : []), false);
+  }
+
+  /* examens à réaliser secondairement */
+  const todo = [], ld = last.d;
+  if(ld.sortie_exam_second) String(ld.sortie_exam_second).split(/\n+/).forEach(l=>{ if(l.trim()) todo.push(fin(l)); });
+  if(ld.ev_exam_demandes) todo.push(fin('Examens complémentaires demandés : '+flat(ld.ev_exam_demandes)));
+  if(ld.im_demande) todo.push(fin('Examens demandés en attente : '+flat(ld.im_demande)));
+  sect('Examens à réaliser secondairement', todo, false);
+
+  /* aptitude à la plongée */
+  let apt = '';
+  if(ld.inapt_type===1) apt = bold('Inaptitude temporaire à la plongée'+(ld.inapt_mois ? ' de '+ld.inapt_mois+' mois' : ' (durée à préciser)')+'.');
+  else if(ld.inapt_type===2) apt = bold('Inaptitude définitive à la plongée.');
+  sect('Aptitude à la plongée', [apt], true);
+  return B;
+}
+function crhHTML(){ return blocksHTML(crhBlocks()); }
+function crhText(){ return blocksPlain(crhBlocks()); }
+
+/* ---------- affichage et copie ---------- */
+let CRH_T = null;
+function renderCRH(){
+  const el = $('#crh'); if(!el || !REC) return;
+  if(!REC.d.dossier){
+    el.innerHTML = '<span style="color:var(--ink2)">Renseignez le numéro de dossier : le compte rendu est écrit à partir de toutes les fiches de ce dossier.</span>';
+    return;
+  }
+  const B = crhBlocks(), n = crhFiches().length;
+  el.innerHTML = B.length ? blocksHTML(B) : '<span style="color:var(--ink2)">Rien à rédiger pour l’instant.</span>';
+  const c = $('#crhn'); if(c) c.textContent = n+' fiche'+(n>1?'s':'')+' du dossier';
+}
+function scheduleCRH(){ if(!$('#crh')) return; clearTimeout(CRH_T); CRH_T = setTimeout(renderCRH, 450); }
+function crhBlock(){
+  const closed = CLOSED.crh ? ' closed' : '';
+  return '<div class="sec'+closed+'" id="s_crh"><h3 onclick="if(!event.target.closest(\'button\'))toggleSec(\'crh\')">'+
+    '<span class="caret">&#9660;</span>Compte rendu d’hospitalisation (CRH)'+
+    '<span class="fill"><span class="badge" id="crhn"></span><button class="mini" onclick="copyCRH()">copier le CRH</button></span></h3>'+
+    '<div class="body"><div class="note" style="background:#f2f6fb;border-color:#c9d8ea">Texte enrichi, sans en-tête, écrit à partir de '+
+    '<b>toutes les fiches de ce dossier</b> : histoire et examen d’admission, prise en charge, examens paracliniques réunis, évolution horodatée '+
+    '(améliorations, aggravations, autres modifications d’une fiche à l’autre), examen de sortie, diagnostic retenu, examens à réaliser '+
+    'secondairement et inaptitude à la plongée. <b>Gras</b> : ce qui est anormal. Collez-le dans le dossier du patient, puis relisez-le.</div>'+
+    '<div id="crh" class="rich"></div></div></div>';
+}
+function copyCRH(){
+  const B = crhBlocks();
+  if(!B.length){ toast('Rien à copier : renseignez le numéro de dossier'); return; }
+  copyRich(blocksHTML(B), blocksPlain(B), 'CRH copié');
 }
 
 /* Le paragraphe d'évolution destiné au compte rendu de sortie.
@@ -6091,22 +6567,11 @@ function evolBox(){
 }
 function renderSynth(){ const el=$('#synth'); if(el) el.innerHTML=narrativeHTML() ||
     '<span style="color:var(--ink2)">Renseignez la fiche : la synthèse s\'écrit toute seule.</span>';
+  scheduleCRH();
   const ev=$('#evolp'); if(ev) ev.textContent = evolTexte() ||
     "Renseignez l'encart : le paragraphe s'écrit tout seul et se recopie dans le CRH.";
 }
-/* Copie en texte brut ET en texte enrichi : collée dans un traitement de texte,
-   la synthèse garde ses titres en gras ; collée dans un champ simple, elle reste lisible. */
-function copySynth(){
-  const txt = narrative(), ok = ()=>toast('Synthèse copiée'), ko = ()=>toast('Copie impossible');
-  if(!navigator.clipboard){ ko(); return; }
-  if(window.ClipboardItem && navigator.clipboard.write){
-    const html = '<div style="font-family:Calibri,Arial,sans-serif;font-size:11pt">'+narrativeHTML()+'</div>';
-    navigator.clipboard.write([new ClipboardItem({
-      'text/plain': new Blob([txt], {type:'text/plain'}),
-      'text/html':  new Blob([html], {type:'text/html'})
-    })]).then(ok, ()=>navigator.clipboard.writeText(txt).then(ok, ko));
-  } else navigator.clipboard.writeText(txt).then(ok, ko);
-}
+function copySynth(){ copyRich(narrativeHTML(), narrative(), 'Synthèse copiée'); }
 
 /* =====================================================================
    IMPRESSION / PDF
@@ -6604,6 +7069,7 @@ function buildPrint(){
   h+=pspec('examens','Examens complémentaires');
   h+=pspec('prescriptions','Prescriptions');
   if(TY===2||TY===3) h+=pspec('evolution','Évolution depuis la consultation précédente');
+  if(TY===3) h+=pspec('sortie','Sortie : examens à prévoir et aptitude à la plongée');
 
   const dgt = diagnosticTexte(d);
   h+=box('DIAGNOSTIC RETENU', dgt ? '<div class="pl"><b>'+esc(dgt)+'</b></div>' : '<div class="pl"><span style="color:#888">—</span></div>');
@@ -7088,7 +7554,7 @@ function sortedDB(){
    l'explique (diagnostic) et propose ce qui fonctionne : « Exporter tout en JSON » (dossier choisi, ou archive
    ZIP), téléchargement du JSON à chaque enregistrement, import d'un dossier ou d'une archive.
    ===================================================================== */
-const APP_VERSION = '7.3.3';
+const APP_VERSION = '7.4.0';
 /* hasPicker teste une fonction de l'API au moment de s'en servir : une extension ou un réglage du navigateur peut la retirer */
 const hasPicker = name => { try{ return typeof window[name] === 'function'; }catch(e){ return false; } };
 let FSA = hasPicker('showDirectoryPicker');
@@ -7806,8 +8272,43 @@ function renderList(){
     '<button class="clr" style="float:right" title="Supprimer" onclick="delFiche(\''+f.id+'\',event)">&#10006;</button></div></div>').join('')
     : '<div style="color:#8a94a3;font-size:12px;padding:6px">Aucune fiche enregistree.</div>';
 }
+/* ---------- bandeau patient ---------- */
+let PATBAR_HTML = null;
+function ageOf(ddn, at){
+  const b = new Date(ddn), e = at ? new Date(at) : new Date();
+  if(isNaN(b) || isNaN(e) || e < b) return null;
+  let a = e.getFullYear() - b.getFullYear();
+  const m = e.getMonth() - b.getMonth();
+  if(m < 0 || (m === 0 && e.getDate() < b.getDate())) a--;
+  return a;
+}
+function patBarHTML(){
+  const d = (REC && REC.d) || {};
+  const item = (lib, val) => '<span class="pi"><small>'+lib+'</small>'+(val ? '<b>'+esc(val)+'</b>' : '<b class="nd">—</b>')+'</span>';
+  const a = d.ddn ? ageOf(d.ddn, d.date_ex) : null;
+  const naiss = d.ddn ? frDate(d.ddn)+(a!=null ? ' · '+a+' ans' : '') : '';
+  const typ = {1:'Consultation initiale', 2:'Consultation de suivi', 3:'Consultation de sortie'}[ftype()] || '';
+  return item('Nom', d.nom ? String(d.nom).toUpperCase() : '')+item('Prénom', d.prenom)+'<span class="pbr"></span>'+item('Naissance', naiss)+
+         item('Accident n°', d.ad_num)+item('Dossier', d.dossier)+
+         '<span class="pt">'+esc(typ)+(d.num_ex ? ' · examen n° '+d.num_ex : '')+'</span>';
+}
+function updatePatBar(){
+  const el = $('#patbar'); if(!el || !REC) return;
+  const h = patBarHTML();
+  if(h === PATBAR_HTML) return;
+  PATBAR_HTML = h; el.innerHTML = h;
+  const hd = $('#hdr'); if(hd) document.documentElement.style.setProperty('--hdr', hd.offsetHeight+'px');
+}
+/* la hauteur de l'en-tête (barre d'outils et bandeau) décale la liste de gauche et les ancres de sections */
+function watchHdr(){
+  const hd = $('#hdr'); if(!hd) return;
+  const set = () => document.documentElement.style.setProperty('--hdr', hd.offsetHeight+'px');
+  set();
+  if(window.ResizeObserver) new ResizeObserver(set).observe(hd); else window.addEventListener('resize', set);
+}
 function updateBar(){
   const s=$('#dbstate'); if(!s) return;
+  updatePatBar();
   const st = folderStatusHTML();
   s.innerHTML = '<b>'+DB.length+'</b> fiche'+(DB.length>1?'s':'')+
     (DIRTY?' <span style="color:#ffcf66">&#9679;<span class="lbl2"> modifications non enregistrees</span></span>':
@@ -8444,6 +8945,16 @@ function openHelp(){
   'de l\'examen precedent apparaissent en grise : cliquez dessus pour les reprendre, ou utilisez le bouton '+
   '<b>Reprendre tout l\'examen precedent</b>. '+
   'Cliquez <b>Tout renseigner comme NORMAL</b>, puis ne modifiez que les items anormaux.</p>'+
+  '<p><b>2 ter. Cinq onglets et un bandeau.</b><br>'+
+  'La fiche se remplit en cinq onglets : <b>Administratif</b>, <b>Anamnèse et plongée</b>, <b>Examen clinique général</b>, '+
+  '<b>Examen neurologique</b>, <b>Conclusion et évolution</b>. Le bandeau bleu sous la barre du haut rappelle en permanence le nom, '+
+  'le prénom, la date de naissance, le n° d’accident et le n° de dossier. Sur une fiche de suivi ou de sortie, l’onglet « Anamnèse et '+
+  'plongée » disparaît : la plongée reste sur la fiche initiale.</p>'+
+  '<p><b>2 quater. Synthèse rédigée et compte rendu d’hospitalisation.</b><br>'+
+  'La synthèse, sous la fiche, se copie en texte enrichi : titres soulignés, anomalies en <b>gras</b>, examen dit en syndromes '+
+  '(« absence de déficit moteur », « syndrome pyramidal »…). Sur une <b>consultation de sortie</b>, l’encart « Compte rendu '+
+  'd’hospitalisation » (fin de l’onglet « Conclusion et évolution ») écrit, sans en-tête, un compte rendu à partir de toutes les fiches '+
+  'du dossier : examens paracliniques réunis, évolution horodatée, diagnostic retenu, examens à réaliser secondairement, inaptitude à la plongée.</p>'+
   '<p><b>2 bis. Les schemas corporels.</b><br>'+
   'Choisissez d\'abord la cotation a appliquer (hypoesthesie, hyperesthesie, anesthesie), puis cliquez les zones. '+
   'Chaque cotation a son propre motif. Re-cliquer une zone avec la meme cotation l\'efface ; la gomme efface aussi. '+
@@ -8638,7 +9149,7 @@ async function saveDraft(){ if(DIRTY && REC) await metaSet('draft',JSON.parse(JS
   const draft = await metaGet('draft');
   if(!wantNew && draft && draft.d && Object.keys(draft.d).length>2){ REC=draft; DIRTY=true; }
   else REC=blank();
-  renderForm(); renderList(); updateBar();
+  renderForm(); renderList(); updateBar(); watchHdr();
   initPWA();
   setInterval(saveDraft,4000);
   startupSync().catch(e=>console.error('dossier de données :', e));      // sans attendre : le dossier est relu pendant que la fiche s'affiche

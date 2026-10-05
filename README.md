@@ -2,7 +2,7 @@
 
 Outil de saisie pour la prise en charge d'un accident de plongée en médecine
 hyperbare : consultation initiale en urgence, consultations de suivi, compte
-rendu de séjour. Auteur : Dr Julien Lesaca. Version 7.3.3.
+rendu de séjour. Auteur : Dr Julien Lesaca. Version 7.4.0.
 
 Deux sorties, depuis la même saisie :
 
@@ -10,7 +10,7 @@ Deux sorties, depuis la même saisie :
    de consultation (compte rendu de prise en charge, fiche de suivi, compte rendu
    de séjour) ;
 2. un fichier `donnees_neuro.csv` unique qui s'incrémente, une ligne par fiche,
-   883 colonnes, prêt pour R, Python, SPSS, Jamovi ou Excel.
+   887 colonnes, prêt pour R, Python, SPSS, Jamovi ou Excel.
 
 Aucune donnée ne quitte l'appareil. Pas de serveur, pas de compte, pas de
 requête réseau. Le code entier tient dans `index.html`.
@@ -55,7 +55,7 @@ cd Fiche-Neuro-Standardisee
 # copiez ici le contenu de ce dossier (index.html, icons/, manifest, sw.js, docs/, native/)
 
 git add .
-git commit -m "ADP v7.3.3"
+git commit -m "ADP v7.4.0"
 git push origin main
 ```
 
@@ -74,12 +74,12 @@ en HTTPS, condition nécessaire pour l'installation et le service worker.
 ### Publier une mise à jour
 
 Modifiez `index.html`, incrémentez `VERSION` en tête de `sw.js`
-(`v7.3.3` → `v7.3.4`), poussez. Sans ce changement de version, les appareils
+(`v7.4.0` → `v7.4.1`), poussez. Sans ce changement de version, les appareils
 déjà installés gardent l'ancienne copie en cache.
 
 ```bash
-sed -i "s/const VERSION = 'v7.3.3'/const VERSION = 'v7.3.4'/" sw.js
-git commit -am "v7.3.4" && git push
+sed -i "s/const VERSION = 'v7.4.0'/const VERSION = 'v7.4.1'/" sw.js
+git commit -am "v7.4.1" && git push
 ```
 
 Au lancement suivant avec réseau, l'application signale la mise à jour et
@@ -101,14 +101,14 @@ serveur interne à l'établissement, ou distribuez `index.html` par clé USB.
 ## Contenu du dépôt
 
 ```
-index.html                 application complète, fichier unique, 537 ko
+index.html                 application complète, fichier unique, 569 ko
 manifest.webmanifest       déclaration d'installation (nom, icônes, plein écran)
 sw.js                      service worker : démarrage hors ligne, mises à jour
 icons/                     icônes 32 à 1024 px, dont deux masquables Android
 brand_logo_source.png      le blason, fichier maître, pour régénérer les icônes
 docs/
   PUBLIER.md                   publier et mettre à jour, pas à pas
-  dictionnaire_variables.csv   883 variables, libellé et codage de chacune
+  dictionnaire_variables.csv   887 variables, libellé et codage de chacune
   NOTICE.md                    mode d'emploi clinique et technique
 native/                    projet Capacitor pour Android et iOS
 .nojekyll                  désactive le moteur Jekyll de GitHub Pages

@@ -1,4 +1,4 @@
-# ADP — accident de plongée, version 7.3.3
+# ADP — accident de plongée, version 7.4.0
 
 Fichier unique : `index.html`. Aucun réseau, aucune dépendance externe, aucun compte.
 Double-cliquez dessus, il s'ouvre dans votre navigateur et tout fonctionne.
@@ -20,11 +20,14 @@ plein écran, démarrage sans réseau. Voir *Installer sur téléphone et tablet
 | Fichier exploitable, incrémental | `donnees_neuro.csv` | Réécrit automatiquement à chaque enregistrement de fiche |
 
 Un seul CSV pour tous les sujets, toutes les consultations et tous les types de document.
-Une ligne = une fiche. 883 colonnes.
+Une ligne = une fiche. 887 colonnes.
 
 Sans bouton de plus, chaque enregistrement écrit aussi la fiche entière au format **JSON** dans le
 dossier de données (un fichier par fiche), et chaque ouverture relit ce dossier pour la recherche d'un
 sujet : voir *Mise en place, une seule fois*.
+
+Sur une consultation de sortie, la fiche propose aussi le **compte rendu d'hospitalisation** : un texte enrichi
+à copier, sans en-tête, écrit à partir de toutes les fiches du dossier (voir *Le compte rendu d'hospitalisation*).
 
 Pour emporter **toutes les fiches en JSON d'un coup**, **Exporter** › **Exporter tout en JSON** les écrit
 une par fichier dans un dossier de votre choix (Téléchargements par défaut), ou les réunit dans une
@@ -216,26 +219,43 @@ suivantes sur *suivi*. Vous changez d'un clic, la fiche se recompose aussitôt.
 
 ---
 
-## Les quatre pages de saisie
+## Les cinq onglets de saisie
 
-La fiche est découpée en quatre pages. Les onglets en haut mènent directement à l'une d'elles,
-le bouton **Suivant** avance d'une page, **Précédent** recule. Chaque onglet porte son compte de
-champs remplis, et se borde de vert quand la page est complète.
+La fiche est découpée en cinq onglets, dans l'ordre réel de la consultation. Les onglets en haut mènent
+directement à l'un d'eux, le bouton **Suivant** avance d'un onglet, **Précédent** recule. Chaque onglet porte
+son compte de champs remplis, et se borde de vert quand il est complet.
 
-| Page | Contenu |
+| Onglet | Contenu |
 |---|---|
-| 1. Anamnèse et plongée | Identification, accueil et prise en charge initiale, plongeur (avec photo de l'ordonnance), plongée (profil, durées, paliers, procédure de ré-immersion), plongée précédente, facteurs favorisants, anamnèse, contacts |
-| 2. Examen général | Constantes et surveillance, examen par appareil, conscience, pupilles et fonctions supérieures, ORL, signes fonctionnels, signes subjectifs, lésions cutanées |
-| 3. Examen neurologique | Réflexes, force motrice, miction, coordination et examen vestibulaire, sensibilités, grille ASIA, scores de sévérité, conclusion de l'examen clinique |
-| 4. Conclusion | Recompression, actes, examens complémentaires, échographie pleuro-pulmonaire, traitements prescrits, évolution, diagnostic retenu, orientation, pièces jointes |
+| 1. Administratif | Identification, mode d'entrée et prise en charge initiale (arrivée, médecin, adressé par, alerte, évacuation, soins sur place), contacts |
+| 2. Anamnèse et plongée | Le plongeur (avec photo de l'ordonnance), plongée (profil, durées, paliers, procédure de ré-immersion), plongée précédente, facteurs favorisants, anamnèse |
+| 3. Examen clinique général | Constantes et surveillance, examen par appareil, conscience, pupilles et fonctions supérieures, ORL, signes fonctionnels, signes subjectifs, lésions cutanées |
+| 4. Examen neurologique | Réflexes, force motrice, miction, coordination et examen vestibulaire, sensibilités, grille ASIA, scores de sévérité, conclusion de l'examen clinique |
+| 5. Conclusion et évolution | Recompression, actes, examens complémentaires, échographie pleuro-pulmonaire, traitements prescrits, évolution (suivi et sortie), diagnostic retenu, sortie (consultation de sortie), orientation, compte rendu d'hospitalisation (consultation de sortie), pièces jointes |
 
-La synthèse rédigée reste visible en permanence, quelle que soit la page.
+Sur une **consultation de suivi ou de sortie**, l'onglet « Anamnèse et plongée » n'a plus rien à montrer (la
+plongée reste sur la fiche initiale) : il disparaît, et les onglets se renumérotent.
+
+La synthèse rédigée reste visible en permanence, sous la fiche, quel que soit l'onglet.
+
+### Le bandeau patient
+
+Sous la barre d'outils, un **bandeau reste affiché en permanence**, quel que soit l'onglet et le défilement :
+**nom, prénom, date de naissance (avec l'âge), numéro d'accident de plongée et numéro de dossier**. À droite, le
+type de consultation et le rang de l'examen. Il suit la saisie ; une valeur absente s'affiche « — ». Un clic sur
+le bandeau ramène à l'onglet Administratif. Sur téléphone, il tient sur deux lignes. Il ne s'imprime pas.
+
+### Le nombre total de plongées
+
+L'encart « Le plongeur » demande le **nombre total de plongées réalisées** (carnet de plongée), avec le nombre
+moyen par an. Les deux figurent dans la synthèse (« 1200 plongées au total ; 80 par an en moyenne ») et dans le
+CSV (`nb_plongees_total`).
 
 ---
 
 ## Le profil de plongée et les durées
 
-L'encart « Paramètres de la plongée accidentelle » (page 1) décrit la plongée : heures, profondeur,
+L'encart « Paramètres de la plongée accidentelle » (onglet « Anamnèse et plongée ») décrit la plongée : heures, profondeur,
 paliers, type de profil et, le cas échéant, la procédure de ré-immersion. Le schéma se dessine seul,
 se redessine à chaque frappe et s'imprime en noir et blanc sur la page 1 du PDF.
 
@@ -341,7 +361,7 @@ reste modifiable à la main, et passe dans la synthèse et sur le PDF.
 
 ## Prise en charge : recompression, actes, examens, traitements, diagnostic
 
-La page 4 suit l'ordre de la prise en charge.
+L'onglet « Conclusion et évolution » suit l'ordre de la prise en charge.
 
 1. **Recompression** : table, heures de mise en pression et de fin, séances, complications. Les tables
    proposées sont OHB15, A15IOT, A18IOT, A18, B18, A18HeOx, B18HeOx, C18, et « autre » ; **B18** est
@@ -390,7 +410,7 @@ La page 4 suit l'ordre de la prise en charge.
 8. **Orientation et commentaires**, puis les **pièces jointes**.
 
 La **conclusion de l'examen clinique** (examen neurologique normal, anormal ou à recontrôler) ferme
-l'onglet « Examen neurologique », en page 3.
+l'onglet « Examen neurologique ».
 
 ### Consultation de suivi ou de sortie
 
@@ -429,7 +449,7 @@ et sur le PDF ; il ne part pas dans le CSV, où une ligne par fiche est la règl
 
 ## Scores de sévérité
 
-L'encart se trouve en fin de page 3, après la grille ASIA.
+L'encart se trouve en fin d'onglet « Examen neurologique », après la grille ASIA.
 
 ### MEDSUBHYP
 
@@ -485,13 +505,47 @@ retiré : la grille s'écrit dans la constante `VEST`, en tête du script de `in
 
 ## La synthèse rédigée
 
-Elle reste visible sous la fiche, quelle que soit la page, et s'imprime en page 6 du PDF. Elle suit le
-plan d'une observation d'entrée : histoire de l'accident, antécédents, examen clinique, examens
-paracliniques, diagnostic retenu, conduite à tenir. Chaque phrase vient d'un champ renseigné ; une
-négation (« pas de déficit ») n'est écrite que si l'item a été examiné. Le bouton **Copier** la met dans
-le presse-papiers, titres en gras pour un traitement de texte.
+Elle reste visible sous la fiche, quelle que soit la page, et s'imprime en page 6 du PDF. Elle suit le plan d'une
+observation d'entrée, en **paragraphes distincts dont le titre est en gras et souligné** : *Le plongeur*,
+*La plongée*, *Histoire des symptômes*, *Prise en charge initiale*, *Antécédents et terrain*, *Constantes*,
+*À l'examen général, on retrouve*, *À l'examen neurologique, on retrouve*, *Au total*, *Examens paracliniques*,
+*Diagnostic retenu*, *Conduite à tenir*. Chaque phrase vient d'un champ renseigné ; une négation (« absence
+de… ») n'est écrite que si l'item a été examiné. Le bouton **Copier** met le texte dans le presse-papiers **en
+texte enrichi** (titres soulignés et anomalies en gras, pour un traitement de texte ou un dossier patient) et en
+texte brut pour un champ simple, où il n'y a ni gras ni souligné.
 
-Ce texte est destiné à un compte rendu d'hospitalisation : il est **allégé et sans signe spécial**.
+### Ce qui est anormal est en gras
+
+Tout constat anormal de l'examen ; dans l'histoire, les **facteurs favorisants** (dont la procédure de décompression
+non respectée), la **remontée rapide ou non conforme**, la **plongée dans les 24 heures précédentes** et une
+évolution **aggravée** avant la recompression ; un résultat paraclinique qui n'est pas dit normal (un résultat saisi en texte
+libre est tenu pour normal s'il commence par « normal », « sans anomalie », « absence de », « pas de »,
+« négatif » ou « bilan sans particularité » ; sinon il est en gras) ; un Doppler transcrânien avec shunt ; une
+échographie pleuro-pulmonaire qui n'est pas A partout ; un score ASIA dont l'AIS n'est pas E ; une complication
+thérapeutique ; la conclusion « examen neurologique anormal » ou « à recontrôler ».
+
+### L'examen est dit en syndromes
+
+Sous « À l'examen neurologique, on retrouve » (et « à l'examen général »), **un syndrome par ligne**, en gras, avec
+ce qui le fonde ; puis « En revanche, » ce qui a été examiné et trouvé normal. Un domaine non examiné n'est dit ni
+normal ni anormal.
+
+| Domaine | Examiné et normal | Anormal |
+|---|---|---|
+| Conscience, signes cérébraux | « absence de signe cérébral », « GCS 15 » | « des signes cérébraux : » conscience altérée, troubles du comportement, désorientation, parole, vue, paralysie faciale, pupilles ; un Glasgow inférieur à 15 |
+| Vestibulo-cochléaire | « absence de syndrome vestibulaire », « absence de signe cochléaire » | « un syndrome vestibulaire : » vertiges, nystagmus (côté, regard, sens), VNS, NIV, Romberg, Fukuda, marche en étoile, marche funambule. Avec une atteinte de l'audition ou des acouphènes : « syndrome vestibulo-cochléaire » ; sans atteinte vestibulaire : « signes cochléaires » |
+| Motricité | « absence de déficit moteur » | « un déficit moteur de type » paraparésie, tétraparésie, hémiparésie droite ou gauche, monoparésie d'un membre, « des deux membres supérieurs », ou « multifocal » ; **plégie** quand tous les myotomes atteints sont cotés 0 ; puis le détail myotome par myotome |
+| Sensibilités | « absence de déficit sensitif aux trois modes (tact léger, piqûre et pallesthésie) » | « un déficit sensitif aux trois modes » ; **dissocié** quand un mode au moins est conservé (« modes épargnés : pallesthésie ») ; l'étendue en intervalles de métamères, avec le côté ; les signes subjectifs à part |
+| Réflexes | « absence de syndrome pyramidal » | « un syndrome pyramidal droit, gauche ou bilatéral : » ROT vifs ou polycinétiques, signe de Hoffmann, trépidation épileptoïde, cutané plantaire en extension. L'abolition des ROT reste une « anomalie des réflexes » distincte |
+| Coordination | « absence de syndrome cérébelleux », « équilibre et marche normaux » | « un syndrome cérébelleux cinétique » (talon-genou, doigt-nez), « et statique » si l'équilibre ou la marche sont atteints aussi ; sans signe cinétique : « des troubles de l'équilibre et de la marche » |
+| Miction, sphincter anal | « absence de trouble vésico-sphinctérien » | « des troubles vésico-sphinctériens : » pas de miction, rétention, résidu post-mictionnel de plus de 100 mL, contraction anale volontaire absente, pression anale profonde non perçue |
+| Score ASIA | | « une atteinte médullaire : niveau neurologique…, AIS… » quand l'AIS va de A à D |
+| Examen général | « examen cardio-vasculaire, respiratoire… sans anomalie », « examen ORL normal », « pas de lésion cutanée », « pas de céphalée ni de douleur rachidienne » | « une anomalie respiratoire (…) », « des anomalies ORL », « des lésions cutanées de désaturation », « une symptomatologie douloureuse » |
+
+Ces règles sont une **proposition à valider** : elles s'écrivent dans les fonctions `examFindings` (les constats)
+et `syndromes` (leur traduction), en fin de script de `index.html`.
+
+### Le reste du texte, allégé et sans signe spécial
 
 - **Aucun exposant, indice, barre verticale, étoile ni flèche.** SpO2, cmH2O et FiO2 s'écrivent en
   lettres, un niveau de plongée sans ses étoiles (« N2 »), les listes de zones se séparent par des
@@ -505,11 +559,9 @@ Ce texte est destiné à un compte rendu d'hospitalisation : il est **allégé e
   n'est écrite que si elle est absente** ; sa présence est la règle et ne se dit pas.
 - **Omis** : la voie veineuse, le numéro de dossier et le rang de l'examen, le club, la photo de
   l'ordonnance et la liste des pièces jointes.
-- **Examen anal** : écrit **seulement s'il est anormal** (« contraction anale volontaire absente »,
-  « pression anale profonde non perçue »). Normal ou non testé, il n'apparaît pas. Les troubles
-  sphinctériens restent signalés dans les anomalies.
-- Les épreuves vestibulaires anormales rejoignent les signes vestibulo-cochléaires, avec leur côté ;
-  toutes normales, la synthèse écrit « épreuves vestibulaires normales ».
+- **Examen anal** : « contraction anale volontaire absente » et « pression anale profonde non perçue » ne
+  s'écrivent que s'ils sont anormaux, dans les troubles vésico-sphinctériens. Normaux ou non testés, ils
+  n'apparaissent pas.
 
 Chacun de ces choix est une ligne de la fonction `narrativeBlocks`, en fin de script.
 
@@ -524,6 +576,58 @@ examens demandés.
 Sous l'encart, un cadre bleu assemble ces réponses en un **paragraphe rédigé**, prêt pour le
 compte rendu de sortie. Il se recalcule à chaque frappe. Le bouton **Copier** le met dans le
 presse-papiers.
+
+---
+
+## Le compte rendu d'hospitalisation (CRH)
+
+Sur une **consultation de sortie**, l'encart **Compte rendu d'hospitalisation**, en fin d'onglet « Conclusion et
+évolution », écrit un texte enrichi **sans en-tête** à partir de **toutes les fiches du dossier**, la fiche ouverte
+comprise même si elle n'est pas enregistrée. Il se recalcule à la saisie. Le bouton **Copier le CRH** le place dans
+le presse-papiers en texte enrichi (titres soulignés, anomalies en gras) et en texte brut. Il n'est pas ajouté au
+PDF. C'est un **brouillon à relire** avant de le coller dans le dossier du patient.
+
+Les fiches sont rangées par date et heure d'examen ; **J0** est la date de la première.
+
+| Paragraphe | D'où vient le texte |
+|---|---|
+| Le plongeur, La plongée, Histoire des symptômes, Prise en charge initiale, Antécédents et terrain | la fiche initiale (la première fiche de type initial du dossier) |
+| Constantes et examen à l'admission | la fiche initiale : « À l'admission, à l'examen général / neurologique, on retrouve », avec les syndromes de la synthèse |
+| Prise en charge | la fiche initiale (table, oxygène, corticoïdes, remplissage, actes), puis chaque fiche qui porte une recompression ou un traitement, avec sa date |
+| Examens paracliniques | **tous** les examens du dossier, **par fiche et par date**, un examen par ligne ; les examens « demandés, en attente » en sont écartés ; les scores (MEDSUBHYP, vestibulaire, ASIA) en fin de paragraphe |
+| Évolution | tout ce qui **diffère d'une fiche à l'autre**, horodaté (voir ci-dessous) |
+| Examen de sortie | la dernière fiche : « À la sortie, à l'examen général / neurologique, on retrouve » |
+| Diagnostic retenu | le plus récent des diagnostics saisis |
+| Orientation | l'orientation de la fiche de sortie (retour au domicile, hospitalisation, transfert) et ses précisions |
+| Examens à réaliser secondairement | le champ de la consultation de sortie, puis les examens demandés de la dernière fiche |
+| Aptitude à la plongée | « Inaptitude temporaire à la plongée de N mois » ou « Inaptitude définitive à la plongée » (en gras) ; rien si non précisée |
+
+### L'évolution, fiche à fiche
+
+Pour chaque fiche après la première, une ligne **datée** (« Le 03/10/2026 à 9 h 00 (J1) : »), puis une ligne par
+catégorie :
+
+- **Amélioration** : un constat disparu (« vertiges : disparition »), une force musculaire qui remonte
+  (« L2 (flexion de hanche) droit : coté 4/5 (auparavant coté 3/5) »), une récupération complète, une
+  normalisation de la sensibilité ou des réflexes, une étendue de déficit sensitif qui se réduit, un score ASIA
+  qui s'améliore ;
+- **Aggravation** (en gras) : un constat nouveau (« acouphènes : apparition (à gauche) »), une force qui baisse, un
+  score ASIA qui s'aggrave ;
+- **Autres modifications** : un changement sans sens clinique évident, ou un constat nouveau dont l'item **n'avait pas
+  été examiné** à la fiche précédente (« non examiné auparavant ») ;
+- **Examen clinique inchangé** quand rien ne diffère ;
+- puis ce que dit l'encart **Évolution** de la fiche : séances de recompression depuis la consultation précédente,
+  complication thérapeutique (en gras), évolution jugée, commentaire.
+
+La comparaison se fait **constat par constat** (muscle, réflexe, épreuve vestibulaire, étendue sensitive…), pas sur
+le texte. Une anomalie n'est dite **disparue** que si l'item a été **réexaminé** à la fiche suivante : un item laissé
+vide n'est jamais tenu pour normal.
+
+### La sortie
+
+La consultation de sortie ajoute un encart **Sortie : examens à prévoir et aptitude à la plongée** :
+**examens à réaliser secondairement** (texte libre, avec des phrases à cliquer) et **inaptitude à la plongée**,
+*temporaire* avec sa **durée en mois**, ou *définitive*. Il figure sur le PDF de la fiche de sortie.
 
 ---
 
@@ -578,7 +682,7 @@ disparaissent du fichier de données. Aucune valeur fantôme ne subsiste.
 
 ### Coordination et examen vestibulaire
 
-L'encart de la page 3 réunit la coordination (verticalisation, équilibre statique, marche,
+L'encart de l'onglet « Examen neurologique » réunit la coordination (verticalisation, équilibre statique, marche,
 talon-genou, doigt-nez) et quatre **épreuves vestibulaires** :
 
 | Épreuve | Réponses | Côté demandé si anormale |
@@ -758,7 +862,7 @@ courants. Quatre d'entre elles portent un schéma au trait.
 ### Photographies
 
 Les fiches techniques sont des textes et des schémas. Les photographies qui documentent un examen
-précis se joignent à la **fiche du sujet**, dans l'encart *Pièces jointes* en fin de page 4 (jusqu'à
+précis se joignent à la **fiche du sujet**, dans l'encart *Pièces jointes* en fin d'onglet « Conclusion et évolution » (jusqu'à
 douze photos, chacune avec un titre, réduites à 1600 pixels, enregistrées avec la fiche et imprimées
 sur des pages dédiées du PDF). La photo de l'ordonnance se joint depuis l'encart « Antécédents et
 traitements ». Elles n'entrent pas dans le fichier de données, qui ne reçoit que leur nombre et leurs
@@ -876,7 +980,7 @@ d = pd.read_csv("donnees_neuro.csv", sep=";", encoding="utf-8-sig")
 
 - Séparateur par défaut : point-virgule. Modifiable dans **Exporter** (virgule pour R et Python).
 - **Cellule vide = valeur manquante (NA).** Aucune valeur par défaut n'est inventée.
-- `dictionnaire_variables.csv` donne le libellé et le codage des 883 colonnes.
+- `dictionnaire_variables.csv` donne le libellé et le codage des 887 colonnes.
 
 ### Codages principaux
 
@@ -943,6 +1047,52 @@ d = pd.read_csv("donnees_neuro.csv", sep=";", encoding="utf-8-sig")
 
 Pour les analyses courantes, les colonnes de synthèse suffisent. Les colonnes de détail servent
 aux analyses topographiques fines.
+
+---
+
+## Changements de la version 7.4.0
+
+Quatre colonnes s'ajoutent au CSV (**883 → 887**) : `nb_plongees_total`, `sortie_exam_second`, `inapt_type`,
+`inapt_mois`. Aucune n'est retirée ni recodée : les fiches de la 7.3.3 s'ouvrent telles quelles. Les intitulés de
+section qui figurent dans le dictionnaire (entre parenthèses) restent ceux de la 7.3.3 ; seul l'onglet qui les
+contient change.
+
+### Saisie
+
+- **Cinq onglets** au lieu de quatre : *Administratif*, *Anamnèse et plongée*, *Examen clinique général*, *Examen
+  neurologique*, *Conclusion et évolution*. L'ancienne page 1 se scinde en deux ; les trois autres gardent leur
+  contenu. En suivi et en sortie, l'onglet « Anamnèse et plongée » disparaît.
+- **Bandeau patient** permanent : nom, prénom, naissance, accident, dossier.
+- **Nombre total de plongées réalisées** dans « Le plongeur ».
+- **Sortie** : examens à réaliser secondairement, inaptitude à la plongée (mois ou définitive).
+
+### Synthèse rédigée
+
+- **Paragraphes distincts**, titres en gras et soulignés ; l'ancien paragraphe « Histoire de l'accident » devient
+  quatre paragraphes (le plongeur, la plongée, les symptômes, la prise en charge initiale).
+- **Anomalies en gras.**
+- **L'examen dit en syndromes** : « absence de déficit moteur », « absence de syndrome pyramidal »… quand tout est
+  normal ; « un syndrome pyramidal bilatéral », « un déficit moteur de type paraparésie »… quand il ne l'est pas.
+- Copie en **texte enrichi** (titres soulignés, gras) ; sur un navigateur qui ne sait pas écrire du texte enrichi
+  dans le presse-papiers (Firefox ancien), la copie passe par une sélection temporaire.
+
+### Compte rendu d'hospitalisation
+
+- Encart **CRH** sur la consultation de sortie : texte enrichi sans en-tête, écrit à partir de toutes les fiches du
+  dossier ; examens paracliniques réunis ; évolution horodatée.
+
+### À valider de votre côté
+
+- **Le découpage des onglets.** L'alerte, l'évacuation et les soins sur place restent dans « Mode d'entrée et prise
+  en charge initiale », donc dans l'onglet *Administratif* ; la nationalité, la profession, l'adresse et le
+  téléphone restent dans « Le plongeur », onglet *Anamnèse et plongée*. Dites-moi si vous voulez les déplacer.
+- **Le vocabulaire des syndromes** (tableau de la section *La synthèse rédigée*) : syndrome pyramidal dès un signe
+  pyramidal, syndrome cérébelleux limité aux signes cinétiques, déficit sensitif « dissocié », atteinte médullaire
+  d'après l'AIS. C'est une proposition de rédaction, pas une classification validée.
+- **Le CRH** : sa structure, la place des scores, le fait que les examens demandés en attente n'y figurent pas, la
+  forme « amélioration / aggravation / autres modifications ».
+- **Données de santé** : le CRH copié contient des données de santé sans l'identité ; une fois collé, il est
+  soumis aux mêmes règles que le dossier du patient.
 
 ---
 
@@ -1180,6 +1330,9 @@ du script de `index.html`.
 
 ## Historique
 
+- **7.4.0** : cinq onglets, bandeau patient permanent, nombre total de plongées, synthèse en paragraphes (titres
+  soulignés, anomalies en gras, examen dit en syndromes), compte rendu d'hospitalisation à partir de toutes les
+  fiches du dossier (examens paracliniques réunis, évolution horodatée, examens à prévoir, inaptitude à la plongée).
 - **7.3.3** : « Exporter tout en JSON » (une fiche par fichier, dans un dossier choisi ou une archive ZIP),
   import d'archives ZIP et de dossiers entiers, choix du dossier : explication, diagnostic et solutions de
   repli quand le navigateur n'offre pas l'écriture directe.
