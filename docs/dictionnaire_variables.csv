@@ -13,12 +13,15 @@ delai_min;Delai accident vers examen;entier, minutes (calcule)
 fiche_type;Type de consultation;"1 = consultation initiale (prise en charge en urgence) ; 2 = consultation de suivi ; 3 = consultation de sortie / CRH ; vide = non renseigne (a lire comme 1)"
 sexe;Sexe;"1 = M ; 2 = F ; 3 = Autre"
 age;Age a la date de l'examen;entier, annees (calcule)
+nationalite;Nationalité (Identité complémentaire);"1 = Française ; 2 = Belge ; 3 = Allemande ; 4 = Suisse ; 5 = Italienne ; 6 = Espagnole ; 7 = Américaine (US) ; 8 = Anglaise ; 9 = Autre"
+nationalite_autre;Nationalité — à préciser (Identité complémentaire);texte libre
+profession;Profession (Identité complémentaire);texte libre
 ad_num;Accident de plongée n° (Mode d'entrée et prise en charge initiale);texte libre
 date_arr;Date d'arrivée (Mode d'entrée et prise en charge initiale);AAAA-MM-JJ
 heure_arr;Heure d'arrivée (Mode d'entrée et prise en charge initiale);HH:MM
 medecin;Médecin (Mode d'entrée et prise en charge initiale);texte libre
 infirmier;Infirmier(e) (Mode d'entrée et prise en charge initiale);texte libre
-adresse_par;Adressé par (Mode d'entrée et prise en charge initiale);"1 = SAMU 83 ; 2 = SCMM ; 3 = Autre SAMU ; 4 = Autre"
+adresse_par;Adressé par (Mode d'entrée et prise en charge initiale);"1 = SAMU 83 ; 2 = SCMM ; 3 = Autre SAMU ; 5 = SAU HNIA SA ; 4 = Autre"
 adresse_samu;Autre SAMU — à préciser (Mode d'entrée et prise en charge initiale);texte libre
 adresse_etab_type;Type d’établissement (Mode d'entrée et prise en charge initiale);"1 = SAU (service d’accueil des urgences) ; 2 = Centre hyperbare ; 3 = Non défini"
 adresse_etab;Établissement — à préciser (Mode d'entrée et prise en charge initiale);texte libre
@@ -35,9 +38,6 @@ soin_hydrat;Hydratation (mL) (Mode d'entrée et prise en charge initiale);numeri
 soin_autres;Autres soins sur place (Mode d'entrée et prise en charge initiale);texte libre
 heure_pec;Heure de prise en charge au SMHEP (Mode d'entrée et prise en charge initiale);HH:MM
 delai_symp_pec;Délai 1ers symptômes → prise en charge (min) (Mode d'entrée et prise en charge initiale);numerique, calcule
-nationalite;Nationalité (Le plongeur);"1 = Française ; 2 = Belge ; 3 = Allemande ; 4 = Suisse ; 5 = Italienne ; 6 = Espagnole ; 7 = Américaine (US) ; 8 = Anglaise ; 9 = Autre"
-nationalite_autre;Nationalité — à préciser (Le plongeur);texte libre
-profession;Profession (Le plongeur);texte libre
 poids;Poids (kg) (Le plongeur);numerique (kg)
 taille;Taille (cm) (Le plongeur);numerique (cm)
 imc;IMC (Le plongeur);numerique, calcule (kg/m²)
@@ -117,18 +117,29 @@ pl_proc;Procédure de décompression (Paramètres de la plongée accidentelle);"
 pl_ordi_modele;Ordinateur — marque / modèle (Paramètres de la plongée accidentelle);texte libre
 pl_ordi_reglage;Ordinateur — réglage (GF, etc.) (Paramètres de la plongée accidentelle);texte libre
 pl_proc_autre;Autres tables — préciser (Paramètres de la plongée accidentelle);texte libre
-pl_profil_type;Type de profil (Paramètres de la plongée accidentelle);"1 = Carré ; 2 = Inversé ; 3 = Yoyo ; 4 = Remontée progressive"
+pl_profil_type;Type de profil (Paramètres de la plongée accidentelle);"1 = Carré ; 2 = Inversé ; 3 = Yoyo ; 4 = Remontée progressive ; 5 = Apnée"
 pl_h_immersion;Départ surface — DS (heure d'immersion) (Paramètres de la plongée accidentelle);HH:MM
 pl_h_depart_fond;Départ fond — DF (heure) (Paramètres de la plongée accidentelle);HH:MM
 pl_h_sortie;Heure de sortie de l'eau — HS (Paramètres de la plongée accidentelle);HH:MM
 pl_prof;Profondeur maximale atteinte — Pmax (m) (Paramètres de la plongée accidentelle);numerique (m)
 pl_prof1;Profondeur de la 1re phase (m) (Paramètres de la plongée accidentelle);numerique (m)
 pl_h_inv;Heure du passage à Pmax (Paramètres de la plongée accidentelle);HH:MM
+pl_dpmax;Durée à la profondeur maximale (min) (Paramètres de la plongée accidentelle);numerique (min)
 pl_prof_df;Profondeur au départ du fond (m) (Paramètres de la plongée accidentelle);numerique (m)
 pl_yoyo_nb;Nombre de remontées (Paramètres de la plongée accidentelle);numerique
 pl_yoyo_amp;Amplitude des variations (m) (Paramètres de la plongée accidentelle);numerique (m)
 pl_yoyo_surf;Les remontées atteignent la surface (Paramètres de la plongée accidentelle);"1 = OUI ; 0 = NON"
 pl_yoyo_int;Intervalle de surface le plus long (min) (Paramètres de la plongée accidentelle);numerique (min)
+ap_nb;Nombre d’apnées (Paramètres de la plongée accidentelle);numerique
+ap_interval;Intervalle de surface entre les apnées (min) (Paramètres de la plongée accidentelle);numerique (min)
+ap_decomp;Décompression après les apnées (Paramètres de la plongée accidentelle);"0 = Aucune ; 1 = Par réimmersion ; 2 = En surface"
+ap_rim_int;Réimmersion — intervalle après la dernière apnée (min) (Paramètres de la plongée accidentelle);numerique (min)
+ap_rim_duree;Réimmersion — durée (min) (Paramètres de la plongée accidentelle);numerique (min)
+ap_rim_prof;Réimmersion — profondeur (m) (Paramètres de la plongée accidentelle);numerique (m)
+ap_rim_gaz;Réimmersion — type de gaz (Paramètres de la plongée accidentelle);"1 = Air ; 2 = Nitrox ; 3 = Trimix ; 4 = Héliox ; 5 = Oxygène ; 9 = Autre"
+ap_surf_int;Décompression en surface — intervalle après la dernière apnée (min) (Paramètres de la plongée accidentelle);numerique (min)
+ap_surf_duree;Décompression en surface — durée (min) (Paramètres de la plongée accidentelle);numerique (min)
+ap_surf_gaz;Décompression en surface — gaz respiré (Paramètres de la plongée accidentelle);"1 = Air ; 2 = Nitrox ; 3 = Trimix ; 4 = Héliox ; 5 = Oxygène ; 9 = Autre"
 pl_dt;Durée de travail — DT (Paramètres de la plongée accidentelle);numerique, calcule (min)
 pl_dtr;Durée totale de remontée — DTR (Paramètres de la plongée accidentelle);numerique (min)
 pl_duree_tot;Durée totale de plongée — DTP (Paramètres de la plongée accidentelle);numerique (min)
@@ -161,7 +172,10 @@ ff_insomnie;Insomnie (Facteurs favorisants);"1 = OUI ; 0 = NON"
 ff_exercice24;Exercice physique dans les 24 h (Facteurs favorisants);"1 = OUI ; 0 = NON"
 ff_froid;Eau froide (Facteurs favorisants);"1 = OUI ; 0 = NON"
 ff_deshydrat;Déshydratation (Facteurs favorisants);"1 = OUI ; 0 = NON"
-ff_env;Conditions environnementales (Facteurs favorisants);texte libre
+ff_courant;Courant (Facteurs favorisants);"1 = OUI ; 0 = NON"
+ff_houle;Houle de surface (Facteurs favorisants);"1 = OUI ; 0 = NON"
+ff_visib;Visibilité (Facteurs favorisants);"1 = Bonne ; 2 = Mauvaise ; 3 = Inférieure à 1 m"
+ff_env;Conditions environnementales — précisions (Facteurs favorisants);texte libre
 histoire;Histoire de la maladie (Anamnèse);texte libre
 sf_arrivee;Signes fonctionnels à l’arrivée (Anamnèse);texte libre
 evol_avant_rec;Évolution avant recompression (Anamnèse);"0 = Amélioré ; 1 = Stable ; 2 = Aggravé"
@@ -348,6 +362,7 @@ etoile_cote;Marche en étoile — côté de la déviation (Coordination et exame
 funambule;Marche funambule (Coordination et examen vestibulaire);"0 = Normale ; 1 = Anormale"
 funambule_cote;Marche funambule — côté de la déviation (Coordination et examen vestibulaire);"1 = D ; 2 = G"
 sens_examinee;Examen des sensibilités réalisé (Sensibilités);"1 = OUI ; 0 = NON"
+sc_masquer;Scores MEDSUBHYP et vestibulaire (Scores dans la synthèse);"1 = coche ; vide = non coche"
 conclusion;Conclusion de l'examen (Conclusion de l'examen clinique);"1 = Examen neurologique normal ; 2 = Examen neurologique anormal ; 3 = À recontrôler"
 cut_present;Lésions cutanées présentes (Lésions cutanées de désaturation);"1 = OUI ; 0 = NON"
 cut_delai;Délai d'apparition après émersion (min) (Lésions cutanées de désaturation);numerique (min)

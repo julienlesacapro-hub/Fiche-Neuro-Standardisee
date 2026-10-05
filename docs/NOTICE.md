@@ -1,4 +1,4 @@
-# ADP — accident de plongée, version 7.4.0
+# ADP — accident de plongée, version 8.0.0
 
 Fichier unique : `index.html`. Aucun réseau, aucune dépendance externe, aucun compte.
 Double-cliquez dessus, il s'ouvre dans votre navigateur et tout fonctionne.
@@ -227,8 +227,8 @@ son compte de champs remplis, et se borde de vert quand il est complet.
 
 | Onglet | Contenu |
 |---|---|
-| 1. Administratif | Identification, mode d'entrée et prise en charge initiale (arrivée, médecin, adressé par, alerte, évacuation, soins sur place), contacts |
-| 2. Anamnèse et plongée | Le plongeur (avec photo de l'ordonnance), plongée (profil, durées, paliers, procédure de ré-immersion), plongée précédente, facteurs favorisants, anamnèse |
+| 1. Administratif | Identification, **identité complémentaire** (nationalité, profession, adresse, téléphone, e-mail), mode d'entrée et prise en charge initiale (arrivée, médecin, adressé par, alerte, évacuation, soins sur place), contacts |
+| 2. Anamnèse et plongée | Le plongeur (poids, taille et IMC, antécédents, habitudes toxiques, traitement, niveaux de plongée, avec photo de l'ordonnance), plongée (profil, apnée, durées, paliers, procédure de ré-immersion), plongée précédente, facteurs favorisants et conditions environnementales, anamnèse |
 | 3. Examen clinique général | Constantes et surveillance, examen par appareil, conscience, pupilles et fonctions supérieures, ORL, signes fonctionnels, signes subjectifs, lésions cutanées |
 | 4. Examen neurologique | Réflexes, force motrice, miction, coordination et examen vestibulaire, sensibilités, grille ASIA, scores de sévérité, conclusion de l'examen clinique |
 | 5. Conclusion et évolution | Recompression, actes, examens complémentaires, échographie pleuro-pulmonaire, traitements prescrits, évolution (suivi et sortie), diagnostic retenu, sortie (consultation de sortie), orientation, compte rendu d'hospitalisation (consultation de sortie), pièces jointes |
@@ -241,13 +241,20 @@ La synthèse rédigée reste visible en permanence, sous la fiche, quel que soit
 ### Le bandeau patient
 
 Sous la barre d'outils, un **bandeau reste affiché en permanence**, quel que soit l'onglet et le défilement :
-**nom, prénom, date de naissance (avec l'âge), numéro d'accident de plongée et numéro de dossier**. À droite, le
-type de consultation et le rang de l'examen. Il suit la saisie ; une valeur absente s'affiche « — ». Un clic sur
-le bandeau ramène à l'onglet Administratif. Sur téléphone, il tient sur deux lignes. Il ne s'imprime pas.
+**nom, prénom, date de naissance (avec l'âge), numéro d'accident de plongée, numéro de dossier, numéro de
+l'examen, date d'entrée et dernier diagnostic retenu**. À droite, le type de consultation.
+
+- La **date d'entrée** est celle du **premier examen du dossier** (la fiche la plus ancienne).
+- Le **dernier diagnostic retenu** est celui de la fiche la plus récente du dossier qui en porte un, fiche ouverte
+  comprise, écrit comme dans la synthèse (« Accident de désaturation (médullaire et vestibulaire) ») sans l'indication
+  du diagnostic principal ; le texte complet est dans l'infobulle quand il est coupé.
+
+Il suit la saisie ; une valeur absente s'affiche « — ». Un clic sur le bandeau ramène à l'onglet Administratif.
+Sur téléphone, il passe sur plusieurs lignes. Il ne s'imprime pas.
 
 ### Le nombre total de plongées
 
-L'encart « Le plongeur » demande le **nombre total de plongées réalisées** (carnet de plongée), avec le nombre
+L'encart « Le plongeur » (onglet « Anamnèse et plongée ») demande le **nombre total de plongées réalisées** (carnet de plongée), avec le nombre
 moyen par an. Les deux figurent dans la synthèse (« 1200 plongées au total ; 80 par an en moyenne ») et dans le
 CSV (`nb_plongees_total`).
 
@@ -266,23 +273,48 @@ se redessine à chaque frappe et s'imprime en noir et blanc sur la page 1 du PDF
 - **Paliers** : une ligne par palier, avec le gaz, la profondeur et la durée à la profondeur. La case
   *paliers de sécurité réalisés (non obligatoires)* propose 1 min à 6 m et 5 min à 3 m, modifiables.
 
-### Les quatre types de profil
+### Les cinq types de profil
 
-Un bouton à vignette choisit le type ; sans choix, le profil carré est dessiné. Le titre du type
-est inscrit sur le schéma.
+Un bouton à vignette choisit le type. **La remontée progressive est proposée d'office** sur une consultation
+initiale, et c'est elle qui est dessinée quand aucun type n'est choisi (c'était le profil carré dans la 7.4.0). Le
+titre du type est inscrit sur le schéma.
 
 | Type | Ce que dessine le schéma | Données propres au type |
 |---|---|---|
 | **Carré** | descente, séjour au fond, remontée | aucune |
 | **Inversé** | plus profond en fin de plongée : un premier plateau moins profond, puis le passage à Pmax | profondeur de la 1re phase ; heure d'arrivée à Pmax (facultative : sans elle, le passage est dessiné aux deux tiers du séjour au fond) |
 | **Yoyo** | remontées et réimmersions répétées | nombre de remontées, amplitude, remontées jusqu'à la surface ou non, intervalle de surface le plus long |
-| **Remontée progressive** | descente à Pmax, puis remontée lente et ondulée **pendant DT**, jusqu'au départ du fond (DF) ; la remontée finale (DTR) part ensuite de cette profondeur | profondeur au départ du fond ; sans valeur, 40 % de Pmax est dessiné (au moins 3 m au-dessus du premier palier) |
+| **Remontée progressive** | descente à Pmax, **plateau à Pmax**, puis remontée lente et ondulée **pendant DT**, jusqu'au départ du fond (DF) ; la remontée finale (DTR) part ensuite de cette profondeur | **durée à la profondeur maximale** (`pl_dpmax`, en minutes, comptée dans DT ; sans valeur, une minute ou deux sont dessinées, et au plus 80 % de DT) ; profondeur au départ du fond ; sans valeur, 40 % de Pmax est dessiné (au moins 3 m au-dessus du premier palier) |
+| **Apnée** | pas de schéma : l'apnée se décrit par ses paramètres (voir ci-dessous) | nombre d'apnées, intervalle de surface, décompression éventuelle |
 
 Une plongée à **yoyo** se définit par des remontées et des réimmersions d'**au moins 10 m** de
 variation de profondeur ; si elles atteignent la surface, l'**intervalle de surface** doit être
 **inférieur ou égal à 15 minutes**. Une alerte signale le cas contraire, ainsi que l'absence de coche
 sur le facteur favorisant « Plongées ludion (yo-yo) ». Le CSV porte une colonne calculée
 `pl_yoyo_crit`.
+
+### L'apnée
+
+Le type de profil **Apnée** change les paramètres demandés. Il se choisit de deux façons équivalentes : le bouton
+« Apnée » du **type de profil**, ou « Apnée » du **type de plongée** (les deux boutons se suivent : choisir l'un
+choisit l'autre, et en sortir en sort aussi ; un type de plongée de contexte, loisir, instruction, professionnelle ou
+militaire, n'est jamais écrasé par le choix du profil).
+
+| Paramètre | Champ |
+|---|---|
+| Profondeur maximale des apnées | `pl_prof` (Pmax : le champ s'intitule alors « Profondeur maximale des apnées (m) ») |
+| Nombre d'apnées | `ap_nb` |
+| Intervalle de surface entre les apnées (min) | `ap_interval` |
+| Décompression après les apnées | `ap_decomp` : `0` aucune, `1` par réimmersion, `2` en surface |
+| Par réimmersion | `ap_rim_int` (intervalle après la dernière apnée, min), `ap_rim_duree` (min), `ap_rim_prof` (m), `ap_rim_gaz` (type de gaz) |
+| En surface | `ap_surf_int` (intervalle, min), `ap_surf_duree` (min), `ap_surf_gaz` (gaz respiré) |
+
+L'heure d'immersion (DS), l'heure de sortie de l'eau (HS) et la durée totale (DTP) restent disponibles : HS sert au
+délai « sortie de l'eau → premiers symptômes ». **Sont masqués**, et leurs valeurs retirées, le mélange respiré, la
+procédure de décompression, DF, DT, DTR, les paliers et la procédure de ré-immersion, qui ne s'appliquent pas à
+une apnée. Revenir à un autre type de profil les rend visibles, mais ne les rétablit pas. La synthèse écrit « Plongée en
+apnée … 12 apnées, intervalle de surface 2 min, décompression par réimmersion (intervalle 10 min, durée 15 min,
+profondeur 6 m, oxygène) » ; le papier imprime une ligne « Apnées » à la place du schéma.
 
 ### DT, DTR et DTP : les heures ou les durées
 
@@ -359,6 +391,23 @@ reste modifiable à la main, et passe dans la synthèse et sur le PDF.
 
 ---
 
+## Facteurs favorisants et conditions environnementales
+
+L'encart « Facteurs favorisants » (onglet « Anamnèse et plongée ») garde ses dix questions OUI / NON. Sous elles, un
+bloc **Conditions environnementales** cote à chaque plongée :
+
+- le **courant** : OUI ou NON (`ff_courant`) ;
+- la **houle de surface** : OUI ou NON (`ff_houle`) ;
+- la **visibilité** : bonne, mauvaise ou inférieure à 1 m (`ff_visib`, codes `1`, `2`, `3`) ;
+- un **texte libre** de précisions (`ff_env`), avec quelques phrases à cliquer, qui complète.
+
+La synthèse les écrit dans une phrase à part (« Conditions environnementales : courant, pas de houle de surface,
+mauvaise visibilité, mer agitée. »). Ces quatre éléments **ne sont pas des facteurs favorisants** : ils n'entrent ni
+dans la phrase « Facteurs favorisants », ni dans la règle « pas de facteur favorisant retrouvé », et « Tout normal »
+n'y touche pas. Sur le papier, ils s'impriment avec les facteurs favorisants.
+
+---
+
 ## Prise en charge : recompression, actes, examens, traitements, diagnostic
 
 L'onglet « Conclusion et évolution » suit l'ordre de la prise en charge.
@@ -366,8 +415,8 @@ L'onglet « Conclusion et évolution » suit l'ordre de la prise en charge.
 1. **Recompression** : table, heures de mise en pression et de fin, séances, complications. Les tables
    proposées sont OHB15, A15IOT, A18IOT, A18, B18, A18HeOx, B18HeOx, C18, et « autre » ; **B18** est
    proposée d'office sur une consultation initiale. L'**heure de fin** est calculée (mise en pression
-   plus durée de la table : 90, 115, 115, 90, 150, 110, 150 et 300 min dans l'ordre ci-dessus) et reste
-   modifiable.
+   plus durée de la table : **95** (OHB15, portée de 90 à 95 min dans la 8.0.0), 115, 115, 90, 150, 110, 150 et
+   300 min dans l'ordre ci-dessus) et reste modifiable.
 2. **Actes**, dans cet ordre : voie veineuse périphérique, **bilan biologique** (bilan accident de
    plongée et bilan œdème pulmonaire d'immersion cochés d'office sur une consultation initiale), puis
    **sondage vésical** (à demeure, évacuateur, ou non) avec le **volume initial évacué**.
@@ -450,6 +499,23 @@ et sur le PDF ; il ne part pas dans le CSV, où une ligne par fiche est la règl
 ## Scores de sévérité
 
 L'encart se trouve en fin d'onglet « Examen neurologique », après la grille ASIA.
+
+### Ne pas mentionner les scores
+
+MEDSUBHYP et le score vestibulaire n'ont de sens que pour un **accident de décompression**. Pour un autre
+accident (barotraumatisme, œdème pulmonaire d'immersion, noyade…), la case **« Ne pas les mentionner dans la
+synthèse »** (encart **Scores dans la synthèse**, juste sous les scores, onglet « Examen neurologique », `sc_masquer`)
+les retire :
+
+- de la **synthèse rédigée** ;
+- du **compte rendu d'hospitalisation**, dès qu'une fiche du dossier porte la case (le score ASIA reste) ;
+- de l'**impression** (l'encart « Scores de sévérité » n'est pas imprimé, et le titre de la page ne les cite plus) ;
+- de la **ligne pour le fichier Excel maître** (colonne BI vide, colonne BJ à « ns »).
+
+Les scores restent **calculés dans la fiche** (colonnes `msh_total`, `vest_total` du CSV) et visibles à l'écran, avec un
+bandeau qui le rappelle. La case est **reprise sur les autres fiches du dossier** (nouvelle fiche, ré-examen).
+Quand le **diagnostic retenu** n'est pas un accident de décompression, un **rappel** s'affiche en tête de l'encart des
+scores, avec un bouton qui coche la case : elle n'est jamais cochée à votre place.
 
 ### MEDSUBHYP
 
@@ -593,8 +659,8 @@ Les fiches sont rangées par date et heure d'examen ; **J0** est la date de la p
 |---|---|
 | Le plongeur, La plongée, Histoire des symptômes, Prise en charge initiale, Antécédents et terrain | la fiche initiale (la première fiche de type initial du dossier) |
 | Constantes et examen à l'admission | la fiche initiale : « À l'admission, à l'examen général / neurologique, on retrouve », avec les syndromes de la synthèse |
-| Prise en charge | la fiche initiale (table, oxygène, corticoïdes, remplissage, actes), puis chaque fiche qui porte une recompression ou un traitement, avec sa date |
-| Examens paracliniques | **tous** les examens du dossier, **par fiche et par date**, un examen par ligne ; les examens « demandés, en attente » en sont écartés ; les scores (MEDSUBHYP, vestibulaire, ASIA) en fin de paragraphe |
+| Prise en charge | la fiche initiale (table, oxygène, corticoïdes, remplissage, actes), puis chaque fiche qui porte une recompression ou un traitement, avec sa date ; en dernière ligne, le **décompte des recompressions par type de table** (voir ci-dessous) |
+| Examens paracliniques | **tous** les examens du dossier, **par fiche et par date**, un examen par ligne ; les examens « demandés, en attente » en sont écartés ; les scores (MEDSUBHYP, vestibulaire, ASIA) en fin de paragraphe, sauf MEDSUBHYP et vestibulaire quand la case « ne pas les mentionner » est cochée |
 | Évolution | tout ce qui **diffère d'une fiche à l'autre**, horodaté (voir ci-dessous) |
 | Examen de sortie | la dernière fiche : « À la sortie, à l'examen général / neurologique, on retrouve » |
 | Diagnostic retenu | le plus récent des diagnostics saisis |
@@ -623,11 +689,271 @@ La comparaison se fait **constat par constat** (muscle, réflexe, épreuve vesti
 le texte. Une anomalie n'est dite **disparue** que si l'item a été **réexaminé** à la fiche suivante : un item laissé
 vide n'est jamais tenu pour normal.
 
+### Les recompressions, par type de table
+
+La dernière ligne du paragraphe « Prise en charge » compte les séances du dossier **par type de table** :
+« Recompressions : 5 séances au total (OHB15 : 3 ; B18 : 1 ; type non précisé : 1). » Règle :
+
+- une fiche qui porte une **table** (champ « Table utilisée ») compte pour le **plus grand** de ses « Nombre de séances
+  réalisées » et « Séances réalisées depuis la dernière consultation », et pour **une séance au moins** ;
+- les séances déclarées dans l'encart d'évolution **sans table** sur la fiche sont comptées à part (« type non
+  précisé ») : la fiche ne dit pas de quelle table il s'agit ;
+- une table **hors liste** compte sous le nom saisi (« Table Comex 30 : 2 ») ; les noms identiques à la casse près se
+  regroupent ;
+- les types s'écrivent dans l'ordre de la liste des tables (OHB15, A15IOT, A18IOT, A18, B18, A18HeOx, B18HeOx,
+  C18, autre).
+
+La table **B18 proposée d'office** sur une fiche initiale compte comme une table : décochez-la, ou videz le champ,
+quand aucune recompression n'a eu lieu (le texte de la synthèse écrit lui aussi « Table B18 »).
+
 ### La sortie
 
 La consultation de sortie ajoute un encart **Sortie : examens à prévoir et aptitude à la plongée** :
 **examens à réaliser secondairement** (texte libre, avec des phrases à cliquer) et **inaptitude à la plongée**,
 *temporaire* avec sa **durée en mois**, ou *définitive*. Il figure sur le PDF de la fiche de sortie.
+
+---
+
+## Documents de sortie : le générateur de courriers du service
+
+Le **générateur de courriers du SMHEP** (fichier autonome `Generateur-courriers-SMHEP.html` : courrier au médecin
+traitant, courriers d'avis, ordonnances, certificats, recommandations, plans de soin) **s'ouvre depuis ADP**, utilisé tel
+quel. Sur une **consultation de sortie**, le bouton **Documents de sortie : courriers, ordonnances, certificats…**
+(encart « Sortie », onglet « Conclusion et évolution »), ou **documents de sortie** dans l'en-tête du compte rendu
+d'hospitalisation, ouvre le générateur **en plein écran, avec les éléments connus déjà remplis**. Tout reste modifiable.
+
+**Première utilisation : choisir le fichier du générateur.** ADP **ne contient pas le générateur** : il porte les
+**signatures scannées** et les **numéros RPPS** des médecins du service, qui ne doivent pas se retrouver dans une page
+publiée sur Internet (GitHub Pages est public). À la première ouverture, ADP demande de **choisir votre copie** de
+`Generateur-courriers-SMHEP.html` ; il la **garde dans la base locale de ce navigateur**, sur cet ordinateur (elle n'est
+envoyée nulle part et ne figure dans aucun export), et ne la redemande plus. Il faut la choisir de nouveau dans un autre
+navigateur, sur un autre appareil, ou après avoir vidé les données de navigation. Le lien **Fichier du générateur…** (encart
+« Sortie ») montre le fichier chargé et permet de le **remplacer** (nouvelle version) ou de l'**oublier**. Le fichier choisi
+**s'exécute avec les mêmes droits qu'ADP** : ne chargez que votre propre copie.
+
+| Champ du générateur | Repris de |
+|---|---|
+| Genre, civilité | le sexe de la fiche (M : Homme, Mr ; F : Femme, Mme ; « Autre » : le réglage du générateur reste) |
+| NOM, Prénom, Date de naissance | la fiche |
+| Date de l'accident | la fiche (initiale) |
+| Motif, précision, précision complémentaire | le **dernier diagnostic retenu** du dossier (tableau ci-dessous) |
+| Hospitalisation, début | la **date d'entrée** : le premier examen du dossier |
+| Hospitalisation, fin | la date de la consultation de sortie |
+| Signataire | le médecin ou l'examinateur reconnu parmi LESACA, BLATTEAU, DRUELLE, CASTAGNA, MORIN, RUBY, DAUBRESSE, LEHOT ; sinon le réglage du générateur reste |
+| Certificat médical : inaptitude à la plongée | l'inaptitude de la sortie : *jusqu'à réévaluation* avec sa durée en mois, ou *définitive* |
+| Certificat de premières constatations : « Présente cliniquement » | les signes fonctionnels à l'arrivée et les syndromes de la fiche initiale (« À l'examen, on retrouve : … ») |
+| Certificat de premières constatations : « Examens complémentaires réalisés » | les examens paracliniques du dossier, par date, sans les scores |
+
+Le motif suit le diagnostic, et **c'est le générateur lui-même qui coche ensuite les documents habituels** de la
+situation (recommandations post-ADD, ordonnances, imagerie, certificats ; avec « vestibulaire » dans la précision :
+courrier ORL et kinésithérapie vestibulaire ; pour un œdème pulmonaire d'immersion : recommandations post-OPI,
+cardiologue, pneumologue) :
+
+| Diagnostic retenu | Motif | Précision |
+|---|---|---|
+| Accident de désaturation | un accident de désaturation | un seul type : médullaire, cérébral, vestibulaire (« avec atteinte cochléaire » si des acouphènes ou une baisse de l'audition sont notés, sinon « sans »), cutané, ostéo-myo-articulaire, pulmonaire ; plusieurs types : *médullaire et vestibulaire*, *médullaire et cérébral*, *cérébral, médullaire et vestibulaire*, *cérébral et vestibulaire*, sinon *mixte* |
+| Œdème pulmonaire d'immersion | un œdème pulmonaire d'immersion | — |
+| Barotraumatisme | un barotraumatisme | de l'oreille moyenne, de l'oreille interne, sinusien, pulmonaire, dentaire, par plaquage de masque |
+| Accident biochimique | un accident biochimique | par hyperoxie, par hypercapnie, par narcose, par intoxication au monoxyde de carbone |
+| Noyade | une noyade | — |
+| Diagnostic saisi seulement en texte libre | « motif rédigé librement » | — |
+
+**Fonctionnement.** *Retour à la fiche* referme la fenêtre **sans rien perdre** : la rouvrir pour la même fiche reprend là
+où vous en étiez. Une autre fiche recharge le générateur. *Reprendre les éléments de la fiche* remplit à nouveau
+l'identité, le motif, les dates, le signataire, l'inaptitude et les deux textes du certificat de premières constatations
+(après confirmation). *Ouvrir dans un onglet* ouvre le même générateur dans un onglet du navigateur, rempli de la même
+façon. La production des PDF et l'impression se font avec les boutons du générateur, qui rappelle ses réglages
+d'impression.
+
+**Rien n'est enregistré** : ni le générateur ni ADP ne gardent les documents, et les éléments de la fiche passent d'un
+bloc à l'autre en mémoire, sans réseau.
+
+**Mettre à jour le générateur** : *Fichier du générateur…*, puis *Remplacer le fichier*, avec la nouvelle version.
+Seul un fichier qui porte le titre « Générateur de courriers » et ses champs est accepté. L'intégration ne dépend que des
+champs `genre`, `civilite`, `nom`, `prenom`, `ddn`, `dateAccident`, `motif1`, `motif2`, `motif3`, `motifLibre`,
+`hospDebut`, `hospFin`, `signataire`, `inaptitude`, `delaiReeval`, `cmpcClinique`, `cmpcExamens` : si l'un d'eux disparaît
+d'une version du générateur, ADP le dit au lieu de se taire (« Introuvable : … »). Hors ligne, tout continue de
+fonctionner : le fichier est dans le navigateur.
+
+**Variante locale, jamais publiable.** Un `index.html` qui porterait lui-même le générateur (bloc
+`<script type="application/json" id="gensrc">`) l'utilise sans rien demander ; cette variante contient les signatures des
+médecins et ne doit jamais être publiée. ADP n'est pas livré ainsi.
+
+**Limites.** Le générateur est fait pour un écran de bureau (formulaire à gauche, aperçu A4 à droite) : il n'est pas
+adapté à un téléphone. Si l'impression lancée depuis la fenêtre intégrée devait imprimer la page ADP au lieu des courriers
+(à vérifier sous Firefox), utilisez *Ouvrir dans un onglet*.
+
+---
+
+## La ligne pour le fichier Excel maître
+
+Le fichier maître du service compte **89 colonnes (A à CK)** : identité, plongeur, plongée, alerte et prise en charge,
+évolution, recompression, examens. Depuis une fiche du dossier, **Exporter**, puis **Ligne Excel du dossier ouvert** (ou
+**ligne Excel** dans l'en-tête du compte rendu d'hospitalisation), compose **une ligne** à partir de **toutes les fiches
+du dossier**, la fiche ouverte comprise. Rien n'est enregistré : la ligne est recalculée à chaque ouverture de la fenêtre.
+Votre fichier maître n'est ni lu ni modifié.
+
+La fenêtre affiche, pour chaque colonne, sa **valeur** et la **règle** suivie ; les colonnes vides sont grisées. Vérifiez,
+puis :
+
+1. **Copier la ligne** : le texte (une ligne, 89 cellules séparées par des tabulations) se colle dans la **première
+   cellule** d'une ligne vide d'Excel (Ctrl+V). Les dates (JJ/MM/AAAA) et les heures (HH:MM) sont reconnues au
+   format français ;
+2. ou **Télécharger le classeur .xlsx** (`ligne_excel_AAAA-MM-JJ.xlsx`) : une feuille « Feuil1 », en-têtes identiques à
+   votre fichier (légendes de codes comprises) en ligne 1, la ligne du dossier en ligne 2, dates et heures en vrais
+   nombres au même format. Copiez la ligne 2 et collez-la dans le fichier maître, en « valeurs » si vous voulez garder
+   sa mise en forme.
+
+La case **inclure le nom et le prénom (colonne A)** est cochée par défaut, la colonne A du fichier maître étant
+« NOM Prénom » ; décochez-la pour laisser la colonne vide. Le nom du fichier téléchargé ne porte aucune donnée du patient.
+
+### D'où vient chaque colonne
+
+La **fiche initiale** (la première de type initial) donne l'identité, le plongeur, la plongée, l'alerte, les soins sur
+place, le premier examen et la table initiale ; la **fiche proche de H+24** (entre 12 h et 40 h après l'arrivée, la plus
+proche de 24 h) et la **première fiche de suivi** donnent l'évolution ; la **dernière fiche** donne les séquelles et l'inaptitude ;
+**toutes les fiches** donnent le diagnostic (le dernier), les recompressions, le doppler transcrânien, les échographies,
+l'IRM et les traitements.
+
+| Col. | Colonne du fichier maître | Source dans ADP et règle de codage |
+|---|---|---|
+| A | NOM Prénom | nom en majuscules, puis prénom (identité) |
+| B | n° dossier (SMHEP) | numéro d’accident de plongée du service |
+| C | Numero Dossier | numéro de dossier de la fiche |
+| D | Sexe | M = 1, F = 0 |
+| E | Date de naissance (JJ:MM:AA) | date de naissance |
+| F | Age | âge à la date du premier examen |
+| G | Diagnostic | dernier diagnostic retenu du dossier, codé 1 à 13 (voir la notice) |
+| H | Année début plongée | année de début de la plongée |
+| I | Nb total de plongée | nombre total de plongées réalisées |
+| J | Nb moyen plongée par an (2 dernières années) | nombre moyen de plongées par an |
+| K | Plongeur pro (militaire ou civil) | 1 si niveau professionnel, plongée professionnelle ou militaire |
+| L | Organisme d'affiliation actuel | FFESSM 1, FSGT 2, UCPA 3, ANMP 4, CMAS 6, PADI 7, autres 8 |
+| M | Niveau plongeur loisir | N1 / Open Water 1 … N5 5 ; baptême ou non breveté 0 |
+| N | Niveau enseignement loisir | E1 / BPJEPS 1, E2 2, E3 / MF1 3, E4 / MF2 / DEJEPS / DESJEPS 4 |
+| O | Niveau plongeur pro (classe et mention) | libellé du niveau ; « Aucun » si pas de plongée professionnelle ; la mention (A à D) n’est pas recueillie |
+| P | Niveau plongeur militaire/ | libellé pour un plongeur d’armes ; la catégorie n’est pas recueillie |
+| Q | Date dernier certifical médical (JJ:MM:AA) | date du dernier certificat médical |
+| R | Qualification médecin assurant suivi plongée | fédéral 1, du sport 2, DIU 3, rééducateur 4, autre 5 |
+| S | ATCD | antécédents médico-chirurgicaux ; « ras » si aucun |
+| T | ATCD plongée | 1 si un accident de plongée antérieur, 0 si aucun |
+| U | Plongée en structure (associative/commerciale) | plongée en club : 1 ; hors club ou professionnelle : 0 |
+| V | Plongée auto-encadrée | plongée auto-encadrée : 1 ou 0 |
+| W | Date de l'accident (JJ:MM:AA) | date de l’accident |
+| X | Plongée pro | plongée professionnelle ou militaire : 1 |
+| Y | Lieu/site de l'accident | reconnu dans le texte du lieu (école, Var, parc national) ; sinon vide, le texte passe dans « Observations » |
+| Z | Appareil utilisé | apnée 1 ; sinon circuit ouvert 2 par défaut (l’appareil n’est pas recueilli) |
+| AA | Mélange uilisé | air 1, nitrox 2, trimix 3, autres 4 |
+| AB | Procédure de décompression | tables 1, ordinateur 2, autre 3 |
+| AC | Combinaison | non recueillie |
+| AD | Heure immersion (hh:mm) | heure d’immersion (DS) |
+| AE | Profondeur max (msw) | profondeur maximale (Pmax) ; en apnée, celle des apnées |
+| AF | Durée de travail (hh:mm) | durée de travail (DT) |
+| AG | Réalisation de paliers | 1 si un palier obligatoire est saisi, 0 sinon (plongée renseignée) |
+| AH | Heure sortie de l'eau (hh:mm) | heure de sortie de l’eau (HS) |
+| AI | Durée totale plongée (hh:mm) | durée totale de plongée (DTP) |
+| AJ | Heure premiers symptômes (hh:mm) 00:00 si premiers symptômes en plongée | 00:00 si les symptômes sont apparus entre l’immersion et la sortie de l’eau |
+| AK | Respect procédure décompression | respect de la procédure de décompression (facteur favorisant) : 1 ou 0 |
+| AL | Plongée ludion | facteur « plongées ludion » ; profil à yoyo si non renseigné |
+| AM | Plongée successive | plongée dans les 24 heures précédentes |
+| AN | Plongée d'instruction | facteur favorisant « plongée d’instruction », sinon type de plongée « instruction » |
+| AO | Travail musculaire intense en et/ou après plongée | travail musculaire intense (facteur favorisant) : 1 ou 0 |
+| AP | Fatigue avant plongée | fatigue (facteur favorisant) : 1 ou 0 |
+| AQ | Nb de plongées 15 derniers jours (< 20 m / > 20 m) | non recueilli |
+| AR | Heure d'appel SMHEP (hh:mm) | heure d’appel |
+| AS | Identité de l'appelant | SAMU 1 (SAMU 83, SCMM, autre SAMU), SAU HNIA SA 2, autre SAU 3, autre 5 |
+| AT | Localisation accidenté moment de l'appel | non recueillie |
+| AU | Moyen d'évacuation vers SMHEP | hélicoptère 1, SMUR 2, VSAV 3, autre 5 |
+| AV | Heure début des soins (hh:mm) | heure des 1ers soins sur place |
+| AW | Circonstances de survenue de l'accident | remontée, profil, commentaire des paliers, histoire de la maladie |
+| AX | Signes initiaux | signes fonctionnels à l’arrivée |
+| AY | Déséquipement + protection thermique | non recueilli |
+| AZ | Oxygénothérapie normobare | oxygène sur place : 1 (masque à haute concentration) ou 0 |
+| BA | Hydratation per os et IV (ml) | hydratation sur place (mL) |
+| BB | Aspirine | aspirine sur place : 1 ou 0 |
+| BC | Heure de prise en charge SMHEP (hh:mm) | heure de prise en charge au SMHEP |
+| BD | Evolution avant arrivée SMHEP : | amélioré 2, stable 3, aggravé 4 |
+| BE | Signes au SMHEP | syndromes anormaux du premier examen |
+| BF | Signes au SMHEP : | déficit moteur 3, déficit sensitif objectif 2, paresthésies isolées 1, aucun 0 |
+| BG | Douleur vertébrale | douleur rachidienne du premier examen : 1 ou 0 |
+| BH | Troubles sphictériens | troubles vésico-sphinctériens du premier examen |
+| BI | Score MEDSUBHYP | à l’arrivée si coté, sinon le premier disponible ; vide si la case « ne pas mentionner les scores » est cochée |
+| BJ | Score sévérité OI | score vestibulaire du premier examen coté ; « ns » sinon |
+| BK | Table Initiale | O2 2,5 ATA 1 (OHB15, A15IOT), A18 2, B18 3, C18 4, héliox 5, autre 6, aucune 0 |
+| BL | Heure de mise en pression (hh:mm) | heure de mise en pression de la table initiale |
+| BM | Délai de recompression après 1ers symptômes (hh:mm) | délai 1ers symptômes → mise en pression |
+| BN | Traitements médicamenteux, y compris ceux avant arrivée au SMHEP: (le ou les chiffres) | chiffres séparés par des espaces : ONB 1 ou 2, hydratation > 500 mL 3, aspirine 4, corticoïdes 5, lidocaïne 6, fluoxétine 7, autres 8 ; 0 si aucun |
+| BO | Evolution après la table initiale (par rapport arrivée SMHEP): | première fiche de suivi : régression totale 1, amélioration 2, stabilisation 3, aggravation 4 |
+| BP | Signes après la table initiale | syndromes anormaux de la première fiche de suivi |
+| BQ | Evolution à 24h (par rapport arrivée SMHEP): | fiche la plus proche de H+24 (entre 12 h et 40 h) |
+| BR | Signes à 24h | syndromes anormaux de la fiche proche de H+24 |
+| BS | Nb séances d'OHB complémentaires (table héliox, 2,8 ou 4 ATA) | séances du dossier à 2,8 ATA ou héliox (A18, B18, C18, héliox), la table initiale déduite |
+| BT | Nb séances d'OHB complémentaires (table O2, 2,5 ATA) | séances du dossier à l’oxygène 2,5 ATA (OHB15, A15IOT), la table initiale déduite |
+| BU | Séquelles sortie service | dernier examen : signes objectifs 2, signes subjectifs 1, aucun 0 |
+| BV | Médecin ayant pris en charge le patient | médecin de la fiche initiale (sinon l’examinateur) |
+| BW | Observations | lieu non codé, apnées, conditions environnementales, tables « autres » |
+| BX | Score MJOAS | non recueilli |
+| BY | nombre j AT | non recueilli |
+| BZ | nombre j inaptitude plongée | inaptitude temporaire : mois × 30 jours ; « définitive » sinon |
+| CA | GF ORDINATEUR | réglage de l’ordinateur |
+| CB | Echodoppler transcrânien | meilleur grade de shunt noté au doppler transcrânien (0, 1, 2) |
+| CC | IRM délai/accident (jours) | jours entre l’accident et la première IRM médullaire |
+| CD | IRM Image | IRM médullaire : image anormale 1, normale 0 |
+| CE | IRM Facteur compressif | non recueilli |
+| CF | IRM Facteur compressif Type | non recueilli |
+| CG | IRM concordance radio clinique | non recueillie |
+| CH | Echographie cardiaque anormale | résultat de l’échographie cardiaque : anormal 1, normal 0 |
+| CI | Epreuve d'effort anormale | non recueillie |
+| CJ | MAPA anormale | non recueillie |
+| CK | G | colonne sans équivalent |
+
+Les colonnes qu'ADP **ne recueille pas** (AC, AQ, AT, AY, BX, BY, CE, CF, CG, CI, CJ, CK) restent vides. La colonne Z
+(appareil utilisé) est **« circuit ouvert » par défaut** hors apnée : ADP ne demande ni recycleur ni caisson. Les niveaux
+professionnel et militaire (O, P) sont repris en toutes lettres, la mention (A à D) et la catégorie n'étant pas recueillies.
+
+### Le diagnostic (colonne G)
+
+Le **dernier diagnostic retenu** du dossier est codé ; quand plusieurs diagnostics sont retenus, c'est le diagnostic
+principal s'il est désigné, sinon le premier dans l'ordre accident de désaturation, œdème pulmonaire d'immersion,
+barotraumatisme, accident biochimique, noyade.
+
+| Code | Libellé du fichier maître | Dans ADP |
+|---|---|---|
+| 1 | ADD neurologique | accident de désaturation, type médullaire et / ou cérébral seul |
+| 2 | ADD OI | accident de désaturation, type vestibulaire seul |
+| 3 | ADD cutané | accident de désaturation, type cutané seul |
+| 4 | ADD OMA | accident de désaturation, type ostéo-articulaire seul |
+| 5 | ADD mixte | accident de désaturation de plusieurs familles de types (par exemple médullaire et vestibulaire) |
+| 6 | ADD ambigu | accident de désaturation dont le type n'est pas précisé |
+| 7 | OPI | œdème pulmonaire d'immersion |
+| 8 | BT OI | barotraumatisme dont l'oreille interne fait partie |
+| 9 | BT pulmonaire | barotraumatisme dont la surpression pulmonaire fait partie (sans oreille interne) |
+| 10 | BT sinusien | barotraumatisme dont les sinus font partie (sans oreille interne ni poumon) |
+| 11 | autres barotrauma | oreille moyenne, dentaire, plaquage de masque, ou type non précisé |
+| 12 | accident biochimique | accident biochimique |
+| 13 | autre | noyade, accident de désaturation pulmonaire (chokes) seul, diagnostic saisi seulement en texte libre |
+
+---
+
+## Dictée vocale
+
+Un **bouton micro** accompagne chaque encart de texte (zone de texte, ligne de texte libre) : histoire de la maladie,
+signes fonctionnels, commentaires, antécédents, précisions, résultats d'examens. Les champs d'identité (nom, prénom, date
+de naissance, adresse, e-mail), les téléphones et le numéro de dossier n'en ont pas. Un clic lance la dictée, un second
+l'arrête ; le texte est posé **à la place du curseur** (à la suite du texte déjà saisi si le curseur n'a pas été placé),
+avec la majuscule seulement en début de phrase.
+
+- Commandes vocales : **« à la ligne »** (ou « nouvelle ligne »), **« virgule »**, **« point final »**,
+  **« point-virgule »**, **« deux points »**, **« point d'interrogation »**. Dans une ligne de texte (et non une zone),
+  « à la ligne » donne un espace.
+- La dictée est celle du **navigateur** : elle fonctionne sur **Chrome, Edge et Safari**, en français. Le navigateur la
+  relance seul après un silence.
+- **Firefox n'a pas cette fonction.** Le bouton le dit et place le curseur dans le champ ; dictez alors avec la dictée de
+  Windows : **touche Windows + H** (sur Mac, menu Édition, « Démarrer la dictée » ; sur téléphone, le micro du clavier).
+- **Confidentialité.** Chrome et Edge **envoient l'audio à un service distant** (Google, Microsoft) pour le transcrire :
+  il quitte l'ordinateur, contrairement au reste d'ADP. Un avis le rappelle à la première utilisation (réglage mémorisé ;
+  refuser n'active rien). **Ne dictez aucune donnée identifiante.** La dictée de Windows (Win + H) passe, elle aussi, par
+  un service en ligne selon la configuration du poste.
 
 ---
 
@@ -1006,13 +1332,16 @@ d = pd.read_csv("donnees_neuro.csv", sep=";", encoding="utf-8-sig")
 | Orientation | `1 = domicile`, `2 = médecine`, `3 = surveillance continue`, `4 = soins intensifs`, `5 = transfert` ; `orientation_txt` : texte libre complémentaire |
 | Position du regard | une colonne binaire par position + une colonne texte (valeurs séparées par `\|`) |
 | Trépidation | `trep_pied_qual_D`, `trep_pied_qual_G` : `1 = épuisable`, `2 = inépuisable` |
-| Adressé par | `adresse_par` : `1 = SAMU 83`, `2 = SCMM`, `3 = autre SAMU`, `4 = autre` (établissement, avec son type et son nom) ; `adresse_etab_type` : `1 = SAU`, `2 = centre hyperbare`, `3 = non défini` |
+| Adressé par | `adresse_par` : `1 = SAMU 83`, `2 = SCMM`, `3 = autre SAMU`, `5 = SAU HNIA SA`, `4 = autre` (établissement, avec son type et son nom) ; `adresse_etab_type` : `1 = SAU`, `2 = centre hyperbare`, `3 = non défini` |
 | Moyen d'évacuation | `evac_moyen` : `1` moyens propres, `2` VSAV / pompiers, `3` SMUR routier, `7` hélicoptère médicalisé, `8` hélicoptère non médicalisé, `6` autre |
 | Sonde vésicale | `ac_sonde` : `2 = sonde à demeure`, `3 = sondage évacuateur`, `0 = non` ; `ac_sonde_vol` : volume initial évacué (mL) |
-| Table de recompression | `tb_table` : `1 = OHB15`, `2 = A15IOT`, `3 = A18IOT`, `4 = A18`, `5 = B18`, `6 = A18HeOx`, `7 = B18HeOx`, `8 = C18`, `9 = autre` (texte dans `tb_table_autre`) ; `tb_duree` : durée de la table en minutes, calculée |
+| Table de recompression | `tb_table` : `1 = OHB15`, `2 = A15IOT`, `3 = A18IOT`, `4 = A18`, `5 = B18`, `6 = A18HeOx`, `7 = B18HeOx`, `8 = C18`, `9 = autre` (texte dans `tb_table_autre`) ; `tb_duree` : durée de la table en minutes, calculée (OHB15 : 95) |
 | ECG | `im_ecg`, `ecg_fc` (bpm), `ecg_qtc` (ms), `ecg_txt` (compte rendu, texte) |
 | (Méthyl)prednisolone | `rx_solu`, `rx_solu_dose` (mg par jour), `rx_solu_jours` (jours), `rx_solu_h` (heure de la 1re dose) |
-| Type de profil de plongée | `pl_profil_type` : `1 = carré`, `2 = inversé`, `3 = yoyo`, `4 = remontée progressive` ; inversé : `pl_prof1`, `pl_h_inv` ; yoyo : `pl_yoyo_nb`, `pl_yoyo_amp`, `pl_yoyo_surf` (`1 = oui`, `0 = non`), `pl_yoyo_int`, et `pl_yoyo_crit` (`1` si les critères du yoyo sont remplis, `0` sinon, calculé) ; remontée progressive : `pl_prof_df` (profondeur au départ du fond) |
+| Type de profil de plongée | `pl_profil_type` : `1 = carré`, `2 = inversé`, `3 = yoyo`, `4 = remontée progressive` (proposée d'office), `5 = apnée` ; inversé : `pl_prof1`, `pl_h_inv` ; yoyo : `pl_yoyo_nb`, `pl_yoyo_amp`, `pl_yoyo_surf` (`1 = oui`, `0 = non`), `pl_yoyo_int`, et `pl_yoyo_crit` (`1` si les critères du yoyo sont remplis, `0` sinon, calculé) ; remontée progressive : `pl_dpmax` (durée à la profondeur maximale, min), `pl_prof_df` (profondeur au départ du fond) |
+| Apnée | `ap_nb` (nombre d'apnées), `ap_interval` (intervalle de surface, min), `ap_decomp` : `0 = aucune`, `1 = par réimmersion`, `2 = en surface` ; réimmersion : `ap_rim_int`, `ap_rim_duree` (min), `ap_rim_prof` (m), `ap_rim_gaz` ; en surface : `ap_surf_int`, `ap_surf_duree` (min), `ap_surf_gaz` ; gaz : `1 = air`, `2 = nitrox`, `3 = trimix`, `4 = héliox`, `5 = oxygène`, `9 = autre` ; la profondeur maximale des apnées est `pl_prof` ; type de plongée `pl_type = 5` |
+| Conditions environnementales | `ff_courant`, `ff_houle` : `1 = OUI`, `0 = NON` ; `ff_visib` : `1 = bonne`, `2 = mauvaise`, `3 = inférieure à 1 m` ; `ff_env` : précisions, texte libre |
+| Scores dans la synthèse | `sc_masquer` : `1` = scores MEDSUBHYP et vestibulaire non mentionnés (synthèse, CRH, impression), vide sinon ; `msh_total` et `vest_total` restent calculés |
 | Score vestibulaire | `vest_vertige`, `vest_nystagmus`, `vest_nv`, `vest_instab` : `0` à `3` ; `vest_cochl` : `0` ou `1` (8 points) ; `vest_total` : `0` à `19` |
 | Échographie pleuro-pulmonaire | 24 colonnes de zones `ech_<a ou p>_<D ou G>_<s ou i>_<lat, mdn ou mdl>` : `1 = A`, `2 = B`, `3 = B++`, `4 = C`, `5 = PNO`, vide = zone non examinée ; `ech_nb` (zones cotées), `ech_nb_A`, `ech_nb_B`, `ech_nb_Bpp`, `ech_nb_C`, `ech_nb_PNO`, `ech_anom_D`, `ech_anom_G` (zones hors A par poumon), `ech_pno`, `ech_zones` (liste), `ech_txt` (commentaire) |
 | Procédure de décompression | `pl_proc` : `1 = ordinateur`, `2 = tables MN23`, `5 = tables MT 92`, `3 = autres tables`, `4 = sans procédure` |
@@ -1042,11 +1371,87 @@ d = pd.read_csv("donnees_neuro.csv", sep=";", encoding="utf-8-sig")
 | Synthèse ASIA | `asia_lt`, `asia_pp`, `asia_uems`, `asia_lems`, `asia_sens_D/G`, `asia_mot_D/G`, `asia_nli`, `asia_sacre`, `asia_ais` |
 | Signes subjectifs | `subj_nb`, un compteur par ressenti, 48 colonnes de zones |
 | Lésions cutanées | `cut_present`, `cut_nb`, un compteur par type, indicateurs de région, 48 colonnes de zones |
-| Plongeur | nationalité, IMC, antécédents (une colonne par case), habitudes toxiques et paquets-années `tabac_pa`, antécédents en plongée, niveaux, organisme, certificat médical |
-| Plongée accidentelle | procédure, heures DS / DF / HS, `pl_prof`, `pl_dt`, `pl_dtr`, `pl_duree_tot`, paliers |
+| Identité complémentaire | nationalité, profession, adresse, téléphone, e-mail (les trois derniers seulement si l'export de l'identité est autorisé) |
+| Plongeur | IMC, antécédents (une colonne par case), habitudes toxiques et paquets-années `tabac_pa`, antécédents en plongée, niveaux, organisme, certificat médical |
+| Plongée accidentelle | procédure, heures DS / DF / HS, `pl_prof`, `pl_dt`, `pl_dtr`, `pl_duree_tot`, `pl_dpmax`, paliers, apnée (`ap_*`) |
+| Facteurs favorisants | les dix facteurs, puis `ff_courant`, `ff_houle`, `ff_visib`, `ff_env` |
 
 Pour les analyses courantes, les colonnes de synthèse suffisent. Les colonnes de détail servent
 aux analyses topographiques fines.
+
+---
+
+## Changements de la version 8.0.0
+
+Quinze colonnes s'ajoutent au CSV (**887 → 902**) : `pl_dpmax`, `ap_nb`, `ap_interval`, `ap_decomp`, `ap_rim_int`,
+`ap_rim_duree`, `ap_rim_prof`, `ap_rim_gaz`, `ap_surf_int`, `ap_surf_duree`, `ap_surf_gaz`, `ff_courant`, `ff_houle`,
+`ff_visib`, `sc_masquer`. Aucune n'est retirée ni recodée : les fiches de la 7.4.0 s'ouvrent telles quelles. Deux codes
+s'ajoutent à des listes existantes : `adresse_par = 5` (SAU HNIA SA) et `pl_profil_type = 5` (apnée). Dans le
+dictionnaire, l'intitulé de section entre parenthèses change pour les six champs déplacés (« Identité complémentaire »
+au lieu de « Le plongeur ») et `ff_env` s'appelle désormais « Conditions environnementales — précisions ».
+
+`index.html` passe de 570 Ko à 650 Ko. Le générateur de courriers du service n'y est **pas** intégré (il porte les
+signatures et les numéros RPPS des médecins, et ADP peut être publié) : ADP le fait choisir une fois et le garde dans la
+base locale du navigateur.
+
+### Saisie
+
+- **Identité complémentaire** (nationalité, profession, adresse, téléphone, e-mail) : dans l'onglet **Administratif**.
+  Le poids, la taille et l'IMC restent avec le plongeur.
+- **Adressé par** : nouvelle réponse **SAU HNIA SA**, dans « Alerte et évacuation ».
+- **Profil de plongée** : la **remontée progressive** est le type proposé d'office (et dessiné quand aucun type n'est
+  choisi), avec la nouvelle donnée **durée à la profondeur maximale** ; nouveau type **Apnée**, avec ses paramètres
+  (profondeur maximale des apnées, nombre d'apnées, intervalle de surface, décompression par réimmersion ou en
+  surface : intervalle, durée, profondeur, gaz).
+- **Conditions environnementales** cotées : courant, houle de surface (OUI / NON), visibilité (bonne, mauvaise,
+  inférieure à 1 m), avec un texte libre en complément.
+- **Table OHB15** : 95 minutes (90 auparavant).
+- **Dictée vocale** dans les encarts de texte.
+- **Case « ne pas mentionner les scores »** MEDSUBHYP et vestibulaire, pour les accidents autres que de décompression.
+
+### Bandeau, synthèse et compte rendu
+
+- Le **bandeau patient** porte aussi le **numéro de l'examen**, la **date d'entrée** (premier examen) et le **dernier
+  diagnostic retenu**.
+- Le compte rendu d'hospitalisation **compte les recompressions par type de table**.
+- La synthèse écrit les conditions environnementales cotées et la plongée en apnée.
+
+### Export et documents
+
+- **Ligne pour le fichier Excel maître** : une ligne de 89 colonnes composée à partir de toutes les fiches du dossier,
+  à copier-coller ou en classeur .xlsx.
+- **Documents de sortie** : le générateur de courriers du service s'ouvre depuis la consultation de sortie, rempli
+  avec ce que la fiche sait. Son fichier se choisit une fois et reste dans la base locale du navigateur.
+
+### À valider de votre côté
+
+- **« Identité et terrain ».** J'ai déplacé vers l'onglet Administratif ce que contenait l'intertitre « Identité et
+  terrain » : nationalité, profession, adresse, téléphone, e-mail. Les antécédents, les habitudes toxiques, le traitement,
+  les allergies, les antécédents en plongée et les niveaux de plongée restent dans « Le plongeur » (onglet Anamnèse et
+  plongée), qui garde le poids, la taille et l'IMC. Dites-moi si « terrain » désignait aussi les antécédents : c'est un
+  déplacement d'une seule ligne.
+- **L'apnée** : deux boutons désignent la même chose (type de profil « Apnée » et type de plongée « Apnée »). La
+  profondeur maximale des apnées est la Pmax habituelle ; « intervalle de surface » est celui qui sépare deux apnées ;
+  l'intervalle de la décompression se compte depuis la dernière apnée. Une réponse « Aucune » existe pour la décompression.
+- **Le profil par défaut.** Les fiches de la 7.4.0 dont le type de profil n'avait pas été choisi sont désormais dessinées
+  en remontée progressive, et leur DTR attendue (colonnes `pl_dtr_att_min`, `pl_dtr_att_max`, `pl_vit_remontee`) se calcule
+  sur ce profil : ces trois colonnes peuvent changer à la prochaine réécriture du CSV.
+- **OHB15 à 95 minutes** : l'heure de fin déjà enregistrée sur une fiche n'est pas recalculée.
+- **Le décompte des recompressions** : une fiche qui porte une table compte pour le plus grand de ses deux nombres de
+  séances (au moins une) ; les séances d'évolution sans table sont « de type non précisé ». La table B18 proposée d'office
+  compte, tant qu'on ne l'a pas retirée.
+- **La ligne Excel** : toutes les règles de correspondance du tableau « D'où vient chaque colonne », en particulier les
+  codes des colonnes G, L, M, N, R, AS, AU, BK, BN, BO, BQ, BS, BT, BU, le classement des tables entre les colonnes BS et
+  BT, « circuit ouvert » par défaut (Z), le lieu reconnu dans le texte (Y), les mois convertis en jours (BZ). Essayez de
+  coller la ligne dans une copie de votre fichier maître.
+- **Les documents de sortie** : le motif tiré du diagnostic, les textes « présente cliniquement » et « examens
+  complémentaires réalisés » proposés pour le certificat de premières constatations, le signataire reconnu. **Le choix du
+  fichier du générateur à la première utilisation** (au lieu d'un générateur embarqué : voir plus haut pourquoi).
+  L'impression depuis la fenêtre intégrée n'a pas été essayée sous Firefox.
+- **La dictée** : elle a été essayée avec une reconnaissance simulée, pas avec un vrai micro ; sous Firefox, le bouton ne
+  fait que renvoyer à la dictée de Windows.
+- **La case « scores »** retire les scores de la synthèse, du compte rendu, de l'impression et de la ligne Excel : dites-moi
+  si elle ne doit concerner que la synthèse.
 
 ---
 
@@ -1330,6 +1735,10 @@ du script de `index.html`.
 
 ## Historique
 
+- **8.0.0** : identité complémentaire dans l'onglet Administratif, SAU HNIA SA, remontée progressive proposée d'office
+  avec sa durée à Pmax, apnée, conditions environnementales cotées, OHB15 à 95 min, dictée vocale, case « ne pas
+  mentionner les scores », bandeau enrichi (examen, entrée, dernier diagnostic), recompressions comptées par type dans
+  le compte rendu, ligne pour le fichier Excel maître, générateur de courriers de sortie ouvert depuis ADP.
 - **7.4.0** : cinq onglets, bandeau patient permanent, nombre total de plongées, synthèse en paragraphes (titres
   soulignés, anomalies en gras, examen dit en syndromes), compte rendu d'hospitalisation à partir de toutes les
   fiches du dossier (examens paracliniques réunis, évolution horodatée, examens à prévoir, inaptitude à la plongée).
@@ -1370,6 +1779,13 @@ comme des données de santé identifiantes, quels que soient les réglages de l'
 un dossier protégé (disque chiffré, accès restreint). Si ce dossier est synchronisé avec un service
 en ligne, les fiches quittent le poste : vérifiez que ce service est compatible avec l'hébergement de
 données de santé qui vous est imposé. Le nom de chaque fichier ne porte, lui, aucune donnée du patient.
+
+**La ligne pour le fichier Excel maître** reprend, par défaut, le **nom et le prénom** (colonne A de votre fichier) : c'est
+un traitement de données de santé identifiantes, comme le fichier maître lui-même. Elle est copiée dans le presse-papiers ou
+téléchargée : supprimez le classeur téléchargé une fois la ligne collée. **La dictée vocale** de Chrome et d'Edge envoie
+l'audio à un service distant (voir *Dictée vocale*) : n'y dictez rien d'identifiant. **Les documents de sortie** reçoivent
+l'identité du patient pour composer les courriers ; le générateur n'enregistre rien et n'utilise aucun réseau. Son fichier,
+qui porte les signatures des médecins, reste dans la base locale du navigateur : ne le versez jamais dans le dépôt publié.
 
 ---
 
