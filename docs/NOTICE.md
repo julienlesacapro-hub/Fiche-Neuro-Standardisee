@@ -1,4 +1,4 @@
-# ADP — accident de plongée, version 8.1.1
+# ADP — accident de plongée, version 8.1.2
 
 Fichier unique : `index.html`. Aucun réseau, aucune dépendance externe, aucun compte.
 Double-cliquez dessus, il s'ouvre dans votre navigateur et tout fonctionne.
@@ -20,7 +20,7 @@ plein écran, démarrage sans réseau. Voir *Installer sur téléphone et tablet
 | Fichier exploitable, incrémental | `donnees_neuro.csv` | Réécrit automatiquement à chaque enregistrement de fiche |
 
 Un seul CSV pour tous les sujets, toutes les consultations et tous les types de document.
-Une ligne = une fiche. 902 colonnes.
+Une ligne = une fiche. 929 colonnes.
 
 Sans bouton de plus, chaque enregistrement écrit aussi la fiche entière au format **JSON** dans le
 dossier de données (un fichier par fiche), et chaque ouverture relit ce dossier pour la recherche d'un
@@ -272,12 +272,12 @@ suivantes sur *suivi*. Vous changez d'un clic, la fiche se recompose aussitôt.
 
 ---
 
-## Les cinq onglets de saisie
+## Les six onglets de saisie
 
-La fiche est découpée en cinq onglets, dans l'ordre réel de la consultation. Les onglets en haut mènent
+La fiche est découpée en six onglets, dans l'ordre réel de la consultation. Les onglets en haut mènent
 directement à l'un d'eux, le bouton **Suivant** du bas de page avance d'un onglet, **Précédent** recule. Le bandeau
 patient porte aussi, à droite, un bouton **Suivant** qui nomme l'onglet à venir (Anamnèse, Examen, Neuro,
-Conclusion) et y mène sans descendre en bas de page. Chaque onglet porte son compte de champs remplis, et se borde
+Examens compl., Conclusion) et y mène sans descendre en bas de page. Chaque onglet porte son compte de champs remplis, et se borde
 de vert quand il est complet.
 
 | Onglet | Contenu |
@@ -286,7 +286,8 @@ de vert quand il est complet.
 | 2. Anamnèse et plongée | Le plongeur (poids, taille et IMC, antécédents, habitudes toxiques, traitement, niveaux de plongée, avec photo de l'ordonnance), plongée (profil, apnée, durées, paliers, procédure de ré-immersion), plongée précédente, facteurs favorisants et conditions environnementales, anamnèse |
 | 3. Examen clinique général | Constantes et surveillance, examen par appareil, conscience, pupilles et fonctions supérieures, ORL, signes fonctionnels, signes subjectifs, lésions cutanées |
 | 4. Examen neurologique | Réflexes, force motrice, miction, coordination et examen vestibulaire, sensibilités, grille ASIA, scores de sévérité, conclusion de l'examen clinique |
-| 5. Conclusion et évolution | Recompression, actes, examens complémentaires, échographie pleuro-pulmonaire, traitements prescrits, évolution (suivi et sortie), diagnostic retenu, sortie (consultation de sortie), orientation, compte rendu d'hospitalisation (consultation de sortie), pièces jointes |
+| 5. Examens complémentaires | **Gaz du sang veineux** et **biologie** (horodatés, avec leurs valeurs normales), examens complémentaires (ECG, radiographie et scanners, IRM, échographie cardiaque, doppler transcrânien, autres examens, examens demandés), échographie pleuro-pulmonaire |
+| 6. Conclusion et évolution | Recompression, actes, traitements prescrits, évolution (suivi et sortie), diagnostic retenu, sortie (consultation de sortie), orientation et commentaires, compte rendu d'hospitalisation (consultation de sortie), pièces jointes |
 
 Sur une **consultation de suivi ou de sortie**, l'onglet « Anamnèse et plongée » n'a plus rien à montrer (la
 plongée reste sur la fiche initiale) : il disparaît, et les onglets se renumérotent.
@@ -467,7 +468,9 @@ n'y touche pas. Sur le papier, ils s'impriment avec les facteurs favorisants.
 
 ## Prise en charge : recompression, actes, examens, traitements, diagnostic
 
-L'onglet « Conclusion et évolution » suit l'ordre de la prise en charge.
+Cette section suit l'ordre de la prise en charge. Depuis la 8.1.2, les **examens complémentaires** (point 3), l'**échographie
+pleuro-pulmonaire** (point 4) et la **biologie** (voir plus bas) ont leur propre onglet, « Examens complémentaires » ; la
+recompression, les actes, les traitements, l'évolution, le diagnostic et l'orientation restent dans « Conclusion et évolution ».
 
 1. **Recompression** : table, heures de mise en pression et de fin, séances, complications. Les tables
    proposées sont OHB15, A15IOT, A18IOT, A18, B18, A18HeOx, B18HeOx, C18, et « autre » ; **B18** est
@@ -524,6 +527,48 @@ Seuls l'anamnèse, l'examen général et l'examen neurologique sont proposés en
 précédent. La recompression, les actes, les examens complémentaires, les traitements, le diagnostic et
 la conclusion ne sont **jamais repris** : ils sont nécessairement différents, et un examen coché de
 nouveau est un **nouvel examen**.
+
+---
+
+## Examens complémentaires : la biologie
+
+L'onglet « Examens complémentaires » commence par deux encarts de biologie, **Gaz du sang veineux** puis **Biologie**, avant
+l'ECG, l'imagerie et les autres examens. Chaque encart est **horodaté** : la date et l'heure du prélèvement sont celles de la
+fiche dès qu'une valeur est saisie, et restent modifiables (un bilan rendu le lendemain se date du lendemain).
+
+Chaque résultat est un **champ décimal** : virgule ou point, et un « < » ou un « > » devant la valeur est accepté (« < 5 »
+pour une CRP sous le seuil de dosage). Sous le libellé, les **valeurs normales (VN)** ; à droite, l'**unité**. Une valeur
+**hors des VN** s'écrit en **gras et en rouge**, avec la mention « au-dessus des VN » ou « en dessous des VN », dans la fiche
+et dans la synthèse. L'en-tête de l'encart dit combien de valeurs sont saisies et combien sortent des VN. Une saisie qui n'est
+pas un nombre est refusée à la sortie du champ (la valeur enregistrée reste celle d'avant). Les bornes sont comprises dans les VN,
+sauf pour la CRP (« < 5,0 » : 5,0 est hors VN).
+
+| Encart | Paramètres : unité ; VN |
+|---|---|
+| Gaz du sang veineux | pH veineux (7,33 - 7,38) ; pO₂ veineux (mmHg ; 33 - 37) ; pCO₂ veineux (mmHg ; 40 - 50) ; HCO₃⁻ veineux (mmol/L ; 24 - 30) ; Hb (g/dL ; 12 - 16) ; Ht (% ; 37 - 46) ; lactates veineux (mmol/L ; 0,5 - 2,2) |
+| Biologie | leucocytes (G/L ; 4,020 - 11,420) ; Hb (g/dL ; 12 - 16) ; Ht (% ; 37 - 46) ; plaquettes (G/L ; 185 - 445) ; neutrophiles (G/L ; 1,78 - 6,946) ; fibrinogène (g/L ; 2,0 - 4,0) ; D-dimères (µg/mL ; 0,00 - 0,50) ; protéines totales (g/L ; 64,0 - 83,0) ; créatinine (µmol/L ; 45,0 - 84,0) ; DFG CKD-EPI (mL/min/1,73 m² ; 90 - 150) ; CK (UI/L ; 26 - 192) ; CRP (mg/L ; < 5,0) ; albumine (g/L ; 35,0 - 52,0) ; myoglobine (µg/L ; 25,0 - 58,0) ; troponine (ng/L ; 0 - 14) ; NT-pro-BNP (ng/L ; 10 - 202) |
+
+L'**hémoglobine et l'hématocrite du bilan** sont reprises du gaz du sang **du même jour** tant que vous ne les saisissez pas
+vous-même (même mécanique que l'heure de fin de table : proposées, puis modifiables) ; si la date du bilan diffère de celle du
+gaz du sang, rien n'est repris et la valeur reprise est retirée.
+
+Ces champs ne comptent pas dans la complétude de l'onglet (aucune valeur n'est attendue) et ne sont **jamais proposés en grisé**
+depuis l'examen précédent : le prélèvement d'hier n'est pas celui d'aujourd'hui. Ils figurent dans le CSV (27 colonnes :
+`gds_date`, `gds_h`, `gds_ph`, `gds_po2`, `gds_pco2`, `gds_hco3`, `gds_hb`, `gds_ht`, `gds_lac`, puis `lab_date`, `lab_h`,
+`lab_leuco`, `lab_hb`, `lab_ht`, `lab_plq`, `lab_pnn`, `lab_fib`, `lab_dd`, `lab_prot`, `lab_creat`, `lab_dfg`, `lab_ck`,
+`lab_crp`, `lab_alb`, `lab_myo`, `lab_tropo`, `lab_ntbnp`), en nombres à point décimal ; une valeur saisie avec « < » ou « > »
+y reste du texte (`<5`). Les VN et les unités sont dans le dictionnaire.
+
+### Dans la synthèse et le compte rendu
+
+La synthèse écrit, après les examens paracliniques, un bloc **Résultats biologiques** : un **tableau** pour le gaz du sang, un
+pour la biologie, avec une ligne par paramètre saisi au moins une fois (paramètre, VN, unité) et **une colonne par prélèvement
+du dossier, le plus récent à gauche** (date et heure en tête). Les tableaux s'enrichissent donc de jour en jour : la synthèse
+d'une fiche montre les prélèvements du dossier **jusqu'à cette fiche** ; le compte rendu d'hospitalisation montre **tous** ceux du
+dossier. Les valeurs hors VN sont en gras et en rouge (en style en ligne : il suit la copie vers un traitement de texte) ; dans
+le texte brut, le tableau est un texte à tabulations. Les Hb et Ht du bilan reprises du gaz du sang ne font pas, à elles seules, un
+tableau « Biologie » : elles figurent déjà dans celui du gaz du sang. Sur le papier, les tableaux s'impriment dans l'encart
+« Synthèse » (une dizaine de centimètres de plus quand les 23 paramètres sont saisis).
 
 ---
 
@@ -718,6 +763,7 @@ Les fiches sont rangées par date et heure d'examen ; **J0** est la date de la p
 | Constantes et examen à l'admission | la fiche initiale : « À l'admission, à l'examen général / neurologique, on retrouve », avec les syndromes de la synthèse |
 | Prise en charge | la fiche initiale (table, oxygène, corticoïdes, remplissage, actes), puis chaque fiche qui porte une recompression ou un traitement, avec sa date ; en dernière ligne, le **décompte des recompressions par type de table** (voir ci-dessous) |
 | Examens paracliniques | **tous** les examens du dossier, **par fiche et par date**, un examen par ligne ; les examens « demandés, en attente » en sont écartés ; les scores (MEDSUBHYP, vestibulaire, ASIA) en fin de paragraphe, sauf MEDSUBHYP et vestibulaire quand la case « ne pas les mentionner » est cochée |
+| Résultats biologiques | **tous** les prélèvements du dossier (gaz du sang veineux, biologie), en **tableaux** : une colonne par prélèvement, le plus récent à gauche ; valeurs hors des valeurs normales en gras et en rouge |
 | Évolution | tout ce qui **diffère d'une fiche à l'autre**, horodaté (voir ci-dessous) |
 | Examen de sortie | la dernière fiche : « À la sortie, à l'examen général / neurologique, on retrouve » |
 | Diagnostic retenu | le plus récent des diagnostics saisis |
@@ -952,7 +998,7 @@ l'IRM et les traitements.
 | BX | Score MJOAS | non recueilli |
 | BY | nombre j AT | non recueilli |
 | BZ | nombre j inaptitude plongée | inaptitude temporaire : mois × 30 jours ; « définitive » sinon |
-| CA | GF ORDINATEUR | réglage de l’ordinateur |
+| CA | GF ORDINATEUR | marque et modèle de l’ordinateur, suivis de ses réglages, dans la même case (« Suunto D5 - GF 35/75 ») ; l’un des deux seulement si l’autre est vide |
 | CB | Echodoppler transcrânien | meilleur grade de shunt noté au doppler transcrânien (0, 1, 2) |
 | CC | IRM délai/accident (jours) | jours entre l’accident et la première IRM médullaire |
 | CD | IRM Image | IRM médullaire : image anormale 1, normale 0 |
@@ -989,6 +1035,52 @@ barotraumatisme, accident biochimique, noyade.
 | 11 | autres barotrauma | oreille moyenne, dentaire, plaquage de masque, ou type non précisé |
 | 12 | accident biochimique | accident biochimique |
 | 13 | autre | noyade, accident de désaturation pulmonaire (chokes) seul, diagnostic saisi seulement en texte libre |
+
+---
+
+## La ligne pour l'activité COHB
+
+Le service tient aussi une feuille **« Activité COHB »** : une ligne par dossier clos, **31 colonnes (A à AE)**. Même mécanique
+que la ligne du fichier maître : **Exporter**, puis **Ligne COHB du dossier ouvert** (ou **ligne COHB** dans l'en-tête du compte
+rendu d'hospitalisation). La fenêtre propose les deux feuilles en haut, affiche la **valeur** et la **règle** de chaque colonne,
+puis **Copier la ligne** (texte à tabulations, 31 cellules, à coller dans la première cellule d'une ligne vide) ou **Télécharger le
+classeur .xlsx** (`ligne_excel_cohb_AAAA-MM-JJ.xlsx` : les en-têtes de votre feuille en ligne 1, la ligne du dossier en ligne 2, sur
+le fond bleu des lignes « plongée »). La case « inclure le nom et le prénom » concerne la colonne B. Rien n'est enregistré, votre
+feuille n'est ni lue ni modifiée.
+
+| Col. | En-tête | Règle |
+|---|---|---|
+| A | Date cloture | date de la dernière fiche du dossier |
+| B | Nom prénom | nom en majuscules, puis prénom |
+| C | IPP | numéro de dossier de la fiche |
+| D | Diagnostic | dernier diagnostic retenu, abrégé comme dans votre feuille (« ADD médullaire + cutané », « Barotraumatisme oreille moyenne », « Intoxication CO »), le diagnostic principal d'abord |
+| E | Classement ARS | « accident de plongée » ; « intoxication CO » si le diagnostic comprend une intoxication au monoxyde de carbone |
+| F | CS | nombre de fiches du dossier (une consultation par fiche) |
+| G | 1ere en urgence | période de la mise en pression de la table initiale : **O** heures ouvrables, **N** en semaine hors de ces heures, **W** week-end ou jour férié |
+| H, I | nbre seance en repose pied, nbre seance Alité | non recueillis (la position du patient n'est pas saisie) |
+| J à U | A15, A15HNO, B18Hx, B18HxHNO, IOT, IOTHNO, A18, A18HNO, B 18, B18HNO, C18, C18HNO | séances par table, voir ci-dessous |
+| V, W, X | Pansements, PRF, PTcO2 | non recueillis |
+| Y | DTC | nombre de doppler transcrâniens réalisés (fiches du dossier) |
+| Z | Audio / Tympan | non recueilli |
+| AA | Complication | nombre de fiches du dossier avec une complication thérapeutique |
+| AB, AC, AD | EE / plateau technique, Echo-doppler, CACI plongée | non recueillis (le doppler transcrânien est compté en Y) |
+| AE | Résidence | voir ci-dessous |
+
+**Séances par table.** Une fiche qui porte une table compte pour le nombre de séances qu'elle déclare (le plus grand de « séances
+réalisées » et de « séances depuis la dernière consultation », une au moins), comme dans le compte rendu. Correspondance :
+OHB15 → A15 ; A15IOT et A18IOT → IOT ; A18 → A18 ; B18 → B 18 ; A18HeOx et B18HeOx → B18Hx ; C18 → C18 ; une table « autre » n'est
+rangée nulle part. La colonne « HNO » qui suit chacune reçoit les séances hors heures ouvrables. La séance dont l'heure de mise en
+pression est connue compte pour sa période ; les **autres séances déclarées** (une fiche de suivi qui annonce trois séances) sont
+comptées en **heures ouvrables**, faute d'heure.
+
+**Heures ouvrables.** Du lundi au vendredi, de 8 h à 18 h (18 h exclue), hors **jours fériés** français (1er janvier, lundi de
+Pâques, 1er mai, 8 mai, Ascension, lundi de Pentecôte, 14 juillet, 15 août, 1er novembre, 11 novembre, 25 décembre, calculés pour
+chaque année). Un jour férié compte comme un week-end (W). La colonne G s'appuie sur l'heure de mise en pression de la table
+initiale, à défaut sur l'heure de prise en charge au SMHEP ; sans heure, elle reste vide un jour de semaine.
+
+**Résidence.** Un pays cité dans l'adresse (« Belgique », « Suisse »…) ; sinon **VAR** (code postal 83, ou une commune du Var
+reconnue) ; sinon « France (dép. xx) » d'après le code postal ; sinon le pays de la nationalité si elle est étrangère. La nationalité
+ne dit pas la résidence : c'est la règle la moins sûre, à vérifier avant de coller.
 
 ---
 
@@ -1371,7 +1463,7 @@ d = pd.read_csv("donnees_neuro.csv", sep=";", encoding="utf-8-sig")
 
 - Séparateur par défaut : point-virgule. Modifiable dans **Exporter** (virgule pour R et Python).
 - **Cellule vide = valeur manquante (NA).** Aucune valeur par défaut n'est inventée.
-- `dictionnaire_variables.csv` donne le libellé et le codage des 902 colonnes.
+- `dictionnaire_variables.csv` donne le libellé et le codage des 929 colonnes.
 
 ### Codages principaux
 
@@ -1422,6 +1514,7 @@ d = pd.read_csv("donnees_neuro.csv", sep=";", encoding="utf-8-sig")
 | Listes à cases | une colonne binaire par case (`atcd_med_hta`, `tox_tabac`, `atcdp_add`…) et une colonne texte (valeurs séparées par `\|`) |
 | Menus déroulants | `niv_loisir`, `niv_pro`, `niv_ens`, `organisme` : codes numériques listés dans le dictionnaire ; `99 = autre (à préciser)` |
 | Paliers | `pl_pal_nb`, `pl_pal_secu`, `pl_pal_duree`, `pl_pal_prof_max`, `pl_pal_txt`, puis le détail des six premiers (`pl_pal1_gaz`, `pl_pal1_prof`, `pl_pal1_duree`, `pl_pal1_secu`…) |
+| Biologie | `gds_ph`, `gds_po2`, `gds_pco2`, `gds_hco3`, `gds_hb`, `gds_ht`, `gds_lac` et `lab_leuco`, `lab_hb`, `lab_ht`… : nombres à point décimal (`7.35`), ou texte `<5` / `>20` quand la valeur a été saisie avec « < » ou « > » ; `gds_date`, `lab_date` : `AAAA-MM-JJ` ; `gds_h`, `lab_h` : `HH:MM` (date et heure du prélèvement) ; valeurs normales et unités dans le dictionnaire |
 
 ### Structure des colonnes
 
@@ -1440,9 +1533,69 @@ d = pd.read_csv("donnees_neuro.csv", sep=";", encoding="utf-8-sig")
 | Plongeur | IMC, antécédents (une colonne par case), habitudes toxiques et paquets-années `tabac_pa`, antécédents en plongée, niveaux, organisme, certificat médical |
 | Plongée accidentelle | procédure, heures DS / DF / HS, `pl_prof`, `pl_dt`, `pl_dtr`, `pl_duree_tot`, `pl_dpmax`, paliers, apnée (`ap_*`) |
 | Facteurs favorisants | les dix facteurs, puis `ff_courant`, `ff_houle`, `ff_visib`, `ff_env` |
+| Biologie | 27 colonnes (rangs 470 à 496), à la suite des champs de la fiche et avant les colonnes calculées (`pl_dtr_src`, échographie, paliers) : `gds_*` (gaz du sang veineux) et `lab_*` (biologie), avec leur date et leur heure de prélèvement |
 
 Pour les analyses courantes, les colonnes de synthèse suffisent. Les colonnes de détail servent
 aux analyses topographiques fines.
+
+---
+
+## Changements de la version 8.1.2
+
+**27 colonnes s'ajoutent au CSV (902 → 929)**, toutes de biologie, à la suite des champs de la fiche (rangs 470 à 496). Les 902
+autres colonnes, leur ordre, le dictionnaire de leurs libellés et le papier d'une fiche sans biologie sont identiques à ceux de la
+8.1.1 (vérifié par comparaison avec la 8.1.1), et les fiches de la 8.1.1 s'ouvrent telles quelles. `index.html` passe de 670 Ko à
+710 Ko. Trois demandes.
+
+### Ligne Excel
+
+- **Colonne « ordinateur » (CA) du fichier maître** : la case porte maintenant la **marque et le modèle** de l'ordinateur,
+  **suivis de ses réglages** (« Suunto D5 - GF 35/75 »). Elle ne portait que le réglage.
+- **Ligne pour l'activité COHB** : une seconde ligne Excel, de **31 colonnes (A à AE)**, pour la feuille « Activité COHB » (voir
+  *La ligne pour l'activité COHB*). Même fenêtre que la ligne du fichier maître, qui propose les deux feuilles ; même copie (texte à
+  tabulations) et même classeur .xlsx. Boutons : **Exporter** › **Ligne COHB du dossier ouvert**, et **ligne COHB** dans l'en-tête du
+  compte rendu d'hospitalisation.
+
+### Saisie et synthèse
+
+- **Nouvel onglet « Examens complémentaires »** (le cinquième ; la conclusion devient le sixième). Il réunit le **gaz du sang
+  veineux**, la **biologie**, puis l'ECG, l'imagerie, l'échographie cardiaque, le doppler transcrânien, l'échographie
+  pleuro-pulmonaire, les autres examens et les examens demandés, qui se trouvaient dans l'onglet « Conclusion et évolution ». Celui-ci
+  **persiste avec les éléments de décision et de suivi** : recompression, actes, traitements prescrits, évolution, diagnostic retenu,
+  sortie, orientation et commentaires, compte rendu d'hospitalisation, pièces jointes. Le bouton **Suivant** du bandeau nomme le nouvel
+  onglet « Examens compl. ».
+- **Biologie horodatée** : 7 paramètres de gaz du sang veineux et 16 de biologie, **dans l'ordre de votre note, avec leurs valeurs
+  normales (VN) et leurs unités** (voir *Examens complémentaires : la biologie*). Date et heure du prélèvement proposées d'après la
+  fiche, modifiables. Une valeur **hors des VN** s'écrit en **gras et en rouge**, dans la fiche et dans la synthèse. L'hémoglobine et
+  l'hématocrite du bilan sont reprises du gaz du sang du même jour tant qu'on ne les saisit pas.
+- **Tableaux dans la synthèse** : un tableau pour le gaz du sang, un pour la biologie, **une colonne par prélèvement du dossier, le
+  plus récent à gauche** ; ils s'enrichissent de jour en jour. Le compte rendu d'hospitalisation reprend ceux de tout le dossier. Sur
+  le papier, ils s'impriment dans l'encart « Synthèse ».
+- Seul l'affichage des examens change de place : les champs de l'ancien onglet 5 gardent leur nom, leur codage et leur place dans le
+  CSV et sur le papier.
+
+### À valider de votre côté
+
+- **Les valeurs normales de votre note** sont celles d'un dosage **féminin** pour l'hémoglobine (12 - 16), l'hématocrite (37 - 46), la
+  créatinine (45 - 84) et probablement les CK et la myoglobine : elles s'appliquent ici à **tous** les patients (un homme à 17 g/dL
+  d'hémoglobine sortira en rouge). Dites-moi si vous voulez des VN selon le sexe : elles sont dans `BIO_GDS` et `BIO_LAB`, en tête de
+  `index.html`, une ligne par paramètre.
+- **L'unité des bicarbonates** : votre note écrit « mmHg » pour le HCO₃⁻ veineux ; j'ai mis **mmol/L**, l'unité du dosage. Le DFG est
+  écrit « mL/min/1,73 m² ».
+- **« Horodatés »** : j'ai donné une date et une heure de prélèvement aux deux encarts de biologie. Les autres examens (ECG,
+  imagerie…) gardent l'horodatage de la fiche qui les porte ; si vous voulez une heure par examen, dites-le-moi.
+- **Les Hb et Ht du bilan reprises du gaz du sang** ne font pas, à elles seules, un tableau « Biologie » dans la synthèse (elles
+  figurent déjà dans celui du gaz du sang) ; dès qu'une autre valeur du bilan est saisie, elles y figurent.
+- **Heures ouvrables** (colonnes COHB) : j'ai retenu du **lundi au vendredi, de 8 h à 18 h, hors jours fériés**. Une séance dont
+  l'heure n'est pas connue est comptée en heures ouvrables. Une table « autre » n'est rangée dans aucune colonne ; A15IOT et A18IOT
+  sont comptées ensemble (IOT), A18HeOx et B18HeOx ensemble (B18Hx) : c'est ma lecture de vos en-têtes, à confirmer.
+- **Les colonnes COHB que l'application ne recueille pas** restent vides : séances « en repose pied » et « Alité », pansements, PRF,
+  PTcO2, audio / tympan, EE / plateau technique, écho-doppler, CACI plongée. La **résidence** est déduite de l'adresse (ou, à défaut,
+  de la nationalité) : c'est la colonne la moins sûre. La **date de clôture** est celle de la dernière fiche du dossier.
+- **Ce qui a été essayé.** Les suites de la 8.1.2 (colonne ordinateur et ligne COHB, onglet biologie, synthèse, compte rendu et papier)
+  et toutes celles des versions précédentes passent (713 contrôles) ; le classeur COHB a été relu avec un lecteur .xlsx indépendant et
+  ses 31 en-têtes sont identiques à ceux de votre feuille. Rien n'a été essayé avec Excel, ni avec votre navigateur (Firefox), ni sur un
+  téléphone réel : collez une première ligne dans une copie de votre feuille avant de l'utiliser.
 
 ---
 
@@ -1888,6 +2041,9 @@ du script de `index.html`.
 
 ## Historique
 
+- **8.1.2** : colonne « ordinateur » de la ligne Excel (marque, modèle, réglages), ligne pour l'activité COHB, onglet « Examens
+  complémentaires » (le cinquième ; la conclusion devient le sixième) avec la biologie horodatée, ses valeurs normales, les valeurs
+  hors normes en gras et en rouge, et des tableaux de jour en jour dans la synthèse et le compte rendu.
 - **8.1.1** : identité complémentaire affichée après le mode d'entrée, bouton « onglet suivant » dans le bandeau patient,
   dictée vocale corrigée sous Chrome (texte écrit une seule fois), micro éteint seul après une seconde sans parole.
 - **8.1.0** : fichiers JSON des fiches nommés `xxx-aaaa_bbbbbbbb-EXc.json` (numéro d'accident, année de prise en charge,

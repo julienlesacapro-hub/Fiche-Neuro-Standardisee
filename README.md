@@ -2,7 +2,7 @@
 
 Outil de saisie pour la prise en charge d'un accident de plongée en médecine
 hyperbare : consultation initiale en urgence, consultations de suivi, compte
-rendu de séjour. Auteur : Dr Julien Lesaca. Version 8.1.1.
+rendu de séjour. Auteur : Dr Julien Lesaca. Version 8.1.2.
 
 Deux sorties, depuis la même saisie :
 
@@ -10,12 +10,12 @@ Deux sorties, depuis la même saisie :
    de consultation (compte rendu de prise en charge, fiche de suivi, compte rendu
    de séjour) ;
 2. un fichier `donnees_neuro.csv` unique qui s'incrémente, une ligne par fiche,
-   902 colonnes, prêt pour R, Python, SPSS, Jamovi ou Excel.
+   929 colonnes, prêt pour R, Python, SPSS, Jamovi ou Excel.
 
 Depuis la consultation de sortie, le générateur de courriers du service (courriers,
-ordonnances, certificats) s'ouvre rempli avec ce que la fiche sait, et une ligne de
-89 colonnes à coller dans le fichier Excel maître se compose à partir de toutes les
-fiches d'un dossier. Le générateur n'est **pas** dans `index.html` (il porte les signatures
+ordonnances, certificats) s'ouvre rempli avec ce que la fiche sait, et deux lignes à
+coller dans les fichiers Excel du service (89 colonnes pour le fichier maître, 31 pour la
+feuille « Activité COHB ») se composent à partir de toutes les fiches d'un dossier. Le générateur n'est **pas** dans `index.html` (il porte les signatures
 et les numéros RPPS des médecins, et ce dépôt peut être public) : ADP en fait choisir
 une copie une fois, puis la garde dans la base locale du navigateur.
 
@@ -64,7 +64,7 @@ cd Fiche-Neuro-Standardisee
 # copiez ici le contenu de ce dossier (index.html, icons/, manifest, sw.js, docs/, native/)
 
 git add .
-git commit -m "ADP v8.1.1"
+git commit -m "ADP v8.1.2"
 git push origin main
 ```
 
@@ -83,12 +83,12 @@ en HTTPS, condition nécessaire pour l'installation et le service worker.
 ### Publier une mise à jour
 
 Modifiez `index.html`, incrémentez `VERSION` en tête de `sw.js`
-(`v8.1.1` → `v8.1.2`), poussez. Sans ce changement de version, les appareils
+(`v8.1.2` → `v8.1.3`), poussez. Sans ce changement de version, les appareils
 déjà installés gardent l'ancienne copie en cache.
 
 ```bash
-sed -i "s/const VERSION = 'v8.1.1'/const VERSION = 'v8.1.2'/" sw.js
-git commit -am "v8.1.2" && git push
+sed -i "s/const VERSION = 'v8.1.2'/const VERSION = 'v8.1.3'/" sw.js
+git commit -am "v8.1.3" && git push
 ```
 
 Au lancement suivant avec réseau, l'application signale la mise à jour et
@@ -112,14 +112,14 @@ serveur interne à l'établissement, ou distribuez `index.html` par clé USB.
 ## Contenu du dépôt
 
 ```
-index.html                 application complète, fichier unique, 670 ko
+index.html                 application complète, fichier unique, 710 ko
 manifest.webmanifest       déclaration d'installation (nom, icônes, plein écran)
 sw.js                      service worker : démarrage hors ligne, mises à jour
 icons/                     icônes 32 à 1024 px, dont deux masquables Android
 brand_logo_source.png      le blason, fichier maître, pour régénérer les icônes
 docs/
   PUBLIER.md                   publier et mettre à jour, pas à pas
-  dictionnaire_variables.csv   902 variables, libellé et codage de chacune
+  dictionnaire_variables.csv   929 variables, libellé et codage de chacune
   NOTICE.md                    mode d'emploi clinique et technique
 native/                    projet Capacitor pour Android et iOS
 .nojekyll                  désactive le moteur Jekyll de GitHub Pages

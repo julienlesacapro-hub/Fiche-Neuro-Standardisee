@@ -682,7 +682,11 @@ svg.echo rect.z:hover{stroke-width:2.6;filter:brightness(.96)}
     border-top:1px solid #000;padding-top:1mm;margin-top:1mm}
   .psyn{border:1px solid #000;padding:1mm 1.4mm;font-size:8.1pt;line-height:1.28}
   .psyn p{margin:0 0 .8mm}
-  .psyn table.biot{font-size:7.2pt;line-height:1.2}
+  /* tableaux de biologie de la synthèse : serrés, et jamais coupés par un saut de page */
+  .psyn table.biot{font-size:7pt;line-height:1.12;margin:0 0 1.4mm !important;break-inside:avoid;page-break-inside:avoid}
+  .psyn table.biot th{font-size:6.6pt}
+  .psyn table.biot th,.psyn table.biot td{padding:0 3px !important}
+  .psyn .biocap{margin:1mm 0 .6mm !important;break-after:avoid;page-break-after:avoid}
   .pecho{display:flex;gap:2mm;align-items:flex-start}
   .pecho .efig{flex:0 0 auto}
   .pecho svg.echo{display:block;width:44mm;height:auto;margin:0}
@@ -6490,7 +6494,7 @@ function synLines(S){
    ===================================================================== */
 const BT = {tbl:'border-collapse:collapse;margin:2px 0 8px',
             th:'border:1px solid #8a94a3;padding:1px 6px;background:#eef2f7;text-align:center;font-weight:bold',
-            td:'border:1px solid #8a94a3;padding:1px 6px;text-align:center',
+            td:'border:1px solid #8a94a3;padding:1px 6px;text-align:center;white-space:nowrap',
             tl:'border:1px solid #8a94a3;padding:1px 6px;text-align:left',
             ab:'color:#c00000'};
 /* les fiches dont la synthèse lit la biologie : celles du dossier jusqu'à la fiche ouverte (telle qu'elle est à l'écran) ; sans n° de dossier, elle seule */
@@ -6517,7 +6521,7 @@ function bioTable(titre, L, C){
   if(!R.length) return null;
   const clean = TXT.clean, cell = (c, e) => { const v = c.d[e.k]; return (v==null || v==='') ? '' : decShow(v); };
   const ent = C.map(c=>({j:c.jour ? frDate(c.jour) : '', h:c.hm}));
-  let h = '<p style="margin:4px 0 2px"><b>'+esc(titre)+'</b></p><div style="overflow-x:auto;max-width:100%"><table class="biot" style="'+BT.tbl+'"><tr>'+
+  let h = '<p class="biocap" style="margin:4px 0 2px"><b>'+esc(titre)+'</b></p><div style="overflow-x:auto;max-width:100%"><table class="biot" style="'+BT.tbl+'"><tr>'+
     ['Paramètre','VN','Unité'].map(x=>'<th style="'+BT.th+'">'+x+'</th>').join('')+
     ent.map(x=>'<th style="'+BT.th+'">'+esc(x.j)+(x.h ? '<br>'+esc(x.h) : '')+'</th>').join('')+'</tr>';
   const lines = [titre, ['Paramètre','VN','Unité'].concat(ent.map(x=>(x.j+' '+x.h).trim())).join('\t')];
@@ -9245,6 +9249,7 @@ function openExport(){
    '<button class="tb" onclick="expJSON()" title="Un seul fichier JSON qui réunit toutes les fiches">Telecharger la sauvegarde JSON</button>'+
    '<button class="tb pri" onclick="openExportJSON()" title="Une fiche par fichier, dans un dossier choisi ou dans une archive ZIP">Exporter tout en JSON…</button>'+
    '<button class="tb gd" onclick="openXls()" title="Une ligne à coller dans votre fichier Excel maître, composée à partir de toutes les fiches du dossier ouvert">Ligne Excel du dossier ouvert…</button>'+
+   '<button class="tb gd" onclick="openXls(\'cohb\')" title="Une ligne à coller dans la feuille Activité COHB, composée à partir de toutes les fiches du dossier ouvert">Ligne COHB du dossier ouvert…</button>'+
    (FSA?'<button class="tb" onclick="rewriteFolder()">Réécrire tout le dossier de données</button>':'')+
   '</div>'+
   '<div class="note" style="background:#eef4fb;border-color:#bcd4ee"><b>Le dossier de données.</b> '+
@@ -10773,7 +10778,13 @@ function openHelp(){
   'Bouton <b>Exporter</b> puis <b>Ligne Excel du dossier ouvert</b> (ou « ligne Excel » dans l’en-tête du compte rendu) : l’outil compose, à partir de '+
   'toutes les fiches du dossier, une ligne de 89 colonnes (A à CK) qui suit le fichier maître du service. <b>Copier la ligne</b>, puis collez-la dans la '+
   'première cellule d’une ligne vide d’Excel (Ctrl+V) ; ou téléchargez un classeur .xlsx de même structure. Les valeurs sont affichées avant la copie : '+
-  'vérifiez-les, les colonnes que l’application ne recueille pas restent vides.</p>'+
+  'vérifiez-les, les colonnes que l’application ne recueille pas restent vides. La colonne « ordinateur » (CA) porte la marque et le modèle, suivis des réglages, dans la même case.</p>'+
+  '<p><b>5 ter. Ligne pour l’activité COHB.</b><br>'+
+  'Même fenêtre (bouton <b>Ligne COHB du dossier ouvert</b>, ou « ligne COHB » dans l’en-tête du compte rendu ; les deux feuilles se choisissent en haut de la fenêtre) : '+
+  'une ligne de 31 colonnes (A à AE) qui suit la feuille « Activité COHB » du service. Elle reprend la date de la dernière fiche, l’identité, le n° de dossier, le diagnostic, '+
+  'le classement ARS, le nombre de consultations, la période de la première séance en urgence (O : lundi au vendredi de 8 h à 18 h hors jours fériés ; N : autre heure en semaine ; W : week-end ou jour férié), '+
+  'les séances par table (les colonnes « HNO » comptent celles qui ne tombent pas en heures ouvrables), les doppler transcrâniens, les complications et la résidence. '+
+  'Les colonnes que l’application ne recueille pas restent vides ; vérifiez les valeurs affichées avant de coller.</p>'+
   '<p><b>6. Analyser.</b><br>'+
   'Ouvrez <code>donnees_neuro.csv</code> dans Excel, R, Python, SPSS ou Jamovi. '+
   '<code>dictionnaire_variables.csv</code> donne le codage de chaque colonne. '+

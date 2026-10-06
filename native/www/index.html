@@ -288,6 +288,13 @@ td.lv small{display:block;font-weight:400;color:var(--ink2);font-size:10.5px;max
 .eva-7.on,.eva-8.on{background:var(--warn);border-color:var(--warn)}
 .eva-9.on,.eva-10.on{background:var(--bad);border-color:var(--bad)}
 
+/* ---------- biologie : hors des valeurs normales, en gras et en rouge ---------- */
+input.bio{width:110px;text-align:right}
+input.bio.bioab{font-weight:700;color:#c00000}
+input.bio.bad{border-color:var(--bad);outline:2px solid var(--bad-l)}
+.bioflag{margin-left:8px;font-size:11.5px;font-weight:700;color:#c00000}
+#synth table.biot,#crh table.biot{font-size:12px;line-height:1.35}
+
 /* ---------- synthèse ---------- */
 #synth,#crh{background:#fbfcfe;border:1px solid var(--bd2);border-radius:6px;padding:9px 11px;
   font-size:12.5px;line-height:1.55}
@@ -675,6 +682,11 @@ svg.echo rect.z:hover{stroke-width:2.6;filter:brightness(.96)}
     border-top:1px solid #000;padding-top:1mm;margin-top:1mm}
   .psyn{border:1px solid #000;padding:1mm 1.4mm;font-size:8.1pt;line-height:1.28}
   .psyn p{margin:0 0 .8mm}
+  /* tableaux de biologie de la synthèse : serrés, et jamais coupés par un saut de page */
+  .psyn table.biot{font-size:7pt;line-height:1.12;margin:0 0 1.4mm !important;break-inside:avoid;page-break-inside:avoid}
+  .psyn table.biot th{font-size:6.6pt}
+  .psyn table.biot th,.psyn table.biot td{padding:0 3px !important}
+  .psyn .biocap{margin:1mm 0 .6mm !important;break-after:avoid;page-break-after:avoid}
   .pecho{display:flex;gap:2mm;align-items:flex-start}
   .pecho .efig{flex:0 0 auto}
   .pecho svg.echo{display:block;width:44mm;height:auto;margin:0}
@@ -696,7 +708,7 @@ svg.echo rect.z:hover{stroke-width:2.6;filter:brightness(.96)}
 <body>
 <div id="hdr">
 <div id="topbar">
-  <span class="ttl" title="Accident de plongée — version 8.1.1">ADP <small style="font-weight:400;opacity:.65">8.1.1</small></span>
+  <span class="ttl" title="Accident de plongée — version 8.1.2">ADP <small style="font-weight:400;opacity:.65">8.1.2</small></span>
   <button class="tb nophone" onclick="toggleSide()" title="Afficher / masquer la liste des fiches">&#9776;</button>
   <span class="sep"></span>
   <button class="tb pri" onclick="newFiche()">+<span class="lbl2"> Nouvelle</span> fiche</button>
@@ -1400,6 +1412,49 @@ const RINNE = [{v:1,l:'Positif (CA > CO)',c:'v-ok'},{v:0,l:'Négatif (CO > CA)',
 const RFLAGS = [{k:'poly', l:'polycinétique'},{k:'etendu', l:'étendu'}];
 
 /* =====================================================================
+   BIOLOGIE : GAZ DU SANG VEINEUX ET BILAN
+   Deux encarts de l'onglet « Examens complémentaires », chacun horodaté (date et heure du prélèvement, proposées d'après la
+   fiche, modifiables). Un résultat est un champ décimal (virgule ou point ; « < » ou « > » devant est accepté) qui porte ses
+   valeurs normales (VN) et son unité, celles de la feuille du service. Hors des VN, il s'écrit en gras et en rouge dans la fiche
+   et dans la synthèse, où les prélèvements du dossier forment un tableau, le plus récent à gauche.
+   k : clé du champ ; l : libellé ; t : libellé dans la synthèse s'il diffère ; u : unité ; lo, hi : bornes des VN (hi est exclue
+   quand les VN s'écrivent « < 5,0 » : hiStrict) ; vn : les VN, telles qu'elles s'affichent ; note : précision sous le libellé.
+   Ajouter, retirer ou réordonner une ligne de ces deux listes suffit : le formulaire, la synthèse et le dictionnaire la suivent.
+   ===================================================================== */
+const BIO_GDS = [
+ {k:'gds_ph',   l:'pH veineux',       u:'',        lo:7.33, hi:7.38, vn:'7,33 - 7,38'},
+ {k:'gds_po2',  l:'pO₂ veineux',      u:'mmHg',    lo:33,   hi:37,   vn:'33 - 37'},
+ {k:'gds_pco2', l:'pCO₂ veineux',     u:'mmHg',    lo:40,   hi:50,   vn:'40 - 50'},
+ {k:'gds_hco3', l:'HCO₃⁻ veineux',    t:'HCO3- veineux', u:'mmol/L', lo:24, hi:30, vn:'24 - 30'},
+ {k:'gds_hb',   l:'Hb',               u:'g/dL',    lo:12,   hi:16,   vn:'12 - 16'},
+ {k:'gds_ht',   l:'Ht',               u:'%',       lo:37,   hi:46,   vn:'37 - 46'},
+ {k:'gds_lac',  l:'Lactates veineux', u:'mmol/L',  lo:0.5,  hi:2.2,  vn:'0,5 - 2,2'}
+];
+const BIO_LAB = [
+ {k:'lab_leuco', l:'Leucocytes',        u:'G/L',    lo:4.02, hi:11.42, vn:'4,020 - 11,420'},
+ {k:'lab_hb',    l:'Hb',                u:'g/dL',   lo:12,   hi:16,    vn:'12 - 16', note:'Repris du gaz du sang du jour tant que non modifié'},
+ {k:'lab_ht',    l:'Ht',                u:'%',      lo:37,   hi:46,    vn:'37 - 46', note:'Repris du gaz du sang du jour tant que non modifié'},
+ {k:'lab_plq',   l:'Plaquettes',        u:'G/L',    lo:185,  hi:445,   vn:'185 - 445'},
+ {k:'lab_pnn',   l:'Neutrophiles',      u:'G/L',    lo:1.78, hi:6.946, vn:'1,78 - 6,946'},
+ {k:'lab_fib',   l:'Fibrinogène',       u:'g/L',    lo:2,    hi:4,     vn:'2,0 - 4,0'},
+ {k:'lab_dd',    l:'D-dimères',         u:'µg/mL',  lo:0,    hi:0.5,   vn:'0,00 - 0,50'},
+ {k:'lab_prot',  l:'Protéines totales', u:'g/L',    lo:64,   hi:83,    vn:'64,0 - 83,0'},
+ {k:'lab_creat', l:'Créatinine',        u:'µmol/L', lo:45,   hi:84,    vn:'45,0 - 84,0'},
+ {k:'lab_dfg',   l:'DFG CKD-EPI',       u:'mL/min/1,73 m²', lo:90, hi:150, vn:'90 - 150'},
+ {k:'lab_ck',    l:'CK',                u:'UI/L',   lo:26,   hi:192,   vn:'26 - 192'},
+ {k:'lab_crp',   l:'CRP',               u:'mg/L',   hi:5, hiStrict:1,  vn:'< 5,0'},
+ {k:'lab_alb',   l:'Albumine',          u:'g/L',    lo:35,   hi:52,    vn:'35,0 - 52,0'},
+ {k:'lab_myo',   l:'Myoglobine',        u:'µg/L',   lo:25,   hi:58,    vn:'25,0 - 58,0'},
+ {k:'lab_tropo', l:'Troponine',         u:'ng/L',   lo:0,    hi:14,    vn:'0 - 14'},
+ {k:'lab_ntbnp', l:'NT-pro-BNP',        u:'ng/L',   lo:10,   hi:202,   vn:'10 - 202'}
+];
+/* les champs d'un encart : la date et l'heure du prélèvement, puis un champ décimal par résultat */
+const bioFields = (pre, L) => [
+  {k:pre+'_date', l:'Date du prélèvement',  t:'date', nofill:1},
+  {k:pre+'_h',    l:'Heure du prélèvement', t:'time', nofill:1}
+].concat(L.map(e=>({k:e.k, l:e.l, t:'num', dec:1, unit:e.u, nofill:1, bio:e, hint:'VN '+e.vn+(e.note ? '. '+e.note : '')})));
+
+/* =====================================================================
    SPÉCIFICATION DES CHAMPS
    t : txt | num | date | time | choice | multi | calc | area
    dep: [clé, [valeurs qui affichent le champ], …]   (condition OU)
@@ -1407,6 +1462,8 @@ const RFLAGS = [{k:'poly', l:'polycinétique'},{k:'etendu', l:'étendu'}];
    custom: bloc rendu par du code dédié (schémas corporels)
    after: id de la section après laquelle celle-ci s'affiche, sur la même page (l'ordre d'affichage seulement :
           l'ordre des colonnes du fichier de données, lui, ne change pas)
+   before: id de la section avant laquelle celle-ci s'affiche, sur la même page (même remarque)
+   dec: champ décimal (num) saisi en texte, virgule ou point ; bio: ses valeurs normales (voir BIO_GDS)
    ===================================================================== */
 const SPEC = [
 {id:'ident', t:'Identification', cols:2, page:1, tail:()=>identBox(), f:[
@@ -1953,12 +2010,12 @@ const SPEC = [
    phr:['Marbrures typiques du tronc','Marbrures des flancs','Prurit isolé','Œdème du membre supérieur','Œdème du membre inférieur','Emphysème sous-cutané cervical','Photographies réalisées']}
 ]},
 
-/* ---------- page 4 : recompression, actes, examens, traitements, diagnostic ----------
+/* ---------- onglet 5 : examens complémentaires ; onglet 6 : recompression, actes, traitements, diagnostic, sortie ----------
    noghost : section dont les valeurs ne sont jamais proposées depuis l'examen précédent.
    Sur une consultation de suivi ou de sortie, seuls l'anamnèse, l'examen général et
    l'examen neurologique sont repris (en gris) ; les examens complémentaires et la
    conclusion sont nécessairement différents, et un examen coché de nouveau est un nouvel examen. */
-{id:'recomp', t:'Recompression', cols:2, page:5, noghost:1, f:[
+{id:'recomp', t:'Recompression', cols:2, page:6, noghost:1, f:[
   {k:'tb_table', l:'Table utilisée', t:'choice', o:TABLES, full:1, hint:'B18 proposée d’office sur une consultation initiale, modifiable'},
   {k:'tb_table_autre', l:'Table — à préciser', t:'txt', wide:1, full:1, sub:1, dep:['tb_table',[9]]},
   {k:'tb_duree', l:'Durée de la table (min)', t:'calc', unit:'min', dep:['tb_table',[1,2,3,4,5,6,7,8]],
@@ -1975,7 +2032,7 @@ const SPEC = [
 ]},
 
 /* Actes : voie veineuse, bilan biologique, puis sondage, dans cet ordre */
-{id:'actes', t:'Actes', cols:2, page:5, noghost:1, f:[
+{id:'actes', t:'Actes', cols:2, page:6, noghost:1, f:[
   {k:'ac_vvp', l:'Voie veineuse périphérique', t:'choice', o:ONA, full:1},
   {k:'h_bio', t:'head', l:'Bilan biologique', full:1},
   {k:'bio_add', l:'Bilan accident de plongée prélevé', t:'choice', o:ONA,
@@ -2036,7 +2093,7 @@ const SPEC = [
         'Épanchement pleural.','Examen limité par l’emphysème sous-cutané.']}
 ]},
 
-{id:'prescriptions', t:'Traitements prescrits', cols:2, page:5, noghost:1, f:[
+{id:'prescriptions', t:'Traitements prescrits', cols:2, page:6, noghost:1, f:[
   {k:'rx_o2', l:'Oxygène normobare', t:'choice', o:ONA, full:1},
   {k:'rx_o2_mode', l:'Modalité', t:'choice', o:O2_MODES, full:1, sub:1, dep:['rx_o2',[1]]},
   {k:'rx_o2_debit', l:'Débit', t:'num', min:0, max:25, unit:'L/min', sub:1, dep:['rx_o2_mode',[1]],
@@ -2058,7 +2115,7 @@ const SPEC = [
    phr:['Anticoagulation préventive.','Kinésithérapie.','Antiémétique.','Anxiolytique.']}
 ]},
 
-{id:'evolution', t:"Évolution depuis la consultation précédente", cols:1, page:5, only:[2,3], noghost:1,
+{id:'evolution', t:"Évolution depuis la consultation précédente", cols:1, page:6, only:[2,3], noghost:1,
  tail:()=>evolBox(), f:[
   {k:'ev_seances', l:'Séances réalisées depuis la dernière consultation', t:'num', min:0, max:20},
   {k:'ev_complic', l:'Complication thérapeutique depuis la dernière consultation', t:'choice', o:ON},
@@ -2076,7 +2133,7 @@ const SPEC = [
 
 /* Diagnostic retenu : un ou plusieurs diagnostics associés, avec leurs types, et un diagnostic
    principal quand plusieurs sont retenus et que le principal est déterminé. */
-{id:'diagnostic', page:5, t:'Diagnostic retenu', cols:1, noghost:1, f:[
+{id:'diagnostic', page:6, t:'Diagnostic retenu', cols:1, noghost:1, f:[
   {k:'dg_liste', l:'Diagnostic(s) retenu(s)', t:'multi', o:DG, full:1,
    hint:'Plusieurs diagnostics peuvent être associés'},
   {k:'dg_add_types', l:'Accident de désaturation — type', t:'multi', o:DG_ADD, full:1, sub:1, dep:['dg_liste',['add']]},
@@ -2091,7 +2148,7 @@ const SPEC = [
 ]},
 
 /* Sortie : ce que le compte rendu d'hospitalisation doit encore dire. Consultation de sortie seulement. */
-{id:'sortie', page:5, t:'Sortie : examens à prévoir et aptitude à la plongée', cols:1, only:[3], noghost:1, tail:()=>genBox(), f:[
+{id:'sortie', page:6, t:'Sortie : examens à prévoir et aptitude à la plongée', cols:1, only:[3], noghost:1, tail:()=>genBox(), f:[
   {k:'sortie_exam_second', l:'Examens à réaliser secondairement', t:'area', wide:1, full:1, nofill:1,
    hint:'Repris dans le compte rendu d’hospitalisation',
    phr:['IRM médullaire de contrôle.','Doppler transcrânien de contraste.','Échographie cardiaque de contraste (recherche de FOP).',
@@ -2103,7 +2160,7 @@ const SPEC = [
   {k:'inapt_mois', l:'Durée de l’inaptitude (mois)', t:'num', min:1, max:120, unit:'mois', sub:1, dep:['inapt_type',[1]]}
 ]},
 
-{id:'concl', page:5, t:'Orientation et commentaires', cols:1, noghost:1, f:[
+{id:'concl', page:6, t:'Orientation et commentaires', cols:1, noghost:1, f:[
   {k:'orientation', l:'Orientation', t:'choice',
    o:[{v:1,l:'Retour au domicile',c:'v-ok'},
       {v:2,l:'Hospitalisation en service de médecine',c:'v-wn'},
@@ -2122,9 +2179,18 @@ const SPEC = [
 ]},
 
 /* Compte rendu d'hospitalisation, écrit à partir de toutes les fiches du dossier (consultation de sortie) */
-{id:'crh', page:5, t:'Compte rendu d’hospitalisation (CRH)', custom:'crh', cols:1, only:[3], f:[]},
+{id:'crh', page:6, t:'Compte rendu d’hospitalisation (CRH)', custom:'crh', cols:1, only:[3], f:[]},
 
-{id:'pj', page:5, t:'Pièces jointes photographiques', custom:'pj', cols:1, f:[]},
+{id:'pj', page:6, t:'Pièces jointes photographiques', custom:'pj', cols:1, f:[]},
+
+/* Biologie : deux encarts de l'onglet « Examens complémentaires », écrits en fin de SPEC pour ne pas déplacer les colonnes
+   du fichier de données (before : ils s'affichent avant les autres examens). Ni reprise de l'examen précédent (noghost) ni
+   décompte de complétude : aucune valeur n'est attendue, l'encart dit combien sont saisies et combien sortent des VN. */
+{id:'bio_gds', t:'Gaz du sang veineux', cols:2, page:5, before:'examens', noghost:1, bio:1,
+ note:'VN : valeurs normales de la feuille du service. Hors VN, la valeur s’écrit en gras et en rouge, ici et dans la synthèse (tableau des '+
+      'prélèvements du dossier, le plus récent à gauche). Virgule ou point ; « < » ou « > » accepté devant la valeur.',
+ f:bioFields('gds', BIO_GDS)},
+{id:'bio_lab', t:'Biologie', cols:2, page:5, before:'examens', noghost:1, bio:1, f:bioFields('lab', BIO_LAB)}
 ];
 
 /* =====================================================================
@@ -2947,6 +3013,13 @@ function fieldHTML(f){
   } else if(f.t==='area'){
     ctl='<div class="micwrap"><textarea id="i_'+f.k+'" oninput="setRaw(\''+f.k+'\',this.value)"'+
         (g?' placeholder="'+esc(String(g).slice(0,120))+'"':(f.ph?' placeholder="'+esc(f.ph)+'"':''))+'>'+esc(v||'')+'</textarea>'+micHTML(f)+'</div>'+ghostBtn(f,g);
+  } else if(f.t==='num' && f.dec){
+    /* résultat de biologie : texte décimal, en gras et en rouge hors des valeurs normales */
+    const fl = v==null ? '' : bioAbn(f.bio, v);
+    ctl='<input id="i_'+f.k+'" class="bio'+(fl?' bioab':'')+'" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" '+
+        'value="'+esc(decShow(v))+'" oninput="setDec(\''+f.k+'\',this)" onblur="decBlur(\''+f.k+'\',this)">'+
+        (f.unit?'<span style="margin-left:5px;color:#5a6472;white-space:nowrap">'+esc(f.unit)+'</span>':'')+
+        '<span class="bioflag" id="bf_'+f.k+'">'+bioFlagTxt(fl)+'</span>';
   } else if(f.t==='num'){
     ctl='<input id="i_'+f.k+'" type="number" inputmode="numeric" style="width:110px"'+
         (f.min!=null?' min="'+f.min+'"':'')+(f.max!=null?' max="'+f.max+'"':'')+
@@ -3336,7 +3409,16 @@ function ghostBtn(f,g){
   return '<button class="ghb" title="Reprendre la valeur de l\'examen précédent" onclick="acceptGhost(\''+f.k+'\')">&#8617; '+esc(lbl)+'</button>';
 }
 
+/* le texte et la couleur du badge d'un encart : « 3/8 », ou, pour la biologie, « 3 valeurs · 1 hors VN » */
+const badgeTxt = fi => fi.txt!=null ? fi.txt : fi.done+'/'+fi.tot;
+const badgeCls = fi => fi.ab ? ' ab' : (fi.txt==null && fi.done===fi.tot && fi.tot>0 ? ' ok' : '');
 function secFill(s){
+  if(s.bio){
+    /* aucune valeur de biologie n'est attendue : l'encart ne compte pas dans la complétude, il dit combien de valeurs sont saisies */
+    let n = 0, ab = 0;
+    s.f.forEach(f=>{ if(!f.bio) return; const v = REC.d[f.k]; if(v==null || v==='') return; n++; if(bioAbn(f.bio, v)) ab++; });
+    return {done:0, tot:0, ab:ab, txt:n ? n+' valeur'+(n>1?'s':'')+(ab ? ' · '+ab+' hors VN' : '') : 'aucune valeur'};
+  }
   const vis = s.f.filter(f=>f.t!=='calc' && f.t!=='head' && !f.nofill && depOK(f));
   const done = vis.filter(f=>{const v=REC.d[f.k]; return Array.isArray(v)?v.length>0:(v!=null&&v!=='')}).length;
   return {done:done, tot:vis.length};
@@ -3424,7 +3506,7 @@ function renderFormInner(){
     h+='<div class="sec'+closed+'" id="s_'+s.id+'"><h3 onclick="if(!event.target.closest(\'button\'))toggleSec(\''+s.id+'\')">'+
        '<span class="caret">&#9660;</span>'+esc(s.t)+
        '<span class="fill">'+(s.norm?'<button class="mini" onclick="applyNormal(\''+s.id+'\')">tout normal</button>':'')+
-       '<span class="badge'+(fi.done===fi.tot&&fi.tot>0?' ok':'')+'" id="b_'+s.id+'">'+fi.done+'/'+fi.tot+'</span></span></h3>'+
+       '<span class="badge'+badgeCls(fi)+'" id="b_'+s.id+'">'+badgeTxt(fi)+'</span></span></h3>'+
        '<div class="body">'+(s.note?'<div class="note">'+esc(s.note)+'</div>':'')+
        '<div class="'+(s.cols===2?'grid2':'')+'">'+fieldsHTML(s)+'</div>'+
        (s.tail? s.tail() : '')+'</div></div>';
@@ -3443,13 +3525,14 @@ function renderFormInner(){
 }
 
 /* =====================================================================
-   NAVIGATION EN CINQ ONGLETS
-   La fiche est longue : on la découpe en cinq temps qui suivent l'ordre
+   NAVIGATION EN SIX ONGLETS
+   La fiche est longue : on la découpe en six temps qui suivent l'ordre
    réel de la consultation : l'administratif, l'anamnèse et la plongée,
-   l'examen clinique général, l'examen neurologique, puis la conclusion et
-   l'évolution. Les sections propres à la prise en charge initiale
-   disparaissent des fiches de suivi : l'onglet « Anamnèse et plongée », qui
-   n'a plus rien à montrer, disparaît alors lui aussi.
+   l'examen clinique général, l'examen neurologique, les examens
+   complémentaires (gaz du sang, biologie, ECG, imagerie), puis la conclusion
+   et l'évolution (décision et suivi). Les sections propres à la prise en
+   charge initiale disparaissent des fiches de suivi : l'onglet « Anamnèse et
+   plongée », qui n'a plus rien à montrer, disparaît alors lui aussi.
    ===================================================================== */
 /* c : nom court de l'onglet, écrit sur le bouton « suivant » du bandeau patient */
 const PAGES = [
@@ -3458,8 +3541,9 @@ const PAGES = [
  {n:2, l:'Anamnèse et plongée', c:'Anamnèse', s:'plongeur, plongée, facteurs, anamnèse'},
  {n:3, l:'Examen clinique général', c:'Examen', s:'constantes, conscience, ORL, cutané'},
  {n:4, l:'Examen neurologique', c:'Neuro', s:'réflexes, force, sensibilités, scores'},
- {n:5, l:'Conclusion et évolution', c:'Conclusion', s:'recompression, examens, diagnostic',
-  s2:'examens, évolution, diagnostic, sortie'}
+ {n:5, l:'Examens complémentaires', c:'Examens compl.', s:'gaz du sang, biologie, ECG, imagerie'},
+ {n:6, l:'Conclusion et évolution', c:'Conclusion', s:'recompression, traitements, diagnostic, orientation',
+  s2:'évolution, diagnostic, orientation, sortie'}
 ];
 let PAGE = 1;
 let TYPE_PROPOSE = false;   /* le type a ete deduit du rang de l'examen */
@@ -3477,6 +3561,12 @@ function pageSections(n){
     const j = L.findIndex(x=>x.id===s.after); if(j < 0) return;
     L.splice(L.indexOf(s), 1);
     L.splice(L.findIndex(x=>x.id===s.after)+1, 0, s);
+  });
+  /* before : la section s'affiche juste avant celle qu'elle désigne (si celle-ci est sur la même page) */
+  L.slice().forEach(s=>{
+    if(!s.before || L.findIndex(x=>x.id===s.before) < 0) return;
+    L.splice(L.indexOf(s), 1);
+    L.splice(L.findIndex(x=>x.id===s.before), 0, s);
   });
   return L;
 }
@@ -3611,14 +3701,18 @@ function autoSync(k, val){
 }
 /* les champs correspondants à l'écran suivent le calcul, sauf celui qui a le focus */
 const AUTOKEYS = ['tb_h_fin','rx_solu_dose','ecg_txt','pl_dtr','pl_duree_tot','pl_rr_prof','pl_reimm_txt',
-                  'pl_h_immersion','pl_h_depart_fond','pl_h_sortie'];
+                  'pl_h_immersion','pl_h_depart_fond','pl_h_sortie',
+                  'gds_date','gds_h','lab_date','lab_h','lab_hb','lab_ht'];
 function refreshAutoFields(){
   AUTOKEYS.forEach(k=>{
     const el = document.getElementById('i_'+k);
     if(!el || el===document.activeElement) return;
-    const v = REC.d[k]==null ? '' : String(REC.d[k]);
+    const f = FIELDS[k], raw = REC.d[k], pv = raw==null ? '' : String(raw);
+    /* la date s'affiche en JJ/MM/AAAA, le résultat décimal avec sa virgule ; le champ natif caché garde la valeur enregistrée */
+    const v = raw==null ? '' : (f && f.t==='date') ? isoToFr(raw) : (f && f.dec) ? decShow(raw) : pv;
     if(el.value !== v) el.value = v;
-    const p = document.getElementById('p_'+k); if(p && p.value !== v) p.value = v;
+    const p = document.getElementById('p_'+k); if(p && p.value !== pv) p.value = pv;
+    if(f && f.dec){ const fl = raw==null ? '' : bioAbn(f.bio, raw); el.classList.toggle('bioab', !!fl); bioFlag(k, fl); }
   });
 }
 function autofill(k){
@@ -3683,6 +3777,58 @@ function setRaw(k,v){
 }
 function setNum(k,v){ if(v===''||v==null) delete REC.d[k]; else { const n=Number(v); if(!isNaN(n)) REC.d[k]=n; }
   touch(); softRefresh(); }
+/* ---------- champs décimaux : biologie ---------- */
+/* ce qui est tapé : un nombre à virgule ou à point, éventuellement précédé de « < » ou « > » (résultat sous le seuil de dosage) */
+function decParse(s){
+  s = String(s==null ? '' : s).replace(/\s+/g, '').replace(/,/g, '.');
+  if(s==='') return {vide:true};
+  const m = /^([<>]?)(\d+(?:\.\d*)?|\.\d+)$/.exec(s); if(!m) return {faux:true};
+  const n = Number(m[2]); if(!isFinite(n)) return {faux:true};
+  return {n:n, op:m[1], v:m[1] ? m[1]+m[2].replace(/\.$/, '') : n};
+}
+/* la valeur enregistrée : un nombre, ou un texte comme « <5 » */
+const decNum = v => { if(typeof v==='number') return isFinite(v) ? {n:v, op:''} : null; const p = decParse(v); return (p.faux || p.vide) ? null : {n:p.n, op:p.op}; };
+const decShow = v => v==null ? '' : String(v).replace('.', ',');
+/* 'H' au-dessus des valeurs normales, 'L' en dessous, '' dans les VN (ou impossible à dire : « < 5 » pour des VN de 0 à 14) ; e : une ligne de BIO_GDS ou BIO_LAB */
+function bioAbn(e, v){
+  const x = decNum(v); if(!x || !e) return '';
+  if(x.op==='<') return (e.lo!=null && x.n <= e.lo) ? 'L' : '';
+  if(x.op==='>') return (e.hi!=null && x.n >= e.hi) ? 'H' : '';
+  if(e.lo!=null && x.n < e.lo) return 'L';
+  if(e.hi!=null && (e.hiStrict ? x.n >= e.hi : x.n > e.hi)) return 'H';
+  return '';
+}
+const bioFlagTxt = fl => fl==='H' ? 'au-dessus des VN' : fl==='L' ? 'en dessous des VN' : '';
+function bioFlag(k, fl){ const e = document.getElementById('bf_'+k); if(e) e.textContent = bioFlagTxt(fl); }
+/* Pendant la frappe, ni reconstruction ni reformatage : seuls la couleur et la mention « au-dessus des VN » suivent. Une saisie qui n'est pas
+   un nombre (lettres, « < » seul) laisse la valeur enregistrée en l'état ; le champ la rétablit à la sortie. */
+function setDec(k, el){
+  const f = FIELDS[k], p = decParse(el.value);
+  el.classList.toggle('bad', !!p.faux);
+  if(p.faux) return;
+  if(p.vide) delete REC.d[k]; else REC.d[k] = p.v;
+  const fl = p.vide ? '' : bioAbn(f.bio, p.v);
+  el.classList.toggle('bioab', !!fl); bioFlag(k, fl);
+  touch(); softRefresh();
+}
+function decBlur(k, el){
+  if(!decParse(el.value).faux) return;
+  el.value = decShow(REC.d[k]); el.classList.remove('bad');
+  toast('Valeur numérique attendue : virgule ou point, « < » ou « > » accepté devant');
+}
+/* Horodatage et reprise de l'hémoglobine et de l'hématocrite. Dès qu'un encart a une valeur, sa date et son heure sont celles de la fiche,
+   modifiables ; l'Hb et l'Ht du bilan reprennent celles du gaz du sang du MÊME JOUR tant qu'on ne les a pas saisies soi-même (même mécanique
+   que les autres valeurs proposées : voir autoSync). */
+function bioCalc(d){
+  const some = L => L.some(e=>d[e.k]!=null && d[e.k]!=='');
+  const hasG = some(BIO_GDS), jourG = d.gds_date || (hasG ? d.date_ex : null), jourL = d.lab_date || d.date_ex;
+  const meme = !!jourG && !!jourL && jourG === jourL;
+  autoSync('lab_hb', meme && d.gds_hb!=null ? d.gds_hb : null);
+  autoSync('lab_ht', meme && d.gds_ht!=null ? d.gds_ht : null);
+  autoSync('gds_date', hasG ? d.date_ex : null);  autoSync('gds_h', hasG ? d.heure_ex : null);
+  const hasL = some(BIO_LAB);
+  autoSync('lab_date', hasL ? d.date_ex : null);  autoSync('lab_h', hasL ? d.heure_ex : null);
+}
 function toggleFlag(k){ REC.d[k]=REC.d[k]?0:1; if(!REC.d[k]) delete REC.d[k]; touch();
   const base=k.replace(/_(poly|etendu)$/,''); refreshField(base); }
 function toggleMulti(k,v){
@@ -3727,7 +3873,7 @@ function softRefresh(){ computeAll();
 }
 function refreshBadges(){
   SPEC.forEach(s=>{ const b=$('#b_'+s.id); if(!b) return; const fi=secFill(s);
-    b.textContent=fi.done+'/'+fi.tot; b.className='badge'+(fi.done===fi.tot&&fi.tot>0?' ok':''); });
+    b.textContent=badgeTxt(fi); b.className='badge'+badgeCls(fi); });
 }
 
 /* ---------- boutons « normal » ---------- */
@@ -4732,6 +4878,8 @@ function adpCalc(){
   autoSync('rx_solu_dose', (d.rx_solu===1 && d.poids>0) ? Math.round(d.poids*DEF_CORTICO_MGKG) : null);
   /* ECG : compte rendu rédigé à partir de la fréquence et du QTc, modifiable */
   autoSync('ecg_txt', (d.im_ecg===1 && (d.ecg_fc!=null || d.ecg_qtc!=null)) ? ecgTexte(d) : null);
+  /* biologie : horodatage proposé, Hb et Ht du bilan repris du gaz du sang du même jour */
+  bioCalc(d);
 }
 /* =====================================================================
    DURÉES DU PROFIL : DT, DTR ET DTP
@@ -6337,6 +6485,64 @@ function synLines(S){
    syndrome pyramidal…). Chaque affirmation vient d'un champ renseigné : une négation n'est écrite que si l'item a
    été examiné, jamais par défaut.
    ===================================================================== */
+/* =====================================================================
+   LA BIOLOGIE DANS LA SYNTHÈSE ET DANS LE COMPTE RENDU
+   Un tableau par type de prélèvement (gaz du sang, biologie) : une ligne par paramètre saisi au moins une fois, une colonne par
+   prélèvement du dossier, le plus récent à gauche (les prélèvements s'ajoutent de jour en jour). Hors des valeurs normales, la valeur
+   est en gras et en rouge : en style en ligne, qui survit à la copie vers un traitement de texte. Le texte brut est un texte à
+   tabulations (une cellule par colonne). Le bloc porte son tableau en HTML (tbl) et son texte brut (lines).
+   ===================================================================== */
+const BT = {tbl:'border-collapse:collapse;margin:2px 0 8px',
+            th:'border:1px solid #8a94a3;padding:1px 6px;background:#eef2f7;text-align:center;font-weight:bold',
+            td:'border:1px solid #8a94a3;padding:1px 6px;text-align:center;white-space:nowrap',
+            tl:'border:1px solid #8a94a3;padding:1px 6px;text-align:left',
+            ab:'color:#c00000'};
+/* les fiches dont la synthèse lit la biologie : celles du dossier jusqu'à la fiche ouverte (telle qu'elle est à l'écran) ; sans n° de dossier, elle seule */
+function bioFichesSynth(){
+  const doss = REC.d.dossier; if(!doss) return [REC];
+  const cur = stamp(REC);
+  return DB.filter(f=>f.d.dossier===doss && f.id!==REC.id && stamp(f) <= cur).concat([REC]);
+}
+/* les prélèvements d'un type (pre : 'gds' ou 'lab'), du plus récent au plus ancien. Une Hb ou une Ht du bilan reprise du gaz du sang et jamais
+   retouchée ne fait pas à elle seule un prélèvement : elle figure déjà dans le tableau du gaz du sang. */
+function bioCols(fiches, pre, L){
+  const propre = (d, e) => { const v = d[e.k]; return !(v==null || v==='' || ((e.k==='lab_hb' || e.k==='lab_ht') && v===d[e.k+'_auto'])); };
+  const C = [];
+  fiches.forEach(f=>{
+    const d = f.d; if(!L.some(e=>propre(d, e))) return;
+    const jour = d[pre+'_date'] || d.date_ex || '', hm = d[pre+'_h'] || d.heure_ex || '';
+    C.push({d:d, jour:jour, hm:hm, when:jour+'T'+(hm || '00:00'), st:stamp(f)});
+  });
+  return C.sort((a,b)=>b.when.localeCompare(a.when) || b.st.localeCompare(a.st));
+}
+/* un tableau : {html, lines} ; null s'il n'y a aucune valeur */
+function bioTable(titre, L, C){
+  const R = L.filter(e=>C.some(c=>{ const v = c.d[e.k]; return v!=null && v!==''; }));
+  if(!R.length) return null;
+  const clean = TXT.clean, cell = (c, e) => { const v = c.d[e.k]; return (v==null || v==='') ? '' : decShow(v); };
+  const ent = C.map(c=>({j:c.jour ? frDate(c.jour) : '', h:c.hm}));
+  let h = '<p class="biocap" style="margin:4px 0 2px"><b>'+esc(titre)+'</b></p><div style="overflow-x:auto;max-width:100%"><table class="biot" style="'+BT.tbl+'"><tr>'+
+    ['Paramètre','VN','Unité'].map(x=>'<th style="'+BT.th+'">'+x+'</th>').join('')+
+    ent.map(x=>'<th style="'+BT.th+'">'+esc(x.j)+(x.h ? '<br>'+esc(x.h) : '')+'</th>').join('')+'</tr>';
+  const lines = [titre, ['Paramètre','VN','Unité'].concat(ent.map(x=>(x.j+' '+x.h).trim())).join('\t')];
+  R.forEach(e=>{
+    const lab = clean(e.t || e.l), u = clean(e.u || '');
+    h += '<tr><td style="'+BT.tl+'">'+esc(lab)+'</td><td style="'+BT.td+'">'+esc(e.vn)+'</td><td style="'+BT.td+'">'+esc(u)+'</td>'+
+      C.map(c=>{ const t = cell(c, e); if(!t) return '<td style="'+BT.td+'">&nbsp;</td>';
+                 return '<td style="'+BT.td+'">'+(bioAbn(e, c.d[e.k]) ? '<b style="'+BT.ab+'">'+esc(t)+'</b>' : esc(t))+'</td>'; }).join('')+'</tr>';
+    lines.push([lab, e.vn, u].concat(C.map(c=>cell(c, e))).join('\t'));
+  });
+  return {html:h+'</table></div>', lines:lines};
+}
+/* le bloc « Résultats biologiques » : un tableau pour le gaz du sang, un pour la biologie ; rien s'il n'y a aucune valeur */
+function bioSynth(B, fiches){
+  const T = [bioTable('Gaz du sang veineux', BIO_GDS, bioCols(fiches, 'gds', BIO_GDS)),
+             bioTable('Biologie', BIO_LAB, bioCols(fiches, 'lab', BIO_LAB))].filter(Boolean);
+  if(!T.length) return;
+  const lines = []; T.forEach((t, i)=>{ if(i) lines.push(''); t.lines.forEach(l=>lines.push(l)); });
+  B.push({h:'Résultats biologiques', lines:lines, inline:false, tbl:T.map(t=>t.html).join('')});
+}
+
 function narrativeBlocks(){
   const d = REC.d, TY = d.fiche_type||1, B = [];
   const F = d.sexe===2;
@@ -6630,6 +6836,8 @@ function narrativeBlocks(){
   }
   if(asia) PC('score', asia, ASIA.ais!=='E', 'asia');
   sect('Examens paracliniques', pc, false);
+  /* la biologie : tableau du dossier jusqu'à cette fiche, le plus récent à gauche */
+  bioSynth(B, bioFichesSynth());
 
   /* ---------- diagnostic retenu : entre les examens paracliniques et la conduite à tenir ---------- */
   const dgt = diagnosticTexte(d);
@@ -6694,6 +6902,7 @@ function narrative(){ return blocksPlain(narrativeBlocks()); }
 function blocksHTML(B){
   return B.map(b=>{
     if(b.title) return '<p><b>'+b.lines.map(boldHTML).join('<br>')+'</b></p>';
+    if(b.tbl) return '<p style="margin-bottom:.2em"><b><u>'+esc(b.h)+'</u></b> :</p>'+b.tbl;
     return '<p><b><u>'+esc(b.h)+'</u></b> :'+(b.inline ? ' ' : '<br>')+b.lines.map(boldHTML).join('<br>')+'</p>';
   }).join('');
 }
@@ -6882,6 +7091,8 @@ function crhBlocks(){
   const sc = last.pce.filter(x=>x.cat==='score' && !(noSc && x.sub!=='asia')).map(x=>x.text);
   sc.forEach(t=>pcl.push(t));
   sect('Examens paracliniques', pcl, false);
+  /* la biologie de tout le dossier, dans un tableau : le plus récent à gauche */
+  bioSynth(B, FI);
 
   /* évolution : tout ce qui diffère d'une fiche à l'autre, horodaté */
   const evo = [];
@@ -6954,6 +7165,7 @@ function crhBlock(){
     '<span class="caret">&#9660;</span>Compte rendu d’hospitalisation (CRH)'+
     '<span class="fill"><span class="badge" id="crhn"></span><button class="mini" onclick="openGen()" title="Courriers, ordonnances et certificats de sortie">documents de sortie</button>'+
     '<button class="mini" onclick="openXls()" title="Ligne à coller dans le fichier Excel maître">ligne Excel</button>'+
+    '<button class="mini" onclick="openXls(\'cohb\')" title="Ligne à coller dans la feuille Activité COHB">ligne COHB</button>'+
     '<button class="mini" onclick="copyCRH()">copier le CRH</button></span></h3>'+
     '<div class="body"><div class="note" style="background:#f2f6fb;border-color:#c9d8ea">Texte enrichi, sans en-tête, écrit à partir de '+
     '<b>toutes les fiches de ce dossier</b> : histoire et examen d’admission, prise en charge, examens paracliniques réunis, évolution horodatée '+
@@ -7604,6 +7816,7 @@ function codesOf(f){
   if(f.t==='check')  return '1 = coche ; vide = non coche';
   if(f.t==='date')   return 'AAAA-MM-JJ';
   if(f.t==='time')   return 'HH:MM';
+  if(f.t==='num' && f.bio) return 'numerique decimal'+(f.unit?' ('+f.unit+')':'')+' ; valeurs normales : '+f.bio.vn+' ; un signe < ou > peut preceder la valeur';
   if(f.t==='num')    return 'numerique'+(f.unit?' ('+f.unit+')':'');
   if(f.t==='calc')   return 'numerique, calcule'+(f.unit?' ('+f.unit+')':'');
   return 'texte libre';
@@ -8009,7 +8222,7 @@ function sortedDB(){
    l'explique (diagnostic) et propose ce qui fonctionne : « Exporter tout en JSON » (dossier choisi, ou archive
    ZIP), téléchargement du JSON à chaque enregistrement, import d'un dossier ou d'une archive.
    ===================================================================== */
-const APP_VERSION = '8.1.1';
+const APP_VERSION = '8.1.2';
 /* hasPicker teste une fonction de l'API au moment de s'en servir : une extension ou un réglage du navigateur peut la retirer */
 const hasPicker = name => { try{ return typeof window[name] === 'function'; }catch(e){ return false; } };
 let FSA = hasPicker('showDirectoryPicker');
@@ -9036,6 +9249,7 @@ function openExport(){
    '<button class="tb" onclick="expJSON()" title="Un seul fichier JSON qui réunit toutes les fiches">Telecharger la sauvegarde JSON</button>'+
    '<button class="tb pri" onclick="openExportJSON()" title="Une fiche par fichier, dans un dossier choisi ou dans une archive ZIP">Exporter tout en JSON…</button>'+
    '<button class="tb gd" onclick="openXls()" title="Une ligne à coller dans votre fichier Excel maître, composée à partir de toutes les fiches du dossier ouvert">Ligne Excel du dossier ouvert…</button>'+
+   '<button class="tb gd" onclick="openXls(\'cohb\')" title="Une ligne à coller dans la feuille Activité COHB, composée à partir de toutes les fiches du dossier ouvert">Ligne COHB du dossier ouvert…</button>'+
    (FSA?'<button class="tb" onclick="rewriteFolder()">Réécrire tout le dossier de données</button>':'')+
   '</div>'+
   '<div class="note" style="background:#eef4fb;border-color:#bcd4ee"><b>Le dossier de données.</b> '+
@@ -9479,7 +9693,7 @@ const XLS = [
  /* BY */ {h:'nombre j AT', n:'non recueilli', f:X=>null},
  /* BZ */ {h:'nombre j inaptitude', n:'inaptitude temporaire : mois × 30 jours ; « définitive » sinon', f:X=>{ const d = X.last.d;
           return d.inapt_type===1 && d.inapt_mois ? Math.round(d.inapt_mois*30) : (d.inapt_type===2 ? 'définitive' : null); }},
- /* CA */ {h:'GF ORDINATEUR', n:'réglage de l’ordinateur', f:X=>XT(X.d0.pl_ordi_reglage)},
+ /* CA */ {h:'GF ORDINATEUR', n:'marque - modèle de l’ordinateur, suivi de ses réglages (même case)', f:X=>XT([X.d0.pl_ordi_modele, X.d0.pl_ordi_reglage].map(x=>TXT.flat(x)).filter(Boolean).join(' - '))},
  /* CB */ {h:'Echodoppler', n:'meilleur grade de shunt noté au doppler transcrânien (0, 1, 2)', f:X=>{ const g = [];
           X.FI.forEach(f=>['dtc_repos','dtc_sensib','dtc_flack'].forEach(k=>{ if(f.d[k]!=null) g.push(f.d[k]); }));
           return g.length ? Math.max.apply(null, g) : null; }},
@@ -9497,9 +9711,9 @@ const XLS = [
  /* CK */ {h:'G', n:'colonne sans équivalent', f:X=>null}
 ];
 
-/* la ligne : une valeur par colonne ; la colonne d'identité peut être laissée vide */
-function xlsRow(X, opt){
-  return XLS.map(c=>{ if(c.nom && opt && opt.nom===false) return null; let v = null; try{ v = c.f(X); }catch(e){ v = null; } return v==null || v==='' ? null : v; });
+/* la ligne : une valeur par colonne ; la colonne d'identité peut être laissée vide ; T : la feuille visée (le fichier maître par défaut) */
+function xlsRow(X, opt, T){
+  return (T ? T.cols : XLS).map(c=>{ if(c.nom && opt && opt.nom===false) return null; let v = null; try{ v = c.f(X); }catch(e){ v = null; } return v==null || v==='' ? null : v; });
 }
 /* texte d'une cellule : la date en JJ/MM/AAAA, l'heure en HH:MM (Excel les reconnaît à la collure) */
 function xlsText(c){
@@ -9575,6 +9789,226 @@ async function xlsxBlob(row){
   return new Blob([z], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
 }
 
+/* =====================================================================
+   LIGNE POUR L'ACTIVITÉ COHB
+   Le service tient aussi une feuille « Activité COHB » : une ligne par dossier clos, 31 colonnes (A à AE) : date de clôture,
+   identité, IPP, diagnostic, classement ARS, nombre de consultations, période de la première séance en urgence, séances par
+   table (en heures ouvrables ou non), actes, résidence. Même mécanique que la ligne du fichier maître : texte à tabulations à
+   coller, ou classeur .xlsx. Ce que l'application ne recueille pas reste vide. Les en-têtes sont ceux de la feuille.
+   ===================================================================== */
+const COHB_HEAD = [
+  /* A */ "Date cloture",
+  /* B */ "Nom prénom",
+  /* C */ "IPP",
+  /* D */ "Diagnostic",
+  /* E */ "Classement ARS",
+  /* F */ "CS",
+  /* G */ "1ere en urgence en   HO = O HNO = N  WE=W",
+  /* H */ "nbre seance en repose pied",
+  /* I */ "nbre seance Alité",
+  /* J */ "A15",
+  /* K */ "A15HNO",
+  /* L */ "B18Hx",
+  /* M */ "B18HxHNO",
+  /* N */ "IOT",
+  /* O */ "IOTHNO",
+  /* P */ "A18",
+  /* Q */ "A18HNO",
+  /* R */ "B 18",
+  /* S */ "B18HNO",
+  /* T */ "C18",
+  /* U */ "C18HNO",
+  /* V */ "Pansements",
+  /* W */ "PRF",
+  /* X */ "PTcO2",
+  /* Y */ "DTC",
+  /* Z */ "Audio / Tympan",
+  /* AA */ "Complication",
+  /* AB */ "EE/ plateau technique",
+  /* AC */ "Echo-doppler",
+  /* AD */ "CACI plongée",
+  /* AE */ "Résidence"
+];
+const COHB_NCOL = COHB_HEAD.length;
+/* heures ouvrables (en minutes) : du lundi au vendredi, de 8 h à 18 h, hors jours fériés ; le reste est « hors heures ouvrables » */
+const COHB_HO = {debut:480, fin:1080};
+const hm2min = hm => { const m = /^(\d{1,3}):(\d{2})$/.exec(String(hm||'')); return m ? (+m[1])*60 + (+m[2]) : null; };
+const jourUTC = t => { const x = new Date(t); return x.getUTCFullYear()+'-'+String(x.getUTCMonth()+1).padStart(2,'0')+'-'+String(x.getUTCDate()).padStart(2,'0'); };
+/* jours fériés français d'une année : fixes, puis lundi de Pâques, Ascension et lundi de Pentecôte (Pâques : algorithme de Meeus) */
+const FERIES = {};
+function frFeries(an){
+  if(FERIES[an]) return FERIES[an];
+  const a = an % 19, b = Math.floor(an/100), c = an % 100, d = Math.floor(b/4), e = b % 4, f = Math.floor((b+8)/25), g = Math.floor((b-f+1)/3),
+        h = (19*a + b - d - g + 15) % 30, i = Math.floor(c/4), k = c % 4, l = (32 + 2*e + 2*i - h - k) % 7, m = Math.floor((a + 11*h + 22*l)/451),
+        mois = Math.floor((h + l - 7*m + 114)/31), jour = ((h + l - 7*m + 114) % 31) + 1;
+  const P = Date.UTC(an, mois-1, jour), S = new Set(['01-01','05-01','05-08','07-14','08-15','11-01','11-11','12-25'].map(x=>an+'-'+x));
+  [1, 39, 50].forEach(n=>S.add(jourUTC(P + n*864e5)));
+  return FERIES[an] = S;
+}
+/* période d'un horaire : O heures ouvrables, N en semaine hors de ces heures, W week-end ou jour férié ; null si l'horaire manque */
+function cohbPeriode(iso, hm){
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso||'')); if(!m) return null;
+  const j = new Date(Date.UTC(+m[1], +m[2]-1, +m[3])).getUTCDay();
+  if(j===0 || j===6 || frFeries(+m[1]).has(iso)) return 'W';
+  const mn = hm2min(hm); if(mn==null) return null;
+  return (mn >= COHB_HO.debut && mn < COHB_HO.fin) ? 'O' : 'N';
+}
+/* table de l'application → colonne de la feuille (la colonne « HNO » est la suivante) : OHB15 → A15, tables avec intubation → IOT,
+   A18, B18, C18, tables héliox → B18Hx ; une table « autre » n'est rangée nulle part */
+const COHB_TAB = {1:9, 2:13, 3:13, 4:15, 5:17, 6:11, 7:11, 8:19};
+const COHB_TXT = {add:'ADD', opi:'OPI', baro:'Barotraumatisme', bioch:'Accident biochimique', noyade:'Noyade'};
+const COHB_TYPES = {medullaire:'médullaire', cerebral:'cérébral', vestibulaire:'vestibulaire', cutane:'cutané', articulaire:'ostéo-articulaire', pulmonaire:'pulmonaire',
+                    orm:'oreille moyenne', ori:'oreille interne', sinus:'sinus', pulm:'pulmonaire', dent:'dentaire', masque:'plaquage de masque',
+                    hyperoxie:'hyperoxie', hypercapnie:'hypercapnie', narcose:'narcose', co:'monoxyde de carbone'};
+/* diagnostic abrégé d'une fiche, comme dans la feuille : « ADD médullaire + cutané » ; le principal d'abord */
+function cohbDiag(d){
+  const sel = Array.isArray(d.dg_liste) ? d.dg_liste.slice() : [], arr = k => Array.isArray(d[k]) ? d[k] : [];
+  if(d.dg_principal && sel.indexOf(d.dg_principal) > 0){ sel.splice(sel.indexOf(d.dg_principal), 1); sel.unshift(d.dg_principal); }
+  const t = sel.map(v=>{
+    const ty = arr({add:'dg_add_types', baro:'dg_baro_types', bioch:'dg_bioch_types'}[v]).map(x=>COHB_TYPES[x] || x);
+    if(v==='bioch' && arr('dg_bioch_types').indexOf('co') >= 0) return 'Intoxication CO';
+    return (COHB_TXT[v] || v)+(ty.length ? ' '+ty.join(' + ') : '');
+  });
+  if(d.dg_txt) t.push(TXT.flat(d.dg_txt));
+  return t.length ? t.join(' ; ') : null;
+}
+/* résidence, comme la feuille l'écrit (VAR, Belgique, suisse) : un pays cité dans l'adresse, le Var (code postal 83 ou commune du
+   Var), un autre département français (code postal), sinon le pays de la nationalité si elle est étrangère et connue.
+   La nationalité ne dit pas la résidence : cette dernière règle est la moins sûre. */
+const COHB_PAYS = {2:'Belgique', 3:'Allemagne', 4:'Suisse', 5:'Italie', 6:'Espagne', 7:'États-Unis', 8:'Royaume-Uni'};
+const COHB_PAYS_TXT = [['belgique','Belgique'], ['suisse','Suisse'], ['allemagne','Allemagne'], ['italie','Italie'], ['espagne','Espagne'],
+  ['luxembourg','Luxembourg'], ['royaume-uni','Royaume-Uni'], ['angleterre','Royaume-Uni'], ['etats-unis','États-Unis'], ['pays-bas','Pays-Bas'],
+  ['portugal','Portugal'], ['monaco','Monaco']];
+function cohbResidence(d){
+  const a = String(d.adresse||''), t = noAcc(TXT.low(a)), pays = COHB_PAYS_TXT.find(x=>t.indexOf(x[0]) >= 0);
+  if(pays) return pays[1];
+  const etr = d.nationalite != null && d.nationalite !== 1, cp = /(?:^|\D)(\d{5})(?!\d)/.exec(a);
+  if(cp && (!etr || cp[1].slice(0, 2) === '83')) return cp[1].slice(0, 2) === '83' ? 'VAR' : 'France (dép. '+cp[1].slice(0, 2)+')';
+  if(a && xlsLieu(a) === 2) return 'VAR';
+  return etr ? (COHB_PAYS[d.nationalite] || null) : null;
+}
+/* tout ce que la ligne lit en plus du contexte de la ligne principale, calculé une fois */
+function cohbCtx(X){
+  const c = {n:{}}, i0 = X.init.d;
+  X.FI.forEach(f=>{
+    const d = f.d, lib = tableLib(d); if(!lib) return;
+    const code = TABLES.some(t=>t.v===d.tb_table && t.v!==9) ? d.tb_table : 9, col = COHB_TAB[code]; if(col==null) return;
+    const n = Math.max(1, +d.tb_nb_seances || 0, +d.ev_seances || 0), per = cohbPeriode(d.date_ex, d.tb_h_mep || null);
+    /* la séance dont l'heure est connue compte pour sa période, les autres séances déclarées en heures ouvrables */
+    const k = col + ((per==='N' || per==='W') ? 1 : 0);
+    c.n[k] = (c.n[k] || 0) + 1;
+    c.n[col] = (c.n[col] || 0) + (n - 1);
+  });
+  c.g = (i0.tb_table!=null || i0.tb_h_mep) ? cohbPeriode(i0.date_ex, i0.tb_h_mep || i0.heure_pec || null) : null;
+  c.dtc = X.FI.filter(f=>f.d.im_dtc===1).length;
+  c.compl = X.FI.filter(f=>f.d.tb_complic===1 || f.d.ev_complic===1).length;
+  for(let i = X.ST.length-1; i >= 0 && c.diag==null; i--){ const t = cohbDiag(X.ST[i].d); if(t) c.diag = t; }
+  if(c.diag==null) c.diag = null;
+  const co = X.FI.some(f=>Array.isArray(f.d.dg_liste) && f.d.dg_liste.indexOf('bioch')>=0 && Array.isArray(f.d.dg_bioch_types) && f.d.dg_bioch_types.indexOf('co')>=0);
+  c.ars = (c.diag || X.FI.some(f=>f.d.dg_liste && f.d.dg_liste.length)) ? (co ? 'intoxication CO' : 'accident de plongée') : null;
+  c.res = cohbResidence(X.d0);
+  return c;
+}
+const cohbX = X => X.cohb || (X.cohb = cohbCtx(X));
+const cohbN = (X, i) => cohbX(X).n[i] || null;
+/* Une entrée par colonne de la feuille, dans l'ordre : mêmes champs que XLS. */
+const COHB = [
+ /* A  */ {h:'Date cloture', n:'date de la dernière fiche du dossier', f:X=>XD(X.last.d.date_ex)},
+ /* B  */ {h:'Nom prénom', nom:1, n:'nom en majuscules, puis prénom (identité)', f:X=>[X.d0.nom ? String(X.d0.nom).toUpperCase() : '', X.d0.prenom || ''].filter(Boolean).join(' ') || null},
+ /* C  */ {h:'IPP', n:'numéro de dossier de la fiche', f:X=>xlsNum(X.d0.dossier)},
+ /* D  */ {h:'Diagnostic', n:'dernier diagnostic retenu, abrégé (ADD médullaire + cutané)', f:X=>cohbX(X).diag},
+ /* E  */ {h:'Classement ARS', n:'« accident de plongée » ; « intoxication CO » si le diagnostic est une intoxication au monoxyde de carbone', f:X=>cohbX(X).ars},
+ /* F  */ {h:'CS', n:'nombre de consultations : une par fiche du dossier', f:X=>X.FI.length},
+ /* G  */ {h:'1ere en urgence', n:'période de la mise en pression de la table initiale : O heures ouvrables (lundi au vendredi, 8 h à 18 h), N en semaine hors de ces heures, W week-end ou jour férié', f:X=>cohbX(X).g},
+ /* H  */ {h:'nbre seance en repose pied', n:'non recueilli (la position du patient n’est pas saisie)', f:X=>null},
+ /* I  */ {h:'nbre seance Alit', n:'non recueilli (la position du patient n’est pas saisie)', f:X=>null},
+ /* J  */ {h:'A15', n:'séances OHB15 en heures ouvrables', f:X=>cohbN(X, 9)},
+ /* K  */ {h:'A15HNO', n:'séances OHB15 hors heures ouvrables', f:X=>cohbN(X, 10)},
+ /* L  */ {h:'B18Hx', n:'séances héliox (A18HeOx, B18HeOx) en heures ouvrables', f:X=>cohbN(X, 11)},
+ /* M  */ {h:'B18HxHNO', n:'séances héliox hors heures ouvrables', f:X=>cohbN(X, 12)},
+ /* N  */ {h:'IOT', n:'séances avec intubation (A15IOT, A18IOT) en heures ouvrables', f:X=>cohbN(X, 13)},
+ /* O  */ {h:'IOTHNO', n:'séances avec intubation hors heures ouvrables', f:X=>cohbN(X, 14)},
+ /* P  */ {h:'A18', n:'séances A18 en heures ouvrables', f:X=>cohbN(X, 15)},
+ /* Q  */ {h:'A18HNO', n:'séances A18 hors heures ouvrables', f:X=>cohbN(X, 16)},
+ /* R  */ {h:'B 18', n:'séances B18 en heures ouvrables', f:X=>cohbN(X, 17)},
+ /* S  */ {h:'B18HNO', n:'séances B18 hors heures ouvrables', f:X=>cohbN(X, 18)},
+ /* T  */ {h:'C18', n:'séances C18 en heures ouvrables', f:X=>cohbN(X, 19)},
+ /* U  */ {h:'C18HNO', n:'séances C18 hors heures ouvrables', f:X=>cohbN(X, 20)},
+ /* V  */ {h:'Pansements', n:'non recueilli', f:X=>null},
+ /* W  */ {h:'PRF', n:'non recueilli', f:X=>null},
+ /* X  */ {h:'PTcO2', n:'non recueilli', f:X=>null},
+ /* Y  */ {h:'DTC', n:'nombre de doppler transcrâniens réalisés (fiches du dossier)', f:X=>cohbX(X).dtc || null},
+ /* Z  */ {h:'Audio / Tympan', n:'non recueilli', f:X=>null},
+ /* AA */ {h:'Complication', n:'nombre de fiches du dossier avec une complication thérapeutique', f:X=>cohbX(X).compl || null},
+ /* AB */ {h:'EE/ plateau technique', n:'non recueilli', f:X=>null},
+ /* AC */ {h:'Echo-doppler', n:'non recueilli (le doppler transcrânien est compté en colonne Y)', f:X=>null},
+ /* AD */ {h:'CACI plong', n:'non recueilli', f:X=>null},
+ /* AE */ {h:'Résidence', n:'pays cité dans l’adresse ; VAR (code postal 83 ou commune du Var) ; sinon France (dép. xx) d’après le code postal ; sinon pays de la nationalité si elle est étrangère', f:X=>cohbX(X).res}
+];
+
+/* Classeur .xlsx de la feuille « Activité COHB » : en-têtes en ligne 1, ligne du dossier en ligne 2 sur le fond bleu des lignes
+   « plongée » de la feuille. Même emballage que le classeur du fichier maître. */
+async function cohbBlob(row){
+  const enc = new TextEncoder();
+  const W = {0:12, 1:23.7, 2:13.3, 3:38.4, 4:33.9, 5:5, 6:12, 7:8.5, 8:8, 9:7, 10:8, 11:7, 12:9, 13:7.3, 14:8, 15:7, 16:8, 17:7, 18:8, 19:7, 20:8, 21:12, 22:5.5, 23:9, 24:7.5, 25:9, 26:17.3, 27:12, 28:9, 29:8.5, 30:13.3};
+  let cols = '';
+  for(let i = 0; i < COHB_NCOL; i++) cols += '<col min="'+(i+1)+'" max="'+(i+1)+'" width="'+(W[i] || 9)+'" customWidth="1"/>';
+  let r1 = '', r2 = '';
+  COHB_HEAD.forEach((h, i)=>{ r1 += '<c r="'+xlsCol(i)+'1" s="'+(i===7 ? 2 : 1)+'" t="inlineStr"><is><t xml:space="preserve">'+xmlEsc(h)+'</t></is></c>'; });
+  for(let i = 0; i < COHB_NCOL; i++){
+    const c = row[i], ref = xlsCol(i)+'2';
+    if(c==null){ r2 += '<c r="'+ref+'" s="3"/>'; continue; }
+    if(typeof c==='number' && isFinite(c)) r2 += '<c r="'+ref+'" s="4"><v>'+c+'</v></c>';
+    else if(typeof c==='object' && c.k==='d'){ const n = xlsSerial(c.v); r2 += n!=null ? '<c r="'+ref+'" s="5"><v>'+n+'</v></c>' : '<c r="'+ref+'" s="3"/>'; }
+    else { const t = String(c); r2 += t ? '<c r="'+ref+'" s="3" t="inlineStr"><is><t xml:space="preserve">'+xmlEsc(t)+'</t></is></c>' : '<c r="'+ref+'" s="3"/>'; }
+  }
+  const NS = 'http://schemas.openxmlformats.org/spreadsheetml/2006/main';
+  const sheet = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<worksheet xmlns="'+NS+'">'+
+    '<dimension ref="A1:'+xlsCol(COHB_NCOL-1)+'2"/>'+
+    '<sheetViews><sheetView tabSelected="1" workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/>'+
+    '<selection pane="bottomLeft" activeCell="A2" sqref="A2"/></sheetView></sheetViews>'+
+    '<sheetFormatPr defaultRowHeight="15"/><cols>'+cols+'</cols><sheetData>'+
+    '<row r="1" ht="81.75" customHeight="1">'+r1+'</row><row r="2">'+r2+'</row></sheetData>'+
+    '<pageMargins left="0.7" right="0.7" top="0.75" bottom="0.75" header="0.3" footer="0.3"/></worksheet>';
+  const edge = '<left style="thin"><color indexed="64"/></left><right style="thin"><color indexed="64"/></right><top style="thin"><color indexed="64"/></top><bottom style="thin"><color indexed="64"/></bottom><diagonal/>';
+  const styles = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<styleSheet xmlns="'+NS+'">'+
+    '<fonts count="1"><font><sz val="11"/><name val="Calibri"/><family val="2"/></font></fonts>'+
+    '<fills count="5"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill>'+
+    '<fill><patternFill patternType="solid"><fgColor rgb="FFFFFF99"/><bgColor indexed="64"/></patternFill></fill>'+
+    '<fill><patternFill patternType="solid"><fgColor rgb="FFFF33CC"/><bgColor indexed="64"/></patternFill></fill>'+
+    '<fill><patternFill patternType="solid"><fgColor rgb="FF00B0F0"/><bgColor indexed="64"/></patternFill></fill></fills>'+
+    '<borders count="2"><border><left/><right/><top/><bottom/><diagonal/></border><border>'+edge+'</border></borders>'+
+    '<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>'+
+    '<cellXfs count="6">'+
+    '<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>'+
+    '<xf numFmtId="0" fontId="0" fillId="2" borderId="1" xfId="0" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf>'+
+    '<xf numFmtId="0" fontId="0" fillId="3" borderId="1" xfId="0" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf>'+
+    '<xf numFmtId="0" fontId="0" fillId="4" borderId="1" xfId="0" applyFill="1" applyBorder="1" applyAlignment="1"><alignment vertical="center" wrapText="1"/></xf>'+
+    '<xf numFmtId="0" fontId="0" fillId="4" borderId="1" xfId="0" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>'+
+    '<xf numFmtId="14" fontId="0" fillId="4" borderId="1" xfId="0" applyNumberFormat="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>'+
+    '</cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>';
+  const files = [
+    {name:'[Content_Types].xml', text:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">'+
+      '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/>'+
+      '<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>'+
+      '<Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>'+
+      '<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>'},
+    {name:'_rels/.rels', text:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'+
+      '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>'},
+    {name:'xl/workbook.xml', text:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<workbook xmlns="'+NS+'" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">'+
+      '<bookViews><workbookView xWindow="0" yWindow="0" windowWidth="28800" windowHeight="11250"/></bookViews>'+
+      '<sheets><sheet name="Feuil1" sheetId="1" r:id="rId1"/></sheets></workbook>'},
+    {name:'xl/_rels/workbook.xml.rels', text:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'+
+      '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>'+
+      '<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>'},
+    {name:'xl/styles.xml', text:styles},
+    {name:'xl/worksheets/sheet1.xml', text:sheet}
+  ].map(f=>({name:f.name, data:enc.encode(f.text)}));
+  const z = await zipBuild(files);
+  return new Blob([z], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+}
+
+
 /* copie de texte brut : l'API du presse-papiers, sinon un champ temporaire sélectionné */
 function copyPlain(txt, okMsg){
   const ok = () => toast(okMsg), ko = () => toast('Copie impossible');
@@ -9590,42 +10024,54 @@ function copyPlain(txt, okMsg){
 /* ---------- fenêtre « Ligne pour le fichier Excel maître » ---------- */
 const XLS_OPT = {nom:true};
 /* titre d'une colonne : les premières lignes de l'en-tête, jusqu'à la légende des codes */
-function xlsTitre(i){
+function xlsTitre(i, T){
   const t = [];
-  for(const l of XLS_HEAD[i].split('\n')){
+  for(const l of (T ? T.head : XLS_HEAD)[i].split('\n')){
     if(/^\s*\d+[a-z]?\)/.test(l) || /^\s*aucun\s*$/i.test(l)) break;
     t.push(l.trim()); if(t.length >= 3) break;
   }
   return t.filter(Boolean).join(' ').replace(/\s+/g, ' ').trim();
 }
-function openXls(){
+/* les deux feuilles que la ligne peut viser : le fichier maître (89 colonnes) et l'activité COHB */
+const XLS_T = {
+  maitre:{id:'maitre', titre:'Ligne pour le fichier Excel maître', head:XLS_HEAD, cols:XLS, ncol:XLS_NCOL, blob:row=>xlsxBlob(row), fichier:'ligne_excel_',
+          cible:'votre fichier maître', onglet:'Fichier maître'},
+  cohb:{id:'cohb', titre:'Ligne pour l’activité COHB', head:COHB_HEAD, cols:COHB, ncol:COHB_NCOL, blob:row=>cohbBlob(row), fichier:'ligne_excel_cohb_',
+        cible:'la feuille « Activité COHB »', onglet:'Activité COHB'}
+};
+function openXls(which){
+  const T = XLS_T[which] || XLS_T.maitre;
   if(!REC || !REC.d.dossier){ toast('Renseignez le numéro de dossier : la ligne est composée à partir de toutes les fiches de ce dossier'); return; }
   const X = xlsCtx(); if(!X){ toast('Aucune fiche à exporter'); return; }
-  const row = xlsRow(X, XLS_OPT), n = row.filter(c=>c!=null).length;
+  const row = xlsRow(X, XLS_OPT, T), n = row.filter(c=>c!=null).length;
   const dates = X.FI.map(f=>frDate(f.d.date_ex)).filter(Boolean).join(', ');
-  modalHTML('<h3>Ligne pour le fichier Excel maître</h3>'+
+  const tab = t => '<button class="tb'+(t.id===T.id ? ' pri' : '')+'" onclick="openXls(\''+t.id+'\')">'+t.onglet+' ('+t.ncol+' colonnes)</button>';
+  modalHTML('<h3>'+T.titre+'</h3>'+
+    '<div style="display:flex;gap:6px;flex-wrap:wrap;margin:0 0 8px">'+tab(XLS_T.maitre)+tab(XLS_T.cohb)+'</div>'+
     '<div class="note" style="background:#eef4fb;border-color:#bcd4ee">Dossier <b>'+esc(REC.d.dossier)+'</b> : <b>'+X.FI.length+' fiche'+(X.FI.length>1?'s':'')+'</b>'+
-      (dates ? ' ('+esc(dates)+')' : '')+'. La ligne reprend les colonnes A à '+xlsCol(XLS_NCOL-1)+' de votre fichier maître : <b>'+n+'</b> sur '+XLS_NCOL+
+      (dates ? ' ('+esc(dates)+')' : '')+'. La ligne reprend les colonnes A à '+xlsCol(T.ncol-1)+' de '+T.cible+' : <b>'+n+'</b> sur '+T.ncol+
       ' sont remplies d’après les fiches, les autres sont vides (ce que l’application ne recueille pas, ou n’a pas encore reçu). '+
       '<b>Vérifiez les valeurs ci-dessous avant de coller.</b></div>'+
     '<label style="display:block;margin:8px 0;font-weight:400"><input type="checkbox" id="xlsNom"'+(XLS_OPT.nom!==false?' checked':'')+
-      ' onchange="XLS_OPT.nom=this.checked;openXls()"> inclure le nom et le prénom (colonne A)</label>'+
+      ' onchange="XLS_OPT.nom=this.checked;openXls(\''+T.id+'\')"> inclure le nom et le prénom (colonne '+(T.id==='cohb'?'B':'A')+')</label>'+
     '<div style="display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 10px">'+
-      '<button class="tb gd" onclick="xlsCopy()" title="Texte à tabulations : dans Excel, cliquez la première cellule d’une ligne vide, puis Ctrl+V">Copier la ligne</button>'+
-      '<button class="tb pri" onclick="xlsDownload()" title="Classeur de même structure : en-têtes en ligne 1, la ligne du dossier en ligne 2">Télécharger le classeur .xlsx</button></div>'+
-    '<div style="font-size:11.5px;color:var(--ink2);margin-bottom:8px">Dans Excel : cliquez la <b>première cellule</b> d’une ligne vide de votre fichier maître, puis <b>Ctrl+V</b>. '+
-      'Les dates (JJ/MM/AAAA) et les heures (HH:MM) sont reconnues au format français. Avec le classeur, copiez la ligne 2 entière et collez-la en « valeurs » si la mise en forme du fichier maître doit être gardée.</div>'+
+      '<button class="tb gd" onclick="xlsCopy(\''+T.id+'\')" title="Texte à tabulations : dans Excel, cliquez la première cellule d’une ligne vide, puis Ctrl+V">Copier la ligne</button>'+
+      '<button class="tb pri" onclick="xlsDownload(\''+T.id+'\')" title="Classeur de même structure : en-têtes en ligne 1, la ligne du dossier en ligne 2">Télécharger le classeur .xlsx</button></div>'+
+    '<div style="font-size:11.5px;color:var(--ink2);margin-bottom:8px">Dans Excel : cliquez la <b>première cellule (colonne A)</b> d’une ligne vide de '+T.cible+', puis <b>Ctrl+V</b>. '+
+      'Les dates (JJ/MM/AAAA) et les heures (HH:MM) sont reconnues au format français. Avec le classeur, copiez la ligne 2 entière et collez-la en « valeurs » si la mise en forme de '+(T.id==='cohb' ? 'la feuille' : 'votre fichier')+' doit être gardée.</div>'+
     '<div style="max-height:46vh;overflow:auto;border:1px solid var(--bd2);border-radius:6px"><table class="xlstab"><thead><tr><th>Col.</th><th>Colonne</th><th>Valeur</th><th>Règle</th></tr></thead><tbody>'+
-    XLS.map((c, i)=>{ const t = xlsText(row[i]); return '<tr'+(t===''?' class="xe"':'')+'><td class="xl">'+xlsCol(i)+'</td><td>'+esc(xlsTitre(i))+'</td><td class="xv">'+(t===''?'—':esc(t))+'</td><td class="xn">'+esc(c.n||'')+'</td></tr>'; }).join('')+
+    T.cols.map((c, i)=>{ const t = xlsText(row[i]); return '<tr'+(t===''?' class="xe"':'')+'><td class="xl">'+xlsCol(i)+'</td><td>'+esc(xlsTitre(i, T))+'</td><td class="xv">'+(t===''?'—':esc(t))+'</td><td class="xn">'+esc(c.n||'')+'</td></tr>'; }).join('')+
     '</tbody></table></div>');
 }
-function xlsCopy(){
+function xlsCopy(which){
   const X = xlsCtx(); if(!X) return;
-  copyPlain(xlsTSV(xlsRow(X, XLS_OPT)), 'Ligne copiée : collez-la dans la première cellule d’une ligne vide');
+  const T = XLS_T[which] || XLS_T.maitre;
+  copyPlain(xlsTSV(xlsRow(X, XLS_OPT, T)), 'Ligne copiée : collez-la dans la première cellule d’une ligne vide');
 }
-async function xlsDownload(){
+async function xlsDownload(which){
   const X = xlsCtx(); if(!X) return;
-  try{ dlBlob('ligne_excel_'+today()+'.xlsx', await xlsxBlob(xlsRow(X, XLS_OPT))); toast('Classeur téléchargé'); }
+  const T = XLS_T[which] || XLS_T.maitre;
+  try{ dlBlob(T.fichier+today()+'.xlsx', await T.blob(xlsRow(X, XLS_OPT, T))); toast('Classeur téléchargé'); }
   catch(e){ toast('Classeur impossible : '+errTxt(e)); }
 }
 
@@ -10274,12 +10720,12 @@ function openHelp(){
   'de l\'examen precedent apparaissent en grise : cliquez dessus pour les reprendre, ou utilisez le bouton '+
   '<b>Reprendre tout l\'examen precedent</b>. '+
   'Cliquez <b>Tout renseigner comme NORMAL</b>, puis ne modifiez que les items anormaux.</p>'+
-  '<p><b>2 ter. Cinq onglets et un bandeau.</b><br>'+
-  'La fiche se remplit en cinq onglets : <b>Administratif</b>, <b>Anamnèse et plongée</b>, <b>Examen clinique général</b>, '+
-  '<b>Examen neurologique</b>, <b>Conclusion et évolution</b>. Le bandeau bleu sous la barre du haut rappelle en permanence le nom, '+
+  '<p><b>2 ter. Six onglets et un bandeau.</b><br>'+
+  'La fiche se remplit en six onglets : <b>Administratif</b>, <b>Anamnèse et plongée</b>, <b>Examen clinique général</b>, '+
+  '<b>Examen neurologique</b>, <b>Examens complémentaires</b>, <b>Conclusion et évolution</b>. Le bandeau bleu sous la barre du haut rappelle en permanence le nom, '+
   'le prénom, la date de naissance, le n° d’accident, le n° de dossier, le n° de l’examen, la date d’entrée (celle du premier examen du '+
   'dossier) et le dernier diagnostic retenu. À droite du bandeau, le bouton <b>Suivant</b> nomme l’onglet suivant (Anamnèse, Examen, Neuro, '+
-  'Conclusion) et y mène d’un clic. L’onglet Administratif porte aussi l’identité complémentaire (nationalité, profession, adresse, '+
+  'Examens compl., Conclusion) et y mène d’un clic. L’onglet Administratif porte aussi l’identité complémentaire (nationalité, profession, adresse, '+
   'téléphone, e-mail), après le mode d’entrée. Sur une fiche de suivi ou de sortie, l’onglet « Anamnèse et plongée » disparaît : la plongée reste sur la fiche initiale.</p>'+
   '<p><b>2 quater. Synthèse rédigée et compte rendu d’hospitalisation.</b><br>'+
   'La synthèse, sous la fiche, se copie en texte enrichi : titres soulignés, anomalies en <b>gras</b>, examen dit en syndromes '+
@@ -10299,6 +10745,14 @@ function openHelp(){
   '<code>Generateur-courriers-SMHEP.html</code> : il porte les signatures et les numéros RPPS des médecins, il n’est donc pas dans '+
   'l’application, et reste dans ce navigateur (lien « Fichier du générateur… » pour le remplacer). La fenêtre se referme avec '+
   '<b>Retour à la fiche</b> sans rien perdre ; <b>Ouvrir dans un onglet</b> sert si l’impression depuis la fenêtre intégrée pose problème.</p>'+
+  '<p><b>2 septies. Examens complémentaires et biologie.</b><br>'+
+  'L’onglet « Examens complémentaires » réunit le <b>gaz du sang veineux</b>, la <b>biologie</b>, puis l’ECG, l’imagerie et les autres examens. '+
+  'Chaque encart de biologie est horodaté : la date et l’heure du prélèvement sont celles de la fiche, modifiables. Chaque résultat affiche ses '+
+  'valeurs normales (VN) et son unité ; saisissez-le avec une virgule ou un point (« < » ou « > » est accepté devant). Hors des VN, la valeur '+
+  's’écrit en <b>gras et en rouge</b>, dans la fiche comme dans la synthèse. L’hémoglobine et l’hématocrite de la biologie sont reprises du gaz du '+
+  'sang du même jour tant que vous ne les saisissez pas vous-même. Dans la synthèse et le compte rendu, les prélèvements du dossier forment un '+
+  '<b>tableau</b> qui s’enrichit de jour en jour, le plus récent à gauche. L’onglet « Conclusion et évolution » garde la décision et le suivi '+
+  '(recompression, actes, traitements, évolution, diagnostic, orientation, sortie).</p>'+
   '<p><b>2 bis. Les schemas corporels.</b><br>'+
   'Choisissez d\'abord la cotation a appliquer (hypoesthesie, hyperesthesie, anesthesie), puis cliquez les zones. '+
   'Chaque cotation a son propre motif. Re-cliquer une zone avec la meme cotation l\'efface ; la gomme efface aussi. '+
@@ -10324,7 +10778,13 @@ function openHelp(){
   'Bouton <b>Exporter</b> puis <b>Ligne Excel du dossier ouvert</b> (ou « ligne Excel » dans l’en-tête du compte rendu) : l’outil compose, à partir de '+
   'toutes les fiches du dossier, une ligne de 89 colonnes (A à CK) qui suit le fichier maître du service. <b>Copier la ligne</b>, puis collez-la dans la '+
   'première cellule d’une ligne vide d’Excel (Ctrl+V) ; ou téléchargez un classeur .xlsx de même structure. Les valeurs sont affichées avant la copie : '+
-  'vérifiez-les, les colonnes que l’application ne recueille pas restent vides.</p>'+
+  'vérifiez-les, les colonnes que l’application ne recueille pas restent vides. La colonne « ordinateur » (CA) porte la marque et le modèle, suivis des réglages, dans la même case.</p>'+
+  '<p><b>5 ter. Ligne pour l’activité COHB.</b><br>'+
+  'Même fenêtre (bouton <b>Ligne COHB du dossier ouvert</b>, ou « ligne COHB » dans l’en-tête du compte rendu ; les deux feuilles se choisissent en haut de la fenêtre) : '+
+  'une ligne de 31 colonnes (A à AE) qui suit la feuille « Activité COHB » du service. Elle reprend la date de la dernière fiche, l’identité, le n° de dossier, le diagnostic, '+
+  'le classement ARS, le nombre de consultations, la période de la première séance en urgence (O : lundi au vendredi de 8 h à 18 h hors jours fériés ; N : autre heure en semaine ; W : week-end ou jour férié), '+
+  'les séances par table (les colonnes « HNO » comptent celles qui ne tombent pas en heures ouvrables), les doppler transcrâniens, les complications et la résidence. '+
+  'Les colonnes que l’application ne recueille pas restent vides ; vérifiez les valeurs affichées avant de coller.</p>'+
   '<p><b>6. Analyser.</b><br>'+
   'Ouvrez <code>donnees_neuro.csv</code> dans Excel, R, Python, SPSS ou Jamovi. '+
   '<code>dictionnaire_variables.csv</code> donne le codage de chaque colonne. '+

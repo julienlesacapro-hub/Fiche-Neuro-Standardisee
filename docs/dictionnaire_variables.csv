@@ -468,6 +468,33 @@ orientation;Orientation (Orientation et commentaires);"1 = Retour au domicile ; 
 orientation_autre;Préciser la structure (Orientation et commentaires);texte libre
 orientation_txt;Précisions sur l'orientation (Orientation et commentaires);texte libre
 notes;Commentaires libres (Orientation et commentaires);texte libre
+gds_date;Date du prélèvement (Gaz du sang veineux);AAAA-MM-JJ
+gds_h;Heure du prélèvement (Gaz du sang veineux);HH:MM
+gds_ph;pH veineux (Gaz du sang veineux);"numerique decimal ; valeurs normales : 7,33 - 7,38 ; un signe < ou > peut preceder la valeur"
+gds_po2;pO₂ veineux (Gaz du sang veineux);"numerique decimal (mmHg) ; valeurs normales : 33 - 37 ; un signe < ou > peut preceder la valeur"
+gds_pco2;pCO₂ veineux (Gaz du sang veineux);"numerique decimal (mmHg) ; valeurs normales : 40 - 50 ; un signe < ou > peut preceder la valeur"
+gds_hco3;HCO₃⁻ veineux (Gaz du sang veineux);"numerique decimal (mmol/L) ; valeurs normales : 24 - 30 ; un signe < ou > peut preceder la valeur"
+gds_hb;Hb (Gaz du sang veineux);"numerique decimal (g/dL) ; valeurs normales : 12 - 16 ; un signe < ou > peut preceder la valeur"
+gds_ht;Ht (Gaz du sang veineux);"numerique decimal (%) ; valeurs normales : 37 - 46 ; un signe < ou > peut preceder la valeur"
+gds_lac;Lactates veineux (Gaz du sang veineux);"numerique decimal (mmol/L) ; valeurs normales : 0,5 - 2,2 ; un signe < ou > peut preceder la valeur"
+lab_date;Date du prélèvement (Biologie);AAAA-MM-JJ
+lab_h;Heure du prélèvement (Biologie);HH:MM
+lab_leuco;Leucocytes (Biologie);"numerique decimal (G/L) ; valeurs normales : 4,020 - 11,420 ; un signe < ou > peut preceder la valeur"
+lab_hb;Hb (Biologie);"numerique decimal (g/dL) ; valeurs normales : 12 - 16 ; un signe < ou > peut preceder la valeur"
+lab_ht;Ht (Biologie);"numerique decimal (%) ; valeurs normales : 37 - 46 ; un signe < ou > peut preceder la valeur"
+lab_plq;Plaquettes (Biologie);"numerique decimal (G/L) ; valeurs normales : 185 - 445 ; un signe < ou > peut preceder la valeur"
+lab_pnn;Neutrophiles (Biologie);"numerique decimal (G/L) ; valeurs normales : 1,78 - 6,946 ; un signe < ou > peut preceder la valeur"
+lab_fib;Fibrinogène (Biologie);"numerique decimal (g/L) ; valeurs normales : 2,0 - 4,0 ; un signe < ou > peut preceder la valeur"
+lab_dd;D-dimères (Biologie);"numerique decimal (µg/mL) ; valeurs normales : 0,00 - 0,50 ; un signe < ou > peut preceder la valeur"
+lab_prot;Protéines totales (Biologie);"numerique decimal (g/L) ; valeurs normales : 64,0 - 83,0 ; un signe < ou > peut preceder la valeur"
+lab_creat;Créatinine (Biologie);"numerique decimal (µmol/L) ; valeurs normales : 45,0 - 84,0 ; un signe < ou > peut preceder la valeur"
+lab_dfg;DFG CKD-EPI (Biologie);"numerique decimal (mL/min/1,73 m²) ; valeurs normales : 90 - 150 ; un signe < ou > peut preceder la valeur"
+lab_ck;CK (Biologie);"numerique decimal (UI/L) ; valeurs normales : 26 - 192 ; un signe < ou > peut preceder la valeur"
+lab_crp;CRP (Biologie);"numerique decimal (mg/L) ; valeurs normales : < 5,0 ; un signe < ou > peut preceder la valeur"
+lab_alb;Albumine (Biologie);"numerique decimal (g/L) ; valeurs normales : 35,0 - 52,0 ; un signe < ou > peut preceder la valeur"
+lab_myo;Myoglobine (Biologie);"numerique decimal (µg/L) ; valeurs normales : 25,0 - 58,0 ; un signe < ou > peut preceder la valeur"
+lab_tropo;Troponine (Biologie);"numerique decimal (ng/L) ; valeurs normales : 0 - 14 ; un signe < ou > peut preceder la valeur"
+lab_ntbnp;NT-pro-BNP (Biologie);"numerique decimal (ng/L) ; valeurs normales : 10 - 202 ; un signe < ou > peut preceder la valeur"
 pl_dtr_src;Origine de la DTR;"1 = calculee d apres les heures DF et HS ; 2 = saisie ; 3 = estimee d apres Pmax et les paliers (DTP seule connue) ; 4 = deduite de DTP - DT ; vide = DTR inconnue"
 pl_dtr_att_min;DTR attendue - minimum;"entier, minutes : remontee a 12 m/min, 10 s par metre entre paliers, arrondie a la minute superieure ; vide = Pmax inconnue"
 pl_dtr_att_max;DTR attendue - maximum;"entier, minutes : remontee a 9 m/min, 10 s par metre entre paliers, arrondie a la minute superieure ; vide = Pmax inconnue"
