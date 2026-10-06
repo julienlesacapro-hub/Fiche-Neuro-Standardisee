@@ -2,7 +2,7 @@
 
 Outil de saisie pour la prise en charge d'un accident de plongée en médecine
 hyperbare : consultation initiale en urgence, consultations de suivi, compte
-rendu de séjour. Auteur : Dr Julien Lesaca. Version 8.0.0.
+rendu de séjour. Auteur : Dr Julien Lesaca. Version 8.1.1.
 
 Deux sorties, depuis la même saisie :
 
@@ -64,7 +64,7 @@ cd Fiche-Neuro-Standardisee
 # copiez ici le contenu de ce dossier (index.html, icons/, manifest, sw.js, docs/, native/)
 
 git add .
-git commit -m "ADP v8.0.0"
+git commit -m "ADP v8.1.1"
 git push origin main
 ```
 
@@ -83,12 +83,12 @@ en HTTPS, condition nécessaire pour l'installation et le service worker.
 ### Publier une mise à jour
 
 Modifiez `index.html`, incrémentez `VERSION` en tête de `sw.js`
-(`v8.0.0` → `v8.0.1`), poussez. Sans ce changement de version, les appareils
+(`v8.1.1` → `v8.1.2`), poussez. Sans ce changement de version, les appareils
 déjà installés gardent l'ancienne copie en cache.
 
 ```bash
-sed -i "s/const VERSION = 'v8.0.0'/const VERSION = 'v8.0.1'/" sw.js
-git commit -am "v8.0.1" && git push
+sed -i "s/const VERSION = 'v8.1.1'/const VERSION = 'v8.1.2'/" sw.js
+git commit -am "v8.1.2" && git push
 ```
 
 Au lancement suivant avec réseau, l'application signale la mise à jour et
@@ -97,8 +97,8 @@ propose de l'appliquer.
 ### Ce que vous publiez
 
 GitHub Pages rend ce dépôt **public**. Ne versionnez jamais de fiche remplie,
-de `donnees_neuro.csv`, de sauvegarde JSON, de ligne Excel exportée, ni le sel de
-pseudonymisation, ni **le fichier du générateur de courriers** (signatures scannées
+de `donnees_neuro.csv`, de fiche ou de sauvegarde JSON (`187-2026_50987654-EX1.json`), de ligne
+Excel exportée, ni le sel de pseudonymisation, ni **le fichier du générateur de courriers** (signatures scannées
 et numéros RPPS des médecins : il se choisit dans l'application, jamais dans le dépôt).
 Le `.gitignore` fourni bloque déjà ces noms de fichiers. Vérifiez quand même
 avec `git status` avant chaque `commit`.
@@ -112,7 +112,7 @@ serveur interne à l'établissement, ou distribuez `index.html` par clé USB.
 ## Contenu du dépôt
 
 ```
-index.html                 application complète, fichier unique, 650 ko
+index.html                 application complète, fichier unique, 670 ko
 manifest.webmanifest       déclaration d'installation (nom, icônes, plein écran)
 sw.js                      service worker : démarrage hors ligne, mises à jour
 icons/                     icônes 32 à 1024 px, dont deux masquables Android
@@ -153,7 +153,9 @@ Les fiches vivent à trois endroits, du plus fragile au plus solide :
 2. **le dossier de données**, choisi une seule fois (bouton *Dossier de données*
    ou premier enregistrement), sur Chrome et Edge pour ordinateur : à chaque
    enregistrement l'outil y écrit la fiche en JSON (un fichier par fiche, sous-dossier
-   `fiches`) et réécrit `donnees_neuro.csv` ; à chaque ouverture il le relit pour la
+   `fiches`, nommé `xxx-aaaa_bbbbbbbb-EXc.json` : numéro d'accident, année de prise en
+   charge, numéro de dossier, numéro d'examen, par exemple `187-2026_50987654-EX1.json`)
+   et réécrit `donnees_neuro.csv` ; à chaque ouverture il le relit pour la
    recherche d'un sujet. Les fichiers JSON contiennent l'identité : dossier protégé ;
 3. **l'export manuel**, disponible partout, y compris sur iPhone et Firefox :
    le CSV, la sauvegarde JSON d'un seul fichier, et **Exporter tout en JSON**, qui écrit

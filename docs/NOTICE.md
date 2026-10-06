@@ -1,4 +1,4 @@
-# ADP — accident de plongée, version 8.0.0
+# ADP — accident de plongée, version 8.1.1
 
 Fichier unique : `index.html`. Aucun réseau, aucune dépendance externe, aucun compte.
 Double-cliquez dessus, il s'ouvre dans votre navigateur et tout fonctionne.
@@ -20,7 +20,7 @@ plein écran, démarrage sans réseau. Voir *Installer sur téléphone et tablet
 | Fichier exploitable, incrémental | `donnees_neuro.csv` | Réécrit automatiquement à chaque enregistrement de fiche |
 
 Un seul CSV pour tous les sujets, toutes les consultations et tous les types de document.
-Une ligne = une fiche. 887 colonnes.
+Une ligne = une fiche. 902 colonnes.
 
 Sans bouton de plus, chaque enregistrement écrit aussi la fiche entière au format **JSON** dans le
 dossier de données (un fichier par fiche), et chaque ouverture relit ce dossier pour la recherche d'un
@@ -58,9 +58,11 @@ Les photographies jointes s'ajoutent en fin de document, six par page.
 Le dossier n'est ensuite **jamais redemandé** : le navigateur le mémorise. À chaque enregistrement,
 l'outil y écrit :
 
-- `fiches/fiche_<identifiant>.json` — la fiche entière, **un fichier par fiche**. Le nom du fichier ne
-  porte aucune donnée du patient ; le contenu reprend l'enveloppe de la sauvegarde JSON, avec un bloc
-  `resume` (dossier, nom, prénom, naissance, dates) pour l'œil ;
+- `fiches/xxx-aaaa_bbbbbbbb-EXc.json` — la fiche entière, **un fichier par fiche**, par exemple
+  `fiches/187-2026_50987654-EX1.json` : numéro d'accident, année de prise en charge, numéro de dossier, numéro
+  d'examen (voir *Le nom des fichiers JSON*). Le nom ne porte ni nom, ni prénom, ni date de naissance ; le
+  contenu reprend l'enveloppe de la sauvegarde JSON, avec un bloc `resume` (dossier, nom, prénom, naissance,
+  dates) pour l'œil ;
 - `donnees_neuro.csv` — vos données, toutes fiches confondues ;
 - `dictionnaire_variables.csv` — le codage de chaque colonne.
 
@@ -105,14 +107,16 @@ aussi.
 ### Supprimer une fiche
 
 Supprimer une fiche dans l'outil **n'efface rien sur le disque** : son fichier est déplacé dans
-`fiches/supprimees`, avec une copie complète. La suppression est mémorisée : une relecture du dossier
-ne la ressuscite pas, sauf si la fiche a été modifiée depuis, ou si vous la réimportez à la main.
+`fiches/supprimees`, avec une copie complète (nom habituel suivi de `~` et de l'identifiant de la fiche). La
+suppression est mémorisée : une relecture du dossier ne la ressuscite pas, sauf si la fiche a été modifiée depuis,
+ou si vous la réimportez à la main. Les autres examens du dossier changent de rang, et leurs fichiers de nom.
 Pour retirer vraiment une fiche du dossier, videz `fiches/supprimees` à la main.
 
 ### Fichiers lus
 
-Sont lus : tous les `.json` du sous-dossier `fiches`, et à la racine les `sauvegarde_neuro*.json` et
-`fiche_*.json` (les sauvegardes agrégées des versions précédentes, par exemple). Un fichier illisible
+Sont lus : tous les `.json` du sous-dossier `fiches`, quel que soit leur nom, et à la racine les
+`sauvegarde_neuro*.json`, les `fiche_*.json` et les fichiers au nom `xxx-aaaa_bbbbbbbb-EXc.json` (les sauvegardes
+agrégées des versions précédentes ou une exportation déposée là, par exemple). Un fichier illisible
 est compté et ignoré. Les dates, heures et nombres d'une fiche lue sont contrôlés avant son
 enregistrement.
 
@@ -127,10 +131,11 @@ possible :
 
 - **Exporter tout en JSON** dans une archive ZIP (voir plus bas) ;
 - **Télécharger le JSON de la fiche à chaque enregistrement** : une case à cocher. Le fichier
-  `fiche_<identifiant>.json` part alors dans le dossier de téléchargement du navigateur. Pour le fixer une
-  fois pour toutes, réglez le navigateur (Paramètres › Téléchargements › Emplacement) et désactivez
-  *Demander où enregistrer chaque fichier avant de le télécharger*. Le navigateur numérote les copies d'une
-  même fiche (`fiche_….json`, puis `fiche_… (1).json`) : à l'import, la version la plus récente l'emporte ;
+  `xxx-aaaa_bbbbbbbb-EXc.json` (par exemple `187-2026_50987654-EX1.json`) part alors dans le dossier de
+  téléchargement du navigateur. Pour le fixer une fois pour toutes, réglez le navigateur (Paramètres ›
+  Téléchargements › Emplacement) et désactivez *Demander où enregistrer chaque fichier avant de le télécharger*.
+  Le navigateur numérote les copies d'une même fiche (`187-2026_50987654-EX1.json`, puis
+  `187-2026_50987654-EX1 (1).json`) : à l'import, la version la plus récente l'emporte ;
 - **Importer / Fusionner** un fichier, une archive ZIP ou un dossier entier.
 
 Si Windows ouvre `index.html` dans un autre navigateur que Chrome ou Edge, faites un clic droit sur
@@ -146,8 +151,9 @@ choisissez alors un **sous-dossier dédié**.
 ## Exporter tout en JSON
 
 **Exporter** › **Exporter tout en JSON** (ou, sur téléphone, le menu) écrit **toutes les fiches** de ce
-poste au format JSON, **une fiche par fichier** : `fiche_<identifiant>.json`, le format du dossier de
-données. Le nom ne porte aucune donnée du patient. Deux façons de le faire :
+poste au format JSON, **une fiche par fichier** nommé `xxx-aaaa_bbbbbbbb-EXc.json` (numéro d'accident, année
+de prise en charge, numéro de dossier, numéro d'examen : `187-2026_50987654-EX1.json`, voir *Le nom des
+fichiers JSON*), le format du dossier de données. Deux façons de le faire :
 
 - **Dans un dossier de votre choix** (Chrome, Edge sur ordinateur). Le sélecteur s'ouvre sur
   **Téléchargements**. Chrome et Edge refusent que Téléchargements lui-même soit choisi : créez-y un
@@ -167,6 +173,53 @@ l'identifiant de fiche : une fiche n'est remplacée que par une version plus ré
 
 **Données de santé.** Chaque fichier contient l'identité du sujet et ses pièces jointes, sans protection :
 gardez-les sur un support chiffré ou à accès restreint, et supprimez-les de Téléchargements une fois copiés.
+
+---
+
+## Le nom des fichiers JSON
+
+Chaque fiche exportée en JSON, que ce soit dans le dossier de données, par **Exporter tout en JSON** (dossier choisi ou
+archive ZIP) ou par le téléchargement à chaque enregistrement, porte un nom de la forme :
+
+```
+xxx-aaaa_bbbbbbbb-EXc.json        par exemple :  187-2026_50987654-EX1.json
+```
+
+| Élément | Signification | Règle |
+|---|---|---|
+| `xxx` | numéro d'accident | Au moins **trois chiffres** : le 1er de l'année donne `001`, le 187e `187`. Il est lu dans « Accident de plongée n° » de la **fiche initiale du dossier** (à défaut, dans un autre examen du dossier) ; seuls les chiffres comptent (`AD 12` donne `012`). Numéro absent : `000`. |
+| `aaaa` | année de la prise en charge | Année du **premier examen du dossier**, la date d'« Entrée » du bandeau. Sans date d'examen : date d'arrivée, puis date de l'accident ; sinon `0000`. |
+| `bbbbbbbb` | numéro de dossier | Le numéro saisi, **nettoyé** pour un nom de fichier : espaces retirés, accents supprimés, tout autre signe remplacé par `-`, 40 caractères au plus. Un numéro pseudonymisé (`P-…`) reste tel quel. Dossier absent : `sans-dossier`. |
+| `c` | numéro d'examen | Le rang de la fiche dans le dossier, le même que « Examen n° » du bandeau : `EX1` pour le premier examen. |
+
+Tous les fichiers d'un dossier portent ainsi le même accident, la même année et le même dossier, et se rangent par
+examen dans l'Explorateur de fichiers. Le nom ne contient **ni nom, ni prénom, ni date de naissance**, mais il contient
+le **numéro de dossier** et le numéro d'accident : voir *Données personnelles*.
+
+**Deux fiches ne partagent jamais un fichier.** Quand le nom voulu est déjà pris par une autre fiche (deux numéros de
+dossier qui ne diffèrent que par des espaces ou la casse, un fichier venu d'ailleurs, un fichier illisible), la fiche prend
+le même nom suivi de `_` et de son identifiant : `187-2026_50987654-EX1_FMUV3SC519OI4.json`. Le fichier de l'autre fiche
+n'est jamais écrasé. Dans un export (dossier ou ZIP), la même règle évite deux fichiers de même nom, majuscules et
+minuscules étant confondues comme sous Windows. Un fichier de même nom déjà présent dans le dossier d'un export est remplacé.
+
+**Dans le dossier de données, le nom suit la fiche.** Le numéro d'examen faisant partie du nom, il change quand les
+examens du dossier changent de rang : un examen supprimé, un examen daté avant un autre, un examen plus ancien importé.
+Il change aussi quand on corrige le numéro d'accident de la fiche initiale ou le numéro de dossier. À l'enregistrement,
+l'outil **renomme** alors les fichiers concernés : chacun est écrit sous son nouveau nom (il contient la fiche entière), puis
+l'ancien est retiré, sauf s'il a été modifié depuis la dernière lecture ou s'il porte une version plus récente (il est alors
+gardé, et relu à l'ouverture suivante). Rien n'est perdu : deux examens qui échangent leurs rangs échangent leurs noms. Seuls
+les fichiers qui contiennent **une seule fiche** sont renommés ; une sauvegarde agrégée n'est jamais touchée.
+
+**Les fichiers des versions précédentes** (`fiches/fiche_<identifiant>.json`) restent lus. Ils ne sont pas renommés d'office
+à l'ouverture : chacun l'est quand sa fiche est enregistrée, avec les autres examens du même dossier. **Réécrire tout le
+dossier** (fenêtre *Dossier de données*, qui compte les fichiers encore à l'ancien nom) les renomme tous d'un coup.
+
+**Dans `fiches/supprimees`**, le fichier d'une fiche supprimée porte son nom habituel suivi de `~` et de son identifiant
+(`187-2026_50987654-EX1~FMUV3SC519OI4.json`) : deux fiches supprimées l'une après l'autre avec le même numéro d'examen ne
+s'écrasent jamais.
+
+**À l'import**, seul le contenu compte : n'importe quel nom de fichier convient. Utilisez la **même version** d'ADP sur tous
+les postes qui partagent un dossier : une version antérieure ne lit pas les noms de la corbeille et ne renomme rien.
 
 ---
 
@@ -222,12 +275,14 @@ suivantes sur *suivi*. Vous changez d'un clic, la fiche se recompose aussitôt.
 ## Les cinq onglets de saisie
 
 La fiche est découpée en cinq onglets, dans l'ordre réel de la consultation. Les onglets en haut mènent
-directement à l'un d'eux, le bouton **Suivant** avance d'un onglet, **Précédent** recule. Chaque onglet porte
-son compte de champs remplis, et se borde de vert quand il est complet.
+directement à l'un d'eux, le bouton **Suivant** du bas de page avance d'un onglet, **Précédent** recule. Le bandeau
+patient porte aussi, à droite, un bouton **Suivant** qui nomme l'onglet à venir (Anamnèse, Examen, Neuro,
+Conclusion) et y mène sans descendre en bas de page. Chaque onglet porte son compte de champs remplis, et se borde
+de vert quand il est complet.
 
 | Onglet | Contenu |
 |---|---|
-| 1. Administratif | Identification, **identité complémentaire** (nationalité, profession, adresse, téléphone, e-mail), mode d'entrée et prise en charge initiale (arrivée, médecin, adressé par, alerte, évacuation, soins sur place), contacts |
+| 1. Administratif | Identification, mode d'entrée et prise en charge initiale (arrivée, médecin, adressé par, alerte, évacuation, soins sur place), **identité complémentaire** (nationalité, profession, adresse, téléphone, e-mail), contacts |
 | 2. Anamnèse et plongée | Le plongeur (poids, taille et IMC, antécédents, habitudes toxiques, traitement, niveaux de plongée, avec photo de l'ordonnance), plongée (profil, apnée, durées, paliers, procédure de ré-immersion), plongée précédente, facteurs favorisants et conditions environnementales, anamnèse |
 | 3. Examen clinique général | Constantes et surveillance, examen par appareil, conscience, pupilles et fonctions supérieures, ORL, signes fonctionnels, signes subjectifs, lésions cutanées |
 | 4. Examen neurologique | Réflexes, force motrice, miction, coordination et examen vestibulaire, sensibilités, grille ASIA, scores de sévérité, conclusion de l'examen clinique |
@@ -242,7 +297,9 @@ La synthèse rédigée reste visible en permanence, sous la fiche, quel que soit
 
 Sous la barre d'outils, un **bandeau reste affiché en permanence**, quel que soit l'onglet et le défilement :
 **nom, prénom, date de naissance (avec l'âge), numéro d'accident de plongée, numéro de dossier, numéro de
-l'examen, date d'entrée et dernier diagnostic retenu**. À droite, le type de consultation.
+l'examen, date d'entrée et dernier diagnostic retenu**. À droite, le type de consultation et le bouton **Suivant** (voir
+plus haut) : il porte le nom court de l'onglet suivant, ne s'affiche pas sur le dernier onglet, et propose *Examen* sur une
+consultation de suivi ou de sortie, qui n'a pas d'onglet Anamnèse.
 
 - La **date d'entrée** est celle du **premier examen du dossier** (la fiche la plus ancienne).
 - Le **dernier diagnostic retenu** est celui de la fiche la plus récente du dossier qui en porte un, fiche ouverte
@@ -939,15 +996,23 @@ barotraumatisme, accident biochimique, noyade.
 
 Un **bouton micro** accompagne chaque encart de texte (zone de texte, ligne de texte libre) : histoire de la maladie,
 signes fonctionnels, commentaires, antécédents, précisions, résultats d'examens. Les champs d'identité (nom, prénom, date
-de naissance, adresse, e-mail), les téléphones et le numéro de dossier n'en ont pas. Un clic lance la dictée, un second
-l'arrête ; le texte est posé **à la place du curseur** (à la suite du texte déjà saisi si le curseur n'a pas été placé),
-avec la majuscule seulement en début de phrase.
+de naissance, adresse, e-mail), les téléphones et le numéro de dossier n'en ont pas. Un clic lance la dictée ; **le micro
+s'éteint tout seul après une seconde sans parole** (cinq secondes si l'on n'a pas encore commencé à parler) ; un second clic
+l'arrête aussitôt, sans perdre le dernier texte reconnu. Le texte est posé **à la place du curseur** (à la suite du texte déjà
+saisi si le curseur n'a pas été placé), avec la majuscule seulement en début de phrase. Le texte en cours de reconnaissance
+s'affiche sous le champ avant d'être écrit.
 
 - Commandes vocales : **« à la ligne »** (ou « nouvelle ligne »), **« virgule »**, **« point final »**,
   **« point-virgule »**, **« deux points »**, **« point d'interrogation »**. Dans une ligne de texte (et non une zone),
   « à la ligne » donne un espace.
-- La dictée est celle du **navigateur** : elle fonctionne sur **Chrome, Edge et Safari**, en français. Le navigateur la
-  relance seul après un silence.
+- La dictée est celle du **navigateur** : elle fonctionne sur **Chrome, Edge et Safari**, en français. Elle ne repart pas
+  seule : une pause de plus d'une seconde l'arrête, un nouveau clic la relance. Changer d'onglet, de champ ou de fiche éteint
+  le micro. Si vous corrigez le texte déjà dicté pendant la dictée, elle s'arrête plutôt que de l'écraser ; ajouter du texte
+  avant ou après ne la gêne pas.
+- **Chrome rend parfois chaque résultat avec tout le texte déjà dit** (« antécédent », « antécédent numéro », « antécédent
+  numéro 1 »). Avant la 8.1.1, ces morceaux étaient ajoutés les uns aux autres : « antécédent numéro un » s'écrivait
+  « Antécédent antécédent numéro antécédent numéro 1 ». Le texte est maintenant recomposé à chaque résultat à partir de la liste
+  complète : il ne s'écrit qu'une fois.
 - **Firefox n'a pas cette fonction.** Le bouton le dit et place le curseur dans le champ ; dictez alors avec la dictée de
   Windows : **touche Windows + H** (sur Mac, menu Édition, « Démarrer la dictée » ; sur téléphone, le micro du clavier).
 - **Confidentialité.** Chrome et Edge **envoient l'audio à un service distant** (Google, Microsoft) pour le transcrire :
@@ -1306,7 +1371,7 @@ d = pd.read_csv("donnees_neuro.csv", sep=";", encoding="utf-8-sig")
 
 - Séparateur par défaut : point-virgule. Modifiable dans **Exporter** (virgule pour R et Python).
 - **Cellule vide = valeur manquante (NA).** Aucune valeur par défaut n'est inventée.
-- `dictionnaire_variables.csv` donne le libellé et le codage des 887 colonnes.
+- `dictionnaire_variables.csv` donne le libellé et le codage des 902 colonnes.
 
 ### Codages principaux
 
@@ -1378,6 +1443,94 @@ d = pd.read_csv("donnees_neuro.csv", sep=";", encoding="utf-8-sig")
 
 Pour les analyses courantes, les colonnes de synthèse suffisent. Les colonnes de détail servent
 aux analyses topographiques fines.
+
+---
+
+## Changements de la version 8.1.1
+
+Aucune colonne ne s'ajoute au CSV (902) et aucune fiche n'est modifiée : le fichier de données, son dictionnaire et le papier
+sont identiques à ceux de la 8.1.0, et les fiches de la 8.1.0 s'ouvrent telles quelles. `index.html` passe de 660 Ko à 670 Ko.
+Quatre retouches, toutes à l'écran.
+
+### Saisie
+
+- **Onglet Administratif** : l'encart « Identité complémentaire » s'affiche maintenant **après** « Mode d'entrée et prise en
+  charge initiale » (il le précédait). L'ordre est : identification, mode d'entrée et prise en charge initiale, identité
+  complémentaire, contacts. Seul l'affichage change : l'ordre des colonnes du fichier de données et celui du papier ne bougent pas.
+- **Bandeau patient** : un bouton **Suivant**, à droite, nomme l'onglet suivant (Anamnèse, Examen, Neuro, Conclusion) et y mène
+  d'un clic. Il disparaît sur le dernier onglet. Le bandeau se range désormais en deux zones : les champs à gauche, le type de
+  consultation et le bouton à droite (sur téléphone, la disposition d'avant est conservée, le bouton clôt la dernière ligne).
+
+### Dictée vocale
+
+- **Chrome** : « antécédent numéro un » s'écrivait « Antécédent antécédent numéro antécédent numéro 1 ». Chrome rend parfois
+  chaque résultat avec tout le texte déjà dit (« antécédent », « antécédent numéro », « antécédent numéro 1 ») ; ADP les ajoutait
+  bout à bout. Le texte est maintenant recomposé à chaque résultat, à partir de la liste complète : « Antécédent numéro 1 », une
+  seule fois, même si le même résultat arrive deux fois.
+- **Le micro s'éteint tout seul** : une seconde après la dernière parole (cinq secondes si personne n'a encore parlé). Le
+  dernier texte reconnu est posé avant l'arrêt. Le micro ne repart plus seul : un nouveau clic relance la dictée. Un second clic
+  pendant la dictée l'arrête aussitôt ; le dernier texte reconnu est posé (il était perdu auparavant). Changer d'onglet, de
+  champ ou de fiche éteint le micro.
+
+### À valider de votre côté
+
+- **Le délai d'une seconde.** Une pause de plus d'une seconde en pleine phrase arrête la dictée : il faut recliquer. Si c'est
+  trop court, dites-le-moi : c'est un réglage (`DICT_T` dans `index.html`), qui se change en une ligne. Avant la première parole, j'ai
+  laissé cinq secondes : à une seconde, le micro se serait éteint avant que l'on ait eu le temps de commencer à parler.
+- **Ce qui a été essayé pour la dictée.** Un faux navigateur qui rend les résultats comme Chrome (provisoire, définitif,
+  cumulatif, arrêt qui rend un dernier texte) : le défaut signalé est reproduit sur la 8.1.0 et corrigé sur la 8.1.1. Rien n'a été
+  essayé avec un vrai micro ni avec votre Chrome. Si la duplication persistait, dites-moi sur quel appareil (ordinateur, Android,
+  iPhone) et avec quelle version de Chrome.
+- **Le bouton Suivant du bandeau** porte le nom court de l'onglet, sans bouton « Précédent » : dites-moi si vous le voulez aussi.
+  Sur une consultation de suivi ou de sortie, l'onglet Anamnèse n'existant pas, il propose Examen.
+- **Le papier** garde son ordre (l'identité complémentaire s'imprime avec « Le plongeur ») : seul l'ordre à l'écran a été inversé.
+
+---
+
+## Changements de la version 8.1.0
+
+Aucune colonne ne s'ajoute au CSV (902) et aucune fiche n'est modifiée : les fiches de la 8.0.0 s'ouvrent telles quelles.
+Le seul changement est **le nom des fichiers JSON des fiches**. `index.html` passe de 650 Ko à 660 Ko.
+
+### Le nom des fichiers JSON
+
+- Les fichiers JSON des fiches s'appellent désormais **`xxx-aaaa_bbbbbbbb-EXc.json`** : numéro d'accident (trois chiffres au
+  moins, `001` pour le premier de l'année), année de la prise en charge, numéro de dossier, numéro d'examen. Exemple :
+  `187-2026_50987654-EX1.json`. Auparavant : `fiche_<identifiant>.json`. Le nouveau nom s'applique au **dossier de données**
+  (sous-dossier `fiches`), à **Exporter tout en JSON** (dossier choisi ou archive ZIP) et au **téléchargement du JSON à chaque
+  enregistrement**. Règles complètes : *Le nom des fichiers JSON*.
+- **Renommage dans le dossier de données** : quand le rang d'un examen, le numéro d'accident ou le numéro de dossier change, les
+  fichiers concernés sont renommés à l'enregistrement, sans rien perdre. Deux fiches ne partagent jamais un fichier : si le
+  nom est déjà pris, la fiche prend le même nom suivi de son identifiant.
+- **Anciens fichiers** `fiche_<identifiant>.json` : toujours lus, renommés quand leur fiche est enregistrée, ou tous d'un
+  coup par **Réécrire tout le dossier** ; la fenêtre *Dossier de données* indique combien en restent.
+- **Corbeille** : `fiches/supprimees` reçoit le nom habituel suivi de `~` et de l'identifiant de la fiche.
+- **Fenêtre « Exporter tout en JSON »** : elle explique le nom et signale les fiches dont le numéro d'accident manque (leur nom
+  commence par `000`).
+- **Lecture du dossier de données** : tous les `.json` du sous-dossier `fiches`, comme avant ; à la racine, les fichiers au
+  nouveau nom (une exportation déposée là, par exemple) sont lus comme les `fiche_*.json`.
+- **`.gitignore`** : il bloque aussi ces noms de fichiers (et `fiche_*.json`, les sauvegardes et les archives ZIP), pour qu'une
+  fiche exportée ne parte pas par erreur sur GitHub.
+- La mention « 887 colonnes » de cette notice, restée de la 7.4.0, est corrigée : le CSV compte **902** colonnes.
+
+### À valider de votre côté
+
+- **L'année.** Je l'ai prise sur le **premier examen du dossier** (la date d'« Entrée » du bandeau), pas sur l'accident ni sur
+  chaque examen : un dossier ouvert le 31 décembre et suivi en janvier garde la même année sur tous ses fichiers. Dites-moi
+  si « année de prise en charge » désigne autre chose (année de l'accident, de l'arrivée).
+- **Le numéro d'accident.** Je le lis dans « Accident de plongée n° » de la **fiche initiale**, et tous les examens du dossier le
+  reprennent. Seuls les chiffres sont retenus, sur trois au moins ; sans numéro, le nom commence par `000`.
+- **Le numéro d'examen.** C'est « Examen n° » du bandeau, le rang dans le **dossier**. Si un même numéro de dossier servait à
+  plusieurs accidents d'un même patient, ses examens se suivraient (`EX1`, `EX2`, `EX3`…) sous le numéro d'accident et l'année du
+  premier : dites-le-moi, le rang devrait alors se compter par accident.
+- **La confidentialité.** Avant, le nom d'un fichier ne portait aucune donnée du patient ; maintenant il porte le **numéro de
+  dossier** et le numéro d'accident. Toujours ni nom, ni prénom, ni date de naissance. À peser si des fichiers circulent hors
+  du service ; avec la pseudonymisation, c'est le pseudonyme `P-…` qui figure dans le nom.
+- **Les anciens fichiers** ne sont pas renommés d'office à l'ouverture, pour ne pas réécrire d'un coup tout un dossier
+  (surtout s'il est synchronisé en ligne) : dites-moi si vous préférez une migration automatique.
+- **Ce qui n'a pas été essayé** : l'écriture dans un vrai dossier sous Chrome ou Edge (les essais ont utilisé le système de
+  fichiers privé d'Edge, avec les mêmes appels) ; sous Firefox, qui n'écrit pas dans un dossier, ne sont concernés que le ZIP et
+  le téléchargement à chaque enregistrement.
 
 ---
 
@@ -1735,6 +1888,11 @@ du script de `index.html`.
 
 ## Historique
 
+- **8.1.1** : identité complémentaire affichée après le mode d'entrée, bouton « onglet suivant » dans le bandeau patient,
+  dictée vocale corrigée sous Chrome (texte écrit une seule fois), micro éteint seul après une seconde sans parole.
+- **8.1.0** : fichiers JSON des fiches nommés `xxx-aaaa_bbbbbbbb-EXc.json` (numéro d'accident, année de prise en charge,
+  numéro de dossier, numéro d'examen), renommés dans le dossier de données quand le rang d'un examen change ; corbeille et
+  anciens fichiers `fiche_<identifiant>.json` pris en charge.
 - **8.0.0** : identité complémentaire dans l'onglet Administratif, SAU HNIA SA, remontée progressive proposée d'office
   avec sa durée à Pmax, apnée, conditions environnementales cotées, OHB15 à 95 min, dictée vocale, case « ne pas
   mentionner les scores », bandeau enrichi (examen, entrée, dernier diagnostic), recompressions comptées par type dans
@@ -1778,7 +1936,9 @@ de retrouver un sujet par son nom. Ils sont à traiter
 comme des données de santé identifiantes, quels que soient les réglages de l'export CSV. Choisissez
 un dossier protégé (disque chiffré, accès restreint). Si ce dossier est synchronisé avec un service
 en ligne, les fiches quittent le poste : vérifiez que ce service est compatible avec l'hébergement de
-données de santé qui vous est imposé. Le nom de chaque fichier ne porte, lui, aucune donnée du patient.
+données de santé qui vous est imposé. Le nom de chaque fichier ne porte ni nom, ni prénom, ni date de naissance, mais
+le **numéro de dossier** et le numéro d'accident (`187-2026_50987654-EX1.json`) : il suffit à rattacher un fichier à un
+dossier. Avec la pseudonymisation de l'identifiant scanné, c'est le pseudonyme `P-…` qui y figure.
 
 **La ligne pour le fichier Excel maître** reprend, par défaut, le **nom et le prénom** (colonne A de votre fichier) : c'est
 un traitement de données de santé identifiantes, comme le fichier maître lui-même. Elle est copiée dans le presse-papiers ou

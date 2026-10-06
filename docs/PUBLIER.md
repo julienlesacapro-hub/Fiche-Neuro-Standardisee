@@ -261,7 +261,7 @@ Si rien ne vient : menu **Installation hors ligne** → **Vider le cache et rech
 
 GitHub Pages rend ce dépôt **public**. N'y versionnez jamais :
 
-- une fiche remplie, en PDF ou en JSON ;
+- une fiche remplie, en PDF ou en JSON (`187-2026_50987654-EX1.json`, `fiche_….json`, sauvegarde JSON, archive ZIP) ;
 - `donnees_neuro.csv` ou tout export de données ;
 - le sel de pseudonymisation ;
 - une photo ou une vidéo de patient.

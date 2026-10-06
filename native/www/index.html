@@ -49,8 +49,10 @@ button,input,select,textarea{font-family:inherit;font-size:13px;color:inherit}
 .dot{width:8px;height:8px;border-radius:50%;background:#c0392b;display:inline-block}
 .dot.on{background:#27ae60}
 /* bandeau patient : nom, prénom, naissance, accident, dossier, sous la barre d'outils, en permanence */
-#patbar{display:flex;flex-wrap:wrap;align-items:flex-end;gap:2px 22px;background:#16396b;color:#fff;cursor:pointer;
+#patbar{display:flex;flex-wrap:nowrap;align-items:center;gap:2px 16px;background:#16396b;color:#fff;cursor:pointer;
   padding:4px 14px 5px;border-top:1px solid #2a4f86;box-shadow:0 1px 6px rgba(0,0,0,.25);min-height:34px}
+#patbar .pitems{flex:1 1 0;min-width:0;display:flex;flex-wrap:wrap;align-items:flex-end;gap:2px 22px}
+#patbar .pright{flex:0 0 auto;display:flex;align-items:center;gap:12px}
 #patbar .pi{display:flex;flex-direction:column;line-height:1.15;min-width:0}
 #patbar .pi small{font-size:9.5px;letter-spacing:.07em;text-transform:uppercase;color:#a9c4e6}
 #patbar .pi b{font-size:13.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:36vw}
@@ -72,7 +74,13 @@ button,input,select,textarea{font-family:inherit;font-size:13px;color:inherit}
 #genov .grow{flex:1}
 #genframe{flex:1;border:0;width:100%;background:#fff}
 body.genopen{overflow:hidden}
-#patbar .pt{margin-left:auto;align-self:center;font-size:11px;color:#cfe0f5;text-align:right}
+#patbar .pt{font-size:11px;color:#cfe0f5;text-align:right;white-space:nowrap}
+/* bouton « onglet suivant » : à droite du bandeau, le nom court de l'onglet qui vient après celui-ci */
+#patbar .pn{display:flex;flex-direction:column;align-items:flex-start;line-height:1.15;background:#1b6fd0;color:#fff;
+  border:1px solid #3b8ae8;border-radius:6px;padding:3px 11px 4px;cursor:pointer}
+#patbar .pn:hover{background:#2a80e4}
+#patbar .pn small{font-size:9.5px;letter-spacing:.07em;text-transform:uppercase;color:#d7e7fb}
+#patbar .pn b{font-size:13.5px;font-weight:700;white-space:nowrap}
 #patbar .pbr{display:none}
 #folderbanner{display:none}
 #folderbanner.on{display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:var(--warn-l);
@@ -540,6 +548,9 @@ svg.echo rect.z:hover{stroke-width:2.6;filter:brightness(.96)}
 .scobox.ab{border-left-color:#b3261e;background:#fdf2f1}
 .scobox i{color:var(--ink2)}
 
+@media screen and (max-width:980px){
+  #patbar .pright{flex-direction:column;align-items:flex-end;gap:3px}
+}
 /* ---------- téléphone ---------- */
 @media screen and (max-width:560px){
   body{font-size:14px}
@@ -552,11 +563,14 @@ svg.echo rect.z:hover{stroke-width:2.6;filter:brightness(.96)}
   .tb{padding:9px 10px;font-size:13px}
   /* les onglets tiennent sur deux colonnes sur un écran étroit */
   #pagebar{grid-template-columns:1fr 1fr;gap:5px}
-  #patbar{gap:1px 12px;padding:3px 8px 4px;min-height:30px}
+  #patbar{flex-wrap:wrap;align-items:flex-end;gap:1px 12px;padding:3px 8px 4px;min-height:30px}
+  #patbar .pitems,#patbar .pright{display:contents}
   #patbar .pi small{font-size:8.5px}
   #patbar .pi b{font-size:12.5px;max-width:44vw}
   #patbar .pi.dg b{max-width:66vw}
   #patbar .pt{display:none}
+  #patbar .pn{margin-left:auto;align-self:center;padding:3px 9px 4px}
+  #patbar .pn b{font-size:12.5px}
   #patbar .pbr{display:block;flex-basis:100%;height:0}      /* nom et prénom sur une ligne, le reste sur la suivante */
   .wtab small{display:none}
   .wtab{padding:7px 32px 7px 8px}
@@ -682,7 +696,7 @@ svg.echo rect.z:hover{stroke-width:2.6;filter:brightness(.96)}
 <body>
 <div id="hdr">
 <div id="topbar">
-  <span class="ttl" title="Accident de plongée — version 8.0.0">ADP <small style="font-weight:400;opacity:.65">8.0.0</small></span>
+  <span class="ttl" title="Accident de plongée — version 8.1.1">ADP <small style="font-weight:400;opacity:.65">8.1.1</small></span>
   <button class="tb nophone" onclick="toggleSide()" title="Afficher / masquer la liste des fiches">&#9776;</button>
   <span class="sep"></span>
   <button class="tb pri" onclick="newFiche()">+<span class="lbl2"> Nouvelle</span> fiche</button>
@@ -1391,6 +1405,8 @@ const RFLAGS = [{k:'poly', l:'polycinétique'},{k:'etendu', l:'étendu'}];
    dep: [clé, [valeurs qui affichent le champ], …]   (condition OU)
    flags: qualités binaires complémentaires          pii: donnée identifiante
    custom: bloc rendu par du code dédié (schémas corporels)
+   after: id de la section après laquelle celle-ci s'affiche, sur la même page (l'ordre d'affichage seulement :
+          l'ordre des colonnes du fichier de données, lui, ne change pas)
    ===================================================================== */
 const SPEC = [
 {id:'ident', t:'Identification', cols:2, page:1, tail:()=>identBox(), f:[
@@ -1411,9 +1427,10 @@ const SPEC = [
   {k:'num_ex',    l:"N° d'examen pour ce sujet", t:'calc'}
 ]},
 
-/* Identité complémentaire : sur l'onglet Administratif, comme les contacts. Le poids, la taille et l'IMC restent
-   avec le plongeur (onglet Anamnèse et plongée) : ce sont des données cliniques. */
-{id:'ident2', t:'Identité complémentaire', cols:2, page:1, only:[1], f:[
+/* Identité complémentaire : sur l'onglet Administratif, comme les contacts, et affichée après le mode d'entrée
+   (after). Le poids, la taille et l'IMC restent avec le plongeur (onglet Anamnèse et plongée) : ce sont des
+   données cliniques. */
+{id:'ident2', t:'Identité complémentaire', cols:2, page:1, only:[1], after:'entree', f:[
   {k:'nationalite', l:'Nationalité', t:'choice', o:NATIO, full:1},
   {k:'nationalite_autre', l:'Nationalité — à préciser', t:'txt', sub:1, dep:['nationalite',[9]]},
   {k:'profession', l:'Profession', t:'txt'},
@@ -2972,17 +2989,28 @@ function fieldHTML(f){
    « deux points ». Firefox ne propose pas cette fonction : le bouton le dit et renvoie à la dictée du système
    (Windows + H sous Windows). Chrome et Edge confient l'audio à un service distant pour le transcrire :
    un avis le rappelle à la première utilisation.
+   Le micro s'éteint tout seul : une seconde sans parole après avoir parlé (cinq secondes si personne n'a encore parlé).
+   Le texte dicté est recomposé à chaque événement à partir de la liste complète des résultats du navigateur, jamais
+   ajouté morceau par morceau : Chrome rend parfois chaque résultat avec tout le texte déjà dit (« antécédent »,
+   « antécédent numéro », « antécédent numéro 1 »), ce qui, ajouté bout à bout, écrivait trois fois le début.
    ===================================================================== */
 const dictClasse = () => window.SpeechRecognition || window.webkitSpeechRecognition;
 const dictDispo = () => typeof dictClasse() === 'function';
 const DICT_OK = f => f.t==='area' || (f.t==='txt' && !f.pii && !f.mail && !f.list && f.k!=='dossier' && !/(^|_)tel$/.test(f.k));
-let DICT = null;        // dictée en cours : {k, rec, on, pos}
+/* délais en millisecondes (un objet pour que les essais puissent les raccourcir) :
+   silence : aucun résultat depuis ce délai, le micro s'éteint ; attente : le navigateur écoute et personne n'a encore parlé ;
+   demarrage : le navigateur n'écoute pas encore (il peut demander l'autorisation du micro) : l'attente ne court pas pendant ce temps ;
+   parole : le navigateur a entendu parler mais n'a pas encore rendu de texte ; fin : délai laissé au navigateur
+   pour rendre le dernier texte une fois le micro arrêté, avant de couper net */
+const DICT_T = {silence:1000, attente:5000, parole:3000, fin:3000, demarrage:20000};
+let DICT = null;        // dictée en cours : {k, fid, rec, on, parle, pos, ins, fin, prov, tmr, tmr2}
+const dictSec = ms => { const s = Math.round(ms / 100) / 10; return String(s).replace('.', ',')+' seconde'+(s > 1 ? 's' : ''); };
 const DICT_AVIS = 'Dictée vocale\n\nLe navigateur transcrit la voix avec un service de reconnaissance en ligne (Google pour Chrome, Microsoft pour Edge) : '+
   'l’audio quitte cet ordinateur. Ne dictez aucune donnée identifiante (nom, prénom, date de naissance, adresse, téléphone).\n\n'+
   'Cet avis ne s’affiche qu’une fois. Continuer ?';
 function micHTML(f){
   if(!DICT_OK(f)) return '';
-  const on = !!DICT && DICT.k===f.k;
+  const on = !!DICT && DICT.on && DICT.k===f.k;
   return '<button type="button" class="mic'+(on?' on':'')+'" id="mic_'+f.k+'" aria-label="Dicter" title="'+
     (dictDispo() ? (on ? 'Arrêter la dictée' : 'Dicter (microphone)') : 'Dicter : le navigateur ne le propose pas, voir l’aide')+'" onclick="dictate(\''+f.k+'\')">&#127908;</button>';
 }
@@ -3004,7 +3032,7 @@ function dictFormat(txt, avant, multi){
   return parts.map((x, i)=> !x ? x : ((i > 0 || debut) ? TXT.cap(x) : TXT.lc1(x))).join('\n');
 }
 function dictRefresh(){
-  document.querySelectorAll('.mic').forEach(b=>b.classList.toggle('on', !!DICT && b.id==='mic_'+DICT.k));
+  document.querySelectorAll('.mic').forEach(b=>b.classList.toggle('on', !!DICT && DICT.on && b.id==='mic_'+DICT.k));
 }
 /* texte en cours de reconnaissance, affiché sous le champ tant qu'il n'est pas validé */
 function dictInterim(k, txt){
@@ -3016,24 +3044,91 @@ function dictInterim(k, txt){
   if(b.parentNode !== zone) zone.appendChild(b);
   b.textContent = '… '+txt;
 }
-/* pose le texte dicté à la position suivie (celle du curseur au départ, puis la fin du dernier texte posé) */
-function dictInsert(k, txt){
-  const el = document.getElementById('i_'+k), f = FIELDS[k];
-  if(!el || !f){ dictStop(); toast('Dictée arrêtée : le champ n’est plus affiché'); return; }
-  const v = el.value, pos = Math.max(0, Math.min(DICT && DICT.pos!=null ? DICT.pos : v.length, v.length));
-  const avant = v.slice(0, pos), apres = v.slice(pos), t = dictFormat(txt, avant, f.t==='area');
-  if(!t) return;
-  const sa = (avant && !/\s$/.test(avant) && !/^[\n,.;:?!]/.test(t)) ? ' ' : '';
-  const sp = (apres && !/^[\s,.;:?!]/.test(apres) && !/\s$/.test(t)) ? ' ' : '';
-  const nv = avant + sa + t + sp + apres, np = (avant + sa + t).length;
-  el.value = nv;
-  if(DICT) DICT.pos = np;
-  try{ el.setSelectionRange(np, np); }catch(e){}
-  setRaw(k, nv);
+/* Un résultat qui reprend en tête le texte du précédent le prolonge ou le corrige : il le remplace. Les mots du précédent
+   doivent tous se retrouver en tête ; avec au moins deux mots, le dernier peut n'être qu'un début de mot ou une variante
+   (« numéro » → « numéros »). Deux phrases distinctes ne se confondent pas : « oui » puis « non merci », « un » puis
+   « une douleur » restent deux phrases. */
+function dictCum(prev, t){
+  const a = norm(prev).split(' ').filter(Boolean), b = norm(t).split(' ').filter(Boolean);
+  if(!a.length || b.length < a.length) return false;
+  for(let i = 0; i < a.length; i++){
+    if(a[i] === b[i]) continue;
+    if(i > 0 && i === a.length-1 && (b[i].indexOf(a[i]) === 0 || a[i].indexOf(b[i]) === 0)) continue;
+    return false;
+  }
+  return true;
 }
+/* les résultats de la session, du premier au dernier : le texte définitif (une phrase par élément) et ce qui reste provisoire */
+function dictSegments(results){
+  const fin = [], prov = [];
+  for(let i = 0; results && i < results.length; i++){
+    const r = results[i], t = String((r && r[0] && r[0].transcript) || '').trim();
+    if(!t) continue;
+    const L = r.isFinal ? fin : prov;
+    if(L.length && dictCum(L[L.length-1], t)) L[L.length-1] = t; else L.push(t);
+  }
+  let p = prov.join(' ');
+  const last = fin.length ? fin[fin.length-1] : '';
+  if(last && p && dictCum(last, p)) p = p.split(/\s+/).slice(last.split(/\s+/).length).join(' ');     // seule la suite est provisoire
+  return {fin:fin, prov:p};
+}
+/* Pose le texte définitif de la session, à la place de celui qu'elle avait déjà posé (même endroit : celui du curseur au
+   départ). Le champ peut avoir changé entre-temps : du texte ajouté avant déplace seulement l'endroit ; du texte changé
+   au milieu arrête la dictée plutôt que d'écraser quoi que ce soit. */
+function dictPlace(st, segs){
+  if(st.fid !== REC.id){ dictAbort(); return; }                        // une autre fiche est ouverte : rien n'y est écrit
+  const el = document.getElementById('i_'+st.k), f = FIELDS[st.k];
+  if(!el || !f){ dictAbort(); toast('Dictée arrêtée : le champ n’est plus affiché'); return; }
+  const v = el.value;
+  if(st.ins && v.substr(st.pos, st.ins.length) !== st.ins){
+    const i = v.indexOf(st.ins);
+    if(i < 0){ dictAbort(); toast('Dictée arrêtée : le texte a été modifié pendant la dictée'); return; }
+    st.pos = i;
+  }
+  const pos = Math.max(0, Math.min(st.pos, v.length)), avant = v.slice(0, pos), apres = v.slice(pos + st.ins.length);
+  let t = '';
+  segs.forEach(g=>{
+    const cur = avant + t, x = dictFormat(g, cur, f.t==='area'); if(!x) return;
+    t += ((cur && !/\s$/.test(cur) && !/^[\n,.;:?!]/.test(x)) ? ' ' : '') + x;
+  });
+  if(t === st.ins) return;
+  const sp = (t && apres && !/^[\s,.;:?!]/.test(apres) && !/\s$/.test(t)) ? ' ' : '';
+  const nv = avant + t + sp + apres, np = (avant + t).length;
+  el.value = nv; st.pos = pos; st.ins = t;
+  try{ el.setSelectionRange(np, np); }catch(e){}
+  setRaw(st.k, nv);
+}
+/* le micro s'éteint si rien n'arrive dans ce délai ; chaque résultat le relance */
+function dictSilence(st, ms){
+  clearTimeout(st.tmr);
+  st.tmr = setTimeout(()=>{
+    if(DICT !== st || !st.on) return;
+    if(!st.parle) toast('Aucune parole détectée : le micro est éteint');
+    dictStop();
+  }, ms);
+}
+/* arrêt demandé (un clic, ou le silence) : le navigateur rend encore le dernier texte, posé avant la fin */
 function dictStop(){
-  const d = DICT; DICT = null;
-  if(d){ d.on = false; try{ d.rec.stop(); }catch(e){} }
+  const st = DICT; if(!st || !st.on) return;
+  st.on = false; clearTimeout(st.tmr);
+  try{ st.rec.stop(); }
+  catch(e){ dictAbort(); return; }
+  st.tmr2 = setTimeout(()=>{ if(DICT === st) dictAbort(); }, DICT_T.fin);      // le navigateur ne rend pas la main : on coupe
+  dictRefresh();
+}
+/* arrêt net, sans attendre le dernier texte (autre champ, autre onglet, autre fiche) */
+function dictAbort(){
+  const st = DICT; DICT = null;
+  if(st){
+    st.on = false; clearTimeout(st.tmr); clearTimeout(st.tmr2);
+    try{ st.rec.abort(); }catch(e){ try{ st.rec.stop(); }catch(_){} }
+  }
+  dictInterim(null); dictRefresh();
+}
+/* fin normale : le navigateur a rendu la main */
+function dictFin(st){
+  if(DICT !== st) return;
+  DICT = null; clearTimeout(st.tmr); clearTimeout(st.tmr2);
   dictInterim(null); dictRefresh();
 }
 /* conseil quand le navigateur n'a pas de reconnaissance vocale : la dictée du système */
@@ -3046,8 +3141,8 @@ function dictConseil(){
 }
 function dictate(k){
   const f = FIELDS[k]; if(!f) return;
-  if(DICT && DICT.k===k){ dictStop(); return; }
-  if(DICT) dictStop();
+  if(DICT && DICT.k===k){ if(DICT.on) dictStop(); else dictAbort(); return; }    // un clic arrête ; un autre, pendant l'attente du dernier texte, coupe net
+  if(DICT) dictAbort();
   const Classe = dictClasse(), el = document.getElementById('i_'+k);
   if(typeof Classe !== 'function'){
     if(el){ try{ el.focus(); }catch(e){} }
@@ -3063,31 +3158,41 @@ function dictate(k){
   rec.lang = 'fr-FR'; rec.continuous = true; rec.interimResults = true; rec.maxAlternatives = 1;
   /* à la place du curseur ; un curseur resté tout au début, jamais posé par l'utilisateur, vaut « à la suite du texte » */
   const long = REC.d[k] ? String(REC.d[k]).length : 0;
-  const st = {k:k, rec:rec, on:true, erreur:false, pos:(el && el.selectionEnd > 0) ? el.selectionEnd : long};
+  const st = {k:k, fid:REC.id, rec:rec, on:true, parle:false, pos:(el && el.selectionEnd > 0) ? el.selectionEnd : long,
+              ins:'', fin:[], prov:'', tmr:0, tmr2:0};
   DICT = st;
+  /* le navigateur écoute : c'est à ce moment que l'attente de la première parole commence (pas pendant la demande d'autorisation du micro) */
+  rec.onstart = rec.onaudiostart = () => { if(DICT === st && st.on && !st.parle) dictSilence(st, DICT_T.attente); };
   rec.onresult = e => {
     if(DICT !== st) return;
-    let provisoire = '';
-    for(let i = e.resultIndex; i < e.results.length; i++){
-      const r = e.results[i], t = r[0] ? r[0].transcript : '';
-      if(r.isFinal) dictInsert(k, t); else provisoire += t;
-    }
-    if(DICT === st) dictInterim(k, provisoire);
+    st.parle = true;
+    const g = dictSegments(e && e.results);
+    st.fin = g.fin; st.prov = g.prov;
+    dictPlace(st, st.fin);
+    if(DICT !== st) return;
+    dictInterim(k, st.prov);
+    if(st.on) dictSilence(st, DICT_T.silence);                          // quelqu'un parle encore : le délai repart
   };
+  rec.onspeechstart = () => { if(DICT === st && st.on){ st.parle = true; dictSilence(st, DICT_T.parole); } };
+  rec.onspeechend = () => { if(DICT === st && st.on) dictSilence(st, DICT_T.silence); };
   rec.onerror = e => {
     const m = {'not-allowed':'Microphone refusé : autorisez-le dans le navigateur', 'service-not-allowed':'Reconnaissance vocale non autorisée par le navigateur',
                'audio-capture':'Aucun microphone détecté', 'network':'Pas de connexion : la dictée du navigateur a besoin d’Internet',
-               'language-not-supported':'Le français n’est pas pris en charge par la dictée de ce navigateur'}[e && e.error];
-    if(m){ st.erreur = true; toast(m); }
+               'language-not-supported':'Le français n’est pas pris en charge par la dictée de ce navigateur',
+               'no-speech':'Aucune parole détectée : le micro est éteint'}[e && e.error];
+    if(m) toast(m);
   };
-  /* le navigateur coupe la reconnaissance après un silence : on la relance tant que la dictée n'est pas arrêtée */
+  /* la reconnaissance est finie (arrêt demandé, silence, ou fin décidée par le navigateur) : ce qui restait provisoire est posé,
+     le micro ne repart pas tout seul */
   rec.onend = () => {
-    if(DICT === st && st.on && !st.erreur){ try{ rec.start(); return; }catch(e){} }
-    if(DICT === st) dictStop();
+    if(DICT !== st) return;
+    if(st.prov) dictPlace(st, st.fin.concat([st.prov]));
+    dictFin(st);
   };
   try{ rec.start(); }catch(e){ DICT = null; toast('Dictée impossible : '+errTxt(e)); return; }
+  dictSilence(st, DICT_T.demarrage);                                     // l'attente courte démarre quand le navigateur écoute (onstart)
   dictRefresh();
-  toast('Dictée en cours : parlez, puis cliquez de nouveau sur le micro pour l’arrêter');
+  toast('Dictée en cours : parlez. Le micro s’éteint tout seul après '+dictSec(DICT_T.silence)+' sans parole.');
 }
 
 /* =====================================================================
@@ -3334,6 +3439,7 @@ function renderFormInner(){
 
   $('#form').innerHTML = h;
   buildNav(); renderSynth(); renderCRH(); updateGlobalFill();
+  updatePatBar();                                        // le bouton « onglet suivant » du bandeau suit l'onglet affiché
 }
 
 /* =====================================================================
@@ -3345,13 +3451,14 @@ function renderFormInner(){
    disparaissent des fiches de suivi : l'onglet « Anamnèse et plongée », qui
    n'a plus rien à montrer, disparaît alors lui aussi.
    ===================================================================== */
+/* c : nom court de l'onglet, écrit sur le bouton « suivant » du bandeau patient */
 const PAGES = [
- {n:1, l:'Administratif',          s:'identification, identité, entrée, contacts',
+ {n:1, l:'Administratif', c:'Administratif', s:'identification, identité, entrée, contacts',
   s2:'identification de la consultation'},
- {n:2, l:'Anamnèse et plongée',    s:'plongeur, plongée, facteurs, anamnèse'},
- {n:3, l:'Examen clinique général', s:'constantes, conscience, ORL, cutané'},
- {n:4, l:'Examen neurologique',    s:'réflexes, force, sensibilités, scores'},
- {n:5, l:'Conclusion et évolution', s:'recompression, examens, diagnostic',
+ {n:2, l:'Anamnèse et plongée', c:'Anamnèse', s:'plongeur, plongée, facteurs, anamnèse'},
+ {n:3, l:'Examen clinique général', c:'Examen', s:'constantes, conscience, ORL, cutané'},
+ {n:4, l:'Examen neurologique', c:'Neuro', s:'réflexes, force, sensibilités, scores'},
+ {n:5, l:'Conclusion et évolution', c:'Conclusion', s:'recompression, examens, diagnostic',
   s2:'examens, évolution, diagnostic, sortie'}
 ];
 let PAGE = 1;
@@ -3362,7 +3469,17 @@ function ftype(){ return REC.d.fiche_type || 1; }
 /* une section s'affiche si elle concerne ce type de consultation */
 function secForType(s){ return (!s.only || s.only.indexOf(ftype()) >= 0) && (!s.when || s.when()); }
 function secOnPage(s, n){ return (s.page||1) === n && secForType(s); }
-function pageSections(n){ return SPEC.filter(s=>secOnPage(s,n)); }
+function pageSections(n){
+  const L = SPEC.filter(s=>secOnPage(s,n));
+  /* after : la section s'affiche juste après celle qu'elle désigne (si celle-ci est sur la même page) */
+  L.slice().forEach(s=>{
+    if(!s.after) return;
+    const j = L.findIndex(x=>x.id===s.after); if(j < 0) return;
+    L.splice(L.indexOf(s), 1);
+    L.splice(L.findIndex(x=>x.id===s.after)+1, 0, s);
+  });
+  return L;
+}
 
 /* les onglets qui ont au moins une section pour ce type de consultation */
 function visPages(){ return PAGES.filter(pg=>pageSections(pg.n).length>0); }
@@ -3370,6 +3487,7 @@ function goPage(n){
   const v = visPages(); if(!v.length) return;
   const t = v.find(p=>p.n>=n) || v[v.length-1];
   if(t.n === PAGE) return;
+  if(DICT) dictAbort();                                  // le champ dicté quitte l'écran : le micro s'éteint
   PAGE = t.n; renderForm(); window.scrollTo(0,0);
 }
 function pageFill(n){
@@ -3378,6 +3496,7 @@ function pageFill(n){
   return {done:done, tot:tot};
 }
 function pageLab(pg){ return (ftype()!==1 && pg.l2) ? pg.l2 : pg.l; }
+const pageShort = pg => pg.c || pageLab(pg);
 function pageSub(pg){ return (ftype()!==1 && pg.s2) ? pg.s2 : pg.s; }
 function pageBar(){
   const v = visPages();
@@ -7868,8 +7987,10 @@ function sortedDB(){
 /* =====================================================================
    DOSSIER DE DONNÉES SUR LE DISQUE (File System Access API)
    Un dossier, choisi une seule fois, reçoit à chaque enregistrement :
-     fiches/fiche_<id>.json      la fiche entière, un fichier par fiche ; le nom du fichier ne porte
-                                 aucune donnée du patient
+     fiches/xxx-aaaa_bbbbbbbb-EXc.json
+                                 la fiche entière, un fichier par fiche : numéro d'accident, année de la prise
+                                 en charge, numéro de dossier, numéro d'examen (187-2026_50987654-EX1.json) ;
+                                 le nom ne porte ni nom, ni prénom, ni date de naissance
      donnees_neuro.csv           le fichier statistique, une ligne par fiche
      dictionnaire_variables.csv  le codage des colonnes
    À l'ouverture, l'outil relit ce dossier (et le dossier de recherche, s'il est distinct) : les fiches
@@ -7880,12 +8001,15 @@ function sortedDB(){
    autorisation à chaque session ; un clic suffit (bandeau, ou premier clic dans la page), et le choix
    « autoriser à chaque visite » de Chrome et d'Edge la rend définitive.
    Une fiche supprimée sur ce poste n'est jamais effacée du disque : son fichier passe dans
-   fiches/supprimees. La suppression est mémorisée (TOMB) pour qu'une relecture ne la ressuscite pas.
+   fiches/supprimees (nom habituel suivi de ~ et de l'identifiant de la fiche). La suppression est
+   mémorisée (TOMB) pour qu'une relecture ne la ressuscite pas.
+   Le rang de l'examen fait partie du nom : quand il change (examen supprimé, examen daté avant un autre, numéro
+   d'accident corrigé), les fichiers du dossier sont renommés. Un fichier ne s'écrase jamais sur celui d'une autre fiche.
    Ce dossier suppose un navigateur qui offre l'API (Chrome, Edge sur ordinateur). Sur un autre navigateur, l'outil
    l'explique (diagnostic) et propose ce qui fonctionne : « Exporter tout en JSON » (dossier choisi, ou archive
    ZIP), téléchargement du JSON à chaque enregistrement, import d'un dossier ou d'une archive.
    ===================================================================== */
-const APP_VERSION = '8.0.0';
+const APP_VERSION = '8.1.1';
 /* hasPicker teste une fonction de l'API au moment de s'en servir : une extension ou un réglage du navigateur peut la retirer */
 const hasPicker = name => { try{ return typeof window[name] === 'function'; }catch(e){ return false; } };
 let FSA = hasPicker('showDirectoryPicker');
@@ -7906,7 +8030,46 @@ const roleKey  = role => role==='save' ? 'dir' : 'sdir';
 const errTxt   = e => (e && (e.message || e.name)) || String(e);
 const modalOpen = () => $('#mask').classList.contains('on');
 
-const ficheFile = id => 'fiche_'+String(id).replace(/[^A-Za-z0-9_-]/g,'')+'.json';
+/* ---------- nom du fichier JSON d'une fiche : xxx-aaaa_bbbbbbbb-EXc.json ----------
+   xxx       numéro d'accident, sur trois chiffres au moins (le 1er de l'année donne 001)
+   aaaa      année de la prise en charge
+   bbbbbbbb  numéro de dossier
+   c         numéro de l'examen dans le dossier
+   Exemple : 187-2026_50987654-EX1.json. Le numéro d'accident est celui de la fiche initiale du dossier, l'année celle de son
+   premier examen (la date d'entrée du bandeau) : tous les fichiers d'un dossier se rangent donc ensemble. Le numéro d'examen
+   est le rang de la fiche parmi celles du dossier, comme num_ex. Un numéro d'accident ou une date inconnus laissent 000 ou
+   0000 : le nom garde son format. Il ne porte ni nom, ni prénom, ni date de naissance. */
+const idPart = id => String(id).replace(/[^A-Za-z0-9_.-]/g, '');
+const fnAcc = v => { const m = /\d+/.exec(String(v==null ? '' : v)); return m ? m[0].replace(/^0+(?=\d)/, '').padStart(3, '0') : ''; };
+const fnDossier = v => noAcc(v).replace(/\s+/g, '').replace(/[^A-Za-z0-9_-]+/g, '-').replace(/^[-_]+|[-_]+$/g, '').slice(0, 40);
+const fnYear = d => { for(const k of ['date_ex', 'date_arr', 'date_acc']){ const m = /^(\d{4})-\d{2}-\d{2}/.exec(String(d[k]||'')); if(m) return m[1]; } return ''; };
+/* les fiches de la base regroupées par dossier, de la plus ancienne à la plus récente */
+function fnIndex(){
+  const by = {};
+  DB.forEach(f=>{ const k = f.d.dossier || ''; if(k) (by[k] = by[k] || []).push(f); });
+  Object.keys(by).forEach(k=>by[k].sort((a,b)=>stamp(a).localeCompare(stamp(b))));
+  return by;
+}
+/* les quatre éléments du nom ; by : fnIndex() déjà calculé, pour nommer beaucoup de fiches à la suite */
+function ficheParts(rec, by){
+  const key = (rec.d && rec.d.dossier) || '';
+  let fam = key ? ((by || fnIndex())[key] || []) : [];
+  if(fam.find(f=>f.id===rec.id) !== rec) fam = fam.filter(f=>f.id!==rec.id).concat([rec]).sort((a,b)=>stamp(a).localeCompare(stamp(b)));
+  const init = fam.find(f=>(f.d.fiche_type||1)===1) || fam[0];
+  let acc = fnAcc(init.d.ad_num), year = '';
+  for(let i = 0; !acc && i < fam.length; i++) acc = fnAcc(fam[i].d.ad_num);
+  for(let i = 0; !year && i < fam.length; i++) year = fnYear(fam[i].d);
+  return {acc:acc, year:year, doss:fnDossier(key), ex:fam.indexOf(rec)+1};
+}
+function ficheBase(rec, by){
+  const q = ficheParts(rec, by);
+  return (q.acc || '000')+'-'+(q.year || '0000')+'_'+(q.doss || 'sans-dossier')+'-EX'+q.ex;
+}
+const ficheFileName = (rec, by) => ficheBase(rec, by)+'.json';
+/* dans la corbeille, le nom habituel est suivi de l'identifiant : deux fiches supprimées ne portent jamais le même nom */
+const trashFile = rec => ficheBase(rec)+'~'+idPart(rec.id)+'.json';
+/* fichiers qu'une lecture de la racine du dossier de données retient : sauvegardes, fiches isolées, fiches exportées */
+const ROOT_JSON_RE = /^(fiche_|sauvegarde_neuro).*\.json$|^\d{3,}-\d{4}_.+-EX\d+.*\.json$/i;
 /* Le fichier d'une fiche est une sauvegarde à une seule fiche : la même enveloppe que la sauvegarde JSON
    complète, donc lisible par « Importer / Fusionner ». Le bloc resume n'est là que pour l'œil. */
 function ficheJSON(rec){
@@ -8033,8 +8196,10 @@ function altActionsHTML(){
     box('<label style="cursor:pointer"><input type="checkbox" onchange="setAutoDl(this.checked)"'+(SET.autoDl?' checked':'')+'> '+
       '<b>Télécharger le JSON de la fiche à chaque enregistrement</b></label><br>'+
       '<span style="color:var(--ink2)">'+(pwaNative()
-        ? 'Le fichier <code>fiche_….json</code> est enregistré dans les documents de l’application, puis la feuille de partage du système s’ouvre.'
-        : 'Le fichier <code>fiche_….json</code> part dans le dossier de téléchargement du navigateur. '+
+        ? 'Le fichier <code>xxx-aaaa_bbbbbbbb-EXc.json</code> (accident, année, dossier, examen : par exemple <code>187-2026_50987654-EX1.json</code>) '+
+          'est enregistré dans les documents de l’application, puis la feuille de partage du système s’ouvre.'
+        : 'Le fichier <code>xxx-aaaa_bbbbbbbb-EXc.json</code> (accident, année, dossier, examen : par exemple <code>187-2026_50987654-EX1.json</code>) '+
+          'part dans le dossier de téléchargement du navigateur. '+
           'Pour le fixer une fois : paramètres du navigateur, Téléchargements, Emplacement, puis désactiver « Demander où enregistrer '+
           'chaque fichier avant de le télécharger ».')+'</span>')+
     box('<b>Reprendre des fiches déjà exportées</b> : « Importer / Fusionner » lit un fichier .json, une archive .zip ou un dossier entier.'+
@@ -8176,39 +8341,113 @@ async function writeIn(dir, name, txt){
   }
   throw last;
 }
-async function writeFicheFile(rec){
-  const dir = await FD.save.h.getDirectoryHandle(DIR_FICHES, {create:true}), name = ficheFile(rec.id);
+/* Les fichiers à une seule fiche du sous-dossier fiches que la dernière lecture a vus pour cette fiche : leurs chemins.
+   Il y en a plusieurs quand le nom a changé (ancien nom fiche_<id>.json, ancien rang d'examen). */
+const ownFiles = id => Object.keys(SYNCMAP.save).filter(p=>{
+  if(p.indexOf(DIR_FICHES+'/') !== 0) return false;
+  const ids = SYNCMAP.save[p][2] || [];
+  return ids.length === 1 && ids[0][0] === id;
+});
+/* Qui tient ce nom dans fiches : personne (free), cette fiche et elle seule (same), ou autre chose (other) : une autre fiche,
+   un fichier à plusieurs fiches, un fichier illisible. Le fichier d'une autre fiche n'est jamais écrasé ni retiré. */
+async function occupant(dir, name, id){
+  let fh;
+  try{ fh = await dir.getFileHandle(name); }
+  catch(e){ const n = e && e.name; if(n==='NotFoundError') return 'free'; if(n==='TypeMismatchError') return 'other'; throw e; }
+  const f = await fh.getFile(), old = SYNCMAP.save[DIR_FICHES+'/'+name];
+  let ids;
+  if(old && old[0]===f.size && old[1]===f.lastModified) ids = (old[2] || []).map(x=>x[0]);
+  else{ try{ ids = recsFromJSON(JSON.parse(await f.text())).map(r=>r && r.id); }catch(e){ return 'other'; } }
+  return ids.length===1 && ids[0]===id ? 'same' : 'other';
+}
+/* le nom sous lequel la fiche s'écrit : son nom habituel s'il est libre ou à elle, sinon le même nom suivi de son identifiant */
+async function placeFiche(dir, rec, by){
+  const base = ficheBase(rec, by), idp = idPart(rec.id);
+  for(const nm of [base+'.json', base+'_'+idp+'.json']) if((await occupant(dir, nm, rec.id)) !== 'other') return nm;
+  return base+'_'+idp+'_'+Date.now().toString(36)+'.json';
+}
+/* Les autres fichiers de la même fiche (ancien nom, ancien rang) sont retirés une fois le nouveau écrit : il contient la fiche
+   entière. On n'y touche pas s'ils ont changé depuis la dernière lecture, ni s'ils portent une version plus récente. */
+async function dropStale(dir, rec, keepPath){
+  for(const p of ownFiles(rec.id)){
+    if(p === keepPath) continue;
+    const ent = SYNCMAP.save[p], nm = p.slice(DIR_FICHES.length+1);
+    if(((ent[2][0] || [])[1] || '') > (rec.updated || '')) continue;
+    try{
+      const f = await (await dir.getFileHandle(nm)).getFile();
+      if(f.size !== ent[0] || f.lastModified !== ent[1]) continue;
+      await dir.removeEntry(nm);
+    }catch(e){ if(!(e && e.name==='NotFoundError')) continue; }
+    delete SYNCMAP.save[p];
+  }
+}
+/* écrit la fiche sous son nom ; retourne le nom employé (name : déjà choisi par placeFiche) */
+async function writeFicheFile(rec, by, name){
+  const dir = await FD.save.h.getDirectoryHandle(DIR_FICHES, {create:true});
+  if(!name) name = await placeFiche(dir, rec, by);
+  const path = DIR_FICHES+'/'+name;
   const fh = await writeIn(dir, name, ficheJSON(rec));
   const f = await fh.getFile();
-  SYNCMAP.save[DIR_FICHES+'/'+name] = [f.size, f.lastModified, [[rec.id, rec.updated||'']]];
+  SYNCMAP.save[path] = [f.size, f.lastModified, [[rec.id, rec.updated||'']]];
+  await dropStale(dir, rec, path);
+  return name;
 }
-/* le fichier d'une fiche supprimée passe dans fiches/supprimees, avec une copie complète de la fiche */
-async function trashFicheFileLocked(rec){
-  const dir = await FD.save.h.getDirectoryHandle(DIR_FICHES, {create:true}), name = ficheFile(rec.id);
-  let exists = true;
-  try{ await dir.getFileHandle(name); }catch(e){ exists = false; }
+/* Le rang de l'examen fait partie du nom : supprimer un examen, en dater un avant un autre ou corriger le numéro d'accident
+   change le nom des autres fiches du dossier. Leurs fichiers sont renommés (écrits sous le nouveau nom, l'ancien retiré).
+   Plusieurs passages si deux fiches se disputent un nom. Retourne le nombre de fichiers écrits ; by : fnIndex() déjà calculé. */
+async function renameDossierLocked(doss, by0){
+  if(!doss || FD.save.state!=='ok' || !FD.save.h) return 0;
+  const dir = await FD.save.h.getDirectoryHandle(DIR_FICHES, {create:true});
+  let n = 0;
+  for(let pass = 0; pass < 3; pass++){
+    const by = (pass===0 && by0) || fnIndex(); let moved = 0;
+    for(const r of (by[doss] || [])){
+      const have = ownFiles(r.id);
+      if(!have.length) continue;                                      // pas encore de fichier : exportPendingLocked s'en charge
+      if(have.length===1 && have[0].toLowerCase()===(DIR_FICHES+'/'+ficheFileName(r, by)).toLowerCase()) continue;   // déjà bien nommée
+      const name = await placeFiche(dir, r, by), path = DIR_FICHES+'/'+name;
+      if(have.length===1 && have[0]===path) continue;                // nom voulu pris par une autre fiche : elle garde le sien avec identifiant
+      if(have.indexOf(path) >= 0){ await dropStale(dir, r, path); continue; }
+      await writeFicheFile(r, by, name); moved++; n++;
+    }
+    if(!moved) break;
+  }
+  return n;
+}
+/* le fichier d'une fiche supprimée passe dans fiches/supprimees, avec une copie complète de la fiche ; knownPath : le fichier
+   dans lequel la lecture du dossier vient de la trouver */
+async function trashFicheFileLocked(rec, knownPath){
+  const dir = await FD.save.h.getDirectoryHandle(DIR_FICHES, {create:true});
   const td = await dir.getDirectoryHandle(DIR_TRASH, {create:true});
-  await writeIn(td, name, ficheJSON(rec));
-  if(exists) await dir.removeEntry(name);
-  delete SYNCMAP.save[DIR_FICHES+'/'+name];
+  await writeIn(td, trashFile(rec), ficheJSON(rec));
+  const cand = new Set(ownFiles(rec.id));
+  if(knownPath) cand.add(knownPath);
+  cand.add(DIR_FICHES+'/'+ficheFileName(rec));
+  for(const p of cand){
+    const nm = p.slice(DIR_FICHES.length+1);
+    if(nm.indexOf('/') >= 0 || (await occupant(dir, nm, rec.id)) !== 'same') continue;     // jamais le fichier d'une autre fiche
+    await dir.removeEntry(nm);
+    delete SYNCMAP.save[p];
+  }
 }
-/* identifiants des fiches déjà supprimées (par un autre poste, le cas échéant) : id -> date de suppression en ms */
+/* identifiants des fiches déjà supprimées (par un autre poste, le cas échéant) : id -> date de suppression en ms ;
+   l'identifiant se lit dans le nom : fiche_<id>.json (versions antérieures) ou <nom habituel>~<id>.json */
 async function listTrashLocked(){
   const out = new Map();
   try{
     const dir = await FD.save.h.getDirectoryHandle(DIR_FICHES), td = await dir.getDirectoryHandle(DIR_TRASH);
     for await (const [name, h] of td.entries()){
-      const m = /^fiche_(.+)\.json$/.exec(name);
+      const m = /^fiche_(.+)\.json$/.exec(name) || /^[^~]+~(.+)\.json$/.exec(name);
       if(m && h.kind==='file'){ const f = await h.getFile(); out.set(m[1], f.lastModified); }
     }
   }catch(e){}
   return out;
 }
-/* les fichiers JSON à la racine (sauvegardes, fiches isolées) et tous ceux du sous-dossier fiches */
+/* les fichiers JSON à la racine (sauvegardes, fiches isolées, fiches exportées) et tous ceux du sous-dossier fiches */
 async function listJsonFiles(dir){
   const out = [];
   for await (const [name, h] of dir.entries()){
-    if(h.kind==='file' && /^(fiche_|sauvegarde_neuro).*\.json$/i.test(name)) out.push({path:name, h:h});
+    if(h.kind==='file' && ROOT_JSON_RE.test(name)) out.push({path:name, h:h});
     else if(h.kind==='directory' && name===DIR_FICHES){
       for await (const [n2, h2] of h.entries()) if(h2.kind==='file' && /\.json$/i.test(n2)) out.push({path:DIR_FICHES+'/'+n2, h:h2});
     }
@@ -8263,12 +8502,12 @@ async function scanFolderLocked(role, st){
       ids.push([r.id, r.updated||'']);
       const res = await mergeOne(r, st, false);
       if(res==='err') failed = true;
-      if(res==='tomb' && role==='save' && x.path.indexOf(DIR_FICHES+'/')===0) trash.push(r);
+      if(res==='tomb' && role==='save' && x.path.indexOf(DIR_FICHES+'/')===0) trash.push({r:r, path:x.path});
     }
     if(!failed){ map[x.path] = [f.size, f.lastModified, ids]; st.files++; }       // un échec d'écriture fait relire le fichier la fois suivante
   }
   Object.keys(map).forEach(p=>{ if(!seen[p]) delete map[p]; });
-  for(const r of trash){ try{ await trashFicheFileLocked(r); }catch(e){} }           // fiche supprimée ici, fichier resté dans le dossier
+  for(const t of trash){ try{ await trashFicheFileLocked(t.r, t.path); }catch(e){} }  // fiche supprimée ici, fichier resté dans le dossier
 }
 /* lit les dossiers prêts (enregistrement, et recherche s'il est distinct) ; null si aucun n'est lisible */
 async function syncLocked(){
@@ -8307,12 +8546,21 @@ async function exportPendingLocked(force){
     if(t!=null && (r.updated||'') <= new Date(t).toISOString()) return false;
     return true;
   });
-  let n = 0;
+  let n = 0, late = [];
+  const by = fnIndex();
   try{
     for(const r of todo){
       SYNCINFO = 'écriture des fiches : '+(n+1)+'/'+todo.length; if(n%10===0) updateBar();
-      await writeFicheFile(r); n++;
+      const nm = await writeFicheFile(r, by); n++;
+      if(nm !== ficheFileName(r, by)) late.push(r);                   // son nom était pris par une autre fiche : à reprendre ensuite
     }
+    for(let pass = 0; pass < 3 && late.length; pass++){
+      const rest = [];
+      for(const r of late){ const nm = await writeFicheFile(r, by); if(nm !== ficheFileName(r, by)) rest.push(r); }
+      late = rest;
+    }
+    /* une fiche arrivée d'ailleurs peut changer le rang des autres examens de son dossier : leurs fichiers suivent */
+    if(!force) for(const doss of new Set(todo.map(r=>r.d && r.d.dossier).filter(Boolean))) await renameDossierLocked(doss, by);
   }finally{ SYNCINFO = ''; }
   return n;
 }
@@ -8369,13 +8617,15 @@ function afterConnect(opt){
   });
 }
 /* après l'enregistrement d'une fiche : son fichier JSON, puis le CSV et le dictionnaire */
-function afterSave(rec, fresh){
+function afterSave(rec, fresh, was){
   return withFolderLock(async()=>{
     if(FD.save.state!=='ok' || !FD.save.h) return false;
     let st = null;
     try{
       if(fresh){ st = await syncLocked(); await exportPendingLocked(false); }         // première connexion : lire avant d'écrire
       else await writeFicheFile(rec);
+      await renameDossierLocked(rec.d && rec.d.dossier);                                // rang ou numéro d'accident changés : autres fiches du dossier
+      if(was && was !== (rec.d && rec.d.dossier)) await renameDossierLocked(was);       // fiche passée dans un autre dossier : l'ancien se renumérote
       await writeDataLocked(true);
       await persistSync();
     }catch(e){ folderFailed('save', e); return false; }
@@ -8449,9 +8699,12 @@ function openFolders(){
       LASTSYNC.add+' fiche'+(LASTSYNC.add>1?'s':'')+' ajoutée'+(LASTSYNC.add>1?'s':'')+', '+
       LASTSYNC.upd+' mise'+(LASTSYNC.upd>1?'s':'')+' à jour.'
     : 'Aucune lecture du dossier depuis l’ouverture.';
+  /* fichiers écrits par une version antérieure : fiche_<identifiant>.json, renommés quand leur fiche est enregistrée */
+  const legacy = FD.save.state==='ok' ? Object.keys(SYNCMAP.save).filter(p=>/^fiches\/fiche_[^\/]*\.json$/i.test(p)).length : 0;
   modalHTML('<h3>Dossier de données</h3>'+
     '<div class="note">Choisissez un dossier <b>une seule fois</b>. À chaque enregistrement, l’outil y écrit la fiche au format '+
-    'JSON (sous-dossier <code>fiches</code>), puis <code>donnees_neuro.csv</code> et son dictionnaire. À chaque ouverture, il '+
+    'JSON (sous-dossier <code>fiches</code>, un fichier <code>xxx-aaaa_bbbbbbbb-EXc.json</code> par fiche : numéro d’accident, année de prise en charge, '+
+    'numéro de dossier, numéro d’examen), puis <code>donnees_neuro.csv</code> et son dictionnaire. À chaque ouverture, il '+
     'relit ce dossier : les fiches qu’il contient et que ce poste ne connaît pas encore rejoignent la recherche par nom, '+
     'prénom, date de naissance, numéro de dossier ou d’accident.</div>'+
     '<h4 style="margin:14px 0 6px">1. Dossier d’enregistrement</h4>'+
@@ -8474,6 +8727,9 @@ function openFolders(){
       '<p style="margin:8px 0 0;font-size:11.5px;color:var(--ink2)">Ce dossier n’est que lu : l’outil n’y écrit jamais. Le dossier '+
       'd’enregistrement est lu aussi.</p>' : '')+
     '<p style="margin:14px 0 8px;color:var(--ink2);font-size:12px">'+esc(last)+'</p>'+
+    (legacy ? '<p style="margin:0 0 8px;font-size:12px"><b>'+legacy+' fichier'+(legacy>1?'s portent':' porte')+' encore l’ancien nom</b> '+
+      '<code>fiche_….json</code> (version antérieure). Chacun est renommé quand sa fiche est enregistrée ; « Réécrire tout le dossier » les renomme tous '+
+      'd’un coup, sans rien perdre.</p>' : '')+
     '<div style="display:flex;gap:8px;flex-wrap:wrap">'+
       '<button class="tb gd" onclick="syncNow()">Relire le dossier maintenant</button>'+
       '<button class="tb" onclick="rewriteFolder()">Réécrire tout le dossier</button>'+
@@ -8513,6 +8769,7 @@ async function saveFiche(){
   /* les saisies de dates en cours de frappe sont un état d'affichage, pas une donnée */
   const snap = JSON.parse(JSON.stringify(REC));
   delete snap._badDate; delete snap._badTime;
+  const was = ((DB.find(x=>x.id===snap.id) || {}).d || {}).dossier;                 // dossier de la fiche avant cet enregistrement
   await idbPut(snap);
   DB = await idbAll();
   await renumberAll();
@@ -8522,7 +8779,7 @@ async function saveFiche(){
   renderList(); updateBar();          // la fiche est enregistrée dans le navigateur, même si le sélecteur de dossier est encore ouvert
   /* le JSON de la fiche, puis le CSV et le dictionnaire, dans le dossier de données */
   const fo = await folder;
-  const w = (fo && fo.ok) ? await afterSave(me || snap, !!fo.fresh) : false;
+  const w = (fo && fo.ok) ? await afterSave(me || snap, !!fo.fresh, was) : false;
   /* pas de dossier de données prêt : le JSON de la fiche est téléchargé si l'option est cochée */
   const dn = (!w && SET.autoDl) ? downloadFiche(me || snap) : '';
   renderList(); renderForm(); updateBar();
@@ -8530,7 +8787,7 @@ async function saveFiche(){
 }
 /* le JSON d'une fiche, téléchargé : il part dans le dossier de téléchargement du navigateur */
 function downloadFiche(rec){
-  const name = ficheFile(rec.id);
+  const name = ficheFileName(rec);
   dl(name, ficheJSON(rec), 'application/json');
   return name;
 }
@@ -8552,11 +8809,13 @@ function saveNote(w, dn){
 }
 function newFiche(){
   if(DIRTY && !confirm('La fiche en cours contient des modifications non enregistrees. Continuer ?')) return;
+  if(DICT) dictAbort();
   REC=blank(); DIRTY=false; PAGE=1; TYPE_CHOISI=false; renderForm(); renderList(); updateBar();
   window.scrollTo(0,0); setTimeout(()=>{const i=$('#i_dossier'); if(i)i.focus();},60);
 }
 function newFollowUp(){
   if(DIRTY && !confirm('Modifications non enregistrees. Continuer ?')) return;
+  if(DICT) dictAbort();
   const src=JSON.parse(JSON.stringify(REC.d));
   /* les photographies appartiennent à l'examen où elles ont été prises : un ré-examen repart sans elles */
   const keep=['dossier','nom','prenom','sexe','ddn','date_acc','heure_acc','ad_num','examinateur','sc_masquer'];
@@ -8571,6 +8830,7 @@ function newFollowUp(){
 function loadFiche(id){
   if(DIRTY && !confirm('Modifications non enregistrees. Continuer ?')) return;
   const f=DB.find(x=>x.id===id); if(!f) return;
+  if(DICT) dictAbort();
   REC=JSON.parse(JSON.stringify(f)); DIRTY=false; PAGE=1; TYPE_CHOISI=true; renderForm(); renderList(); updateBar(); window.scrollTo(0,0);
 }
 async function delFiche(id,ev){
@@ -8582,7 +8842,7 @@ async function delFiche(id,ev){
   TOMB[id] = new Date().toISOString(); await persistTomb();
   await idbDel(id); DB=await idbAll(); await renumberAll();
   if(FD.save.state==='ok'){
-    await withFolderLock(async()=>{ try{ await trashFicheFileLocked(f); await persistSync(); }catch(e){ folderFailed('save', e); } });
+    await withFolderLock(async()=>{ try{ await trashFicheFileLocked(f); await renameDossierLocked(f.d.dossier); await persistSync(); }catch(e){ folderFailed('save', e); } });
   }
   await writeDataFiles(true);
   if(REC.id===id){ REC=blank(); DIRTY=false; }
@@ -8634,10 +8894,18 @@ function patBarHTML(){
   const entree = prem && prem.date_ex ? frDate(prem.date_ex) : '';
   const entreeTip = entree ? 'Premier examen du dossier : '+entree+(prem.heure_ex ? ' à '+prem.heure_ex : '') : '';
   let diag = ''; for(let i = FI.length-1; i >= 0 && !diag; i--) diag = diagCourt(FI[i].d);
-  return item('Nom', d.nom ? String(d.nom).toUpperCase() : '')+item('Prénom', d.prenom)+'<span class="pbr"></span>'+item('Naissance', naiss)+
+  return '<div class="pitems">'+item('Nom', d.nom ? String(d.nom).toUpperCase() : '')+item('Prénom', d.prenom)+'<span class="pbr"></span>'+item('Naissance', naiss)+
          item('Accident n°', d.ad_num)+item('Dossier', d.dossier)+item('Examen n°', d.num_ex)+item('Entrée', entree, entreeTip)+
-         item('Dernier diagnostic retenu', diag, diag, 'dg')+
-         '<span class="pt">'+esc(typ)+'</span>';
+         item('Dernier diagnostic retenu', diag, diag, 'dg')+'</div>'+
+         '<div class="pright"><span class="pt">'+esc(typ)+'</span>'+patNextHTML()+'</div>';
+}
+/* le bouton qui passe à l'onglet suivant (celui qui vient après l'onglet affiché pour ce type de consultation) ; rien sur le dernier */
+function patNextHTML(){
+  const v = visPages(), i = v.findIndex(p=>p.n===PAGE);
+  if(i < 0 || i >= v.length-1) return '';
+  const nx = v[i+1];
+  return '<button type="button" class="pn" onclick="event.stopPropagation();goPage('+nx.n+')" title="Onglet suivant : '+esc(pageLab(nx))+'">'+
+         '<small>Suivant</small><b>'+esc(pageShort(nx))+' &#9658;</b></button>';
 }
 function updatePatBar(){
   const el = $('#patbar'); if(!el || !REC) return;
@@ -9578,29 +9846,43 @@ function genBox(){
 
 /* =====================================================================
    EXPORTER TOUT EN JSON
-   Un fichier JSON par fiche, au format du dossier de données (fiche_<id>.json, lisible par « Importer / Fusionner ») :
-   soit écrit directement dans un dossier choisi, soit réuni dans une archive ZIP. Dans les deux cas le sélecteur
-   s'ouvre sur Téléchargements. Le nom d'un fichier ne porte aucune donnée du patient.
+   Un fichier JSON par fiche, au format du dossier de données (lisible par « Importer / Fusionner »), nommé
+   xxx-aaaa_bbbbbbbb-EXc.json : numéro d'accident, année de la prise en charge, numéro de dossier, numéro d'examen.
+   Soit écrit directement dans un dossier choisi, soit réuni dans une archive ZIP. Dans les deux cas le sélecteur
+   s'ouvre sur Téléchargements. Le nom d'un fichier ne porte ni nom, ni prénom, ni date de naissance.
    ===================================================================== */
 function exportEntries(){
-  const used = new Set();
+  const used = new Set(), by = fnIndex();
   return sortedDB().map(r=>{
-    let name = ficheFile(r.id), k = 1;
-    while(used.has(name.toLowerCase())) name = ficheFile(r.id).replace(/\.json$/, '_'+(++k)+'.json');   // Windows ignore la casse
+    const base = ficheBase(r, by);
+    let name = base+'.json', k = 1;
+    if(used.has(name.toLowerCase())) name = base+'_'+idPart(r.id)+'.json';                       // même nom pour deux fiches : l'identifiant les distingue
+    while(used.has(name.toLowerCase())) name = base+'_'+idPart(r.id)+'_'+(++k)+'.json';           // Windows ignore la casse
     used.add(name.toLowerCase());
     return {name:name, rec:r};
   });
+}
+/* fiches dont le nom manque d'une information : numéro d'accident, date d'examen, numéro de dossier */
+function exportGaps(){
+  const by = fnIndex(), g = {acc:0, year:0, doss:0};
+  DB.forEach(r=>{ const q = ficheParts(r, by); if(!q.acc) g.acc++; if(!q.year) g.year++; if(!q.doss) g.doss++; });
+  return g;
 }
 let EXPORTING = false;
 const expSay = h => { const el = $('#expJsonRes'); if(el) el.innerHTML = h; };
 const expBox = (h, ok) => '<div class="note" style="background:'+(ok?'#e6f4ec':'#fbeaea')+';border-color:'+(ok?'#9ccdb3':'#e0a5a5')+'">'+h+'</div>';
 const nFiches = n => n+' fiche'+(n>1?'s':'');
 function openExportJSON(){
-  const n = DB.length, dirOk = hasPicker('showDirectoryPicker'), dis = n ? '' : ' disabled';
+  const n = DB.length, dirOk = hasPicker('showDirectoryPicker'), dis = n ? '' : ' disabled', g = exportGaps();
+  const gap = t => '<br><span style="color:var(--warn)">'+t+'</span>';
   modalHTML('<h3>Exporter tout en JSON</h3>'+
-    '<div class="note" style="background:#eef4fb;border-color:#bcd4ee"><b>'+nFiches(n)+'</b>, <b>une par fichier</b> '+
-      '<code>fiche_&lt;identifiant&gt;.json</code> : le format du dossier de données, que « Importer / Fusionner » relit. '+
-      'Chaque fichier contient la fiche entière.</div>'+
+    '<div class="note" style="background:#eef4fb;border-color:#bcd4ee"><b>'+nFiches(n)+'</b>, <b>une par fichier</b>, nommé '+
+      '<code>xxx-aaaa_bbbbbbbb-EXc.json</code> : <b>xxx</b> numéro d’accident, <b>aaaa</b> année de la prise en charge, '+
+      '<b>bbbbbbbb</b> numéro de dossier, <b>c</b> numéro d’examen (par exemple <code>187-2026_50987654-EX1.json</code>). '+
+      'C’est le format du dossier de données, que « Importer / Fusionner » relit ; chaque fichier contient la fiche entière.'+
+      (g.acc ? gap(nFiches(g.acc)+' sans numéro d’accident : le nom commence par 000. Renseignez « Accident de plongée n° » dans la fiche initiale du dossier.') : '')+
+      (g.year ? gap(nFiches(g.year)+' sans date d’examen : l’année du nom est 0000.') : '')+
+      (g.doss ? gap(nFiches(g.doss)+' sans numéro de dossier : le nom porte « sans-dossier ».') : '')+'</div>'+
     '<h4 style="margin:14px 0 6px">1. Dans un dossier de votre choix</h4>'+
     (dirOk
       ? '<p style="margin:0 0 8px">Le sélecteur s’ouvre sur <b>Téléchargements</b>. Chrome et Edge ne laissent pas choisir Téléchargements '+
@@ -9996,8 +10278,9 @@ function openHelp(){
   'La fiche se remplit en cinq onglets : <b>Administratif</b>, <b>Anamnèse et plongée</b>, <b>Examen clinique général</b>, '+
   '<b>Examen neurologique</b>, <b>Conclusion et évolution</b>. Le bandeau bleu sous la barre du haut rappelle en permanence le nom, '+
   'le prénom, la date de naissance, le n° d’accident, le n° de dossier, le n° de l’examen, la date d’entrée (celle du premier examen du '+
-  'dossier) et le dernier diagnostic retenu. L’onglet Administratif porte aussi l’identité complémentaire (nationalité, profession, adresse, '+
-  'téléphone, e-mail). Sur une fiche de suivi ou de sortie, l’onglet « Anamnèse et plongée » disparaît : la plongée reste sur la fiche initiale.</p>'+
+  'dossier) et le dernier diagnostic retenu. À droite du bandeau, le bouton <b>Suivant</b> nomme l’onglet suivant (Anamnèse, Examen, Neuro, '+
+  'Conclusion) et y mène d’un clic. L’onglet Administratif porte aussi l’identité complémentaire (nationalité, profession, adresse, '+
+  'téléphone, e-mail), après le mode d’entrée. Sur une fiche de suivi ou de sortie, l’onglet « Anamnèse et plongée » disparaît : la plongée reste sur la fiche initiale.</p>'+
   '<p><b>2 quater. Synthèse rédigée et compte rendu d’hospitalisation.</b><br>'+
   'La synthèse, sous la fiche, se copie en texte enrichi : titres soulignés, anomalies en <b>gras</b>, examen dit en syndromes '+
   '(« absence de déficit moteur », « syndrome pyramidal »…). Sur une <b>consultation de sortie</b>, l’encart « Compte rendu '+
@@ -10005,7 +10288,8 @@ function openHelp(){
   'du dossier : examens paracliniques réunis, évolution horodatée, diagnostic retenu, examens à réaliser secondairement, inaptitude à la plongée.</p>'+
   '<p><b>2 quinquies. Dictée vocale.</b><br>'+
   'Le bouton micro placé près d’un encart de texte dicte dans cet encart, à la place du curseur ; les commandes « à la ligne », « virgule », '+
-  '« point final », « point-virgule » et « deux points » sont comprises. La dictée est intégrée à Chrome, Edge et Safari : le navigateur transcrit la '+
+  '« point final », « point-virgule » et « deux points » sont comprises. Le micro s’éteint tout seul après une seconde sans parole (cinq secondes si '+
+  'vous n’avez pas encore commencé) ; un second clic l’arrête aussitôt. La dictée est intégrée à Chrome, Edge et Safari : le navigateur transcrit la '+
   'voix avec un service en ligne (l’audio quitte l’ordinateur), n’y dictez aucune donnée identifiante. Firefox n’a pas cette fonction : cliquez dans '+
   'le champ, puis utilisez la dictée de Windows (touche <b>Windows + H</b>).</p>'+
   '<p><b>2 sexies. Documents de sortie.</b><br>'+
