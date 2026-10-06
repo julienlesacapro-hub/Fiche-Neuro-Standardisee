@@ -1,4 +1,4 @@
-# ADP — accident de plongée, version 8.1.2
+# ADP — accident de plongée, version 8.1.3
 
 Fichier unique : `index.html`. Aucun réseau, aucune dépendance externe, aucun compte.
 Double-cliquez dessus, il s'ouvre dans votre navigateur et tout fonctionne.
@@ -612,7 +612,7 @@ les retire :
 - de la **synthèse rédigée** ;
 - du **compte rendu d'hospitalisation**, dès qu'une fiche du dossier porte la case (le score ASIA reste) ;
 - de l'**impression** (l'encart « Scores de sévérité » n'est pas imprimé, et le titre de la page ne les cite plus) ;
-- de la **ligne pour le fichier Excel maître** (colonne BI vide, colonne BJ à « ns »).
+- de la **ligne Excel ADP** (colonne BI vide, colonne BJ à « ns »).
 
 Les scores restent **calculés dans la fiche** (colonnes `msh_total`, `vest_total` du CSV) et visibles à l'écran, avec un
 bandeau qui le rappelle. La case est **reprise sur les autres fiches du dossier** (nouvelle fiche, ré-examen).
@@ -888,11 +888,11 @@ adapté à un téléphone. Si l'impression lancée depuis la fenêtre intégrée
 
 ---
 
-## La ligne pour le fichier Excel maître
+## La ligne Excel ADP (fichier Excel maître)
 
 Le fichier maître du service compte **89 colonnes (A à CK)** : identité, plongeur, plongée, alerte et prise en charge,
-évolution, recompression, examens. Depuis une fiche du dossier, **Exporter**, puis **Ligne Excel du dossier ouvert** (ou
-**ligne Excel** dans l'en-tête du compte rendu d'hospitalisation), compose **une ligne** à partir de **toutes les fiches
+évolution, recompression, examens. Depuis une fiche du dossier, **Exporter**, puis **Ligne Excel ADP du dossier ouvert** (ou
+**ligne Excel ADP** dans l'en-tête du compte rendu d'hospitalisation), compose **une ligne** à partir de **toutes les fiches
 du dossier**, la fiche ouverte comprise. Rien n'est enregistré : la ligne est recalculée à chaque ouverture de la fenêtre.
 Votre fichier maître n'est ni lu ni modifié.
 
@@ -902,7 +902,7 @@ puis :
 1. **Copier la ligne** : le texte (une ligne, 89 cellules séparées par des tabulations) se colle dans la **première
    cellule** d'une ligne vide d'Excel (Ctrl+V). Les dates (JJ/MM/AAAA) et les heures (HH:MM) sont reconnues au
    format français ;
-2. ou **Télécharger le classeur .xlsx** (`ligne_excel_AAAA-MM-JJ.xlsx`) : une feuille « Feuil1 », en-têtes identiques à
+2. ou **Télécharger le classeur .xlsx** (`ligne_excel_ADP_AAAA-MM-JJ.xlsx`) : une feuille « Feuil1 », en-têtes identiques à
    votre fichier (légendes de codes comprises) en ligne 1, la ligne du dossier en ligne 2, dates et heures en vrais
    nombres au même format. Copiez la ligne 2 et collez-la dans le fichier maître, en « valeurs » si vous voulez garder
    sa mise en forme.
@@ -1038,13 +1038,13 @@ barotraumatisme, accident biochimique, noyade.
 
 ---
 
-## La ligne pour l'activité COHB
+## La ligne Excel COHB (activité COHB)
 
 Le service tient aussi une feuille **« Activité COHB »** : une ligne par dossier clos, **31 colonnes (A à AE)**. Même mécanique
-que la ligne du fichier maître : **Exporter**, puis **Ligne COHB du dossier ouvert** (ou **ligne COHB** dans l'en-tête du compte
-rendu d'hospitalisation). La fenêtre propose les deux feuilles en haut, affiche la **valeur** et la **règle** de chaque colonne,
+que la ligne Excel ADP : **Exporter**, puis **Ligne Excel COHB du dossier ouvert** (ou **ligne Excel COHB** dans l'en-tête du compte
+rendu d'hospitalisation). La fenêtre propose les deux lignes en haut, affiche la **valeur** et la **règle** de chaque colonne,
 puis **Copier la ligne** (texte à tabulations, 31 cellules, à coller dans la première cellule d'une ligne vide) ou **Télécharger le
-classeur .xlsx** (`ligne_excel_cohb_AAAA-MM-JJ.xlsx` : les en-têtes de votre feuille en ligne 1, la ligne du dossier en ligne 2, sur
+classeur .xlsx** (`ligne_excel_COHB_AAAA-MM-JJ.xlsx` : les en-têtes de votre feuille en ligne 1, la ligne du dossier en ligne 2, sur
 le fond bleu des lignes « plongée »). La case « inclure le nom et le prénom » concerne la colonne B. Rien n'est enregistré, votre
 feuille n'est ni lue ni modifiée.
 
@@ -1056,7 +1056,7 @@ feuille n'est ni lue ni modifiée.
 | D | Diagnostic | dernier diagnostic retenu, abrégé comme dans votre feuille (« ADD médullaire + cutané », « Barotraumatisme oreille moyenne », « Intoxication CO »), le diagnostic principal d'abord |
 | E | Classement ARS | « accident de plongée » ; « intoxication CO » si le diagnostic comprend une intoxication au monoxyde de carbone |
 | F | CS | nombre de fiches du dossier (une consultation par fiche) |
-| G | 1ere en urgence | période de la mise en pression de la table initiale : **O** heures ouvrables, **N** en semaine hors de ces heures, **W** week-end ou jour férié |
+| G | 1ere en urgence | période de la mise en pression de la table initiale : **O** heures ouvrables (lundi au vendredi, de 7 h 45 à 16 h 00, hors jours fériés), **N** en semaine hors de ces heures, **W** week-end ou jour férié |
 | H, I | nbre seance en repose pied, nbre seance Alité | non recueillis (la position du patient n'est pas saisie) |
 | J à U | A15, A15HNO, B18Hx, B18HxHNO, IOT, IOTHNO, A18, A18HNO, B 18, B18HNO, C18, C18HNO | séances par table, voir ci-dessous |
 | V, W, X | Pansements, PRF, PTcO2 | non recueillis |
@@ -1073,7 +1073,7 @@ rangée nulle part. La colonne « HNO » qui suit chacune reçoit les séances h
 pression est connue compte pour sa période ; les **autres séances déclarées** (une fiche de suivi qui annonce trois séances) sont
 comptées en **heures ouvrables**, faute d'heure.
 
-**Heures ouvrables.** Du lundi au vendredi, de 8 h à 18 h (18 h exclue), hors **jours fériés** français (1er janvier, lundi de
+**Heures ouvrables.** Du lundi au vendredi, de **7 h 45** (comprise) à **16 h 00** (exclue), hors **jours fériés** français (1er janvier, lundi de
 Pâques, 1er mai, 8 mai, Ascension, lundi de Pentecôte, 14 juillet, 15 août, 1er novembre, 11 novembre, 25 décembre, calculés pour
 chaque année). Un jour férié compte comme un week-end (W). La colonne G s'appuie sur l'heure de mise en pression de la table
 initiale, à défaut sur l'heure de prise en charge au SMHEP ; sans heure, elle reste vide un jour de semaine.
@@ -1540,6 +1540,40 @@ aux analyses topographiques fines.
 
 ---
 
+## Changements de la version 8.1.3
+
+Aucune colonne ne s'ajoute au CSV (929) et aucune fiche n'est modifiée : le fichier de données, son dictionnaire et le papier sont
+identiques à ceux de la 8.1.2 (vérifié par comparaison avec la 8.1.2), et les fiches de la 8.1.2 s'ouvrent telles quelles.
+`index.html` reste à 710 Ko. Deux retouches, toutes deux sur les lignes Excel.
+
+### Ligne Excel
+
+- **La ligne du fichier maître s'appelle maintenant « ligne Excel ADP »** : bouton **Exporter** › **Ligne Excel ADP du dossier
+  ouvert**, bouton « ligne Excel ADP » dans l'en-tête du compte rendu d'hospitalisation, titre et onglet de la fenêtre (« Ligne Excel
+  ADP (89 colonnes) »), aide de l'application et notice. Le classeur téléchargé se nomme `ligne_excel_ADP_AAAA-MM-JJ.xlsx` (il se
+  nommait `ligne_excel_AAAA-MM-JJ.xlsx`). Le contenu de la ligne ne change pas.
+- **L'autre ligne s'appelle « ligne Excel COHB »** (elle se nommait « ligne COHB »), par symétrie ; son classeur se nomme
+  `ligne_excel_COHB_AAAA-MM-JJ.xlsx` (il se nommait `ligne_excel_cohb_AAAA-MM-JJ.xlsx`).
+- **Heures ouvrables de la ligne Excel COHB : du lundi au vendredi, de 7 h 45 à 16 h 00, hors jours fériés** (la 8.1.2 retenait 8 h à
+  18 h). La borne de 7 h 45 est comprise, celle de 16 h 00 est exclue : une mise en pression à 7 h 44 ou à 16 h 00 pile compte **hors
+  heures ouvrables** (période N, colonnes « HNO »), une mise en pression à 7 h 45 ou à 15 h 59 compte **en heures ouvrables** (période
+  O). Le samedi, le dimanche et les jours fériés restent W. Cela change la période de la première séance (colonne G) et le rangement
+  des séances dans les colonnes « HNO » (voir *La ligne Excel COHB (activité COHB)*).
+
+### À valider de votre côté
+
+- **Les bornes** : j'ai compté **16 h 00 pile** hors heures ouvrables et **7 h 45 pile** en heures ouvrables. Dites-moi si vous voulez
+  l'inverse : c'est une constante (`COHB_HO`, dans la partie COHB de `index.html`).
+- **Les séances déclarées sans heure** (une fiche de suivi qui annonce plusieurs séances, dont une seule porte son heure de mise en
+  pression) restent comptées en **heures ouvrables**, faute d'heure.
+- **Le nom de l'autre ligne** : « ligne Excel COHB » est un choix de ma part, par symétrie avec « ligne Excel ADP » ; dites-moi si
+  vous préférez « ligne COHB ».
+- **Ce qui a été essayé.** Les suites de la 8.1.3 (heures ouvrables aux bornes, séances, noms des deux lignes, menu, aide, noms des
+  classeurs) et toutes celles des versions précédentes passent (747 contrôles). Rien n'a été essayé avec Excel ni avec votre
+  navigateur (Firefox).
+
+---
+
 ## Changements de la version 8.1.2
 
 **27 colonnes s'ajoutent au CSV (902 → 929)**, toutes de biologie, à la suite des champs de la fiche (rangs 470 à 496). Les 902
@@ -1552,7 +1586,7 @@ autres colonnes, leur ordre, le dictionnaire de leurs libellés et le papier d'u
 - **Colonne « ordinateur » (CA) du fichier maître** : la case porte maintenant la **marque et le modèle** de l'ordinateur,
   **suivis de ses réglages** (« Suunto D5 - GF 35/75 »). Elle ne portait que le réglage.
 - **Ligne pour l'activité COHB** : une seconde ligne Excel, de **31 colonnes (A à AE)**, pour la feuille « Activité COHB » (voir
-  *La ligne pour l'activité COHB*). Même fenêtre que la ligne du fichier maître, qui propose les deux feuilles ; même copie (texte à
+  *La ligne Excel COHB (activité COHB)*). Même fenêtre que la ligne du fichier maître, qui propose les deux feuilles ; même copie (texte à
   tabulations) et même classeur .xlsx. Boutons : **Exporter** › **Ligne COHB du dossier ouvert**, et **ligne COHB** dans l'en-tête du
   compte rendu d'hospitalisation.
 
@@ -2041,6 +2075,8 @@ du script de `index.html`.
 
 ## Historique
 
+- **8.1.3** : la ligne du fichier maître s'appelle « ligne Excel ADP » (l'autre, « ligne Excel COHB »), classeurs `ligne_excel_ADP_…` et
+  `ligne_excel_COHB_…` ; heures ouvrables de la ligne COHB : lundi au vendredi, de 7 h 45 à 16 h 00, hors jours fériés.
 - **8.1.2** : colonne « ordinateur » de la ligne Excel (marque, modèle, réglages), ligne pour l'activité COHB, onglet « Examens
   complémentaires » (le cinquième ; la conclusion devient le sixième) avec la biologie horodatée, ses valeurs normales, les valeurs
   hors normes en gras et en rouge, et des tableaux de jour en jour dans la synthèse et le compte rendu.
@@ -2096,8 +2132,8 @@ données de santé qui vous est imposé. Le nom de chaque fichier ne porte ni no
 le **numéro de dossier** et le numéro d'accident (`187-2026_50987654-EX1.json`) : il suffit à rattacher un fichier à un
 dossier. Avec la pseudonymisation de l'identifiant scanné, c'est le pseudonyme `P-…` qui y figure.
 
-**La ligne pour le fichier Excel maître** reprend, par défaut, le **nom et le prénom** (colonne A de votre fichier) : c'est
-un traitement de données de santé identifiantes, comme le fichier maître lui-même. Elle est copiée dans le presse-papiers ou
+**La ligne Excel ADP** reprend, par défaut, le **nom et le prénom** (colonne A de votre fichier) : c'est
+un traitement de données de santé identifiantes, comme le fichier maître lui-même ; la **ligne Excel COHB** les reprend aussi (colonne B). Elle est copiée dans le presse-papiers ou
 téléchargée : supprimez le classeur téléchargé une fois la ligne collée. **La dictée vocale** de Chrome et d'Edge envoie
 l'audio à un service distant (voir *Dictée vocale*) : n'y dictez rien d'identifiant. **Les documents de sortie** reçoivent
 l'identité du patient pour composer les courriers ; le générateur n'enregistre rien et n'utilise aucun réseau. Son fichier,

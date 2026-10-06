@@ -2,7 +2,7 @@
 
 Outil de saisie pour la prise en charge d'un accident de plongée en médecine
 hyperbare : consultation initiale en urgence, consultations de suivi, compte
-rendu de séjour. Auteur : Dr Julien Lesaca. Version 8.1.2.
+rendu de séjour. Auteur : Dr Julien Lesaca. Version 8.1.3.
 
 Deux sorties, depuis la même saisie :
 
@@ -14,8 +14,9 @@ Deux sorties, depuis la même saisie :
 
 Depuis la consultation de sortie, le générateur de courriers du service (courriers,
 ordonnances, certificats) s'ouvre rempli avec ce que la fiche sait, et deux lignes à
-coller dans les fichiers Excel du service (89 colonnes pour le fichier maître, 31 pour la
-feuille « Activité COHB ») se composent à partir de toutes les fiches d'un dossier. Le générateur n'est **pas** dans `index.html` (il porte les signatures
+coller dans les fichiers Excel du service se composent à partir de toutes les fiches d'un
+dossier : la ligne Excel ADP (89 colonnes, fichier maître) et la ligne Excel COHB (31 colonnes,
+feuille « Activité COHB »). Le générateur n'est **pas** dans `index.html` (il porte les signatures
 et les numéros RPPS des médecins, et ce dépôt peut être public) : ADP en fait choisir
 une copie une fois, puis la garde dans la base locale du navigateur.
 
@@ -64,7 +65,7 @@ cd Fiche-Neuro-Standardisee
 # copiez ici le contenu de ce dossier (index.html, icons/, manifest, sw.js, docs/, native/)
 
 git add .
-git commit -m "ADP v8.1.2"
+git commit -m "ADP v8.1.3"
 git push origin main
 ```
 
@@ -83,12 +84,12 @@ en HTTPS, condition nécessaire pour l'installation et le service worker.
 ### Publier une mise à jour
 
 Modifiez `index.html`, incrémentez `VERSION` en tête de `sw.js`
-(`v8.1.2` → `v8.1.3`), poussez. Sans ce changement de version, les appareils
+(`v8.1.3` → `v8.1.4`), poussez. Sans ce changement de version, les appareils
 déjà installés gardent l'ancienne copie en cache.
 
 ```bash
-sed -i "s/const VERSION = 'v8.1.2'/const VERSION = 'v8.1.3'/" sw.js
-git commit -am "v8.1.3" && git push
+sed -i "s/const VERSION = 'v8.1.3'/const VERSION = 'v8.1.4'/" sw.js
+git commit -am "v8.1.4" && git push
 ```
 
 Au lancement suivant avec réseau, l'application signale la mise à jour et

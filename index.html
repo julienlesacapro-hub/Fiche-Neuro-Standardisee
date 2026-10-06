@@ -708,7 +708,7 @@ svg.echo rect.z:hover{stroke-width:2.6;filter:brightness(.96)}
 <body>
 <div id="hdr">
 <div id="topbar">
-  <span class="ttl" title="Accident de plongée — version 8.1.2">ADP <small style="font-weight:400;opacity:.65">8.1.2</small></span>
+  <span class="ttl" title="Accident de plongée — version 8.1.3">ADP <small style="font-weight:400;opacity:.65">8.1.3</small></span>
   <button class="tb nophone" onclick="toggleSide()" title="Afficher / masquer la liste des fiches">&#9776;</button>
   <span class="sep"></span>
   <button class="tb pri" onclick="newFiche()">+<span class="lbl2"> Nouvelle</span> fiche</button>
@@ -7164,8 +7164,8 @@ function crhBlock(){
   return '<div class="sec'+closed+'" id="s_crh"><h3 onclick="if(!event.target.closest(\'button\'))toggleSec(\'crh\')">'+
     '<span class="caret">&#9660;</span>Compte rendu d’hospitalisation (CRH)'+
     '<span class="fill"><span class="badge" id="crhn"></span><button class="mini" onclick="openGen()" title="Courriers, ordonnances et certificats de sortie">documents de sortie</button>'+
-    '<button class="mini" onclick="openXls()" title="Ligne à coller dans le fichier Excel maître">ligne Excel</button>'+
-    '<button class="mini" onclick="openXls(\'cohb\')" title="Ligne à coller dans la feuille Activité COHB">ligne COHB</button>'+
+    '<button class="mini" onclick="openXls()" title="Ligne Excel ADP : une ligne à coller dans le fichier Excel maître (89 colonnes)">ligne Excel ADP</button>'+
+    '<button class="mini" onclick="openXls(\'cohb\')" title="Ligne Excel COHB : une ligne à coller dans la feuille Activité COHB (31 colonnes)">ligne Excel COHB</button>'+
     '<button class="mini" onclick="copyCRH()">copier le CRH</button></span></h3>'+
     '<div class="body"><div class="note" style="background:#f2f6fb;border-color:#c9d8ea">Texte enrichi, sans en-tête, écrit à partir de '+
     '<b>toutes les fiches de ce dossier</b> : histoire et examen d’admission, prise en charge, examens paracliniques réunis, évolution horodatée '+
@@ -8222,7 +8222,7 @@ function sortedDB(){
    l'explique (diagnostic) et propose ce qui fonctionne : « Exporter tout en JSON » (dossier choisi, ou archive
    ZIP), téléchargement du JSON à chaque enregistrement, import d'un dossier ou d'une archive.
    ===================================================================== */
-const APP_VERSION = '8.1.2';
+const APP_VERSION = '8.1.3';
 /* hasPicker teste une fonction de l'API au moment de s'en servir : une extension ou un réglage du navigateur peut la retirer */
 const hasPicker = name => { try{ return typeof window[name] === 'function'; }catch(e){ return false; } };
 let FSA = hasPicker('showDirectoryPicker');
@@ -9248,8 +9248,8 @@ function openExport(){
    '<button class="tb" onclick="expDict()">Telecharger le dictionnaire des variables</button>'+
    '<button class="tb" onclick="expJSON()" title="Un seul fichier JSON qui réunit toutes les fiches">Telecharger la sauvegarde JSON</button>'+
    '<button class="tb pri" onclick="openExportJSON()" title="Une fiche par fichier, dans un dossier choisi ou dans une archive ZIP">Exporter tout en JSON…</button>'+
-   '<button class="tb gd" onclick="openXls()" title="Une ligne à coller dans votre fichier Excel maître, composée à partir de toutes les fiches du dossier ouvert">Ligne Excel du dossier ouvert…</button>'+
-   '<button class="tb gd" onclick="openXls(\'cohb\')" title="Une ligne à coller dans la feuille Activité COHB, composée à partir de toutes les fiches du dossier ouvert">Ligne COHB du dossier ouvert…</button>'+
+   '<button class="tb gd" onclick="openXls()" title="Ligne Excel ADP : une ligne à coller dans votre fichier Excel maître (89 colonnes), composée à partir de toutes les fiches du dossier ouvert">Ligne Excel ADP du dossier ouvert…</button>'+
+   '<button class="tb gd" onclick="openXls(\'cohb\')" title="Ligne Excel COHB : une ligne à coller dans la feuille Activité COHB (31 colonnes), composée à partir de toutes les fiches du dossier ouvert">Ligne Excel COHB du dossier ouvert…</button>'+
    (FSA?'<button class="tb" onclick="rewriteFolder()">Réécrire tout le dossier de données</button>':'')+
   '</div>'+
   '<div class="note" style="background:#eef4fb;border-color:#bcd4ee"><b>Le dossier de données.</b> '+
@@ -9360,7 +9360,7 @@ async function zipRead(blob){
 }
 
 /* =====================================================================
-   LIGNE POUR LE FICHIER EXCEL MAÎTRE
+   LIGNE EXCEL ADP (POUR LE FICHIER EXCEL MAÎTRE)
    Le fichier maître du service compte 89 colonnes (A à CK). Une ligne est composée à partir de toutes les fiches du
    dossier : la fiche initiale (identité, plongeur, plongée, alerte, prise en charge, premier examen), la fiche proche
    de H+24 et la première fiche de suivi (évolution), la dernière fiche (séquelles, inaptitude), l'ensemble des fiches
@@ -9790,10 +9790,10 @@ async function xlsxBlob(row){
 }
 
 /* =====================================================================
-   LIGNE POUR L'ACTIVITÉ COHB
+   LIGNE EXCEL COHB (POUR L'ACTIVITÉ COHB)
    Le service tient aussi une feuille « Activité COHB » : une ligne par dossier clos, 31 colonnes (A à AE) : date de clôture,
    identité, IPP, diagnostic, classement ARS, nombre de consultations, période de la première séance en urgence, séances par
-   table (en heures ouvrables ou non), actes, résidence. Même mécanique que la ligne du fichier maître : texte à tabulations à
+   table (en heures ouvrables ou non), actes, résidence. Même mécanique que la ligne Excel ADP (fichier maître) : texte à tabulations à
    coller, ou classeur .xlsx. Ce que l'application ne recueille pas reste vide. Les en-têtes sont ceux de la feuille.
    ===================================================================== */
 const COHB_HEAD = [
@@ -9830,8 +9830,8 @@ const COHB_HEAD = [
   /* AE */ "Résidence"
 ];
 const COHB_NCOL = COHB_HEAD.length;
-/* heures ouvrables (en minutes) : du lundi au vendredi, de 8 h à 18 h, hors jours fériés ; le reste est « hors heures ouvrables » */
-const COHB_HO = {debut:480, fin:1080};
+/* heures ouvrables (en minutes) : du lundi au vendredi, de 7 h 45 (comprise) à 16 h 00 (exclue), hors jours fériés ; le reste est « hors heures ouvrables » */
+const COHB_HO = {debut:7*60+45, fin:16*60};
 const hm2min = hm => { const m = /^(\d{1,3}):(\d{2})$/.exec(String(hm||'')); return m ? (+m[1])*60 + (+m[2]) : null; };
 const jourUTC = t => { const x = new Date(t); return x.getUTCFullYear()+'-'+String(x.getUTCMonth()+1).padStart(2,'0')+'-'+String(x.getUTCDate()).padStart(2,'0'); };
 /* jours fériés français d'une année : fixes, puis lundi de Pâques, Ascension et lundi de Pentecôte (Pâques : algorithme de Meeus) */
@@ -9919,7 +9919,7 @@ const COHB = [
  /* D  */ {h:'Diagnostic', n:'dernier diagnostic retenu, abrégé (ADD médullaire + cutané)', f:X=>cohbX(X).diag},
  /* E  */ {h:'Classement ARS', n:'« accident de plongée » ; « intoxication CO » si le diagnostic est une intoxication au monoxyde de carbone', f:X=>cohbX(X).ars},
  /* F  */ {h:'CS', n:'nombre de consultations : une par fiche du dossier', f:X=>X.FI.length},
- /* G  */ {h:'1ere en urgence', n:'période de la mise en pression de la table initiale : O heures ouvrables (lundi au vendredi, 8 h à 18 h), N en semaine hors de ces heures, W week-end ou jour férié', f:X=>cohbX(X).g},
+ /* G  */ {h:'1ere en urgence', n:'période de la mise en pression de la table initiale : O heures ouvrables (lundi au vendredi, de 7 h 45 à 16 h 00, hors jours fériés), N en semaine hors de ces heures, W week-end ou jour férié', f:X=>cohbX(X).g},
  /* H  */ {h:'nbre seance en repose pied', n:'non recueilli (la position du patient n’est pas saisie)', f:X=>null},
  /* I  */ {h:'nbre seance Alit', n:'non recueilli (la position du patient n’est pas saisie)', f:X=>null},
  /* J  */ {h:'A15', n:'séances OHB15 en heures ouvrables', f:X=>cohbN(X, 9)},
@@ -10021,7 +10021,7 @@ function copyPlain(txt, okMsg){
   if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(ok, viaSel); else viaSel();
 }
 
-/* ---------- fenêtre « Ligne pour le fichier Excel maître » ---------- */
+/* ---------- fenêtre « Ligne Excel ADP » (fichier Excel maître) et « Ligne Excel COHB » (activité COHB) ---------- */
 const XLS_OPT = {nom:true};
 /* titre d'une colonne : les premières lignes de l'en-tête, jusqu'à la légende des codes */
 function xlsTitre(i, T){
@@ -10034,10 +10034,10 @@ function xlsTitre(i, T){
 }
 /* les deux feuilles que la ligne peut viser : le fichier maître (89 colonnes) et l'activité COHB */
 const XLS_T = {
-  maitre:{id:'maitre', titre:'Ligne pour le fichier Excel maître', head:XLS_HEAD, cols:XLS, ncol:XLS_NCOL, blob:row=>xlsxBlob(row), fichier:'ligne_excel_',
-          cible:'votre fichier maître', onglet:'Fichier maître'},
-  cohb:{id:'cohb', titre:'Ligne pour l’activité COHB', head:COHB_HEAD, cols:COHB, ncol:COHB_NCOL, blob:row=>cohbBlob(row), fichier:'ligne_excel_cohb_',
-        cible:'la feuille « Activité COHB »', onglet:'Activité COHB'}
+  maitre:{id:'maitre', titre:'Ligne Excel ADP', head:XLS_HEAD, cols:XLS, ncol:XLS_NCOL, blob:row=>xlsxBlob(row), fichier:'ligne_excel_ADP_',
+          cible:'votre fichier maître', onglet:'Ligne Excel ADP'},
+  cohb:{id:'cohb', titre:'Ligne Excel COHB', head:COHB_HEAD, cols:COHB, ncol:COHB_NCOL, blob:row=>cohbBlob(row), fichier:'ligne_excel_COHB_',
+        cible:'la feuille « Activité COHB »', onglet:'Ligne Excel COHB'}
 };
 function openXls(which){
   const T = XLS_T[which] || XLS_T.maitre;
@@ -10774,15 +10774,15 @@ function openHelp(){
   '<b>Exporter</b> puis <i>sauvegarde JSON</i> (ou <i>Exporter tout en JSON</i>, une archive ZIP). Sur le poste principal, '+
   '<b>Importer / Fusionner</b> ce fichier. '+
   'La fusion se fait sur l\'identifiant de fiche, sans doublon et sans perte.</p>'+
-  '<p><b>5 bis. Ligne pour le fichier Excel maître.</b><br>'+
-  'Bouton <b>Exporter</b> puis <b>Ligne Excel du dossier ouvert</b> (ou « ligne Excel » dans l’en-tête du compte rendu) : l’outil compose, à partir de '+
+  '<p><b>5 bis. Ligne Excel ADP (fichier Excel maître).</b><br>'+
+  'Bouton <b>Exporter</b> puis <b>Ligne Excel ADP du dossier ouvert</b> (ou « ligne Excel ADP » dans l’en-tête du compte rendu) : l’outil compose, à partir de '+
   'toutes les fiches du dossier, une ligne de 89 colonnes (A à CK) qui suit le fichier maître du service. <b>Copier la ligne</b>, puis collez-la dans la '+
   'première cellule d’une ligne vide d’Excel (Ctrl+V) ; ou téléchargez un classeur .xlsx de même structure. Les valeurs sont affichées avant la copie : '+
   'vérifiez-les, les colonnes que l’application ne recueille pas restent vides. La colonne « ordinateur » (CA) porte la marque et le modèle, suivis des réglages, dans la même case.</p>'+
-  '<p><b>5 ter. Ligne pour l’activité COHB.</b><br>'+
-  'Même fenêtre (bouton <b>Ligne COHB du dossier ouvert</b>, ou « ligne COHB » dans l’en-tête du compte rendu ; les deux feuilles se choisissent en haut de la fenêtre) : '+
+  '<p><b>5 ter. Ligne Excel COHB (activité COHB).</b><br>'+
+  'Même fenêtre (bouton <b>Ligne Excel COHB du dossier ouvert</b>, ou « ligne Excel COHB » dans l’en-tête du compte rendu ; les deux lignes se choisissent en haut de la fenêtre) : '+
   'une ligne de 31 colonnes (A à AE) qui suit la feuille « Activité COHB » du service. Elle reprend la date de la dernière fiche, l’identité, le n° de dossier, le diagnostic, '+
-  'le classement ARS, le nombre de consultations, la période de la première séance en urgence (O : lundi au vendredi de 8 h à 18 h hors jours fériés ; N : autre heure en semaine ; W : week-end ou jour férié), '+
+  'le classement ARS, le nombre de consultations, la période de la première séance en urgence (O : lundi au vendredi de 7 h 45 à 16 h 00 hors jours fériés ; N : autre heure en semaine ; W : week-end ou jour férié), '+
   'les séances par table (les colonnes « HNO » comptent celles qui ne tombent pas en heures ouvrables), les doppler transcrâniens, les complications et la résidence. '+
   'Les colonnes que l’application ne recueille pas restent vides ; vérifiez les valeurs affichées avant de coller.</p>'+
   '<p><b>6. Analyser.</b><br>'+
