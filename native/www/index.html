@@ -292,7 +292,6 @@ td.lv small{display:block;font-weight:400;color:var(--ink2);font-size:10.5px;max
 input.bio{width:110px;text-align:right}
 input.bio.bioab{font-weight:700;color:#c00000}
 input.bio.bad{border-color:var(--bad);outline:2px solid var(--bad-l)}
-.bioflag{margin-left:8px;font-size:11.5px;font-weight:700;color:#c00000}
 #synth table.biot,#crh table.biot{font-size:12px;line-height:1.35}
 
 /* ---------- synthèse ---------- */
@@ -708,7 +707,7 @@ svg.echo rect.z:hover{stroke-width:2.6;filter:brightness(.96)}
 <body>
 <div id="hdr">
 <div id="topbar">
-  <span class="ttl" title="Accident de plongée — version 8.1.3">ADP <small style="font-weight:400;opacity:.65">8.1.3</small></span>
+  <span class="ttl" title="Accident de plongée — version 8.2.0">ADP <small style="font-weight:400;opacity:.65">8.2.0</small></span>
   <button class="tb nophone" onclick="toggleSide()" title="Afficher / masquer la liste des fiches">&#9776;</button>
   <span class="sep"></span>
   <button class="tb pri" onclick="newFiche()">+<span class="lbl2"> Nouvelle</span> fiche</button>
@@ -1129,6 +1128,8 @@ const isApnee = d => { d = d || REC.d; return d.pl_profil_type===5 || d.pl_type=
 const NAPN = () => !isApnee();
 /* libellé d'un champ : certains en ont un autre en apnée (lApn) */
 const fLab = f => (f.lApn && isApnee()) ? f.lApn : f.l;
+/* le texte sous le libellé : celui du champ ; pour un résultat de biologie, ses valeurs normales selon le sexe de la fiche */
+const fHint = f => (f.dec && f.bio) ? 'VN '+bioVNtxt(f.bio, bioSexe(), true)+(f.bio.note ? '. '+f.bio.note : '') : f.hint;
 /* type de profil effectif : celui choisi, sinon la remontée progressive ; l'apnée n'a pas de profil dessiné (carré, sans objet) */
 const profType = d => d.pl_profil_type===5 ? 1 : (d.pl_profil_type || DEF_PROFIL);
 /* paramètres propres à la remontée progressive : visibles pour ce type, choisi ou proposé d'office */
@@ -1191,7 +1192,7 @@ const DG_BIOCH = [
    l'heure de fin à partir de l'heure de mise en pression ; l'heure de fin reste modifiable.
    Le code 9 couvre une table hors liste. */
 const TABLES = [
- {v:1, l:'OHB15',   m:95},
+ {v:1, l:'A15',     m:95},
  {v:2, l:'A15IOT',  m:115},
  {v:3, l:'A18IOT',  m:115},
  {v:4, l:'A18',     m:90},
@@ -1417,6 +1418,9 @@ const RFLAGS = [{k:'poly', l:'polycinétique'},{k:'etendu', l:'étendu'}];
    fiche, modifiables). Un résultat est un champ décimal (virgule ou point ; « < » ou « > » devant est accepté) qui porte ses
    valeurs normales (VN) et son unité, celles de la feuille du service. Hors des VN, il s'écrit en gras et en rouge dans la fiche
    et dans la synthèse, où les prélèvements du dossier forment un tableau, le plus récent à gauche.
+   Les VN suivent le sexe renseigné sur la fiche : vn, lo et hi sont celles de la femme (la feuille d'origine), m celles de l'homme
+   quand elles diffèrent (même forme : lo, hi, vn). Sexe non renseigné ou autre : une valeur n'est hors VN que si elle sort des deux
+   fourchettes.
    k : clé du champ ; l : libellé ; t : libellé dans la synthèse s'il diffère ; u : unité ; lo, hi : bornes des VN (hi est exclue
    quand les VN s'écrivent « < 5,0 » : hiStrict) ; vn : les VN, telles qu'elles s'affichent ; note : précision sous le libellé.
    Ajouter, retirer ou réordonner une ligne de ces deux listes suffit : le formulaire, la synthèse et le dictionnaire la suivent.
@@ -1426,33 +1430,34 @@ const BIO_GDS = [
  {k:'gds_po2',  l:'pO₂ veineux',      u:'mmHg',    lo:33,   hi:37,   vn:'33 - 37'},
  {k:'gds_pco2', l:'pCO₂ veineux',     u:'mmHg',    lo:40,   hi:50,   vn:'40 - 50'},
  {k:'gds_hco3', l:'HCO₃⁻ veineux',    t:'HCO3- veineux', u:'mmol/L', lo:24, hi:30, vn:'24 - 30'},
- {k:'gds_hb',   l:'Hb',               u:'g/dL',    lo:12,   hi:16,   vn:'12 - 16'},
- {k:'gds_ht',   l:'Ht',               u:'%',       lo:37,   hi:46,   vn:'37 - 46'},
+ {k:'gds_hb',   l:'Hb',               u:'g/dL',    lo:12,   hi:16,   vn:'12 - 16',  m:{lo:13.5, hi:17.5, vn:'13,5 - 17,5'}},
+ {k:'gds_ht',   l:'Ht',               u:'%',       lo:37,   hi:46,   vn:'37 - 46',  m:{lo:40, hi:50, vn:'40 - 50'}},
  {k:'gds_lac',  l:'Lactates veineux', u:'mmol/L',  lo:0.5,  hi:2.2,  vn:'0,5 - 2,2'}
 ];
 const BIO_LAB = [
- {k:'lab_leuco', l:'Leucocytes',        u:'G/L',    lo:4.02, hi:11.42, vn:'4,020 - 11,420'},
- {k:'lab_hb',    l:'Hb',                u:'g/dL',   lo:12,   hi:16,    vn:'12 - 16', note:'Repris du gaz du sang du jour tant que non modifié'},
- {k:'lab_ht',    l:'Ht',                u:'%',      lo:37,   hi:46,    vn:'37 - 46', note:'Repris du gaz du sang du jour tant que non modifié'},
- {k:'lab_plq',   l:'Plaquettes',        u:'G/L',    lo:185,  hi:445,   vn:'185 - 445'},
- {k:'lab_pnn',   l:'Neutrophiles',      u:'G/L',    lo:1.78, hi:6.946, vn:'1,78 - 6,946'},
+ {k:'lab_leuco', l:'Leucocytes',        u:'G/L',    lo:4.02, hi:11.42, vn:'4,020 - 11,420', m:{lo:4.09, hi:11, vn:'4,090 - 11,000'}},
+ {k:'lab_hb',    l:'Hb',                u:'g/dL',   lo:12,   hi:16,    vn:'12 - 16',  m:{lo:13.5, hi:17.5, vn:'13,5 - 17,5'}, note:'Repris du gaz du sang du jour tant que non modifié'},
+ {k:'lab_ht',    l:'Ht',                u:'%',      lo:37,   hi:46,    vn:'37 - 46',  m:{lo:40, hi:50, vn:'40 - 50'}, note:'Repris du gaz du sang du jour tant que non modifié'},
+ {k:'lab_plq',   l:'Plaquettes',        u:'G/L',    lo:185,  hi:445,   vn:'185 - 445', m:{lo:161, hi:398, vn:'161 - 398'}},
+ {k:'lab_pnn',   l:'Neutrophiles',      u:'G/L',    lo:1.78, hi:6.946, vn:'1,78 - 6,946', m:{lo:1.692, hi:7.5, vn:'1,692 - 7,500'}},
  {k:'lab_fib',   l:'Fibrinogène',       u:'g/L',    lo:2,    hi:4,     vn:'2,0 - 4,0'},
  {k:'lab_dd',    l:'D-dimères',         u:'µg/mL',  lo:0,    hi:0.5,   vn:'0,00 - 0,50'},
  {k:'lab_prot',  l:'Protéines totales', u:'g/L',    lo:64,   hi:83,    vn:'64,0 - 83,0'},
- {k:'lab_creat', l:'Créatinine',        u:'µmol/L', lo:45,   hi:84,    vn:'45,0 - 84,0'},
+ {k:'lab_creat', l:'Créatinine',        u:'µmol/L', lo:45,   hi:84,    vn:'45,0 - 84,0', m:{lo:59, hi:104, vn:'59,0 - 104,0'}},
  {k:'lab_dfg',   l:'DFG CKD-EPI',       u:'mL/min/1,73 m²', lo:90, hi:150, vn:'90 - 150'},
- {k:'lab_ck',    l:'CK',                u:'UI/L',   lo:26,   hi:192,   vn:'26 - 192'},
+ {k:'lab_ck',    l:'CK',                u:'UI/L',   lo:26,   hi:192,   vn:'26 - 192', m:{lo:39, hi:308, vn:'39 - 308'}},
  {k:'lab_crp',   l:'CRP',               u:'mg/L',   hi:5, hiStrict:1,  vn:'< 5,0'},
  {k:'lab_alb',   l:'Albumine',          u:'g/L',    lo:35,   hi:52,    vn:'35,0 - 52,0'},
- {k:'lab_myo',   l:'Myoglobine',        u:'µg/L',   lo:25,   hi:58,    vn:'25,0 - 58,0'},
+ {k:'lab_myo',   l:'Myoglobine',        u:'µg/L',   lo:25,   hi:58,    vn:'25,0 - 58,0', m:{lo:28, hi:72, vn:'28,0 - 72'}},
  {k:'lab_tropo', l:'Troponine',         u:'ng/L',   lo:0,    hi:14,    vn:'0 - 14'},
- {k:'lab_ntbnp', l:'NT-pro-BNP',        u:'ng/L',   lo:10,   hi:202,   vn:'10 - 202'}
+ {k:'lab_ntbnp', l:'NT-pro-BNP',        u:'ng/L',   lo:10,   hi:202,   vn:'10 - 202', m:{lo:10, hi:63, vn:'10 - 63'}}
 ];
-/* les champs d'un encart : la date et l'heure du prélèvement, puis un champ décimal par résultat */
+/* les champs d'un encart : la date et l'heure du prélèvement, puis un champ décimal par résultat ; le texte des VN sous le libellé
+   se compose à l'affichage, d'après le sexe (fHint) */
 const bioFields = (pre, L) => [
   {k:pre+'_date', l:'Date du prélèvement',  t:'date', nofill:1},
   {k:pre+'_h',    l:'Heure du prélèvement', t:'time', nofill:1}
-].concat(L.map(e=>({k:e.k, l:e.l, t:'num', dec:1, unit:e.u, nofill:1, bio:e, hint:'VN '+e.vn+(e.note ? '. '+e.note : '')})));
+].concat(L.map(e=>({k:e.k, l:e.l, t:'num', dec:1, unit:e.u, nofill:1, bio:e})));
 
 /* =====================================================================
    SPÉCIFICATION DES CHAMPS
@@ -1842,7 +1847,7 @@ const SPEC = [
   {k:'sf_subj_cote', l:'Côté', t:'choice', o:CO, dep:['sf_subj',[1]], sub:1}
 ]},
 
-{id:'subj', page:3, t:'Signes subjectifs — localisation', custom:'subj', cols:1, f:[]},
+{id:'subj', page:3, t:'Signes subjectifs — localisation', custom:'subj', cols:1, when:()=>REC.d.sf_subj!==0, f:[]},
 
 {id:'refsup', page:4, t:'Réflexes — membres supérieurs', cols:2,
  norm:{ref_bicip_D:1,ref_bicip_G:1,ref_tricip_D:1,ref_tricip_G:1,hoffman_D:0,hoffman_G:0}, f:[
@@ -2185,11 +2190,8 @@ const SPEC = [
 
 /* Biologie : deux encarts de l'onglet « Examens complémentaires », écrits en fin de SPEC pour ne pas déplacer les colonnes
    du fichier de données (before : ils s'affichent avant les autres examens). Ni reprise de l'examen précédent (noghost) ni
-   décompte de complétude : aucune valeur n'est attendue, l'encart dit combien sont saisies et combien sortent des VN. */
-{id:'bio_gds', t:'Gaz du sang veineux', cols:2, page:5, before:'examens', noghost:1, bio:1,
- note:'VN : valeurs normales de la feuille du service. Hors VN, la valeur s’écrit en gras et en rouge, ici et dans la synthèse (tableau des '+
-      'prélèvements du dossier, le plus récent à gauche). Virgule ou point ; « < » ou « > » accepté devant la valeur.',
- f:bioFields('gds', BIO_GDS)},
+   décompte de complétude : aucune valeur n'est attendue, l'encart dit seulement combien sont saisies. */
+{id:'bio_gds', t:'Gaz du sang veineux', cols:2, page:5, before:'examens', noghost:1, bio:1, f:bioFields('gds', BIO_GDS)},
 {id:'bio_lab', t:'Biologie', cols:2, page:5, before:'examens', noghost:1, bio:1, f:bioFields('lab', BIO_LAB)}
 ];
 
@@ -3014,12 +3016,11 @@ function fieldHTML(f){
     ctl='<div class="micwrap"><textarea id="i_'+f.k+'" oninput="setRaw(\''+f.k+'\',this.value)"'+
         (g?' placeholder="'+esc(String(g).slice(0,120))+'"':(f.ph?' placeholder="'+esc(f.ph)+'"':''))+'>'+esc(v||'')+'</textarea>'+micHTML(f)+'</div>'+ghostBtn(f,g);
   } else if(f.t==='num' && f.dec){
-    /* résultat de biologie : texte décimal, en gras et en rouge hors des valeurs normales */
-    const fl = v==null ? '' : bioAbn(f.bio, v);
+    /* résultat de biologie : texte décimal, en gras et en rouge hors des valeurs normales (celles du sexe de la fiche) */
+    const fl = v==null ? '' : bioAbn(f.bio, v, bioSexe());
     ctl='<input id="i_'+f.k+'" class="bio'+(fl?' bioab':'')+'" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" '+
         'value="'+esc(decShow(v))+'" oninput="setDec(\''+f.k+'\',this)" onblur="decBlur(\''+f.k+'\',this)">'+
-        (f.unit?'<span style="margin-left:5px;color:#5a6472;white-space:nowrap">'+esc(f.unit)+'</span>':'')+
-        '<span class="bioflag" id="bf_'+f.k+'">'+bioFlagTxt(fl)+'</span>';
+        (f.unit?'<span style="margin-left:5px;color:#5a6472;white-space:nowrap">'+esc(f.unit)+'</span>':'');
   } else if(f.t==='num'){
     ctl='<input id="i_'+f.k+'" type="number" inputmode="numeric" style="width:110px"'+
         (f.min!=null?' min="'+f.min+'"':'')+(f.max!=null?' max="'+f.max+'"':'')+
@@ -3049,7 +3050,7 @@ function fieldHTML(f){
   const phr = f.phr ? '<div class="phr">'+f.phr.map(p=>'<button onclick="addPhrase(\''+f.k+'\',this.textContent)">'+esc(p)+'</button>').join('')+'</div>' : '';
   return '<div class="row'+(f.sub?' sub':'')+(depOK(f)?'':' hidden')+'" id="r_'+f.k+'" '+(f.full?'style="grid-column:1/-1"':'')+'>'+
     '<span class="lbl">'+esc(fLab(f))+(f.req?' <span style="color:#a32020">*</span>':'')+helpBtn(f.help)+
-    (f.hint?'<small>'+esc(f.hint)+'</small>':'')+'</span>'+
+    (fHint(f)?'<small>'+esc(fHint(f))+'</small>':'')+'</span>'+
     '<span style="flex:1;min-width:0">'+ctl+phr+'</span></div>';
 }
 
@@ -3409,15 +3410,15 @@ function ghostBtn(f,g){
   return '<button class="ghb" title="Reprendre la valeur de l\'examen précédent" onclick="acceptGhost(\''+f.k+'\')">&#8617; '+esc(lbl)+'</button>';
 }
 
-/* le texte et la couleur du badge d'un encart : « 3/8 », ou, pour la biologie, « 3 valeurs · 1 hors VN » */
+/* le texte et la couleur du badge d'un encart : « 3/8 », ou, pour la biologie, « 3 valeurs » */
 const badgeTxt = fi => fi.txt!=null ? fi.txt : fi.done+'/'+fi.tot;
 const badgeCls = fi => fi.ab ? ' ab' : (fi.txt==null && fi.done===fi.tot && fi.tot>0 ? ' ok' : '');
 function secFill(s){
   if(s.bio){
     /* aucune valeur de biologie n'est attendue : l'encart ne compte pas dans la complétude, il dit combien de valeurs sont saisies */
-    let n = 0, ab = 0;
-    s.f.forEach(f=>{ if(!f.bio) return; const v = REC.d[f.k]; if(v==null || v==='') return; n++; if(bioAbn(f.bio, v)) ab++; });
-    return {done:0, tot:0, ab:ab, txt:n ? n+' valeur'+(n>1?'s':'')+(ab ? ' · '+ab+' hors VN' : '') : 'aucune valeur'};
+    let n = 0;
+    s.f.forEach(f=>{ if(!f.bio) return; const v = REC.d[f.k]; if(v!=null && v!=='') n++; });
+    return {done:0, tot:0, txt:n ? n+' valeur'+(n>1?'s':'') : 'aucune valeur'};
   }
   const vis = s.f.filter(f=>f.t!=='calc' && f.t!=='head' && !f.nofill && depOK(f));
   const done = vis.filter(f=>{const v=REC.d[f.k]; return Array.isArray(v)?v.length>0:(v!=null&&v!=='')}).length;
@@ -3660,6 +3661,8 @@ function pruneDeps(){
   if(isApnee(d)) delete d.pl_pal;
   /* l'échographie n'existe que si l'examen est coché OUI : sinon ses 24 zones n'ont pas d'objet */
   if(d.im_echopp!==1) echoKeys().forEach(k=>{ delete d[k]; });
+  /* « Signes subjectifs » = NON : l'encart de localisation n'existe plus, son schéma n'a plus d'objet */
+  if(d.sf_subj===0) VIEWS.forEach(v=>SLOTS.forEach(s=>['D','G'].forEach(sd=>{ delete d[subjKey(v.v,s.s,sd)]; })));
   /* le diagnostic principal doit rester l'un des diagnostics retenus */
   if(d.dg_principal!=null && (!Array.isArray(d.dg_liste) || d.dg_liste.indexOf(d.dg_principal)<0)) delete d.dg_principal;
   let again = true, guard = 0;
@@ -3712,7 +3715,7 @@ function refreshAutoFields(){
     const v = raw==null ? '' : (f && f.t==='date') ? isoToFr(raw) : (f && f.dec) ? decShow(raw) : pv;
     if(el.value !== v) el.value = v;
     const p = document.getElementById('p_'+k); if(p && p.value !== pv) p.value = pv;
-    if(f && f.dec){ const fl = raw==null ? '' : bioAbn(f.bio, raw); el.classList.toggle('bioab', !!fl); bioFlag(k, fl); }
+    if(f && f.dec) el.classList.toggle('bioab', !!(raw==null ? '' : bioAbn(f.bio, raw, bioSexe())));
   });
 }
 function autofill(k){
@@ -3789,26 +3792,47 @@ function decParse(s){
 /* la valeur enregistrée : un nombre, ou un texte comme « <5 » */
 const decNum = v => { if(typeof v==='number') return isFinite(v) ? {n:v, op:''} : null; const p = decParse(v); return (p.faux || p.vide) ? null : {n:p.n, op:p.op}; };
 const decShow = v => v==null ? '' : String(v).replace('.', ',');
-/* 'H' au-dessus des valeurs normales, 'L' en dessous, '' dans les VN (ou impossible à dire : « < 5 » pour des VN de 0 à 14) ; e : une ligne de BIO_GDS ou BIO_LAB */
-function bioAbn(e, v){
+/* Le sexe qui fixe les valeurs normales : celui de la fiche ouverte, à défaut celui renseigné sur la première fiche du dossier qui en
+   porte un (1 homme, 2 femme) ; sinon null. */
+function bioSexe(){
+  const ok = v => (v===1 || v===2) ? v : null;
+  const s = ok(REC.d.sexe); if(s) return s;
+  const doss = REC.d.dossier; if(!doss) return null;
+  const f = DB.filter(x=>x.d.dossier===doss && ok(x.d.sexe)).sort((a,b)=>stamp(a).localeCompare(stamp(b)))[0];
+  return f ? ok(f.d.sexe) : null;
+}
+/* les VN d'un paramètre pour un sexe : {lo, hi, hiStrict}. Sexe inconnu : la plus large des deux fourchettes. */
+function bioVN(e, sx){
+  if(!e.m || sx===2) return e;
+  if(sx===1) return {lo:e.m.lo, hi:e.m.hi, hiStrict:e.m.hiStrict};
+  return {lo:Math.min(e.lo, e.m.lo), hi:Math.max(e.hi, e.m.hi), hiStrict:false};
+}
+/* le texte des VN : « 13,5 - 17,5 » ; avec le sexe (long) : « homme 13,5 - 17,5 » quand les VN diffèrent ; sexe inconnu : « F 12 - 16 ; H 13,5 - 17,5 » */
+function bioVNtxt(e, sx, long){
+  if(!e.m) return e.vn;
+  if(sx===1) return (long ? 'homme ' : '')+e.m.vn;
+  if(sx===2) return (long ? 'femme ' : '')+e.vn;
+  return 'F '+e.vn+' ; H '+e.m.vn;
+}
+/* 'H' au-dessus des valeurs normales, 'L' en dessous, '' dans les VN (ou impossible à dire : « < 5 » pour des VN de 0 à 14) ; e : une ligne de BIO_GDS
+   ou BIO_LAB, sx : le sexe (voir bioSexe) */
+function bioAbn(e, v, sx){
   const x = decNum(v); if(!x || !e) return '';
-  if(x.op==='<') return (e.lo!=null && x.n <= e.lo) ? 'L' : '';
-  if(x.op==='>') return (e.hi!=null && x.n >= e.hi) ? 'H' : '';
-  if(e.lo!=null && x.n < e.lo) return 'L';
-  if(e.hi!=null && (e.hiStrict ? x.n >= e.hi : x.n > e.hi)) return 'H';
+  const n = bioVN(e, sx);
+  if(x.op==='<') return (n.lo!=null && x.n <= n.lo) ? 'L' : '';
+  if(x.op==='>') return (n.hi!=null && x.n >= n.hi) ? 'H' : '';
+  if(n.lo!=null && x.n < n.lo) return 'L';
+  if(n.hi!=null && (n.hiStrict ? x.n >= n.hi : x.n > n.hi)) return 'H';
   return '';
 }
-const bioFlagTxt = fl => fl==='H' ? 'au-dessus des VN' : fl==='L' ? 'en dessous des VN' : '';
-function bioFlag(k, fl){ const e = document.getElementById('bf_'+k); if(e) e.textContent = bioFlagTxt(fl); }
-/* Pendant la frappe, ni reconstruction ni reformatage : seuls la couleur et la mention « au-dessus des VN » suivent. Une saisie qui n'est pas
+/* Pendant la frappe, ni reconstruction ni reformatage : seule la couleur de la valeur suit (gras et rouge hors des VN). Une saisie qui n'est pas
    un nombre (lettres, « < » seul) laisse la valeur enregistrée en l'état ; le champ la rétablit à la sortie. */
 function setDec(k, el){
   const f = FIELDS[k], p = decParse(el.value);
   el.classList.toggle('bad', !!p.faux);
   if(p.faux) return;
   if(p.vide) delete REC.d[k]; else REC.d[k] = p.v;
-  const fl = p.vide ? '' : bioAbn(f.bio, p.v);
-  el.classList.toggle('bioab', !!fl); bioFlag(k, fl);
+  el.classList.toggle('bioab', !!(p.vide ? '' : bioAbn(f.bio, p.v, bioSexe())));
   touch(); softRefresh();
 }
 function decBlur(k, el){
@@ -3859,6 +3883,7 @@ function touch(){ DIRTY=true; REC.updated=new Date().toISOString(); updateBar();
 
 function refreshField(k){
   computeAll();
+  if(k==='sf_subj'){ renderForm(); return; }            // la réponse montre ou masque l'encart « Signes subjectifs — localisation »
   const f=FIELDS[k];
   if(!f){ softRefresh(); return; }
   const sec=SPEC.find(s=>s.id===f._sec);
@@ -6515,24 +6540,27 @@ function bioCols(fiches, pre, L){
   });
   return C.sort((a,b)=>b.when.localeCompare(a.when) || b.st.localeCompare(a.st));
 }
-/* un tableau : {html, lines} ; null s'il n'y a aucune valeur */
+/* un tableau : {html, lines, data} ; null s'il n'y a aucune valeur. data : le même tableau en données (titre, colonnes, lignes de cellules
+   {t, ab}) pour la copie au format RTF. Les VN et le gras rouge suivent le sexe de la fiche (bioSexe). */
 function bioTable(titre, L, C){
   const R = L.filter(e=>C.some(c=>{ const v = c.d[e.k]; return v!=null && v!==''; }));
   if(!R.length) return null;
-  const clean = TXT.clean, cell = (c, e) => { const v = c.d[e.k]; return (v==null || v==='') ? '' : decShow(v); };
+  const sx = bioSexe(), clean = TXT.clean, cell = (c, e) => { const v = c.d[e.k]; return (v==null || v==='') ? '' : decShow(v); };
   const ent = C.map(c=>({j:c.jour ? frDate(c.jour) : '', h:c.hm}));
   let h = '<p class="biocap" style="margin:4px 0 2px"><b>'+esc(titre)+'</b></p><div style="overflow-x:auto;max-width:100%"><table class="biot" style="'+BT.tbl+'"><tr>'+
     ['Paramètre','VN','Unité'].map(x=>'<th style="'+BT.th+'">'+x+'</th>').join('')+
     ent.map(x=>'<th style="'+BT.th+'">'+esc(x.j)+(x.h ? '<br>'+esc(x.h) : '')+'</th>').join('')+'</tr>';
   const lines = [titre, ['Paramètre','VN','Unité'].concat(ent.map(x=>(x.j+' '+x.h).trim())).join('\t')];
+  const data = {titre:titre, cols:['Paramètre','VN','Unité'].concat(ent.map(x=>x.j+(x.h ? '\n'+x.h : ''))), rows:[]};
   R.forEach(e=>{
-    const lab = clean(e.t || e.l), u = clean(e.u || '');
-    h += '<tr><td style="'+BT.tl+'">'+esc(lab)+'</td><td style="'+BT.td+'">'+esc(e.vn)+'</td><td style="'+BT.td+'">'+esc(u)+'</td>'+
-      C.map(c=>{ const t = cell(c, e); if(!t) return '<td style="'+BT.td+'">&nbsp;</td>';
-                 return '<td style="'+BT.td+'">'+(bioAbn(e, c.d[e.k]) ? '<b style="'+BT.ab+'">'+esc(t)+'</b>' : esc(t))+'</td>'; }).join('')+'</tr>';
-    lines.push([lab, e.vn, u].concat(C.map(c=>cell(c, e))).join('\t'));
+    const lab = clean(e.t || e.l), u = clean(e.u || ''), vn = bioVNtxt(e, sx);
+    const cs = C.map(c=>({t:cell(c, e), ab:!!bioAbn(e, c.d[e.k], sx)}));
+    h += '<tr><td style="'+BT.tl+'">'+esc(lab)+'</td><td style="'+BT.td+'">'+esc(vn)+'</td><td style="'+BT.td+'">'+esc(u)+'</td>'+
+      cs.map(c=>c.t ? '<td style="'+BT.td+'">'+(c.ab ? '<b style="'+BT.ab+'">'+esc(c.t)+'</b>' : esc(c.t))+'</td>' : '<td style="'+BT.td+'">&nbsp;</td>').join('')+'</tr>';
+    lines.push([lab, vn, u].concat(cs.map(c=>c.t)).join('\t'));
+    data.rows.push([{t:lab}, {t:vn}, {t:u}].concat(cs));
   });
-  return {html:h+'</table></div>', lines:lines};
+  return {html:h+'</table></div>', lines:lines, data:data};
 }
 /* le bloc « Résultats biologiques » : un tableau pour le gaz du sang, un pour la biologie ; rien s'il n'y a aucune valeur */
 function bioSynth(B, fiches){
@@ -6540,7 +6568,7 @@ function bioSynth(B, fiches){
              bioTable('Biologie', BIO_LAB, bioCols(fiches, 'lab', BIO_LAB))].filter(Boolean);
   if(!T.length) return;
   const lines = []; T.forEach((t, i)=>{ if(i) lines.push(''); t.lines.forEach(l=>lines.push(l)); });
-  B.push({h:'Résultats biologiques', lines:lines, inline:false, tbl:T.map(t=>t.html).join('')});
+  B.push({h:'Résultats biologiques', lines:lines, inline:false, tbl:T.map(t=>t.html).join(''), tabs:T.map(t=>t.data)});
 }
 
 function narrativeBlocks(){
@@ -6907,12 +6935,94 @@ function blocksHTML(B){
   }).join('');
 }
 function narrativeHTML(){ return blocksHTML(narrativeBlocks()); }
-/* Copie en texte brut ET en texte enrichi : collé dans un traitement de texte ou un dossier patient, le texte garde
-   ses titres soulignés et ses anomalies en gras ; collé dans un champ simple, il reste lisible. Si le navigateur ne
-   sait pas écrire du texte enrichi dans le presse-papiers, on copie un élément temporaire sélectionné. */
-function copyRich(html, txt, okMsg){
+/* =====================================================================
+   COPIE DU TEXTE ENRICHI : TEXTE BRUT, HTML ET RTF
+   Un traitement de texte intégré à un dossier patient est souvent fondé sur le contrôle « RichEdit » de Windows : il ne lit pas le HTML du
+   presse-papiers, il colle le texte brut, sans gras ni souligné. Il lit en revanche le RTF (c'est ce que Word lui donne, d'où le détour par
+   Word). Le document est donc aussi écrit en RTF. Seul Firefox sait le mettre dans le presse-papiers, par l'événement « copy »
+   (setData('text/rtf')) ; les autres navigateurs gardent le texte brut et le HTML, que Word lit.
+   Firefox sérialise cette donnée en UTF-16 (deux octets par caractère, dont un nul), que les lecteurs de RTF prennent pour du texte tronqué :
+   on loge donc deux caractères du RTF (de l'ASCII pur : tout le reste s'écrit \uN?) dans chaque unité de 16 bits, et les octets écrits sont
+   alors, un à un, ceux du RTF. Vérifié avec Firefox 137 et un contrôle RichEdit : gras, souligné, tableaux et accents sont collés.
+   ===================================================================== */
+const isFirefox = () => typeof navigator !== 'undefined' && /\bFirefox\/\d/.test(navigator.userAgent);
+/* un texte en RTF : \, { et } échappés, retour à la ligne en \line, tout ce qui n'est pas de l'ASCII en \uN? (unité UTF-16 signée) */
+function rtfEsc(s){
+  s = String(s==null ? '' : s);
+  let o = '';
+  for(let i = 0; i < s.length; i++){
+    const c = s.charCodeAt(i);
+    if(c === 92 || c === 123 || c === 125) o += '\\'+s[i];
+    else if(c === 10) o += '\\line ';
+    else if(c < 32 || c === 127) continue;
+    else if(c < 128) o += s[i];
+    else o += '\\u'+(c > 32767 ? c - 65536 : c)+'?';
+  }
+  return o;
+}
+/* un texte rédigé : ce que deux marqueurs (BO, BC) encadrent est en gras */
+function rtfBO(s){
+  const P = String(s==null ? '' : s).split(BC);
+  let o = '';
+  P.forEach((q, i)=>{
+    const j = q.indexOf(BO);
+    if(i < P.length-1 && j >= 0) o += rtfEsc(q.slice(0, j))+'{\\b '+rtfEsc(q.slice(j+1))+'}';
+    else o += rtfEsc(q.split(BO).join(''));
+  });
+  return o;
+}
+/* un tableau de biologie (bioTable : data) : titre, ligne d'en-têtes grisée, une ligne par paramètre, valeur hors VN en gras rouge */
+function rtfTable(t){
+  const n = t.cols.length, wd = [2300, t.rows.some(r=>r[1].t.length > 13) ? 2300 : 1500, 1300], cx = [];
+  for(let i = 3; i < n; i++) wd.push(1250);
+  let x = 0; wd.forEach(w=>{ x += w; cx.push(x); });
+  const brd = '\\clbrdrt\\brdrs\\brdrw10\\clbrdrl\\brdrs\\brdrw10\\clbrdrb\\brdrs\\brdrw10\\clbrdrr\\brdrs\\brdrw10';
+  const row = (cells, head) => '\\trowd\\trgaph55\\trleft0'+cells.map((c, i)=>brd+(head ? '\\clcbpat2' : '')+'\\clvertalc\\cellx'+cx[i]).join('')+
+    cells.map((c, i)=>'\\pard\\intbl'+(i ? '\\qc' : '\\ql')+'\\fs18 '+(head ? '{\\b '+rtfEsc(c.t)+'}' : (c.ab ? '{\\b\\cf1 '+rtfEsc(c.t)+'}' : rtfEsc(c.t)))+'\\cell').join('')+'\\row';
+  return '\\pard\\sa40\\keepn\\fs22 {\\b '+rtfEsc(t.titre)+'}\\par\r\n'+row(t.cols.map(c=>({t:c})), true)+'\r\n'+t.rows.map(r=>row(r, false)).join('\r\n')+'\r\n\\pard\\sa120\\fs22\\par';
+}
+/* les blocs du texte rédigé en RTF : même contenu que blocksHTML (titres en gras et soulignés, anomalies en gras, tableaux) */
+function blocksRTF(B){
+  const o = [];
+  B.forEach(b=>{
+    if(b.title){ o.push('\\pard\\sa120\\fs22 {\\b '+b.lines.map(rtfBO).join('\\line ')+'}\\par'); return; }
+    if(b.tabs){ o.push('\\pard\\sa40\\fs22 {\\b\\ul '+rtfEsc(b.h)+'} :\\par'); b.tabs.forEach(t=>o.push(rtfTable(t))); return; }
+    o.push('\\pard\\sa120\\fs22 {\\b\\ul '+rtfEsc(b.h)+'} :'+(b.inline ? ' ' : '\\line ')+b.lines.map(rtfBO).join('\\line ')+'\\par');
+  });
+  return '{\\rtf1\\ansi\\ansicpg1252\\uc1\\deff0\\deflang1036{\\fonttbl{\\f0\\fnil\\fcharset0 Calibri;}}{\\colortbl;\\red192\\green0\\blue0;\\red230\\green235\\blue242;}\\viewkind4\\f0\\fs22\r\n'+
+         o.join('\r\n')+'\r\n}';
+}
+/* deux caractères ASCII du RTF par unité de 16 bits (voir plus haut) */
+function rtfPack(r){
+  let o = '';
+  for(let i = 0; i < r.length; i += 2) o += String.fromCharCode(r.charCodeAt(i) | ((i+1 < r.length ? r.charCodeAt(i+1) : 32) << 8));
+  return o;
+}
+/* Copie en texte brut, en texte enrichi (HTML) et, sous Firefox, en RTF : collé dans Word, dans un traitement de texte ou dans un éditeur de
+   dossier patient, le texte garde ses titres soulignés, ses anomalies en gras et ses tableaux ; collé dans un champ simple, il reste lisible.
+   rtf : le document en RTF (blocksRTF), facultatif. Si le navigateur ne sait pas écrire du texte enrichi dans le presse-papiers, on copie un
+   élément temporaire sélectionné. */
+function copyRich(html, txt, okMsg, rtf){
   const ok = () => toast(okMsg), ko = () => toast('Copie impossible');
   const doc = '<div style="font-family:Calibri,Arial,sans-serif;font-size:11pt">'+html+'</div>';
+  /* Firefox : l'événement « copy » reçoit les trois formats d'un coup ; sans clic de l'utilisateur, il n'a pas lieu et l'on passe à la suite */
+  if(rtf && isFirefox() && SET.rtf !== false && /^[\x00-\x7f]*$/.test(rtf)){
+    const el = document.createElement('div'), sel = window.getSelection(), rg = document.createRange();
+    el.style.cssText = 'position:fixed;left:-9999px;top:0'; el.textContent = 'ADP'; document.body.appendChild(el);
+    rg.selectNodeContents(el); sel.removeAllRanges(); sel.addRange(rg);
+    let good = false;
+    const onCopy = e => {
+      try{
+        e.clipboardData.setData('text/plain', txt); e.clipboardData.setData('text/html', doc); e.clipboardData.setData('text/rtf', rtfPack(rtf));
+        e.preventDefault(); good = true;
+      }catch(x){}
+    };
+    document.addEventListener('copy', onCopy, true);
+    try{ document.execCommand('copy'); }catch(x){}
+    document.removeEventListener('copy', onCopy, true);
+    sel.removeAllRanges(); el.remove();
+    if(good){ ok(); return; }
+  }
   const viaSelection = () => {
     const el = document.createElement('div');
     el.contentEditable = 'true'; el.style.cssText = 'position:fixed;left:-9999px;top:0;white-space:pre-wrap';
@@ -7176,7 +7286,7 @@ function crhBlock(){
 function copyCRH(){
   const B = crhBlocks();
   if(!B.length){ toast('Rien à copier : renseignez le numéro de dossier'); return; }
-  copyRich(blocksHTML(B), blocksPlain(B), 'CRH copié');
+  copyRich(blocksHTML(B), blocksPlain(B), 'CRH copié', blocksRTF(B));
 }
 
 /* Le paragraphe d'évolution destiné au compte rendu de sortie.
@@ -7224,7 +7334,7 @@ function renderSynth(){ const el=$('#synth'); if(el) el.innerHTML=narrativeHTML(
   const ev=$('#evolp'); if(ev) ev.textContent = evolTexte() ||
     "Renseignez l'encart : le paragraphe s'écrit tout seul et se recopie dans le CRH.";
 }
-function copySynth(){ copyRich(narrativeHTML(), narrative(), 'Synthèse copiée'); }
+function copySynth(){ const B = narrativeBlocks(); copyRich(blocksHTML(B), blocksPlain(B), 'Synthèse copiée', blocksRTF(B)); }
 
 /* =====================================================================
    IMPRESSION / PDF
@@ -7807,7 +7917,7 @@ function doPrint(){
 /* =====================================================================
    COLONNES DU FICHIER STATISTIQUE + DICTIONNAIRE
    ===================================================================== */
-const SET = {pii:false, sep:';', poste:'', wedge:true, scanRe:'', hash:false, hashLen:12, salt:'', searchSame:true, autoDl:false, dictOk:false};
+const SET = {pii:false, sep:';', poste:'', wedge:true, scanRe:'', hash:false, hashLen:12, salt:'', searchSame:true, autoDl:false, dictOk:false, rtf:true};
 
 function codesOf(f){
   if(f.t==='choice' || f.t==='select')
@@ -7816,7 +7926,7 @@ function codesOf(f){
   if(f.t==='check')  return '1 = coche ; vide = non coche';
   if(f.t==='date')   return 'AAAA-MM-JJ';
   if(f.t==='time')   return 'HH:MM';
-  if(f.t==='num' && f.bio) return 'numerique decimal'+(f.unit?' ('+f.unit+')':'')+' ; valeurs normales : '+f.bio.vn+' ; un signe < ou > peut preceder la valeur';
+  if(f.t==='num' && f.bio) return 'numerique decimal'+(f.unit?' ('+f.unit+')':'')+' ; valeurs normales : '+(f.bio.m ? 'femme '+f.bio.vn+' ; homme '+f.bio.m.vn : f.bio.vn)+' ; un signe < ou > peut preceder la valeur';
   if(f.t==='num')    return 'numerique'+(f.unit?' ('+f.unit+')':'');
   if(f.t==='calc')   return 'numerique, calcule'+(f.unit?' ('+f.unit+')':'');
   return 'texte libre';
@@ -8222,7 +8332,7 @@ function sortedDB(){
    l'explique (diagnostic) et propose ce qui fonctionne : « Exporter tout en JSON » (dossier choisi, ou archive
    ZIP), téléchargement du JSON à chaque enregistrement, import d'un dossier ou d'une archive.
    ===================================================================== */
-const APP_VERSION = '8.1.3';
+const APP_VERSION = '8.2.0';
 /* hasPicker teste une fonction de l'API au moment de s'en servir : une extension ou un réglage du navigateur peut la retirer */
 const hasPicker = name => { try{ return typeof window[name] === 'function'; }catch(e){ return false; } };
 let FSA = hasPicker('showDirectoryPicker');
@@ -8309,7 +8419,7 @@ async function persistTomb(){ try{ await metaSet('deleted', TOMB); }catch(e){} }
 /* tous les réglages dans un seul enregistrement : écrire seulement une partie perdrait les autres */
 async function persistSettings(){
   await metaSet('settings',{poste:SET.poste, sep:SET.sep, pii:SET.pii, wedge:SET.wedge, scanRe:SET.scanRe,
-                            hash:SET.hash, hashLen:SET.hashLen, searchSame:SET.searchSame, autoDl:SET.autoDl, dictOk:SET.dictOk});
+                            hash:SET.hash, hashLen:SET.hashLen, searchSame:SET.searchSame, autoDl:SET.autoDl, dictOk:SET.dictOk, rtf:SET.rtf});
 }
 
 /* ---------- dossiers : choix, mémorisation, autorisation ---------- */
@@ -9216,9 +9326,9 @@ function dl(name,txt,type){
 const today = () => iso(new Date());
 
 async function saveSettings(){
-  const p=$('#setPoste'), sp=$('#setSep'), pi=$('#setPii');
+  const p=$('#setPoste'), sp=$('#setSep'), pi=$('#setPii'), rt=$('#setRtf');
   if(!p||!sp||!pi) return;
-  SET.poste = p.value.trim(); SET.sep = sp.value; SET.pii = pi.checked;
+  SET.poste = p.value.trim(); SET.sep = sp.value; SET.pii = pi.checked; if(rt) SET.rtf = rt.checked;
   await persistSettings();
   await writeDataFiles(true);
   toast('Reglages enregistres');
@@ -9235,6 +9345,9 @@ function openExport(){
      '<option value="\t"'+(SET.sep==='\t'?' selected':'')+'>tabulation</option></select>'+
    '<label>Identite</label><label style="font-weight:400"><input type="checkbox" id="setPii"'+(SET.pii?' checked':'')+
      '> inclure les donnees identifiantes dans le fichier de donnees (nom, prenom, date de naissance, adresse, telephone, e-mail, personne a prevenir, medecin traitant)</label>'+
+   '<label>Copie du texte</label><label style="font-weight:400"><input type="checkbox" id="setRtf"'+(SET.rtf!==false?' checked':'')+
+     '> ajouter le format RTF quand on copie la synthèse ou le CRH (Firefox) : le gras et le souligné se collent alors dans un éditeur de dossier qui ne lit que le RTF. '+
+     'À décocher si le collage montre du code ou des signes étranges.</label>'+
   '</div>'+
   '<div class="note"><b>Donnees de sante.</b> Par defaut le fichier statistique ne contient ni nom, ni prenom, ni date de naissance, ni coordonnees : '+
    'seuls le numero de dossier que vous saisissez, le sexe et l\'age calcule y figurent. L\'identite complete reste sur le PDF, dans la sauvegarde JSON et dans les fichiers JSON du dossier de donnees. '+
@@ -9555,6 +9668,9 @@ function xlsCtx(){
   if(X.diag==null) X.diag = null;
   X.proMil = d0.niv_pro!=null || d0.pl_type===3 || d0.pl_type===4 || d0.cadre_plongee===3;
   X.pro = X.proMil ? 1 : ((d0.pl_type!=null || d0.cadre_plongee!=null || d0.niv_loisir!=null) ? 0 : null);
+  /* « — » (rien de choisi) dans l'organisme et les niveaux de plongée = 0 (« aucun ») dans le fichier maître ; seulement quand la fiche
+     initiale existe, car elle seule porte ces menus : sans elle, une case vide veut dire « inconnu » */
+  X.zero = (init.d.fiche_type||1) === 1;
   X.lieu = xlsLieu(d0.pl_lieu);
   /* table initiale et séances complémentaires par famille de table */
   X.tb0 = d0.tb_table!=null && XLS_TABLE[d0.tb_table]!=null ? XLS_TABLE[d0.tb_table] : (d0.tb_table==null ? 0 : 6);
@@ -9580,11 +9696,11 @@ const XLS = [
  /* I  */ {h:'Nb total de plongée', n:'nombre total de plongées réalisées', f:X=>XN(X.d0.nb_plongees_total)},
  /* J  */ {h:'Nb moyen plongée par an', n:'nombre moyen de plongées par an', f:X=>XN(X.d0.nb_plongees_an)},
  /* K  */ {h:'Plongeur pro', n:'1 si niveau professionnel, plongée professionnelle ou militaire', f:X=>X.pro},
- /* L  */ {h:'Organisme', n:'FFESSM 1, FSGT 2, UCPA 3, ANMP 4, CMAS 6, PADI 7, autres 8', f:X=>X.d0.organisme!=null ? (XLS_ORG[X.d0.organisme]!=null ? XLS_ORG[X.d0.organisme] : 8) : null},
- /* M  */ {h:'Niveau plongeur loisir', n:'N1 / Open Water 1 … N5 5 ; baptême ou non breveté 0', f:X=>X.d0.niv_loisir!=null ? XN(XLS_LOIS[X.d0.niv_loisir]) : null},
- /* N  */ {h:'Niveau enseignement loisir', n:'E1 / BPJEPS 1, E2 2, E3 / MF1 3, E4 / MF2 / DEJEPS / DESJEPS 4', f:X=>X.d0.niv_ens!=null ? XN(XLS_ENS[X.d0.niv_ens]) : null},
- /* O  */ {h:'Niveau plongeur pro', n:'libellé du niveau ; « Aucun » si pas de plongée professionnelle ; la mention (A à D) n’est pas recueillie', f:X=>X.d0.niv_pro==null ? (X.pro===0 ? 'Aucun' : null) : (X.d0.niv_pro===99 ? XT(X.d0.niv_pro_autre) : xlsOpt('niv_pro', X.d0.niv_pro))},
- /* P  */ {h:'Niveau plongeur militaire', n:'libellé pour un plongeur d’armes ; la catégorie n’est pas recueillie', f:X=>(X.d0.niv_pro===5 || X.d0.niv_pro===6) ? xlsOpt('niv_pro', X.d0.niv_pro) : null},
+ /* L  */ {h:'Organisme', n:'rien de choisi : 0 ; FFESSM 1, FSGT 2, UCPA 3, ANMP 4, CMAS 6, PADI 7, autres 8', f:X=>X.d0.organisme!=null ? (XLS_ORG[X.d0.organisme]!=null ? XLS_ORG[X.d0.organisme] : 8) : (X.zero ? 0 : null)},
+ /* M  */ {h:'Niveau plongeur loisir', n:'rien de choisi, baptême ou non breveté : 0 ; N1 / Open Water 1 … N5 5', f:X=>X.d0.niv_loisir!=null ? XN(XLS_LOIS[X.d0.niv_loisir]) : (X.zero ? 0 : null)},
+ /* N  */ {h:'Niveau enseignement loisir', n:'rien de choisi : 0 ; E1 / BPJEPS 1, E2 2, E3 / MF1 3, E4 / MF2 / DEJEPS / DESJEPS 4', f:X=>X.d0.niv_ens!=null ? XN(XLS_ENS[X.d0.niv_ens]) : (X.zero ? 0 : null)},
+ /* O  */ {h:'Niveau plongeur pro', n:'rien de choisi : 0 ; sinon libellé du niveau ; la mention (A à D) n’est pas recueillie', f:X=>X.d0.niv_pro==null ? (X.zero ? 0 : null) : (X.d0.niv_pro===99 ? XT(X.d0.niv_pro_autre) : xlsOpt('niv_pro', X.d0.niv_pro))},
+ /* P  */ {h:'Niveau plongeur militaire', n:'libellé pour un plongeur d’armes ; sinon 0 (niveau civil ou rien de choisi) ; la catégorie n’est pas recueillie', f:X=>(X.d0.niv_pro===5 || X.d0.niv_pro===6) ? xlsOpt('niv_pro', X.d0.niv_pro) : (X.zero ? 0 : null)},
  /* Q  */ {h:'Date dernier certifical', n:'date du dernier certificat médical', f:X=>XD(X.d0.certif_date)},
  /* R  */ {h:'Qualification médecin', n:'fédéral 1, du sport 2, DIU 3, rééducateur 4, autre 5', f:X=>X.d0.certif_medecin!=null ? XN(XLS_MED[X.d0.certif_medecin]) : null},
  /* S  */ {h:'ATCD', n:'antécédents médico-chirurgicaux ; « ras » si aucun', f:X=>{ const t = X.TX0.atcd; if(!t.length) return null; const j = t.join(' ; ');
@@ -9651,7 +9767,7 @@ const XLS = [
           const L = X.ST.filter(s=>s.d.msh_total!=null), a = L.find(s=>s.d.msh_moment_eff==='t0') || L[0]; return a ? XN(a.d.msh_total) : null; }},
  /* BJ */ {h:'Score sévérité OI', n:'score vestibulaire du premier examen coté ; « ns » sinon', f:X=>{ if(X.noSc) return 'ns';
           const a = X.ST.find(s=>s.d.vest_total!=null); return a ? XN(a.d.vest_total) : 'ns'; }},
- /* BK */ {h:'Table Initiale', n:'O2 2,5 ATA 1 (OHB15, A15IOT), A18 2, B18 3, C18 4, héliox 5, autre 6, aucune 0', f:X=>X.tb0},
+ /* BK */ {h:'Table Initiale', n:'O2 2,5 ATA 1 (A15, A15IOT), A18 2, B18 3, C18 4, héliox 5, autre 6, aucune 0', f:X=>X.tb0},
  /* BL */ {h:'Heure de mise en pression', n:'heure de mise en pression de la table initiale', f:X=>XH(X.d0.tb_h_mep)},
  /* BM */ {h:'Délai de recompression', n:'délai 1ers symptômes → mise en pression', f:X=>XM(X.d0.tb_delai)},
  /* BN */ {h:'Traitements médicamenteux', n:'chiffres séparés par des espaces : ONB 1 ou 2, hydratation > 500 mL 3, aspirine 4, corticoïdes 5, lidocaïne 6, fluoxétine 7, autres 8 ; 0 si aucun', f:X=>{
@@ -9672,7 +9788,7 @@ const XLS = [
  /* BQ */ {h:'Evolution à 24h', n:'fiche la plus proche de H+24 (entre 12 h et 40 h)', f:X=>xlsEvol(X.h24, X.init)},
  /* BR */ {h:'Signes à 24h', n:'syndromes anormaux de la fiche proche de H+24', f:X=>xlsSignes(X.h24)},
  /* BS */ {h:"Nb séances d'OHB complémentaires\n(table héliox", n:'séances du dossier à 2,8 ATA ou héliox (A18, B18, C18, héliox), la table initiale déduite', f:X=>X.rc.total ? X.seances.a28 : null},
- /* BT */ {h:"Nb séances d'OHB complémentaires\n(table O2", n:'séances du dossier à l’oxygène 2,5 ATA (OHB15, A15IOT), la table initiale déduite', f:X=>X.rc.total ? X.seances.o2 : null},
+ /* BT */ {h:"Nb séances d'OHB complémentaires\n(table O2", n:'séances du dossier à l’oxygène 2,5 ATA (A15, A15IOT), la table initiale déduite', f:X=>X.rc.total ? X.seances.o2 : null},
  /* BU */ {h:'Séquelles sortie service', n:'dernier examen : signes objectifs 2, signes subjectifs 1, aucun 0', f:X=>{ const st = X.last, NEU = ['cer','ves','mot','sen','ref','coo','sph'];
           if(xlsAbn(st, NEU)) return 2;
           if(st.X.sen.items.some(i=>i.grp==='subj') || st.X.dou.items.length) return 1;
@@ -9792,8 +9908,8 @@ async function xlsxBlob(row){
 /* =====================================================================
    LIGNE EXCEL COHB (POUR L'ACTIVITÉ COHB)
    Le service tient aussi une feuille « Activité COHB » : une ligne par dossier clos, 31 colonnes (A à AE) : date de clôture,
-   identité, IPP, diagnostic, classement ARS, nombre de consultations, période de la première séance en urgence, séances par
-   table (en heures ouvrables ou non), actes, résidence. Même mécanique que la ligne Excel ADP (fichier maître) : texte à tabulations à
+   identité, IPP, diagnostic, classement ARS, nombre de consultations, période de la première séance en urgence, tables de
+   recompression enregistrées, par type (en heures ouvrables ou non), actes, résidence. Même mécanique que la ligne Excel ADP (fichier maître) : texte à tabulations à
    coller, ou classeur .xlsx. Ce que l'application ne recueille pas reste vide. Les en-têtes sont ceux de la feuille.
    ===================================================================== */
 const COHB_HEAD = [
@@ -9853,7 +9969,7 @@ function cohbPeriode(iso, hm){
   const mn = hm2min(hm); if(mn==null) return null;
   return (mn >= COHB_HO.debut && mn < COHB_HO.fin) ? 'O' : 'N';
 }
-/* table de l'application → colonne de la feuille (la colonne « HNO » est la suivante) : OHB15 → A15, tables avec intubation → IOT,
+/* table de l'application → colonne de la feuille (la colonne « HNO » est la suivante) : A15 → A15, tables avec intubation → IOT,
    A18, B18, C18, tables héliox → B18Hx ; une table « autre » n'est rangée nulle part */
 const COHB_TAB = {1:9, 2:13, 3:13, 4:15, 5:17, 6:11, 7:11, 8:19};
 const COHB_TXT = {add:'ADD', opi:'OPI', baro:'Barotraumatisme', bioch:'Accident biochimique', noyade:'Noyade'};
@@ -9890,14 +10006,14 @@ function cohbResidence(d){
 /* tout ce que la ligne lit en plus du contexte de la ligne principale, calculé une fois */
 function cohbCtx(X){
   const c = {n:{}}, i0 = X.init.d;
+  /* une table de recompression enregistrée = une séance : chaque fiche qui porte une table en compte une seule. Les nombres de séances
+     déclarés (« séances réalisées », « séances depuis la dernière consultation ») ne sont pas lus. La table compte pour sa période
+     (heures ouvrables, nuit, week-end ou jour férié) d'après sa date et son heure de mise en pression ; sans heure, en heures ouvrables. */
   X.FI.forEach(f=>{
-    const d = f.d, lib = tableLib(d); if(!lib) return;
-    const code = TABLES.some(t=>t.v===d.tb_table && t.v!==9) ? d.tb_table : 9, col = COHB_TAB[code]; if(col==null) return;
-    const n = Math.max(1, +d.tb_nb_seances || 0, +d.ev_seances || 0), per = cohbPeriode(d.date_ex, d.tb_h_mep || null);
-    /* la séance dont l'heure est connue compte pour sa période, les autres séances déclarées en heures ouvrables */
+    const d = f.d, code = TABLES.some(t=>t.v===d.tb_table && t.v!==9) ? d.tb_table : 9, col = COHB_TAB[code]; if(col==null) return;
+    const per = cohbPeriode(d.date_ex, d.tb_h_mep || null);
     const k = col + ((per==='N' || per==='W') ? 1 : 0);
     c.n[k] = (c.n[k] || 0) + 1;
-    c.n[col] = (c.n[col] || 0) + (n - 1);
   });
   c.g = (i0.tb_table!=null || i0.tb_h_mep) ? cohbPeriode(i0.date_ex, i0.tb_h_mep || i0.heure_pec || null) : null;
   c.dtc = X.FI.filter(f=>f.d.im_dtc===1).length;
@@ -9922,18 +10038,18 @@ const COHB = [
  /* G  */ {h:'1ere en urgence', n:'période de la mise en pression de la table initiale : O heures ouvrables (lundi au vendredi, de 7 h 45 à 16 h 00, hors jours fériés), N en semaine hors de ces heures, W week-end ou jour férié', f:X=>cohbX(X).g},
  /* H  */ {h:'nbre seance en repose pied', n:'non recueilli (la position du patient n’est pas saisie)', f:X=>null},
  /* I  */ {h:'nbre seance Alit', n:'non recueilli (la position du patient n’est pas saisie)', f:X=>null},
- /* J  */ {h:'A15', n:'séances OHB15 en heures ouvrables', f:X=>cohbN(X, 9)},
- /* K  */ {h:'A15HNO', n:'séances OHB15 hors heures ouvrables', f:X=>cohbN(X, 10)},
- /* L  */ {h:'B18Hx', n:'séances héliox (A18HeOx, B18HeOx) en heures ouvrables', f:X=>cohbN(X, 11)},
- /* M  */ {h:'B18HxHNO', n:'séances héliox hors heures ouvrables', f:X=>cohbN(X, 12)},
- /* N  */ {h:'IOT', n:'séances avec intubation (A15IOT, A18IOT) en heures ouvrables', f:X=>cohbN(X, 13)},
- /* O  */ {h:'IOTHNO', n:'séances avec intubation hors heures ouvrables', f:X=>cohbN(X, 14)},
- /* P  */ {h:'A18', n:'séances A18 en heures ouvrables', f:X=>cohbN(X, 15)},
- /* Q  */ {h:'A18HNO', n:'séances A18 hors heures ouvrables', f:X=>cohbN(X, 16)},
- /* R  */ {h:'B 18', n:'séances B18 en heures ouvrables', f:X=>cohbN(X, 17)},
- /* S  */ {h:'B18HNO', n:'séances B18 hors heures ouvrables', f:X=>cohbN(X, 18)},
- /* T  */ {h:'C18', n:'séances C18 en heures ouvrables', f:X=>cohbN(X, 19)},
- /* U  */ {h:'C18HNO', n:'séances C18 hors heures ouvrables', f:X=>cohbN(X, 20)},
+ /* J  */ {h:'A15', n:'tables A15 enregistrées, en heures ouvrables', f:X=>cohbN(X, 9)},
+ /* K  */ {h:'A15HNO', n:'tables A15 enregistrées, hors heures ouvrables', f:X=>cohbN(X, 10)},
+ /* L  */ {h:'B18Hx', n:'tables héliox (A18HeOx, B18HeOx) enregistrées, en heures ouvrables', f:X=>cohbN(X, 11)},
+ /* M  */ {h:'B18HxHNO', n:'tables héliox enregistrées, hors heures ouvrables', f:X=>cohbN(X, 12)},
+ /* N  */ {h:'IOT', n:'tables avec intubation (A15IOT, A18IOT) enregistrées, en heures ouvrables', f:X=>cohbN(X, 13)},
+ /* O  */ {h:'IOTHNO', n:'tables avec intubation enregistrées, hors heures ouvrables', f:X=>cohbN(X, 14)},
+ /* P  */ {h:'A18', n:'tables A18 enregistrées, en heures ouvrables', f:X=>cohbN(X, 15)},
+ /* Q  */ {h:'A18HNO', n:'tables A18 enregistrées, hors heures ouvrables', f:X=>cohbN(X, 16)},
+ /* R  */ {h:'B 18', n:'tables B18 enregistrées, en heures ouvrables', f:X=>cohbN(X, 17)},
+ /* S  */ {h:'B18HNO', n:'tables B18 enregistrées, hors heures ouvrables', f:X=>cohbN(X, 18)},
+ /* T  */ {h:'C18', n:'tables C18 enregistrées, en heures ouvrables', f:X=>cohbN(X, 19)},
+ /* U  */ {h:'C18HNO', n:'tables C18 enregistrées, hors heures ouvrables', f:X=>cohbN(X, 20)},
  /* V  */ {h:'Pansements', n:'non recueilli', f:X=>null},
  /* W  */ {h:'PRF', n:'non recueilli', f:X=>null},
  /* X  */ {h:'PTcO2', n:'non recueilli', f:X=>null},
@@ -10948,7 +11064,7 @@ async function saveDraft(){ if(DIRTY && REC) await metaSet('draft',JSON.parse(JS
   const s = await metaGet('settings');
   if(s){ SET.poste=s.poste||''; SET.sep=s.sep||';'; SET.pii=!!s.pii;
          SET.wedge = s.wedge!==false; SET.scanRe=s.scanRe||''; SET.hash=!!s.hash; SET.hashLen=s.hashLen||12;
-         SET.searchSame = s.searchSame!==false; SET.autoDl = !!s.autoDl; SET.dictOk = !!s.dictOk; }
+         SET.searchSame = s.searchSame!==false; SET.autoDl = !!s.autoDl; SET.dictOk = !!s.dictOk; SET.rtf = s.rtf!==false; }
   SET.salt = (await metaGet('salt')) || '';
   TOMB = (await metaGet('deleted')) || {};
   SYNCMAP = Object.assign({save:{}, search:{}}, (await metaGet('syncmap')) || {});

@@ -1,4 +1,4 @@
-# ADP — accident de plongée, version 8.1.3
+# ADP — accident de plongée, version 8.2.0
 
 Fichier unique : `index.html`. Aucun réseau, aucune dépendance externe, aucun compte.
 Double-cliquez dessus, il s'ouvre dans votre navigateur et tout fonctionne.
@@ -473,9 +473,9 @@ pleuro-pulmonaire** (point 4) et la **biologie** (voir plus bas) ont leur propre
 recompression, les actes, les traitements, l'évolution, le diagnostic et l'orientation restent dans « Conclusion et évolution ».
 
 1. **Recompression** : table, heures de mise en pression et de fin, séances, complications. Les tables
-   proposées sont OHB15, A15IOT, A18IOT, A18, B18, A18HeOx, B18HeOx, C18, et « autre » ; **B18** est
+   proposées sont A15 (nommée OHB15 jusqu'à la 8.1.3), A15IOT, A18IOT, A18, B18, A18HeOx, B18HeOx, C18, et « autre » ; **B18** est
    proposée d'office sur une consultation initiale. L'**heure de fin** est calculée (mise en pression
-   plus durée de la table : **95** (OHB15, portée de 90 à 95 min dans la 8.0.0), 115, 115, 90, 150, 110, 150 et
+   plus durée de la table : **95** (A15, portée de 90 à 95 min dans la 8.0.0), 115, 115, 90, 150, 110, 150 et
    300 min dans l'ordre ci-dessus) et reste modifiable.
 2. **Actes**, dans cet ordre : voie veineuse périphérique, **bilan biologique** (bilan accident de
    plongée et bilan œdème pulmonaire d'immersion cochés d'office sur une consultation initiale), puis
@@ -538,15 +538,14 @@ fiche dès qu'une valeur est saisie, et restent modifiables (un bilan rendu le l
 
 Chaque résultat est un **champ décimal** : virgule ou point, et un « < » ou un « > » devant la valeur est accepté (« < 5 »
 pour une CRP sous le seuil de dosage). Sous le libellé, les **valeurs normales (VN)** ; à droite, l'**unité**. Une valeur
-**hors des VN** s'écrit en **gras et en rouge**, avec la mention « au-dessus des VN » ou « en dessous des VN », dans la fiche
-et dans la synthèse. L'en-tête de l'encart dit combien de valeurs sont saisies et combien sortent des VN. Une saisie qui n'est
+**hors des VN** s'écrit en **gras et en rouge**, dans la fiche et dans la synthèse, **sans autre mention** (la 8.2.0 a retiré les
+mots « au-dessus des VN » et « en dessous des VN », ainsi que l'encart orange d'explication en tête de l'encart). L'en-tête de
+l'encart dit seulement combien de valeurs sont saisies. Une saisie qui n'est
 pas un nombre est refusée à la sortie du champ (la valeur enregistrée reste celle d'avant). Les bornes sont comprises dans les VN,
 sauf pour la CRP (« < 5,0 » : 5,0 est hors VN).
 
-| Encart | Paramètres : unité ; VN |
-|---|---|
-| Gaz du sang veineux | pH veineux (7,33 - 7,38) ; pO₂ veineux (mmHg ; 33 - 37) ; pCO₂ veineux (mmHg ; 40 - 50) ; HCO₃⁻ veineux (mmol/L ; 24 - 30) ; Hb (g/dL ; 12 - 16) ; Ht (% ; 37 - 46) ; lactates veineux (mmol/L ; 0,5 - 2,2) |
-| Biologie | leucocytes (G/L ; 4,020 - 11,420) ; Hb (g/dL ; 12 - 16) ; Ht (% ; 37 - 46) ; plaquettes (G/L ; 185 - 445) ; neutrophiles (G/L ; 1,78 - 6,946) ; fibrinogène (g/L ; 2,0 - 4,0) ; D-dimères (µg/mL ; 0,00 - 0,50) ; protéines totales (g/L ; 64,0 - 83,0) ; créatinine (µmol/L ; 45,0 - 84,0) ; DFG CKD-EPI (mL/min/1,73 m² ; 90 - 150) ; CK (UI/L ; 26 - 192) ; CRP (mg/L ; < 5,0) ; albumine (g/L ; 35,0 - 52,0) ; myoglobine (µg/L ; 25,0 - 58,0) ; troponine (ng/L ; 0 - 14) ; NT-pro-BNP (ng/L ; 10 - 202) |
+Les valeurs normales, paramètre par paramètre, sont dans le tableau de *Les valeurs normales s'adaptent au sexe*, plus bas : celles de
+la femme sont celles de votre feuille, celles de l'homme viennent de vos annotations.
 
 L'**hémoglobine et l'hématocrite du bilan** sont reprises du gaz du sang **du même jour** tant que vous ne les saisissez pas
 vous-même (même mécanique que l'heure de fin de table : proposées, puis modifiables) ; si la date du bilan diffère de celle du
@@ -557,7 +556,48 @@ depuis l'examen précédent : le prélèvement d'hier n'est pas celui d'aujourd'
 `gds_date`, `gds_h`, `gds_ph`, `gds_po2`, `gds_pco2`, `gds_hco3`, `gds_hb`, `gds_ht`, `gds_lac`, puis `lab_date`, `lab_h`,
 `lab_leuco`, `lab_hb`, `lab_ht`, `lab_plq`, `lab_pnn`, `lab_fib`, `lab_dd`, `lab_prot`, `lab_creat`, `lab_dfg`, `lab_ck`,
 `lab_crp`, `lab_alb`, `lab_myo`, `lab_tropo`, `lab_ntbnp`), en nombres à point décimal ; une valeur saisie avec « < » ou « > »
-y reste du texte (`<5`). Les VN et les unités sont dans le dictionnaire.
+y reste du texte (`<5`). Les VN (celles de la femme et de l'homme quand elles diffèrent) et les unités sont dans le dictionnaire.
+
+### Les valeurs normales s'adaptent au sexe
+
+Depuis la 8.2.0, les VN suivent le **sexe** renseigné dans l'onglet Administratif (« Sexe » : M, F ou Autre) ou, à défaut, sur la première fiche du dossier qui
+le porte. Votre feuille donne les VN de la **femme** ; vos annotations donnent celles de l'**homme** quand elles diffèrent (11 paramètres sur 23) :
+
+| Encart | Paramètre | Unité | VN femme (feuille) | VN homme (annotation) |
+|---|---|---|---|---|
+| Gaz du sang veineux | pH veineux | | 7,33 - 7,38 | identique |
+| | pO₂ veineux | mmHg | 33 - 37 | identique |
+| | pCO₂ veineux | mmHg | 40 - 50 | identique |
+| | HCO₃⁻ veineux | mmol/L | 24 - 30 | identique |
+| | **Hb** | g/dL | 12 - 16 | **13,5 - 17,5** |
+| | **Ht** | % | 37 - 46 | **40 - 50** |
+| | lactates veineux | mmol/L | 0,5 - 2,2 | identique |
+| Biologie | **leucocytes** | G/L | 4,020 - 11,420 | **4,090 - 11,000** |
+| | **Hb** | g/dL | 12 - 16 | **13,5 - 17,5** |
+| | **Ht** | % | 37 - 46 | **40 - 50** |
+| | **plaquettes** | G/L | 185 - 445 | **161 - 398** |
+| | **neutrophiles** | G/L | 1,78 - 6,946 | **1,692 - 7,500** |
+| | fibrinogène | g/L | 2,0 - 4,0 | identique |
+| | D-dimères | µg/mL | 0,00 - 0,50 | identique |
+| | protéines totales | g/L | 64,0 - 83,0 | identique |
+| | **créatinine** | µmol/L | 45,0 - 84,0 | **59,0 - 104,0** |
+| | DFG CKD-EPI | mL/min/1,73 m² | 90 - 150 | identique |
+| | **CK** | UI/L | 26 - 192 | **39 - 308** |
+| | CRP | mg/L | < 5,0 | identique |
+| | albumine | g/L | 35,0 - 52,0 | identique |
+| | **myoglobine** | µg/L | 25,0 - 58,0 | **28,0 - 72** |
+| | troponine | ng/L | 0 - 14 | identique |
+| | **NT-pro-BNP** | ng/L | 10 - 202 | **10 - 63** (à vérifier, voir la fin des changements de la 8.2.0) |
+
+- **Un homme** : le texte sous le libellé donne la VN de l'homme (« VN homme 13,5 - 17,5 »), qui décide aussi du gras et du rouge, de la colonne
+  « VN » du tableau de la synthèse et du compte rendu, et de la ligne du dictionnaire.
+- **Une femme** : mêmes emplacements, avec la VN de la femme (« VN femme 12 - 16 »).
+- **Un paramètre identique pour les deux sexes** garde « VN 7,33 - 7,38 », sans mention du sexe.
+- **Sexe non renseigné, ou « autre »** : l'application ne choisit pas. Elle écrit les deux fourchettes (« VN F 12 - 16 ; H 13,5 - 17,5 ») et ne
+  met en gras et en rouge qu'une valeur **hors des deux** (pour l'hémoglobine : sous 12 ou au-dessus de 17,5).
+- Le **sexe de la fiche ouverte** prime ; changer le sexe réaffiche aussitôt les VN et recolore les valeurs déjà saisies. Le CSV ne contient que
+  les valeurs saisies : il ne change pas, les VN (femme et homme) sont dans le dictionnaire.
+- Les « < » et « > » suivent la VN du sexe (« < 13 » en hémoglobine est sous les VN d'un homme, pas d'une femme).
 
 ### Dans la synthèse et le compte rendu
 
@@ -565,7 +605,8 @@ La synthèse écrit, après les examens paracliniques, un bloc **Résultats biol
 pour la biologie, avec une ligne par paramètre saisi au moins une fois (paramètre, VN, unité) et **une colonne par prélèvement
 du dossier, le plus récent à gauche** (date et heure en tête). Les tableaux s'enrichissent donc de jour en jour : la synthèse
 d'une fiche montre les prélèvements du dossier **jusqu'à cette fiche** ; le compte rendu d'hospitalisation montre **tous** ceux du
-dossier. Les valeurs hors VN sont en gras et en rouge (en style en ligne : il suit la copie vers un traitement de texte) ; dans
+dossier. Les valeurs hors VN sont en gras et en rouge (en style en ligne : il suit la copie vers un traitement de texte) ; la colonne « VN » donne les valeurs normales du sexe
+du patient (les deux fourchettes si le sexe n'est pas renseigné) ; dans
 le texte brut, le tableau est un texte à tabulations. Les Hb et Ht du bilan reprises du gaz du sang ne font pas, à elles seules, un
 tableau « Biologie » : elles figurent déjà dans celui du gaz du sang. Sur le papier, les tableaux s'impriment dans l'encart
 « Synthèse » (une dizaine de centimètres de plus quand les 23 paramètres sont saisis).
@@ -680,7 +721,8 @@ observation d'entrée, en **paragraphes distincts dont le titre est en gras et s
 *Diagnostic retenu*, *Conduite à tenir*. Chaque phrase vient d'un champ renseigné ; une négation (« absence
 de… ») n'est écrite que si l'item a été examiné. Le bouton **Copier** met le texte dans le presse-papiers **en
 texte enrichi** (titres soulignés et anomalies en gras, pour un traitement de texte ou un dossier patient) et en
-texte brut pour un champ simple, où il n'y a ni gras ni souligné.
+texte brut pour un champ simple, où il n'y a ni gras ni souligné ; sur Firefox, aussi en **RTF**, que lisent les éditeurs de
+dossier patient qui ignorent le HTML (voir *Copier vers un traitement de texte ou le dossier patient*).
 
 ### Ce qui est anormal est en gras
 
@@ -733,6 +775,30 @@ et `syndromes` (leur traduction), en fin de script de `index.html`.
 
 Chacun de ces choix est une ligne de la fonction `narrativeBlocks`, en fin de script.
 
+### Copier vers un traitement de texte ou le dossier patient
+
+**Copier** (synthèse) et **Copier le CRH** posent le texte dans le presse-papiers sous plusieurs formes à la fois ; le logiciel qui reçoit
+prend celle qu'il sait lire :
+
+| Où l'on colle | Ce qui est collé |
+|---|---|
+| un champ de texte simple | le texte brut, sans gras ni souligné |
+| Word, LibreOffice, un courriel | le HTML (ou le RTF) : titres en gras et soulignés, anomalies en gras, tableaux de biologie |
+| l'éditeur de texte du dossier patient | le **RTF**, s'il le lit : gras, souligné, rouge et tableaux, **directement**, sans passer par Word |
+
+Un navigateur n'écrit, dans le presse-papiers, que du texte brut et du HTML. Beaucoup d'éditeurs intégrés à un dossier patient ne lisent pas le
+HTML : ils prennent le texte brut, et le gras disparaît. Word, lui, lit le HTML puis écrit du RTF quand on copie depuis lui : c'est très probablement
+pourquoi le détour par Word fonctionnait (je n'ai pas pu examiner votre éditeur). Depuis la 8.2.0, ADP écrit lui-même le RTF, mais **seul Firefox le permet** :
+
+- **sous Firefox**, un clic envoie les trois formats (texte brut, HTML, RTF). Le RTF est écrit en ASCII (accents et signes en `\uN`), avec les
+  mêmes titres en gras et soulignés que le HTML, les anomalies en gras, les valeurs de biologie hors des VN en gras et en rouge, et les
+  tableaux de biologie (bordures, ligne d'en-tête grisée) ;
+- **sous Chrome et Edge**, rien ne change : aucun navigateur de cette famille ne laisse une page écrire du RTF. La copie reste en HTML et en
+  texte brut, et le gras ne passe pas dans un éditeur qui ne lit que le RTF. Ouvrez ADP dans Firefox pour copier, ou gardez le détour par Word.
+
+Dans **Exporter**, la case « Copie du texte : ajouter le format RTF… » (cochée par défaut) désactive cette option : décochez-la si le collage
+affiche du code (« {\rtf1… ») ou des signes étranges dans votre éditeur ; la copie est alors celle de la 8.1.3. Le réglage est mémorisé avec les autres.
+
 ---
 
 ## Le paragraphe d'évolution pour le compte rendu
@@ -752,7 +818,8 @@ presse-papiers.
 Sur une **consultation de sortie**, l'encart **Compte rendu d'hospitalisation**, en fin d'onglet « Conclusion et
 évolution », écrit un texte enrichi **sans en-tête** à partir de **toutes les fiches du dossier**, la fiche ouverte
 comprise même si elle n'est pas enregistrée. Il se recalcule à la saisie. Le bouton **Copier le CRH** le place dans
-le presse-papiers en texte enrichi (titres soulignés, anomalies en gras) et en texte brut. Il n'est pas ajouté au
+le presse-papiers en texte enrichi (titres soulignés, anomalies en gras, tableaux ; sur Firefox aussi en RTF, voir *Copier vers un
+traitement de texte ou le dossier patient*) et en texte brut. Il n'est pas ajouté au
 PDF. C'est un **brouillon à relire** avant de le coller dans le dossier du patient.
 
 Les fiches sont rangées par date et heure d'examen ; **J0** est la date de la première.
@@ -795,7 +862,7 @@ vide n'est jamais tenu pour normal.
 ### Les recompressions, par type de table
 
 La dernière ligne du paragraphe « Prise en charge » compte les séances du dossier **par type de table** :
-« Recompressions : 5 séances au total (OHB15 : 3 ; B18 : 1 ; type non précisé : 1). » Règle :
+« Recompressions : 5 séances au total (A15 : 3 ; B18 : 1 ; type non précisé : 1). » Règle :
 
 - une fiche qui porte une **table** (champ « Table utilisée ») compte pour le **plus grand** de ses « Nombre de séances
   réalisées » et « Séances réalisées depuis la dernière consultation », et pour **une séance au moins** ;
@@ -803,7 +870,7 @@ La dernière ligne du paragraphe « Prise en charge » compte les séances du do
   précisé ») : la fiche ne dit pas de quelle table il s'agit ;
 - une table **hors liste** compte sous le nom saisi (« Table Comex 30 : 2 ») ; les noms identiques à la casse près se
   regroupent ;
-- les types s'écrivent dans l'ordre de la liste des tables (OHB15, A15IOT, A18IOT, A18, B18, A18HeOx, B18HeOx,
+- les types s'écrivent dans l'ordre de la liste des tables (A15, A15IOT, A18IOT, A18, B18, A18HeOx, B18HeOx,
   C18, autre).
 
 La table **B18 proposée d'office** sur une fiche initiale compte comme une table : décochez-la, ou videz le champ,
@@ -931,11 +998,11 @@ l'IRM et les traitements.
 | I | Nb total de plongée | nombre total de plongées réalisées |
 | J | Nb moyen plongée par an (2 dernières années) | nombre moyen de plongées par an |
 | K | Plongeur pro (militaire ou civil) | 1 si niveau professionnel, plongée professionnelle ou militaire |
-| L | Organisme d'affiliation actuel | FFESSM 1, FSGT 2, UCPA 3, ANMP 4, CMAS 6, PADI 7, autres 8 |
-| M | Niveau plongeur loisir | N1 / Open Water 1 … N5 5 ; baptême ou non breveté 0 |
-| N | Niveau enseignement loisir | E1 / BPJEPS 1, E2 2, E3 / MF1 3, E4 / MF2 / DEJEPS / DESJEPS 4 |
-| O | Niveau plongeur pro (classe et mention) | libellé du niveau ; « Aucun » si pas de plongée professionnelle ; la mention (A à D) n’est pas recueillie |
-| P | Niveau plongeur militaire/ | libellé pour un plongeur d’armes ; la catégorie n’est pas recueillie |
+| L | Organisme d'affiliation actuel | rien de choisi (« — ») : 0 ; FFESSM 1, FSGT 2, UCPA 3, ANMP 4, CMAS 6, PADI 7, autres 8 |
+| M | Niveau plongeur loisir | N1 / Open Water 1 … N5 5 ; baptême, non breveté ou rien de choisi (« — ») : 0 |
+| N | Niveau enseignement loisir | rien de choisi (« — ») : 0 ; E1 / BPJEPS 1, E2 2, E3 / MF1 3, E4 / MF2 / DEJEPS / DESJEPS 4 |
+| O | Niveau plongeur pro (classe et mention) | rien de choisi (« — ») : 0 (la 8.1.3 écrivait « Aucun ») ; sinon le libellé du niveau ; la mention (A à D) n’est pas recueillie |
+| P | Niveau plongeur militaire/ | libellé pour un plongeur d’armes ; sinon 0 (niveau civil ou rien de choisi) ; la catégorie n’est pas recueillie |
 | Q | Date dernier certifical médical (JJ:MM:AA) | date du dernier certificat médical |
 | R | Qualification médecin assurant suivi plongée | fédéral 1, du sport 2, DIU 3, rééducateur 4, autre 5 |
 | S | ATCD | antécédents médico-chirurgicaux ; « ras » si aucun |
@@ -982,7 +1049,7 @@ l'IRM et les traitements.
 | BH | Troubles sphictériens | troubles vésico-sphinctériens du premier examen |
 | BI | Score MEDSUBHYP | à l’arrivée si coté, sinon le premier disponible ; vide si la case « ne pas mentionner les scores » est cochée |
 | BJ | Score sévérité OI | score vestibulaire du premier examen coté ; « ns » sinon |
-| BK | Table Initiale | O2 2,5 ATA 1 (OHB15, A15IOT), A18 2, B18 3, C18 4, héliox 5, autre 6, aucune 0 |
+| BK | Table Initiale | O2 2,5 ATA 1 (A15, A15IOT), A18 2, B18 3, C18 4, héliox 5, autre 6, aucune 0 |
 | BL | Heure de mise en pression (hh:mm) | heure de mise en pression de la table initiale |
 | BM | Délai de recompression après 1ers symptômes (hh:mm) | délai 1ers symptômes → mise en pression |
 | BN | Traitements médicamenteux, y compris ceux avant arrivée au SMHEP: (le ou les chiffres) | chiffres séparés par des espaces : ONB 1 ou 2, hydratation > 500 mL 3, aspirine 4, corticoïdes 5, lidocaïne 6, fluoxétine 7, autres 8 ; 0 si aucun |
@@ -991,7 +1058,7 @@ l'IRM et les traitements.
 | BQ | Evolution à 24h (par rapport arrivée SMHEP): | fiche la plus proche de H+24 (entre 12 h et 40 h) |
 | BR | Signes à 24h | syndromes anormaux de la fiche proche de H+24 |
 | BS | Nb séances d'OHB complémentaires (table héliox, 2,8 ou 4 ATA) | séances du dossier à 2,8 ATA ou héliox (A18, B18, C18, héliox), la table initiale déduite |
-| BT | Nb séances d'OHB complémentaires (table O2, 2,5 ATA) | séances du dossier à l’oxygène 2,5 ATA (OHB15, A15IOT), la table initiale déduite |
+| BT | Nb séances d'OHB complémentaires (table O2, 2,5 ATA) | séances du dossier à l’oxygène 2,5 ATA (A15, A15IOT), la table initiale déduite |
 | BU | Séquelles sortie service | dernier examen : signes objectifs 2, signes subjectifs 1, aucun 0 |
 | BV | Médecin ayant pris en charge le patient | médecin de la fiche initiale (sinon l’examinateur) |
 | BW | Observations | lieu non codé, apnées, conditions environnementales, tables « autres » |
@@ -1013,6 +1080,13 @@ l'IRM et les traitements.
 Les colonnes qu'ADP **ne recueille pas** (AC, AQ, AT, AY, BX, BY, CE, CF, CG, CI, CJ, CK) restent vides. La colonne Z
 (appareil utilisé) est **« circuit ouvert » par défaut** hors apnée : ADP ne demande ni recycleur ni caisson. Les niveaux
 professionnel et militaire (O, P) sont repris en toutes lettres, la mention (A à D) et la catégorie n'étant pas recueillies.
+
+**Rien de choisi = 0** (depuis la 8.2.0). Quand la fiche initiale du dossier laisse « — » dans l'organisme d'affiliation (L), le niveau de
+plongeur de loisir (M), le niveau d'enseignement (N) ou le niveau de plongeur professionnel (O), la case correspondante du fichier maître reçoit
+**0** au lieu de rester vide ; la colonne P (militaire) reçoit 0 pour un niveau civil ou quand rien n'est choisi. La colonne O écrivait « Aucun »
+dans ce cas : elle écrit 0. Un dossier **sans fiche initiale** laisse ces cinq cases vides (les menus se posent sur la fiche initiale : sans elle,
+une case vide veut dire « inconnu »). La colonne R (qualification du médecin) reste vide quand rien n'est choisi : la légende de votre fichier
+n'y prévoit pas de 0.
 
 ### Le diagnostic (colonne G)
 
@@ -1058,7 +1132,7 @@ feuille n'est ni lue ni modifiée.
 | F | CS | nombre de fiches du dossier (une consultation par fiche) |
 | G | 1ere en urgence | période de la mise en pression de la table initiale : **O** heures ouvrables (lundi au vendredi, de 7 h 45 à 16 h 00, hors jours fériés), **N** en semaine hors de ces heures, **W** week-end ou jour férié |
 | H, I | nbre seance en repose pied, nbre seance Alité | non recueillis (la position du patient n'est pas saisie) |
-| J à U | A15, A15HNO, B18Hx, B18HxHNO, IOT, IOTHNO, A18, A18HNO, B 18, B18HNO, C18, C18HNO | séances par table, voir ci-dessous |
+| J à U | A15, A15HNO, B18Hx, B18HxHNO, IOT, IOTHNO, A18, A18HNO, B 18, B18HNO, C18, C18HNO | tables enregistrées, voir ci-dessous |
 | V, W, X | Pansements, PRF, PTcO2 | non recueillis |
 | Y | DTC | nombre de doppler transcrâniens réalisés (fiches du dossier) |
 | Z | Audio / Tympan | non recueilli |
@@ -1066,12 +1140,13 @@ feuille n'est ni lue ni modifiée.
 | AB, AC, AD | EE / plateau technique, Echo-doppler, CACI plongée | non recueillis (le doppler transcrânien est compté en Y) |
 | AE | Résidence | voir ci-dessous |
 
-**Séances par table.** Une fiche qui porte une table compte pour le nombre de séances qu'elle déclare (le plus grand de « séances
-réalisées » et de « séances depuis la dernière consultation », une au moins), comme dans le compte rendu. Correspondance :
-OHB15 → A15 ; A15IOT et A18IOT → IOT ; A18 → A18 ; B18 → B 18 ; A18HeOx et B18HeOx → B18Hx ; C18 → C18 ; une table « autre » n'est
-rangée nulle part. La colonne « HNO » qui suit chacune reçoit les séances hors heures ouvrables. La séance dont l'heure de mise en
-pression est connue compte pour sa période ; les **autres séances déclarées** (une fiche de suivi qui annonce trois séances) sont
-comptées en **heures ouvrables**, faute d'heure.
+**Tables enregistrées.** Depuis la 8.2.0, la ligne compte les **tables de recompression enregistrées** : une fiche qui porte une table
+compte pour **une table**, rangée dans la colonne de son type, en heures ouvrables ou dans la colonne « HNO » qui la suit d'après l'heure de sa
+mise en pression. Les séances « déclarées » (« séances réalisées », « séances depuis la dernière consultation ») ne sont plus lues : leur
+total ne coïncidait pas avec le nombre de fiches. Une fiche sans table n'en compte aucune. Correspondance : A15 → A15 ; A15IOT et A18IOT → IOT ;
+A18 → A18 ; B18 → B 18 ; A18HeOx et B18HeOx → B18Hx ; C18 → C18 ; une table « autre » n'est rangée nulle part. Une table dont l'heure de mise en
+pression est inconnue est comptée en **heures ouvrables**, faute d'heure. La table B18 proposée d'office sur la fiche initiale compte comme une
+table : videz le champ quand aucune recompression n'a eu lieu.
 
 **Heures ouvrables.** Du lundi au vendredi, de **7 h 45** (comprise) à **16 h 00** (exclue), hors **jours fériés** français (1er janvier, lundi de
 Pâques, 1er mai, 8 mai, Ascension, lundi de Pentecôte, 14 juillet, 15 août, 1er novembre, 11 novembre, 25 décembre, calculés pour
@@ -1194,6 +1269,11 @@ Chaque cotation a son propre motif, visible à l'écran comme sur le PDF imprim�
 |---|---|
 | Signes subjectifs | fourmillements, picotements, peau cartonnée, brûlures, décharges électriques, engourdissement |
 | Lésions cutanées | marbrures (cutis marmorata), érythème, œdème localisé, prurit, emphysème sous-cutané, purpura |
+
+Le schéma des **signes subjectifs** suit la question « Signes subjectifs » de l'examen général : répondre **NON** retire tout de suite l'encart
+« Signes subjectifs — localisation » (de la page, de la liste des encarts et de la saisie) et **efface les zones déjà dessinées** ; sans réponse,
+l'encart est proposé (avec un rappel : répondre OUI pour que le schéma soit exporté), et avec OUI aussi. Cliquer une seconde fois sur NON retire
+la réponse, et l'encart revient. *Tout renseigner comme NORMAL* répond NON. La page imprimée ne change pas.
 
 Les sensibilités, elles, ne se cotent plus par zone anatomique mais par métamère. Voir la section
 suivante.
@@ -1492,7 +1572,7 @@ d = pd.read_csv("donnees_neuro.csv", sep=";", encoding="utf-8-sig")
 | Adressé par | `adresse_par` : `1 = SAMU 83`, `2 = SCMM`, `3 = autre SAMU`, `5 = SAU HNIA SA`, `4 = autre` (établissement, avec son type et son nom) ; `adresse_etab_type` : `1 = SAU`, `2 = centre hyperbare`, `3 = non défini` |
 | Moyen d'évacuation | `evac_moyen` : `1` moyens propres, `2` VSAV / pompiers, `3` SMUR routier, `7` hélicoptère médicalisé, `8` hélicoptère non médicalisé, `6` autre |
 | Sonde vésicale | `ac_sonde` : `2 = sonde à demeure`, `3 = sondage évacuateur`, `0 = non` ; `ac_sonde_vol` : volume initial évacué (mL) |
-| Table de recompression | `tb_table` : `1 = OHB15`, `2 = A15IOT`, `3 = A18IOT`, `4 = A18`, `5 = B18`, `6 = A18HeOx`, `7 = B18HeOx`, `8 = C18`, `9 = autre` (texte dans `tb_table_autre`) ; `tb_duree` : durée de la table en minutes, calculée (OHB15 : 95) |
+| Table de recompression | `tb_table` : `1 = A15`, `2 = A15IOT`, `3 = A18IOT`, `4 = A18`, `5 = B18`, `6 = A18HeOx`, `7 = B18HeOx`, `8 = C18`, `9 = autre` (texte dans `tb_table_autre`) ; `tb_duree` : durée de la table en minutes, calculée (A15 : 95) |
 | ECG | `im_ecg`, `ecg_fc` (bpm), `ecg_qtc` (ms), `ecg_txt` (compte rendu, texte) |
 | (Méthyl)prednisolone | `rx_solu`, `rx_solu_dose` (mg par jour), `rx_solu_jours` (jours), `rx_solu_h` (heure de la 1re dose) |
 | Type de profil de plongée | `pl_profil_type` : `1 = carré`, `2 = inversé`, `3 = yoyo`, `4 = remontée progressive` (proposée d'office), `5 = apnée` ; inversé : `pl_prof1`, `pl_h_inv` ; yoyo : `pl_yoyo_nb`, `pl_yoyo_amp`, `pl_yoyo_surf` (`1 = oui`, `0 = non`), `pl_yoyo_int`, et `pl_yoyo_crit` (`1` si les critères du yoyo sont remplis, `0` sinon, calculé) ; remontée progressive : `pl_dpmax` (durée à la profondeur maximale, min), `pl_prof_df` (profondeur au départ du fond) |
@@ -1514,7 +1594,7 @@ d = pd.read_csv("donnees_neuro.csv", sep=";", encoding="utf-8-sig")
 | Listes à cases | une colonne binaire par case (`atcd_med_hta`, `tox_tabac`, `atcdp_add`…) et une colonne texte (valeurs séparées par `\|`) |
 | Menus déroulants | `niv_loisir`, `niv_pro`, `niv_ens`, `organisme` : codes numériques listés dans le dictionnaire ; `99 = autre (à préciser)` |
 | Paliers | `pl_pal_nb`, `pl_pal_secu`, `pl_pal_duree`, `pl_pal_prof_max`, `pl_pal_txt`, puis le détail des six premiers (`pl_pal1_gaz`, `pl_pal1_prof`, `pl_pal1_duree`, `pl_pal1_secu`…) |
-| Biologie | `gds_ph`, `gds_po2`, `gds_pco2`, `gds_hco3`, `gds_hb`, `gds_ht`, `gds_lac` et `lab_leuco`, `lab_hb`, `lab_ht`… : nombres à point décimal (`7.35`), ou texte `<5` / `>20` quand la valeur a été saisie avec « < » ou « > » ; `gds_date`, `lab_date` : `AAAA-MM-JJ` ; `gds_h`, `lab_h` : `HH:MM` (date et heure du prélèvement) ; valeurs normales et unités dans le dictionnaire |
+| Biologie | `gds_ph`, `gds_po2`, `gds_pco2`, `gds_hco3`, `gds_hb`, `gds_ht`, `gds_lac` et `lab_leuco`, `lab_hb`, `lab_ht`… : nombres à point décimal (`7.35`), ou texte `<5` / `>20` quand la valeur a été saisie avec « < » ou « > » ; `gds_date`, `lab_date` : `AAAA-MM-JJ` ; `gds_h`, `lab_h` : `HH:MM` (date et heure du prélèvement) ; valeurs normales (femme et homme quand elles diffèrent) et unités dans le dictionnaire |
 
 ### Structure des colonnes
 
@@ -1537,6 +1617,99 @@ d = pd.read_csv("donnees_neuro.csv", sep=";", encoding="utf-8-sig")
 
 Pour les analyses courantes, les colonnes de synthèse suffisent. Les colonnes de détail servent
 aux analyses topographiques fines.
+
+---
+
+## Changements de la version 8.2.0
+
+Aucune colonne ne s'ajoute au CSV (929), aucune fiche n'est modifiée et les fiches de la 8.1.3 s'ouvrent telles quelles. Le
+dictionnaire des variables ne change que par deux libellés : la table **A15** (code 1 de `tb_table`, qui s'appelait OHB15) et les
+**valeurs normales** des paramètres de biologie qui diffèrent selon le sexe. Le papier ne change que par ce nom de table et, pour un
+homme, par la colonne « VN » et le rouge du tableau de biologie de la synthèse (vérifié par comparaison avec la 8.1.3 : une fiche sans
+table A15 ni biologie s'imprime à l'identique). `index.html` passe de 710 Ko à 719 Ko.
+Six demandes. Dans les anciennes sections « Changements de la version… » plus bas, la table s'appelle encore OHB15 : c'était son nom d'alors.
+
+### Ligne Excel COHB
+
+- **Le nombre de tables est le nombre de tables enregistrées.** Les colonnes J à U (A15, A15HNO, B18Hx, …) comptent maintenant **une table
+  par fiche qui en porte une** : un dossier de trois fiches portant chacune une table donne trois tables, comme les trois consultations de
+  la colonne F. La 8.1.3 comptait les **séances déclarées** (« séances réalisées », « séances depuis la dernière consultation »), si bien
+  que le total des tables dépassait le nombre de fiches : une fiche de suivi qui annonçait trois séances en comptait trois. Ces deux champs
+  ne sont plus lus par cette ligne. Une fiche **sans table** n'en compte aucune ; une table « autre » n'est toujours rangée nulle part ; une
+  table dont l'heure de mise en pression manque compte en heures ouvrables. Le compte rendu d'hospitalisation, lui, garde son décompte des
+  séances par type de table (voir *Les recompressions, par type de table*).
+
+### Ligne Excel ADP
+
+- **« — » = 0.** Quand la fiche initiale laisse « — » (rien de choisi) dans l'**organisme d'affiliation**, le **niveau de plongeur de
+  loisir**, le **niveau d'enseignement**, le **niveau de plongeur professionnel** ou le **niveau militaire**, les cases correspondantes du
+  fichier maître reçoivent **0** (colonnes L, M, N, O et P) au lieu de rester vides. La colonne O écrivait « Aucun » quand le dossier n'avait
+  pas de plongée professionnelle : elle écrit 0, comme les autres. La colonne P reçoit aussi 0 pour un niveau professionnel **civil** (le
+  libellé n'y est écrit que pour un plongeur d'armes). Un dossier **sans fiche initiale** laisse ces cases vides : c'est la fiche initiale qui
+  pose ces questions, une case vide veut alors dire « inconnu ».
+
+### Table « A15 »
+
+- **La table « OHB15 » s'appelle « A15 »** partout : liste des tables de la recompression, synthèse (« Table A15 »), compte rendu
+  (« A15 : 3 »), papier, dictionnaire (`1 = A15`), lignes Excel. Le code (1) et la durée (95 min) ne changent pas : les fiches déjà
+  enregistrées, les fichiers JSON et le CSV (qui ne portent que le code) sont inchangés ; l'application les affiche avec le nouveau nom.
+
+### Biologie
+
+- **Valeurs normales de l'homme, selon le sexe de la fiche.** Les VN de votre feuille sont celles de la femme ; vos annotations donnent celles
+  de l'homme pour **11 paramètres** (hémoglobine et hématocrite du gaz du sang et du bilan, leucocytes, plaquettes, neutrophiles, créatinine, CK,
+  myoglobine, NT-pro-BNP). L'application choisit les valeurs d'après le **sexe renseigné** (onglet Administratif : M, F ou Autre ; à défaut, celui de la première fiche du
+  dossier qui le porte) : sous le libellé (« VN homme 13,5 - 17,5 »), pour la mise en gras et en rouge, dans le tableau de la synthèse et du
+  compte rendu, et dans le dictionnaire (les deux fourchettes). Changer le sexe réaffiche les VN et recolore les valeurs déjà saisies. Voir
+  *Les valeurs normales s'adaptent au sexe*.
+- **Plus de mention « au-dessus des VN » ou « en dessous des VN »** : seuls restent le **gras** et le **rouge**. L'en-tête de chaque encart ne
+  dit plus que le nombre de valeurs saisies (« 3 valeurs »), sans décompte de celles qui sortent des VN.
+- **Plus d'encart orange** en tête de l'encart « Gaz du sang veineux » (le rappel sur les VN, le gras et le rouge, les tableaux de la synthèse,
+  la virgule et les signes « < » et « > »). Ces règles restent décrites ici ; le champ accepte toujours la virgule, le point, « < » et « > ».
+
+### Signes subjectifs
+
+- **Signes subjectifs = NON : l'encart « Signes subjectifs — localisation » disparaît.** Répondre NON à « Signes subjectifs » (examen général)
+  retire tout de suite l'encart du schéma, et **efface les zones déjà dessinées** ; sans réponse, ou avec OUI, il reste proposé. « Tout renseigner
+  comme NORMAL » répond NON. Voir *Les schémas corporels*.
+
+### Copie du texte vers le dossier patient
+
+- **Le gras et le souligné se collent maintenant directement dans l'éditeur de texte du dossier patient** (sous Firefox). Votre éditeur ne lisait pas
+  le texte enrichi que le navigateur dépose (du HTML) et collait du texte brut ; Word lit ce HTML puis réécrit du RTF, que l'éditeur comprend très
+  probablement : d'où le détour. **Copier** (synthèse) et **Copier le CRH** déposent désormais aussi le **RTF**, avec les titres en gras et soulignés, les anomalies en
+  gras, les valeurs de biologie hors VN en gras et en rouge, et les tableaux. Le collage dans Word reste possible, directement. Sous **Chrome
+  et Edge**, rien ne change : ces navigateurs n'écrivent pas de RTF. La case « Copie du texte » de la fenêtre **Exporter** coupe cette option. Voir
+  *Copier vers un traitement de texte ou le dossier patient*.
+
+### À valider de votre côté
+
+- **NT-pro-BNP de l'homme : 10 - 63.** C'est la seule valeur de votre annotation qui me paraît suspecte : la limite haute de l'homme (63 ng/L)
+  est plus de trois fois plus basse que celle de la femme (202 ng/L). Le sens de l'écart est plausible (les femmes ont des NT-pro-BNP plus
+  élevés), son ampleur l'est moins : « 63 » est-il bien ce que vous vouliez écrire ? J'ai repris **63** tel qu'il est écrit ; la valeur est dans
+  `BIO_LAB` (ligne `lab_ntbnp`, champ `m`), en tête de `index.html`. La **myoglobine de l'homme** est écrite d'une encre pâle sur le scan : j'ai lu
+  « 28,0 - 72 ».
+- **Les paramètres sans valeur d'homme** dans votre annotation (pH, pO₂, pCO₂, HCO₃⁻, lactates, fibrinogène, D-dimères, protéines totales,
+  DFG, CRP, albumine, troponine) ont la **même fourchette pour les deux sexes** : j'ai lu une case vide comme « identique à la femme ».
+- **Le sexe non renseigné** (ou « autre ») : l'application ne choisit pas. Elle affiche **les deux fourchettes** (« VN F 12 - 16 ; H 13,5 - 17,5 »)
+  et ne met en rouge qu'une valeur **hors des deux** (une hémoglobine à 17 g/dL n'est alors pas en rouge). Dites-moi si vous préférez les valeurs
+  de l'homme ou de la femme par défaut.
+- **Les tables comptées une à une** : j'ai lu votre phrase comme « une fiche = une table = une séance ». Une fiche qui annonce plusieurs séances
+  n'en compte donc qu'une ; si une même fiche couvre deux séances, il faut une fiche par séance. La table **B18 proposée d'office** sur la fiche
+  initiale compte comme une table : videz le champ quand aucune recompression n'a eu lieu (comme pour le compte rendu).
+- **« — » = 0** : j'ai appliqué cette règle aux colonnes **L, M, N, O et P**. La colonne R (qualification du médecin) reste **vide** quand rien
+  n'est choisi : la légende de votre fichier n'y prévoit pas de 0 ; dites-moi si vous la voulez aussi. Je n'ai pas touché aux autres colonnes
+  (« Plongeur pro » K, par exemple, écrit déjà 0 ou 1 dès que la plongée est renseignée).
+- **Signes subjectifs = NON efface le schéma** (les zones dessinées sont supprimées de la fiche, pas seulement masquées) : si l'on répond NON par
+  erreur puis OUI, le schéma est à refaire. La page imprimée n'est pas modifiée.
+- **La copie en RTF n'a été essayée que dans les conditions suivantes** : **Firefox 137**, un vrai clic, et un contrôle de texte enrichi de
+  Windows (RichEdit) qui ne lit que le RTF, comme l'éditeur que vous décrivez : titres, gras, souligné, rouge, tableaux et accents s'y collent.
+  **Rien n'a été essayé avec l'éditeur réel de votre dossier patient, ni avec Word (qui lit le HTML ou le RTF), ni avec votre version exacte de
+  Firefox.** Collez une première fois un texte de test dans une fiche de formation avant de vous en servir ; en cas de signes étranges,
+  décochez la case « Copie du texte » dans **Exporter**. Sous Chrome et Edge, le gras ne passe pas dans un éditeur qui ne lit que le RTF.
+- **Ce qui a été essayé.** Les suites de la 8.2.0 (valeurs normales de l'homme et de la femme aux bornes, tables comptées, zéros de la ligne
+  Excel ADP, encart des signes subjectifs, RTF et écriture dans le presse-papiers) et toutes celles des versions précédentes passent
+  (846 contrôles). Rien n'a été essayé avec Excel.
 
 ---
 
@@ -2075,6 +2248,10 @@ du script de `index.html`.
 
 ## Historique
 
+- **8.2.0** : valeurs normales de l'homme (11 paramètres de biologie) selon le sexe, sans mention « au-dessus / en dessous des VN » ni
+  encart orange ; table « OHB15 » renommée « A15 » ; ligne Excel COHB : une table enregistrée = une table comptée ; ligne Excel ADP : « — » = 0
+  (colonnes L à P) ; encart « Signes subjectifs — localisation » masqué quand la réponse est NON ; copie de la synthèse et du CRH aussi en RTF
+  (Firefox), pour que le gras et le souligné se collent dans l'éditeur du dossier patient.
 - **8.1.3** : la ligne du fichier maître s'appelle « ligne Excel ADP » (l'autre, « ligne Excel COHB »), classeurs `ligne_excel_ADP_…` et
   `ligne_excel_COHB_…` ; heures ouvrables de la ligne COHB : lundi au vendredi, de 7 h 45 à 16 h 00, hors jours fériés.
 - **8.1.2** : colonne « ordinateur » de la ligne Excel (marque, modèle, réglages), ligne pour l'activité COHB, onglet « Examens
