@@ -707,7 +707,7 @@ svg.echo rect.z:hover{stroke-width:2.6;filter:brightness(.96)}
 <body>
 <div id="hdr">
 <div id="topbar">
-  <span class="ttl" title="Accident de plongée — version 8.2.0">ADP <small style="font-weight:400;opacity:.65">8.2.0</small></span>
+  <span class="ttl" title="Accident de plongée — version 8.2.1">ADP <small style="font-weight:400;opacity:.65">8.2.1</small></span>
   <button class="tb nophone" onclick="toggleSide()" title="Afficher / masquer la liste des fiches">&#9776;</button>
   <span class="sep"></span>
   <button class="tb pri" onclick="newFiche()">+<span class="lbl2"> Nouvelle</span> fiche</button>
@@ -2021,7 +2021,7 @@ const SPEC = [
    l'examen neurologique sont repris (en gris) ; les examens complémentaires et la
    conclusion sont nécessairement différents, et un examen coché de nouveau est un nouvel examen. */
 {id:'recomp', t:'Recompression', cols:2, page:6, noghost:1, f:[
-  {k:'tb_table', l:'Table utilisée', t:'choice', o:TABLES, full:1, hint:'B18 proposée d’office sur une consultation initiale, modifiable'},
+  {k:'tb_table', l:'Table utilisée', t:'choice', o:TABLES, full:1, hint:'B18 proposée d’office sur une consultation initiale, modifiable. Pour la ligne Excel COHB, elle ne compte que si l’heure de mise en pression ou le nombre de séances est saisi'},
   {k:'tb_table_autre', l:'Table — à préciser', t:'txt', wide:1, full:1, sub:1, dep:['tb_table',[9]]},
   {k:'tb_duree', l:'Durée de la table (min)', t:'calc', unit:'min', dep:['tb_table',[1,2,3,4,5,6,7,8]],
    hint:'Durée propre à la table choisie'},
@@ -8332,7 +8332,7 @@ function sortedDB(){
    l'explique (diagnostic) et propose ce qui fonctionne : « Exporter tout en JSON » (dossier choisi, ou archive
    ZIP), téléchargement du JSON à chaque enregistrement, import d'un dossier ou d'une archive.
    ===================================================================== */
-const APP_VERSION = '8.2.0';
+const APP_VERSION = '8.2.1';
 /* hasPicker teste une fonction de l'API au moment de s'en servir : une extension ou un réglage du navigateur peut la retirer */
 const hasPicker = name => { try{ return typeof window[name] === 'function'; }catch(e){ return false; } };
 let FSA = hasPicker('showDirectoryPicker');
@@ -9668,8 +9668,9 @@ function xlsCtx(){
   if(X.diag==null) X.diag = null;
   X.proMil = d0.niv_pro!=null || d0.pl_type===3 || d0.pl_type===4 || d0.cadre_plongee===3;
   X.pro = X.proMil ? 1 : ((d0.pl_type!=null || d0.cadre_plongee!=null || d0.niv_loisir!=null) ? 0 : null);
-  /* « — » (rien de choisi) dans l'organisme et les niveaux de plongée = 0 (« aucun ») dans le fichier maître ; seulement quand la fiche
-     initiale existe, car elle seule porte ces menus : sans elle, une case vide veut dire « inconnu » */
+  /* « — » (rien de choisi) dans l'organisme et les niveaux de plongée = 0 (« aucun ») dans le fichier maître, sauf le niveau professionnel
+     (colonne O) qui s'écrit « Aucun » ; seulement quand la fiche initiale existe, car elle seule porte ces menus : sans elle, une case vide
+     veut dire « inconnu » */
   X.zero = (init.d.fiche_type||1) === 1;
   X.lieu = xlsLieu(d0.pl_lieu);
   /* table initiale et séances complémentaires par famille de table */
@@ -9699,7 +9700,7 @@ const XLS = [
  /* L  */ {h:'Organisme', n:'rien de choisi : 0 ; FFESSM 1, FSGT 2, UCPA 3, ANMP 4, CMAS 6, PADI 7, autres 8', f:X=>X.d0.organisme!=null ? (XLS_ORG[X.d0.organisme]!=null ? XLS_ORG[X.d0.organisme] : 8) : (X.zero ? 0 : null)},
  /* M  */ {h:'Niveau plongeur loisir', n:'rien de choisi, baptême ou non breveté : 0 ; N1 / Open Water 1 … N5 5', f:X=>X.d0.niv_loisir!=null ? XN(XLS_LOIS[X.d0.niv_loisir]) : (X.zero ? 0 : null)},
  /* N  */ {h:'Niveau enseignement loisir', n:'rien de choisi : 0 ; E1 / BPJEPS 1, E2 2, E3 / MF1 3, E4 / MF2 / DEJEPS / DESJEPS 4', f:X=>X.d0.niv_ens!=null ? XN(XLS_ENS[X.d0.niv_ens]) : (X.zero ? 0 : null)},
- /* O  */ {h:'Niveau plongeur pro', n:'rien de choisi : 0 ; sinon libellé du niveau ; la mention (A à D) n’est pas recueillie', f:X=>X.d0.niv_pro==null ? (X.zero ? 0 : null) : (X.d0.niv_pro===99 ? XT(X.d0.niv_pro_autre) : xlsOpt('niv_pro', X.d0.niv_pro))},
+ /* O  */ {h:'Niveau plongeur pro', n:'rien de choisi : « Aucun » ; sinon libellé du niveau ; la mention (A à D) n’est pas recueillie', f:X=>X.d0.niv_pro==null ? (X.zero ? 'Aucun' : null) : (X.d0.niv_pro===99 ? XT(X.d0.niv_pro_autre) : xlsOpt('niv_pro', X.d0.niv_pro))},
  /* P  */ {h:'Niveau plongeur militaire', n:'libellé pour un plongeur d’armes ; sinon 0 (niveau civil ou rien de choisi) ; la catégorie n’est pas recueillie', f:X=>(X.d0.niv_pro===5 || X.d0.niv_pro===6) ? xlsOpt('niv_pro', X.d0.niv_pro) : (X.zero ? 0 : null)},
  /* Q  */ {h:'Date dernier certifical', n:'date du dernier certificat médical', f:X=>XD(X.d0.certif_date)},
  /* R  */ {h:'Qualification médecin', n:'fédéral 1, du sport 2, DIU 3, rééducateur 4, autre 5', f:X=>X.d0.certif_medecin!=null ? XN(XLS_MED[X.d0.certif_medecin]) : null},
@@ -9908,8 +9909,8 @@ async function xlsxBlob(row){
 /* =====================================================================
    LIGNE EXCEL COHB (POUR L'ACTIVITÉ COHB)
    Le service tient aussi une feuille « Activité COHB » : une ligne par dossier clos, 31 colonnes (A à AE) : date de clôture,
-   identité, IPP, diagnostic, classement ARS, nombre de consultations, période de la première séance en urgence, tables de
-   recompression enregistrées, par type (en heures ouvrables ou non), actes, résidence. Même mécanique que la ligne Excel ADP (fichier maître) : texte à tabulations à
+   identité, IPP, diagnostic, classement ARS, nombre de consultations, période de la première séance en urgence, séances de
+   recompression cotées dans l'encart « Recompression », par type (en heures ouvrables ou non), actes, résidence. Même mécanique que la ligne Excel ADP (fichier maître) : texte à tabulations à
    coller, ou classeur .xlsx. Ce que l'application ne recueille pas reste vide. Les en-têtes sont ceux de la feuille.
    ===================================================================== */
 const COHB_HEAD = [
@@ -10003,19 +10004,35 @@ function cohbResidence(d){
   if(a && xlsLieu(a) === 2) return 'VAR';
   return etr ? (COHB_PAYS[d.nationalite] || null) : null;
 }
+/* Une fiche porte-t-elle une séance de recompression RÉELLEMENT cotée dans l'encart « Recompression » ? (ligne Excel COHB)
+   - la table B18 est proposée d'office sur une consultation initiale (DEF_TABLE) : seule, elle ne prouve rien, la fiche peut ne porter aucune
+     recompression. Elle ne compte que si l'encart est rempli : heure de mise en pression ou de fin, nombre de séances réalisées, complication ;
+   - une autre table, ou une table sur une fiche de suivi ou de sortie (où rien n'est proposé d'office), est un choix du praticien ;
+   - « Nombre de séances réalisées » à 0 : le praticien dit qu'il n'y en a eu aucune ;
+   - une heure de mise en pression sans table est une séance, de type inconnu ;
+   - les « séances réalisées depuis la dernière consultation » (encart Évolution) ne sont pas une cotation de recompression : jamais lues ici.
+   Une fiche compte pour une séance au plus : les nombres de séances déclarés ne multiplient rien. */
+function recompCotee(d){
+  const nb = (d.tb_nb_seances==null || d.tb_nb_seances==='') ? null : +d.tb_nb_seances;
+  if(nb===0) return false;
+  if(d.tb_table==null) return !!d.tb_h_mep;
+  const office = (d.fiche_type||1)===1 && d.tb_table===DEF_TABLE;
+  return !office || !!(d.tb_h_mep || d.tb_h_fin || nb>0 || d.tb_complic===1);
+}
 /* tout ce que la ligne lit en plus du contexte de la ligne principale, calculé une fois */
 function cohbCtx(X){
   const c = {n:{}}, i0 = X.init.d;
-  /* une table de recompression enregistrée = une séance : chaque fiche qui porte une table en compte une seule. Les nombres de séances
-     déclarés (« séances réalisées », « séances depuis la dernière consultation ») ne sont pas lus. La table compte pour sa période
-     (heures ouvrables, nuit, week-end ou jour férié) d'après sa date et son heure de mise en pression ; sans heure, en heures ouvrables. */
+  /* une séance de recompression est comptée quand elle est réellement cotée dans l'encart « Recompression » (recompCotee), dans la colonne de
+     sa table, pour sa période (heures ouvrables, nuit, week-end ou jour férié) d'après sa date et son heure de mise en pression ; sans heure,
+     en heures ouvrables. Une table « autre » n'a pas de colonne. */
   X.FI.forEach(f=>{
-    const d = f.d, code = TABLES.some(t=>t.v===d.tb_table && t.v!==9) ? d.tb_table : 9, col = COHB_TAB[code]; if(col==null) return;
+    const d = f.d; if(!recompCotee(d)) return;
+    const code = TABLES.some(t=>t.v===d.tb_table && t.v!==9) ? d.tb_table : 9, col = COHB_TAB[code]; if(col==null) return;
     const per = cohbPeriode(d.date_ex, d.tb_h_mep || null);
     const k = col + ((per==='N' || per==='W') ? 1 : 0);
     c.n[k] = (c.n[k] || 0) + 1;
   });
-  c.g = (i0.tb_table!=null || i0.tb_h_mep) ? cohbPeriode(i0.date_ex, i0.tb_h_mep || i0.heure_pec || null) : null;
+  c.g = recompCotee(i0) ? cohbPeriode(i0.date_ex, i0.tb_h_mep || i0.heure_pec || null) : null;
   c.dtc = X.FI.filter(f=>f.d.im_dtc===1).length;
   c.compl = X.FI.filter(f=>f.d.tb_complic===1 || f.d.ev_complic===1).length;
   for(let i = X.ST.length-1; i >= 0 && c.diag==null; i--){ const t = cohbDiag(X.ST[i].d); if(t) c.diag = t; }
@@ -10035,21 +10052,21 @@ const COHB = [
  /* D  */ {h:'Diagnostic', n:'dernier diagnostic retenu, abrégé (ADD médullaire + cutané)', f:X=>cohbX(X).diag},
  /* E  */ {h:'Classement ARS', n:'« accident de plongée » ; « intoxication CO » si le diagnostic est une intoxication au monoxyde de carbone', f:X=>cohbX(X).ars},
  /* F  */ {h:'CS', n:'nombre de consultations : une par fiche du dossier', f:X=>X.FI.length},
- /* G  */ {h:'1ere en urgence', n:'période de la mise en pression de la table initiale : O heures ouvrables (lundi au vendredi, de 7 h 45 à 16 h 00, hors jours fériés), N en semaine hors de ces heures, W week-end ou jour férié', f:X=>cohbX(X).g},
+ /* G  */ {h:'1ere en urgence', n:'période de la mise en pression de la table initiale, quand elle est réellement cotée dans « Recompression » : O heures ouvrables (lundi au vendredi, de 7 h 45 à 16 h 00, hors jours fériés), N en semaine hors de ces heures, W week-end ou jour férié', f:X=>cohbX(X).g},
  /* H  */ {h:'nbre seance en repose pied', n:'non recueilli (la position du patient n’est pas saisie)', f:X=>null},
  /* I  */ {h:'nbre seance Alit', n:'non recueilli (la position du patient n’est pas saisie)', f:X=>null},
- /* J  */ {h:'A15', n:'tables A15 enregistrées, en heures ouvrables', f:X=>cohbN(X, 9)},
- /* K  */ {h:'A15HNO', n:'tables A15 enregistrées, hors heures ouvrables', f:X=>cohbN(X, 10)},
- /* L  */ {h:'B18Hx', n:'tables héliox (A18HeOx, B18HeOx) enregistrées, en heures ouvrables', f:X=>cohbN(X, 11)},
- /* M  */ {h:'B18HxHNO', n:'tables héliox enregistrées, hors heures ouvrables', f:X=>cohbN(X, 12)},
- /* N  */ {h:'IOT', n:'tables avec intubation (A15IOT, A18IOT) enregistrées, en heures ouvrables', f:X=>cohbN(X, 13)},
- /* O  */ {h:'IOTHNO', n:'tables avec intubation enregistrées, hors heures ouvrables', f:X=>cohbN(X, 14)},
- /* P  */ {h:'A18', n:'tables A18 enregistrées, en heures ouvrables', f:X=>cohbN(X, 15)},
- /* Q  */ {h:'A18HNO', n:'tables A18 enregistrées, hors heures ouvrables', f:X=>cohbN(X, 16)},
- /* R  */ {h:'B 18', n:'tables B18 enregistrées, en heures ouvrables', f:X=>cohbN(X, 17)},
- /* S  */ {h:'B18HNO', n:'tables B18 enregistrées, hors heures ouvrables', f:X=>cohbN(X, 18)},
- /* T  */ {h:'C18', n:'tables C18 enregistrées, en heures ouvrables', f:X=>cohbN(X, 19)},
- /* U  */ {h:'C18HNO', n:'tables C18 enregistrées, hors heures ouvrables', f:X=>cohbN(X, 20)},
+ /* J  */ {h:'A15', n:'séances A15 cotées dans « Recompression », en heures ouvrables', f:X=>cohbN(X, 9)},
+ /* K  */ {h:'A15HNO', n:'séances A15 cotées, hors heures ouvrables', f:X=>cohbN(X, 10)},
+ /* L  */ {h:'B18Hx', n:'séances héliox (A18HeOx, B18HeOx) cotées, en heures ouvrables', f:X=>cohbN(X, 11)},
+ /* M  */ {h:'B18HxHNO', n:'séances héliox cotées, hors heures ouvrables', f:X=>cohbN(X, 12)},
+ /* N  */ {h:'IOT', n:'séances avec intubation (A15IOT, A18IOT) cotées, en heures ouvrables', f:X=>cohbN(X, 13)},
+ /* O  */ {h:'IOTHNO', n:'séances avec intubation cotées, hors heures ouvrables', f:X=>cohbN(X, 14)},
+ /* P  */ {h:'A18', n:'séances A18 cotées, en heures ouvrables', f:X=>cohbN(X, 15)},
+ /* Q  */ {h:'A18HNO', n:'séances A18 cotées, hors heures ouvrables', f:X=>cohbN(X, 16)},
+ /* R  */ {h:'B 18', n:'séances B18 cotées (la B18 proposée d’office ne compte que si l’encart est rempli), en heures ouvrables', f:X=>cohbN(X, 17)},
+ /* S  */ {h:'B18HNO', n:'séances B18 cotées, hors heures ouvrables', f:X=>cohbN(X, 18)},
+ /* T  */ {h:'C18', n:'séances C18 cotées, en heures ouvrables', f:X=>cohbN(X, 19)},
+ /* U  */ {h:'C18HNO', n:'séances C18 cotées, hors heures ouvrables', f:X=>cohbN(X, 20)},
  /* V  */ {h:'Pansements', n:'non recueilli', f:X=>null},
  /* W  */ {h:'PRF', n:'non recueilli', f:X=>null},
  /* X  */ {h:'PTcO2', n:'non recueilli', f:X=>null},
@@ -10894,12 +10911,15 @@ function openHelp(){
   'Bouton <b>Exporter</b> puis <b>Ligne Excel ADP du dossier ouvert</b> (ou « ligne Excel ADP » dans l’en-tête du compte rendu) : l’outil compose, à partir de '+
   'toutes les fiches du dossier, une ligne de 89 colonnes (A à CK) qui suit le fichier maître du service. <b>Copier la ligne</b>, puis collez-la dans la '+
   'première cellule d’une ligne vide d’Excel (Ctrl+V) ; ou téléchargez un classeur .xlsx de même structure. Les valeurs sont affichées avant la copie : '+
-  'vérifiez-les, les colonnes que l’application ne recueille pas restent vides. La colonne « ordinateur » (CA) porte la marque et le modèle, suivis des réglages, dans la même case.</p>'+
+  'vérifiez-les, les colonnes que l’application ne recueille pas restent vides. La colonne « ordinateur » (CA) porte la marque et le modèle, suivis des réglages, dans la même case. '+
+  'Un menu laissé sur « — » (organisme, niveaux de plongée et d’enseignement, niveau militaire) s’écrit 0, et « Aucun » pour le niveau professionnel (colonne O).</p>'+
   '<p><b>5 ter. Ligne Excel COHB (activité COHB).</b><br>'+
   'Même fenêtre (bouton <b>Ligne Excel COHB du dossier ouvert</b>, ou « ligne Excel COHB » dans l’en-tête du compte rendu ; les deux lignes se choisissent en haut de la fenêtre) : '+
   'une ligne de 31 colonnes (A à AE) qui suit la feuille « Activité COHB » du service. Elle reprend la date de la dernière fiche, l’identité, le n° de dossier, le diagnostic, '+
   'le classement ARS, le nombre de consultations, la période de la première séance en urgence (O : lundi au vendredi de 7 h 45 à 16 h 00 hors jours fériés ; N : autre heure en semaine ; W : week-end ou jour férié), '+
-  'les séances par table (les colonnes « HNO » comptent celles qui ne tombent pas en heures ouvrables), les doppler transcrâniens, les complications et la résidence. '+
+  'les séances de recompression par table, comptées seulement quand elles sont réellement cotées dans l’encart « Recompression » (la table B18 proposée d’office sur une consultation initiale '+
+  'ne compte que si l’heure de mise en pression ou le nombre de séances est saisi ; les colonnes « HNO » comptent les séances qui ne tombent pas en heures ouvrables), '+
+  'les doppler transcrâniens, les complications et la résidence. '+
   'Les colonnes que l’application ne recueille pas restent vides ; vérifiez les valeurs affichées avant de coller.</p>'+
   '<p><b>6. Analyser.</b><br>'+
   'Ouvrez <code>donnees_neuro.csv</code> dans Excel, R, Python, SPSS ou Jamovi. '+
