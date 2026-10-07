@@ -374,7 +374,6 @@ tb_duree;Durée de la table (min) (Recompression);numerique, calcule (min)
 tb_h_mep;Heure de mise en pression (Recompression);HH:MM
 tb_h_fin;Heure de fin (Recompression);HH:MM
 tb_delai;Délai 1ers symptômes → recompression (min) (Recompression);numerique, calcule
-tb_nb_seances;Nombre de séances réalisées (Recompression);numerique
 tb_complic;Complication thérapeutique (Recompression);"1 = OUI ; 0 = NON"
 tb_complic_txt;Préciser (Recompression);texte libre
 ac_vvp;Voie veineuse périphérique (Actes);"1 = OUI ; 0 = NON"

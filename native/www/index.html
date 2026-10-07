@@ -707,7 +707,7 @@ svg.echo rect.z:hover{stroke-width:2.6;filter:brightness(.96)}
 <body>
 <div id="hdr">
 <div id="topbar">
-  <span class="ttl" title="Accident de plongée — version 8.2.1">ADP <small style="font-weight:400;opacity:.65">8.2.1</small></span>
+  <span class="ttl" title="Accident de plongée — version 9.0.0">ADP <small style="font-weight:400;opacity:.65">9.0.0</small></span>
   <button class="tb nophone" onclick="toggleSide()" title="Afficher / masquer la liste des fiches">&#9776;</button>
   <span class="sep"></span>
   <button class="tb pri" onclick="newFiche()">+<span class="lbl2"> Nouvelle</span> fiche</button>
@@ -2021,7 +2021,7 @@ const SPEC = [
    l'examen neurologique sont repris (en gris) ; les examens complémentaires et la
    conclusion sont nécessairement différents, et un examen coché de nouveau est un nouvel examen. */
 {id:'recomp', t:'Recompression', cols:2, page:6, noghost:1, f:[
-  {k:'tb_table', l:'Table utilisée', t:'choice', o:TABLES, full:1, hint:'B18 proposée d’office sur une consultation initiale, modifiable. Pour la ligne Excel COHB, elle ne compte que si l’heure de mise en pression ou le nombre de séances est saisi'},
+  {k:'tb_table', l:'Table utilisée', t:'choice', o:TABLES, full:1, hint:'B18 proposée d’office sur une consultation initiale, modifiable. Une recompression cotée est une séance ; la B18 d’office n’est comptée (compte rendu, fichiers Excel) que si l’encart est rempli : heure de mise en pression ou de fin, ou complication thérapeutique'},
   {k:'tb_table_autre', l:'Table — à préciser', t:'txt', wide:1, full:1, sub:1, dep:['tb_table',[9]]},
   {k:'tb_duree', l:'Durée de la table (min)', t:'calc', unit:'min', dep:['tb_table',[1,2,3,4,5,6,7,8]],
    hint:'Durée propre à la table choisie'},
@@ -2029,7 +2029,6 @@ const SPEC = [
   {k:'tb_h_fin', l:'Heure de fin', t:'time', hint:'Calculée : mise en pression + durée de la table, modifiable'},
   {k:'tb_delai', l:'Délai 1ers symptômes → recompression (min)', t:'calc', full:1,
    hint:'Facteur pronostique majeur. Un délai supérieur à 194 min a été associé à une récupération incomplète.'},
-  {k:'tb_nb_seances', l:'Nombre de séances réalisées', t:'num', min:0, max:60},
   {k:'tb_complic', l:'Complication thérapeutique', t:'choice', o:ON},
   {k:'tb_complic_txt', l:'Préciser', t:'txt', wide:1, full:1, nofill:1, dep:['tb_complic',[1]], sub:1,
    phr:['Barotraumatisme de l’oreille moyenne.','Crise hyperoxique.','Claustrophobie.','Malaise en caisson.',
@@ -2037,7 +2036,7 @@ const SPEC = [
 ]},
 
 /* Actes : voie veineuse, bilan biologique, puis sondage, dans cet ordre */
-{id:'actes', t:'Actes', cols:2, page:6, noghost:1, f:[
+{id:'actes', t:'Actes', cols:2, page:5, before:'examens', noghost:1, f:[
   {k:'ac_vvp', l:'Voie veineuse périphérique', t:'choice', o:ONA, full:1},
   {k:'h_bio', t:'head', l:'Bilan biologique', full:1},
   {k:'bio_add', l:'Bilan accident de plongée prélevé', t:'choice', o:ONA,
@@ -2107,13 +2106,13 @@ const SPEC = [
   {k:'rx_vni_ai', l:'Aide inspiratoire (AI)', t:'num', min:0, max:30, unit:'cmH₂O', sub:1, dep:['rx_o2_mode',[2]]},
   {k:'rx_vni_fr', l:'Fréquence respiratoire (FR)', t:'num', min:5, max:40, unit:'/min', sub:1, dep:['rx_o2_mode',[2]]},
   {k:'rx_vni_fio2', l:'FiO₂', t:'num', min:21, max:100, unit:'%', sub:1, dep:['rx_o2_mode',[2]]},
-  {k:'rx_solu', l:'(Méthyl)prednisolone', t:'choice', o:ONA},
+  {k:'rx_solu', l:'(Méthyl)prednisolone', t:'choice', o:ONA, full:1},
   {k:'rx_solu_dose', l:'Dose quotidienne', t:'num', min:0, max:2000, unit:'mg/jour', dep:['rx_solu',[1]], sub:1,
-   hint:'Calculée : '+DEF_CORTICO_MGKG+' mg/kg d’après le poids saisi dans l’onglet Anamnèse et plongée, modifiable'},
+   hint:'Calculée : '+DEF_CORTICO_MGKG+' mg/kg d’après le poids de la fiche initiale (onglet Anamnèse et plongée), modifiable. Reprise de la fiche précédente quand la prednisolone y est prescrite'},
   {k:'rx_solu_jours', l:'Durée (jours)', t:'num', min:1, max:30, unit:'j', dep:['rx_solu',[1]], sub:1,
-   hint:DEF_CORTICO_JOURS+' jours proposés, modifiable'},
+   hint:DEF_CORTICO_JOURS+' jours proposés, modifiable. Sur une fiche de suivi ou de sortie : les jours restant à traiter d’après la fiche précédente'},
   {k:'rx_solu_h', l:'Heure de la 1re dose', t:'time', dep:['rx_solu',[1]], sub:1},
-  {k:'rx_nacl', l:'Remplissage', t:'choice', o:ONA},
+  {k:'rx_nacl', l:'Remplissage', t:'choice', o:ONA, full:1},
   {k:'rx_nacl_vol', l:'Volume (mL)', t:'num', min:0, max:10000, unit:'mL', dep:['rx_nacl',[1]], sub:1},
   {k:'rx_antalg', l:'Antalgiques', t:'txt', wide:1, full:1, nofill:1},
   {k:'rx_autres', l:'Autres traitements', t:'area', wide:1, full:1, nofill:1,
@@ -2122,7 +2121,8 @@ const SPEC = [
 
 {id:'evolution', t:"Évolution depuis la consultation précédente", cols:1, page:6, only:[2,3], noghost:1,
  tail:()=>evolBox(), f:[
-  {k:'ev_seances', l:'Séances réalisées depuis la dernière consultation', t:'num', min:0, max:20},
+  {k:'ev_seances', l:'Séances réalisées depuis la dernière consultation', t:'num', min:0, max:20,
+   hint:'Proposé d’après les fiches précédentes (une recompression cotée = une séance), modifiable'},
   {k:'ev_complic', l:'Complication thérapeutique depuis la dernière consultation', t:'choice', o:ON},
   {k:'ev_complic_txt', l:'Préciser', t:'txt', wide:1, full:1, nofill:1, dep:['ev_complic',[1]], sub:1},
   {k:'ev_sens', l:'Évolution clinique', t:'choice', o:EVOL, full:1},
@@ -2133,7 +2133,8 @@ const SPEC = [
         'Sevrage du sondage vésical.','Aucune complication thérapeutique.','Examen clinique inchangé.',
         'Aggravation transitoire dans les 24 premières heures.']},
   {k:'ev_exam_faits', l:'Examens complémentaires réalisés depuis', t:'area', wide:1, full:1, nofill:1},
-  {k:'ev_exam_demandes', l:'Examens complémentaires demandés', t:'area', wide:1, full:1, nofill:1}
+  {k:'ev_exam_demandes', l:'Examens complémentaires demandés', t:'area', wide:1, full:1, nofill:1,
+   depFn:()=>ftype()!==3 || !!REC.d.ev_exam_demandes}                  // absent de la consultation de sortie, sauf si la fiche en porte déjà un
 ]},
 
 /* Diagnostic retenu : un ou plusieurs diagnostics associés, avec leurs types, et un diagnostic
@@ -2155,7 +2156,7 @@ const SPEC = [
 /* Sortie : ce que le compte rendu d'hospitalisation doit encore dire. Consultation de sortie seulement. */
 {id:'sortie', page:6, t:'Sortie : examens à prévoir et aptitude à la plongée', cols:1, only:[3], noghost:1, tail:()=>genBox(), f:[
   {k:'sortie_exam_second', l:'Examens à réaliser secondairement', t:'area', wide:1, full:1, nofill:1,
-   hint:'Repris dans le compte rendu d’hospitalisation',
+   hint:'Proposés d’après le ou les diagnostics retenus et le générateur de documents, modifiables ; repris dans le compte rendu d’hospitalisation',
    phr:['IRM médullaire de contrôle.','Doppler transcrânien de contraste.','Échographie cardiaque de contraste (recherche de FOP).',
         'Audiométrie tonale et bilan vestibulaire.','Consultation ORL.','Consultation de médecine physique et de réadaptation.',
         'Bilan neuropsychologique.']},
@@ -2591,6 +2592,78 @@ function autofillFromDossier(){
     if((v==null||v==='') && PREV.d[k]!=null && PREV.d[k]!==''){ REC.d[k]=PREV.d[k]; n++; } });
   if(n && PREV.id!==before) toast('Dossier connu : identité et accident repris de l\'examen du '+frDate(PREV.d.date_ex));
 }
+/* =====================================================================
+   REPRISES D'UNE FICHE À L'AUTRE
+   Sur une fiche de suivi ou de sortie : le poids de la fiche initiale (pour les doses), le diagnostic retenu de la dernière fiche qui en porte
+   un, la (méthyl)prednisolone encore à prescrire (même dose, jours restants), le nombre de séances depuis la consultation précédente.
+   Tout est proposé, rien n'est imposé : une valeur saisie n'est jamais remplacée, et une fiche déjà enregistrée n'est jamais modifiée d'office.
+   ===================================================================== */
+/* les fiches du dossier AVANT la fiche ouverte (celle-ci exclue), de la plus ancienne à la plus récente */
+function fichesAvant(){
+  const doss = REC && REC.d.dossier; if(!doss) return [];
+  const cur = stamp(REC);
+  return DB.filter(f=>f.d.dossier===doss && f.id!==REC.id && stamp(f) < cur).sort((a,b)=>stamp(a).localeCompare(stamp(b)));
+}
+/* le poids pour les doses : celui de la fiche ouverte, sinon celui de la première fiche du dossier qui en porte un (la fiche initiale :
+   l'onglet « plongeur » n'existe pas sur les fiches de suivi) */
+function poidsRef(){
+  const d = REC.d; if(d.poids > 0) return d.poids;
+  const f = fichesAvant().find(x=>x.d.poids > 0);
+  return f ? f.d.poids : null;
+}
+/* jours entre deux dates AAAA-MM-JJ (b moins a) ; null si l'une est invalide */
+function jourDiff(a, b){
+  const x = Date.parse(String(a||'')+'T12:00:00'), y = Date.parse(String(b||'')+'T12:00:00');
+  return (isNaN(x) || isNaN(y)) ? null : Math.round((y - x) / 864e5);
+}
+/* La (méthyl)prednisolone encore à prescrire à la date ref, d'après les fiches avant : la dernière fiche (de la plus récente à la plus ancienne)
+   qui se prononce, OUI ou NON. Rend {dose, reste, src} (reste : jours restant à traiter à la date ref, null s'ils ne sont pas connus), ou null :
+   aucune prescription en cours (jamais prescrite, arrêtée, ou terminée). */
+function corticoEnCours(avant, ref){
+  for(let i = avant.length-1; i >= 0; i--){
+    const d = avant[i].d;
+    if(d.rx_solu == null) continue;
+    if(d.rx_solu !== 1) return null;
+    let reste = null;
+    if(d.rx_solu_jours != null){
+      const j = jourDiff(d.date_ex, ref);
+      reste = d.rx_solu_jours - Math.max(0, j == null ? 0 : j);
+      if(reste <= 0) return null;
+    }
+    return {dose:d.rx_solu_dose != null ? d.rx_solu_dose : null, reste:reste, src:avant[i]};
+  }
+  return null;
+}
+/* la prescription de la fiche d poursuit-elle celle des fiches avant (même dose, encore en cours) ? Le texte rédigé ne la répète alors pas */
+function corticoRepete(d, avant){
+  if(d.rx_solu !== 1) return false;
+  const c = corticoEnCours(avant, d.date_ex);
+  return !!c && (c.dose == null ? d.rx_solu_dose == null : c.dose === d.rx_solu_dose);
+}
+const DG_KEYS = ['dg_liste','dg_add_types','dg_add_grave','dg_baro_types','dg_bioch_types','dg_principal','dg_txt'];
+/* À la création d'une fiche de suivi ou de sortie, une seule fois (repère reprise_ok) : le diagnostic retenu de la dernière fiche qui en porte un, et
+   la prednisolone encore à prescrire, avec les jours qui restent. Les champs déjà renseignés ne sont pas touchés ; une fiche déjà enregistrée
+   non plus. */
+function reprisesInit(){
+  const d = REC.d;
+  if(ftype()===1 || !d.dossier || d.reprise_ok) return;
+  if(DB.some(f=>f.id===REC.id)) return;
+  const av = fichesAvant(); if(!av.length) return;
+  d.reprise_ok = 1;
+  const vide = k => d[k]==null || d[k]==='' || (Array.isArray(d[k]) && !d[k].length);
+  if(DG_KEYS.every(vide)){
+    const src = av.slice().reverse().find(f=>Array.isArray(f.d.dg_liste) && f.d.dg_liste.length);
+    if(src) DG_KEYS.forEach(k=>{ const v = src.d[k]; if(v!=null && v!=='' && !(Array.isArray(v) && !v.length)) d[k] = Array.isArray(v) ? v.slice() : v; });
+  }
+  if(d.rx_solu == null){
+    const c = corticoEnCours(av, d.date_ex);
+    if(c){
+      d.rx_solu = 1;
+      if(c.dose != null && d.rx_solu_dose == null) d.rx_solu_dose = c.dose;
+      if(c.reste != null && d.rx_solu_jours == null) d.rx_solu_jours = c.reste;
+    }
+  }
+}
 /* valeur grisée proposée depuis l'examen précédent */
 const NOGHOST = {date_ex:1,heure_ex:1,num_ex:1,age:1,delai_min:1,gcs_tot:1,gcs_nc:1,pj:1,cst:1};
 /* clés propres à un examen donné : schémas d'échographie, scores et leurs cotations manuelles */
@@ -2721,6 +2794,7 @@ function computeAll(){
     if(!TYPE_CHOISI && d.num_ex > 1 && d.fiche_type === 1){ d.fiche_type = 2; TYPE_PROPOSE = true; dropDefaults(); }
   } else delete d.num_ex;
 
+  reprisesInit();
   adpCalc();
 
   const au = orlAudio();
@@ -3063,10 +3137,13 @@ function fieldHTML(f){
    « deux points ». Firefox ne propose pas cette fonction : le bouton le dit et renvoie à la dictée du système
    (Windows + H sous Windows). Chrome et Edge confient l'audio à un service distant pour le transcrire :
    un avis le rappelle à la première utilisation.
-   Le micro s'éteint tout seul : une seconde sans parole après avoir parlé (cinq secondes si personne n'a encore parlé).
+   Le micro s'éteint tout seul : deux secondes sans parole après avoir parlé (cinq secondes si personne n'a encore parlé).
    Le texte dicté est recomposé à chaque événement à partir de la liste complète des résultats du navigateur, jamais
    ajouté morceau par morceau : Chrome rend parfois chaque résultat avec tout le texte déjà dit (« antécédent »,
-   « antécédent numéro », « antécédent numéro 1 »), ce qui, ajouté bout à bout, écrivait trois fois le début.
+   « antécédent numéro », « antécédent numéro 1 »), ce qui, ajouté bout à bout, écrivait trois fois le début. Deux résultats se
+   reconnaissent comme le même texte prolongé ou corrigé quand leurs mots se correspondent, sans tenir compte des accents, de la casse, de la
+   ponctuation, ni de l'écriture des nombres (« vingt cinq » et « 25 », « 14 heures 30 » et « 14h30 »), et, dès qu'une session a montré ce
+   comportement, à quelques mots près (le navigateur révise parfois un mot au passage).
    ===================================================================== */
 const dictClasse = () => window.SpeechRecognition || window.webkitSpeechRecognition;
 const dictDispo = () => typeof dictClasse() === 'function';
@@ -3076,7 +3153,7 @@ const DICT_OK = f => f.t==='area' || (f.t==='txt' && !f.pii && !f.mail && !f.lis
    demarrage : le navigateur n'écoute pas encore (il peut demander l'autorisation du micro) : l'attente ne court pas pendant ce temps ;
    parole : le navigateur a entendu parler mais n'a pas encore rendu de texte ; fin : délai laissé au navigateur
    pour rendre le dernier texte une fois le micro arrêté, avant de couper net */
-const DICT_T = {silence:1000, attente:5000, parole:3000, fin:3000, demarrage:20000};
+const DICT_T = {silence:2000, attente:5000, parole:3000, fin:3000, demarrage:20000};
 let DICT = null;        // dictée en cours : {k, fid, rec, on, parle, pos, ins, fin, prov, tmr, tmr2}
 const dictSec = ms => { const s = Math.round(ms / 100) / 10; return String(s).replace('.', ',')+' seconde'+(s > 1 ? 's' : ''); };
 const DICT_AVIS = 'Dictée vocale\n\nLe navigateur transcrit la voix avec un service de reconnaissance en ligne (Google pour Chrome, Microsoft pour Edge) : '+
@@ -3118,33 +3195,137 @@ function dictInterim(k, txt){
   if(b.parentNode !== zone) zone.appendChild(b);
   b.textContent = '… '+txt;
 }
-/* Un résultat qui reprend en tête le texte du précédent le prolonge ou le corrige : il le remplace. Les mots du précédent
-   doivent tous se retrouver en tête ; avec au moins deux mots, le dernier peut n'être qu'un début de mot ou une variante
-   (« numéro » → « numéros »). Deux phrases distinctes ne se confondent pas : « oui » puis « non merci », « un » puis
-   « une douleur » restent deux phrases. */
-function dictCum(prev, t){
-  const a = norm(prev).split(' ').filter(Boolean), b = norm(t).split(' ').filter(Boolean);
-  if(!a.length || b.length < a.length) return false;
-  for(let i = 0; i < a.length; i++){
-    if(a[i] === b[i]) continue;
-    if(i > 0 && i === a.length-1 && (b[i].indexOf(a[i]) === 0 || a[i].indexOf(b[i]) === 0)) continue;
-    return false;
+/* Les mots d'un texte dicté tels qu'on les compare : sans accents, casse ni ponctuation, les chiffres séparés des lettres (« 14h30 » : 14, h, 30), les
+   nombres écrits en lettres ramenés à leurs chiffres (« vingt cinq » et « 25 » se valent), quelques unités ramenées à leur sigle (« heures » : h).
+   Chaque mot garde le rang (end) du mot du texte d'origine qui l'achève : on sait ainsi où couper le texte. */
+const DICT_NB = {zero:0, un:1, une:1, deux:2, trois:3, quatre:4, cinq:5, six:6, sept:7, huit:8, neuf:9, dix:10, onze:11, douze:12, treize:13,
+                 quatorze:14, quinze:15, seize:16, vingt:20, vingts:20, trente:30, quarante:40, cinquante:50, soixante:60, cent:100, cents:100, mille:1000};
+const DICT_UNITES = {heure:'h', heures:'h', minute:'min', minutes:'min', metre:'m', metres:'m', seconde:'s', secondes:'s', jour:'j', jours:'j',
+                     kilo:'kg', kilos:'kg', kilogramme:'kg', kilogrammes:'kg', milligramme:'mg', milligrammes:'mg'};
+function dictTok(texte){
+  const brut = String(texte==null ? '' : texte).trim().split(/\s+/).filter(Boolean), mots = [];
+  brut.forEach((w, i)=>{
+    norm(w.replace(/(\d)(?=[^\d\s])|([^\d\s])(?=\d)/g, '$1$2 ')).split(' ').forEach(t=>{ if(t) mots.push({t:t, end:i+1}); });
+  });
+  const res = [];
+  for(let i = 0; i < mots.length; ){
+    const w = mots[i].t;
+    if(DICT_NB[w] === undefined){
+      res.push({t:/^\d+$/.test(w) ? String(parseInt(w, 10)) : (DICT_UNITES[w] || w), end:mots[i].end}); i++; continue;
+    }
+    /* une suite de mots-nombres (« quatre vingt dix sept », « deux cent trente », « vingt et un ») devient un seul nombre, tant que la grammaire
+       le permet : « trois cinq » ou « vingt trente » sont deux nombres. Catégories : u (0 à 9), t (10 à 16), d (20 à 60), c (cent), m (mille). */
+    let tot = 0, cur = 0, prev = '', pcat = '', qv = false, j = i;
+    for(; j < mots.length; j++){
+      const x = mots[j].t, v = DICT_NB[x];
+      if(v === undefined){
+        if(x === 'et' && pcat === 'd' && j+1 < mots.length && /^(?:un|une|onze)$/.test(mots[j+1].t)) continue;
+        break;
+      }
+      const cat = v === 1000 ? 'm' : v === 100 ? 'c' : v >= 20 ? 'd' : v >= 10 ? 't' : 'u';
+      let permis = !pcat;
+      if(pcat === 'u') permis = cat === 'c' || cat === 'm' || (v === 20 && prev === 'quatre');
+      else if(pcat === 't') permis = cat === 'm' || (prev === 'dix' && cat === 'u' && v >= 7);
+      else if(pcat === 'd') permis = cat === 'u' || cat === 'm' || (cat === 't' && (prev === 'soixante' || qv));
+      else if(pcat === 'c') permis = cat !== 'c';
+      else if(pcat === 'm') permis = cat !== 'm';
+      if(!permis) break;
+      if(v === 1000){ tot += (cur || 1) * 1000; cur = 0; }
+      else if(v === 100) cur = (cur || 1) * 100;
+      else if(v === 20 && prev === 'quatre'){ cur += 76; qv = true; }       // quatre-vingt(s) : 4 déjà compté, + 76
+      else cur += v;
+      prev = x; pcat = cat;
+    }
+    /* « une » seul reste un mot : « un » puis « une douleur » sont deux phrases (« un » ≈ « 1 » seulement pour « numéro un » et « numéro 1 ») */
+    if(j === i+1 && w === 'une') res.push({t:'une', end:mots[i].end});
+    else res.push({t:String(tot + cur), end:mots[j-1].end});
+    i = j;
   }
-  return true;
+  return res;
 }
+/* deux mots se valent s'ils sont égaux, ou ne diffèrent que par un pluriel (« numéro », « numéros ») ; pas pour les petits mots : « de » et « des », « le » et « les » */
+const dictEq = (a, b) => a === b || (a.length >= 4 && b.length >= 4 && (a+'s' === b || b+'s' === a || a+'x' === b || b+'x' === a));
+/* distance d'édition (mots changés, ajoutés ou retirés) entre les mots de a et les m premiers mots de b */
+function dictDist(a, b, m){
+  let prec = [];
+  for(let j = 0; j <= m; j++) prec.push(j);
+  for(let i = 1; i <= a.length; i++){
+    const cur = [i];
+    for(let j = 1; j <= m; j++) cur.push(Math.min(prec[j] + 1, cur[j-1] + 1, prec[j-1] + (dictEq(a[i-1].t, b[j-1].t) ? 0 : 1)));
+    prec = cur;
+  }
+  return prec[m];
+}
+/* Le texte b (les mots de dictTok) prolonge-t-il ou corrige-t-il le texte a ? Rend {n, strict} (n : nombre de mots de b qui répondent à a) ou null.
+   Strict : tous les mots de a en tête de b ; avec au moins deux mots, le dernier peut n'être qu'un début de mot ou une variante (« numéro » →
+   « numéros »). Deux phrases distinctes ne se confondent pas : « oui » puis « non merci », « un » puis « une douleur » restent deux phrases.
+   Souple (seulement quand la session a déjà rendu un résultat qui en prolonge un autre) : à quelques mots près, proportionnellement à la
+   longueur, pour les révisions du navigateur au passage. */
+function dictRaccord(a, b, souple){
+  const n = a.length;
+  if(!n || b.length < n - (souple ? 1 : 0)) return null;
+  let ok = b.length >= n;
+  for(let i = 0; ok && i < n; i++){
+    if(dictEq(a[i].t, b[i].t)) continue;
+    if(!(i > 0 && i === n-1 && (b[i].t.indexOf(a[i].t) === 0 || a[i].t.indexOf(b[i].t) === 0))) ok = false;
+  }
+  if(ok) return {n:n, strict:true};
+  if(!souple) return null;
+  const permis = n < 4 ? 0 : n < 8 ? 1 : n < 14 ? 2 : 3;
+  if(!permis) return null;
+  let best = 0, bestD = permis + 1;
+  for(let m = Math.max(1, n - permis); m <= Math.min(b.length, n + permis); m++){
+    const d = dictDist(a, b, m);
+    if(d < bestD || (d === bestD && m > best)){ bestD = d; best = m; }
+  }
+  return bestD <= permis ? {n:best, strict:false} : null;
+}
+const dictCum = (prev, t, souple) => !!dictRaccord(dictTok(prev), dictTok(t), souple);
 /* les résultats de la session, du premier au dernier : le texte définitif (une phrase par élément) et ce qui reste provisoire */
 function dictSegments(results){
   const fin = [], prov = [];
+  let souple = false;
+  const empile = (L, t) => {
+    if(L.length){
+      const a = dictTok(L[L.length-1]), b = dictTok(t), r = dictRaccord(a, b, souple);
+      if(r){ if(r.strict && b.length > a.length) souple = true; L[L.length-1] = t; return; }
+    }
+    L.push(t);
+  };
   for(let i = 0; results && i < results.length; i++){
     const r = results[i], t = String((r && r[0] && r[0].transcript) || '').trim();
     if(!t) continue;
-    const L = r.isFinal ? fin : prov;
-    if(L.length && dictCum(L[L.length-1], t)) L[L.length-1] = t; else L.push(t);
+    empile(r.isFinal ? fin : prov, t);
   }
   let p = prov.join(' ');
   const last = fin.length ? fin[fin.length-1] : '';
-  if(last && p && dictCum(last, p)) p = p.split(/\s+/).slice(last.split(/\s+/).length).join(' ');     // seule la suite est provisoire
+  if(last && p){
+    const b = dictTok(p), r = dictRaccord(dictTok(last), b, souple);
+    if(r) p = p.split(/\s+/).filter(Boolean).slice(b[r.n-1].end).join(' ');                  // seule la suite est provisoire
+  }
   return {fin:fin, prov:p};
+}
+/* Une phrase d'au moins quatre mots dite deux fois de suite (mêmes mots, à la casse, aux accents et à la ponctuation près) n'est écrite qu'une
+   fois : c'est un doublon du navigateur, pas une répétition voulue. */
+function dictDedup(texte){
+  const t0 = String(texte==null ? '' : texte);
+  if(!/\S/.test(t0)) return t0;
+  const deb = /^\s*/.exec(t0)[0], fin = /\s*$/.exec(t0)[0];
+  const morceaux = t0.slice(deb.length, t0.length - fin.length).split(/(\s+)/), W = [], sep = [];
+  morceaux.forEach((x, i)=>{ if(i % 2 === 0 && x){ W.push(x); sep.push(i > 0 ? morceaux[i-1] : ''); } });
+  const N = W.map(w=>dictTok(w).map(x=>x.t).join(' '));
+  let fait = true;
+  while(fait){
+    fait = false;
+    for(let i = 0; i < W.length && !fait; i++){
+      for(let L = Math.floor((W.length - i) / 2); L >= 4 && !fait; L--){
+        let egal = true;
+        for(let k = 0; egal && k < L; k++) if(!N[i+k] || N[i+k] !== N[i+L+k]) egal = false;
+        if(egal){ W.splice(i+L, L); sep.splice(i+L, L); N.splice(i+L, L); fait = true; }
+      }
+    }
+  }
+  return deb + W.map((w, i)=>(i ? sep[i] : '')+w).join('') + fin;
 }
 /* Pose le texte définitif de la session, à la place de celui qu'elle avait déjà posé (même endroit : celui du curseur au
    départ). Le champ peut avoir changé entre-temps : du texte ajouté avant déplace seulement l'endroit ; du texte changé
@@ -3165,6 +3346,7 @@ function dictPlace(st, segs){
     const cur = avant + t, x = dictFormat(g, cur, f.t==='area'); if(!x) return;
     t += ((cur && !/\s$/.test(cur) && !/^[\n,.;:?!]/.test(x)) ? ' ' : '') + x;
   });
+  t = dictDedup(t);
   if(t === st.ins) return;
   const sp = (t && apres && !/^[\s,.;:?!]/.test(apres) && !/\s$/.test(t)) ? ' ' : '';
   const nv = avant + t + sp + apres, np = (avant + t).length;
@@ -3277,6 +3459,8 @@ function dictate(k){
    calendrier reste disponible pour ceux qui le préfèrent.
    La valeur stockée reste au format ISO AAAA-MM-JJ : rien ne change dans le
    fichier de données ni dans les fiches déjà enregistrées.
+   Dans une case de date ou d'heure, la touche « + » (ou la barre d'espace) écrit la
+   date du jour ou l'heure du moment (dateHeureRapide).
    ===================================================================== */
 const isoToFr = s => {
   const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(s||''));
@@ -3303,7 +3487,7 @@ function dateHTML(f, v, g){
   const bad = REC._badDate && REC._badDate[f.k];
   return '<span class="dtwrap">'+
     '<input id="i_'+f.k+'" class="dtxt'+(f.req&&!v?' req':'')+(bad?' bad':'')+'" type="text" '+
-      'inputmode="numeric" maxlength="10" autocomplete="off" placeholder="JJ/MM/AAAA" '+
+      'inputmode="numeric" maxlength="10" autocomplete="off" placeholder="JJ/MM/AAAA" title="« + » ou espace : la date du jour" '+
       'value="'+esc(bad!=null? bad : isoToFr(v))+'" '+
       'oninput="dateType(\''+f.k+'\',this)" onblur="dateBlur(\''+f.k+'\',this)">'+
     '<button type="button" class="dpk" tabindex="-1" title="Choisir dans un calendrier" '+
@@ -3316,7 +3500,7 @@ function timeHTML(f, v, g){
   const bad = REC._badTime && REC._badTime[f.k];
   return '<span class="dtwrap">'+
     '<input id="i_'+f.k+'" class="dtxt tm'+(f.req&&!v?' req':'')+(bad?' bad':'')+'" type="text" '+
-      'inputmode="numeric" maxlength="5" autocomplete="off" placeholder="HH:MM" '+
+      'inputmode="numeric" maxlength="5" autocomplete="off" placeholder="HH:MM" title="« + » ou espace : l’heure du moment" '+
       'value="'+esc(bad!=null? bad : (v||''))+'" '+
       'oninput="timeType(\''+f.k+'\',this)" onblur="timeBlur(\''+f.k+'\',this)">'+
     '<button type="button" class="dpk" tabindex="-1" title="Choisir une heure" '+
@@ -3371,6 +3555,23 @@ function timeBlur(k, el){
   if(hm){ if(REC._badTime) delete REC._badTime[k]; el.classList.remove('bad'); setDateVal(k, hm); }
   else { el.classList.add('bad'); toast('Heure impossible : attendu HH:MM'); }
 }
+/* « + » ou espace dans une case de date ou d'heure : la date du jour, l'heure du moment (case de date ou d'heure de la fiche, heure d'un relevé de
+   constantes) */
+function dateHeureRapide(e){
+  const el = e.target;
+  if(!el || el.tagName !== 'INPUT' || e.ctrlKey || e.altKey || e.metaKey) return;
+  if(e.key !== '+' && e.key !== ' ' && e.key !== 'Add' && e.key !== 'Spacebar') return;
+  const cl = el.classList, heure = cl.contains('dtxt') ? cl.contains('tm') : el.placeholder === 'HH:MM';
+  if(!cl.contains('dtxt') && !heure) return;
+  e.preventDefault();
+  const now = new Date();
+  el.value = heure ? hhmm(now) : isoToFr(iso(now));
+  const k = String(el.id || '').replace(/^i_/, '');
+  if(cl.contains('dtxt') && k) (heure ? timeType : dateType)(k, el);
+  else el.dispatchEvent(new Event('change', {bubbles:true}));
+  try{ el.setSelectionRange(el.value.length, el.value.length); }catch(_){}
+}
+document.addEventListener('keydown', dateHeureRapide, true);
 /* le champ natif reste dans la page, invisible, uniquement pour son sélecteur */
 function openPicker(k){
   const el = document.getElementById('p_'+k); if(!el) return;
@@ -3542,7 +3743,7 @@ const PAGES = [
  {n:2, l:'Anamnèse et plongée', c:'Anamnèse', s:'plongeur, plongée, facteurs, anamnèse'},
  {n:3, l:'Examen clinique général', c:'Examen', s:'constantes, conscience, ORL, cutané'},
  {n:4, l:'Examen neurologique', c:'Neuro', s:'réflexes, force, sensibilités, scores'},
- {n:5, l:'Examens complémentaires', c:'Examens compl.', s:'gaz du sang, biologie, ECG, imagerie'},
+ {n:5, l:'Examens complémentaires', c:'Examens compl.', s:'actes, gaz du sang, biologie, ECG, imagerie'},
  {n:6, l:'Conclusion et évolution', c:'Conclusion', s:'recompression, traitements, diagnostic, orientation',
   s2:'évolution, diagnostic, orientation, sortie'}
 ];
@@ -3703,7 +3904,7 @@ function autoSync(k, val){
   d[ak] = val;
 }
 /* les champs correspondants à l'écran suivent le calcul, sauf celui qui a le focus */
-const AUTOKEYS = ['tb_h_fin','rx_solu_dose','ecg_txt','pl_dtr','pl_duree_tot','pl_rr_prof','pl_reimm_txt',
+const AUTOKEYS = ['tb_h_fin','rx_solu_dose','ev_seances','sortie_exam_second','ecg_txt','pl_dtr','pl_duree_tot','pl_rr_prof','pl_reimm_txt',
                   'pl_h_immersion','pl_h_depart_fond','pl_h_sortie',
                   'gds_date','gds_h','lab_date','lab_h','lab_hb','lab_ht'];
 function refreshAutoFields(){
@@ -3764,6 +3965,8 @@ let DOSSIER_T=null;
 function setRaw(k,v){
   if(v==='') delete REC.d[k]; else REC.d[k]=v;
   touch();
+  /* les examens proposés à la sortie : vider le champ est un choix (« aucun examen »), la proposition ne revient pas */
+  if(k==='sortie_exam_second'){ if(v==='') REC.d.exam_prop_off = 1; else delete REC.d.exam_prop_off; }
   if(k==='dossier'){
     REC.d.dossier_pseudo = 0;   // saisie directe : la valeur n'est pas pseudonymisée
     // on attend la fin de la frappe avant de chercher le dossier et de reconstruire le formulaire
@@ -4899,8 +5102,13 @@ function adpCalc(){
   /* durée de la table choisie, et heure de fin proposée (modifiable) */
   put('tb_duree', tableDuree(d.tb_table));
   autoSync('tb_h_fin', (d.tb_h_mep && d.tb_duree!=null) ? addMin(d.tb_h_mep, d.tb_duree) : null);
-  /* (méthyl)prednisolone : dose quotidienne proposée à 1 mg/kg, d'après le poids */
-  autoSync('rx_solu_dose', (d.rx_solu===1 && d.poids>0) ? Math.round(d.poids*DEF_CORTICO_MGKG) : null);
+  /* (méthyl)prednisolone : dose quotidienne proposée à 1 mg/kg, d'après le poids (celui de la fiche initiale sur une fiche de suivi) */
+  const pds = poidsRef();
+  autoSync('rx_solu_dose', (d.rx_solu===1 && pds>0) ? Math.round(pds*DEF_CORTICO_MGKG) : null);
+  /* séances réalisées depuis la dernière consultation : proposées d'après la fiche précédente (une recompression cotée = une séance) */
+  if(ftype()!==1){ const av = fichesAvant(); autoSync('ev_seances', av.length ? (recompCotee(av[av.length-1].d) ? 1 : 0) : null); }
+  /* consultation de sortie : examens à réaliser, proposés d'après le ou les diagnostics retenus et le générateur de documents */
+  if(ftype()===3 && !d.exam_prop_off) autoSync('sortie_exam_second', genExamsTexte(d));
   /* ECG : compte rendu rédigé à partir de la fréquence et du QTc, modifiable */
   autoSync('ecg_txt', (d.im_ecg===1 && (d.ecg_fc!=null || d.ecg_qtc!=null)) ? ecgTexte(d) : null);
   /* biologie : horodatage proposé, Hb et Ht du bilan repris du gaz du sang du même jour */
@@ -6104,7 +6312,7 @@ function terrainTextes(){
   if(d.atcd) atcd.push(lc1(flat(d.atcd).replace(/\.$/,'')));
   const trait = [];
   if(d.traitement) trait.push('traitement habituel : '+lc1(flat(d.traitement).replace(/\.$/,'')));
-  if(d.allergie) trait.push('allergies : '+lc1(flat(d.allergie).replace(/\.$/,'')));
+  const allerg = d.allergie ? [lc1(flat(d.allergie).replace(/\.$/,''))] : [];
   if(d.contracept===1) trait.push('contraception orale');
   if(d.regles) trait.push('dernières règles le '+frDate(d.regles));
   if(d.rachianesth===1) trait.push('rachianesthésie récente');
@@ -6146,7 +6354,7 @@ function terrainTextes(){
   if(d.niv_ens!=null)    niveaux.push('enseignement '+niv('niv_ens'));
   if(d.organisme!=null)  niveaux.push('organisme '+niv('organisme'));
   if(d.niveau_date)      niveaux.push('obtenu le '+frDate(d.niveau_date));
-  return {atcd:atcd, trait:trait, tox:tox, plongee:plongee, certif:certif, niveaux:niveaux};
+  return {atcd:atcd, trait:trait, allerg:allerg, tox:tox, plongee:plongee, certif:certif, niveaux:niveaux};
 }
 
 /* Mise en gras dans le texte rédigé : deux caractères d'usage privé encadrent ce qui est anormal. Ils traversent les
@@ -6157,7 +6365,7 @@ const bold = s => s ? BO+s+BC : s;
 const plainTxt = s => String(s==null?'':s).split(BO).join('').split(BC).join('');
 const boldHTML = s => esc(s).split(BO).join('<b>').split(BC).join('</b>');
 /* un résultat d'examen saisi en texte libre est tenu pour normal s'il commence comme une conclusion normale ; sinon il s'écrit en gras */
-const NORM_RES = /^(normale?s?|sans anomalie|aucune anomalie|absence de|pas d[e’']|rien à signaler|négati(?:f|ve)s?|non contributi(?:f|ve)|bilan sans particularité)\b/i;
+const NORM_RES = /^(normale?s?|sans anomalie|aucune anomalie|absence de|pas d[e’']|rien à signaler|négati(?:f|ve)s?|non contributi(?:f|ve)|bilan sans particularité)(?![\wÀ-ÿ])/i;     // pas de \b : « particularité » finit par un « é », qui n'est pas une lettre pour \b
 const abnRes = t => { t = String(t==null?'':t).trim(); return !!t && !NORM_RES.test(t); };
 
 /* Lire une autre fiche que la fiche ouverte : les fonctions de rédaction lisent REC. On installe donc une copie de la
@@ -6743,6 +6951,7 @@ function narrativeBlocks(){
     sect('Antécédents et terrain', [
       TX.atcd.length ? fin('Antécédents médico-chirurgicaux : '+TX.atcd.join(' ; ')) : '',
       TX.trait.length ? fin(cap(TX.trait.join(' ; '))) : '',
+      TX.allerg.length ? fin('Allergies : '+TX.allerg.join(' ; ')) : '',
       TX.tox.length ? fin('Habitudes toxiques : '+TX.tox.join(' ; ')) : '',
       TX.plongee.length ? fin('Antécédents de plongée : '+TX.plongee.join(' ; ')) : '',
       TX.certif.length ? fin('Certificat médical : '+TX.certif.join(' ; ')) : ''
@@ -6808,16 +7017,10 @@ function narrativeBlocks(){
     act.push((d.ac_sonde===2 ? 'sonde vésicale à demeure' : 'sondage vésical évacuateur')+
              (d.ac_sonde_vol!=null ? ' (volume initial évacué : '+d.ac_sonde_vol+' mL)' : ''));
   if(act.length) PC('act', 'Actes : '+lst(act)+'.');
-  const bio = [];
-  if(d.bio_add===1) bio.push('bilan accident de plongée');
-  if(d.bio_opi===1) bio.push('bilan d’œdème pulmonaire d’immersion');
-  if(d.bio_etude===1) bio.push('prélèvement pour étude complémentaire');
-  if(d.bio_autre) bio.push(flat(d.bio_autre).replace(/\.$/,''));
-  if(bio.length || d.bio_res){
-    const br = d.bio_res ? flat(d.bio_res).replace(/[.;,:\s]+$/,'') : '';
-    const bab = br && abnRes(br);
-    PC('bio', 'Biologie : '+[bio.length ? lst(bio)+' prélevé'+(bio.length>1?'s':'') : '',
-                           br ? 'résultats marquants : '+(bab ? bold(br) : br) : ''].filter(Boolean).join(' ; ')+'.', bab);
+  /* le bilan prélevé ne s'écrit pas : seuls les résultats et leur interprétation, quand ils sont connus (les valeurs chiffrées sont dans les tableaux) */
+  if(d.bio_res){
+    const br = lc1(flat(d.bio_res)).replace(/[.;,:\s]+$/,''), bab = abnRes(br);
+    PC('bio', 'Biologie : '+(bab ? bold(br) : br)+'.', bab);
   }
   /* un examen réalisé, avec son résultat quand il est saisi ; e : féminin pour l'accord de « réalisé » */
   const exam = (cat, k, lib, res, e) => {
@@ -6882,8 +7085,7 @@ function narrativeBlocks(){
     if(d.tb_h_mep) tb.push('mise en pression à '+hFr(d.tb_h_mep));
     if(d.tb_h_fin) tb.push('fin à '+hFr(d.tb_h_fin));
     if(d.tb_delai!=null) tb.push('recompression '+dureeFr(d.tb_delai)+' après les premiers symptômes');
-    if(d.tb_nb_seances!=null) tb.push(d.tb_nb_seances+' séance'+(d.tb_nb_seances>1?'s':'')+' réalisée'+(d.tb_nb_seances>1?'s':''));
-    cat.push(fin('Table '+(tbl ? flat(tbl) : 'de recompression')+(tb.length?' ('+tb.join(', ')+')':'')+(ori?' puis '+ori:'')));
+    cat.push(fin(bold('Table '+(tbl ? flat(tbl) : 'de recompression'))+(tb.length?' ('+tb.join(', ')+')':'')+(ori?' puis '+ori:'')));
   } else if(ori) cat.push(fin('Orientation : '+ori));
   if(d.tb_complic===1) cat.push(bold(fin('Complication thérapeutique'+(d.tb_complic_txt?' : '+flat(d.tb_complic_txt):''))));
   if(d.rx_o2===1){
@@ -6899,10 +7101,12 @@ function narrativeBlocks(){
     }
     cat.push(o+'.');
   }
-  if(d.rx_solu===1){
+  /* la prednisolone reprise d'une fiche à l'autre (même dose, encore en cours) ne se répète pas : elle s'écrit à la fiche qui la prescrit et à celle qui la change */
+  if(d.rx_solu===1 && !corticoRepete(d, fichesAvant())){
     let c = 'Corticothérapie : (méthyl)prednisolone';
+    const pds = poidsRef();
     if(d.rx_solu_dose!=null) c += ' '+d.rx_solu_dose+' mg/jour'+
-      (d.poids>0 && d.rx_solu_dose===Math.round(d.poids*DEF_CORTICO_MGKG) ? ' ('+DEF_CORTICO_MGKG+' mg/kg)' : '');
+      (pds>0 && d.rx_solu_dose===Math.round(pds*DEF_CORTICO_MGKG) ? ' ('+DEF_CORTICO_MGKG+' mg/kg)' : '');
     if(d.rx_solu_jours!=null) c += ' pendant '+d.rx_solu_jours+' jour'+(d.rx_solu_jours>1?'s':'');
     if(d.rx_solu_h) c += ', 1re dose à '+hFr(d.rx_solu_h);
     cat.push(c+'.');
@@ -7063,7 +7267,7 @@ const crhWhen = f => 'Le '+frDate(f.d.date_ex)+(f.d.heure_ex ? ' à '+TXT.hFr(f.
 /* ce que l'encart d'évolution d'une fiche dit, sans l'horodatage (le compte rendu écrit le sien) ; à appeler sous withRec */
 function evolPartsCRH(d){
   const P = [], s1 = [];
-  if(d.ev_seances!=null)
+  if(d.ev_seances>0)
     s1.push(d.ev_seances+' séance'+(d.ev_seances>1?'s':'')+' de recompression '+(d.ev_seances>1?'ont été réalisées':'a été réalisée')+' depuis la consultation précédente');
   if(d.ev_complic===0) s1.push('sans complication thérapeutique');
   else if(d.ev_complic===1) s1.push(bold('avec une complication thérapeutique'+(d.ev_complic_txt?' : '+TXT.flat(d.ev_complic_txt).replace(/[.;,:\s]+$/,''):'')));
@@ -7080,7 +7284,7 @@ function evolPartsCRH(d){
 function crhState(f){
   return withRec(f, ()=>{
     const bl = narrativeBlocks(), d = REC.d;
-    return {f:f, d:d, bl:bl, X:bl.xf, S:bl.sy, pce:bl.pce,
+    return {f:f, d:d, bl:bl, X:bl.xf, S:bl.sy, pce:bl.pce, cortRep:corticoRepete(d, fichesAvant()),
             A:(ASIA && ASIA.ais) ? {ais:ASIA.ais, nli:ASIA.nli, lt:ASIA.lt, pp:ASIA.pp, uems:ASIA.uems, lems:ASIA.lems} : null,
             diag:diagnosticTexte(d), ev:evolPartsCRH(d)};
   });
@@ -7115,30 +7319,76 @@ function diffFindings(Xa, Xb, da, db){
   });
   return out;
 }
+/* le score ASIA d'une fiche, en une phrase */
+const asiaTxt = z => 'AIS '+z.ais+(z.nli ? ', niveau neurologique '+z.nli : '')+', tact léger '+(z.lt!=null?z.lt:'?')+'/112, piqûre '+
+                     (z.pp!=null?z.pp:'?')+'/112, moteur '+((z.uems||0)+(z.lems||0))+'/100';
+/* « Évolution des scores » du compte rendu. ST : l'état des fiches du dossier, de la plus ancienne à la plus récente.
+   - MEDSUBHYP : celui d'entrée, puis ceux du premier jour (H12, H24) quand ils sont connus ;
+   - score vestibulaire : le premier connu ;
+   - score ASIA : celui d'entrée, le plus péjoratif s'il diffère de celui d'entrée et de celui de sortie (daté), celui de sortie.
+   noSc : la case « ne pas mentionner les scores » retire MEDSUBHYP et le score vestibulaire, pas le score ASIA. */
+function scoresCRH(ST, noSc){
+  const L = [];
+  if(!noSc){
+    const m = {};
+    ST.forEach(st=>{ const mo = st.d.msh_moment_eff || st.d.msh_moment; if(mo && mo!=='nr' && st.d.msh_total!=null) m[mo] = st.d.msh_total; });
+    const ms = [['t0','à l’arrivée'],['t12','à H12'],['t24','à H24']].filter(x=>m[x[0]]!=null).map(x=>m[x[0]]+' '+x[1]);
+    if(ms.length) L.push('Score MEDSUBHYP : '+ms.join(', ')+'.');
+    const v = ST.find(st=>st.d.vest_total!=null);
+    if(v) L.push(VEST.nom+' initial : '+v.d.vest_total+'.');
+  }
+  const As = ST.filter(st=>st.A);
+  if(As.length){
+    const RK = {A:4, B:3, C:2, D:1, E:0}, sum = z => (z.lt||0)+(z.pp||0)+(z.uems||0)+(z.lems||0);
+    const pire = (a, b) => RK[a.ais]!==RK[b.ais] ? RK[a.ais] > RK[b.ais] : sum(a) < sum(b);        // a plus péjoratif que b
+    const ligne = (lib, z) => { const t = lib+' : '+asiaTxt(z)+'.'; return z.ais!=='E' ? bold(t) : t; };
+    const e = As[0], x = As[As.length-1];
+    if(As.length === 1) L.push(ligne('Score ASIA', e.A));
+    else {
+      L.push(ligne('Score ASIA d’entrée', e.A));
+      let w = e;
+      As.forEach(st=>{ if(pire(st.A, w.A)) w = st; });
+      if(w !== e && w !== x) L.push(ligne('Score ASIA le plus péjoratif ('+crhWhen(w.f).replace(/^Le /, 'le ')+')', w.A));
+      L.push(ligne('Score ASIA de sortie', x.A));
+    }
+  }
+  return L;
+}
 /* le score ASIA d'un examen à l'autre : sens de la variation (négatif = amélioration) et texte */
 function asiaDiff(a, b){
   if(!a || !b) return null;
   if(['ais','nli','lt','pp','uems','lems'].every(x=>a[x]===b[x])) return null;
   const RK = {A:4, B:3, C:2, D:1, E:0}, sum = z => (z.lt||0)+(z.pp||0)+(z.uems||0)+(z.lems||0);
   const dir = RK[b.ais]!==RK[a.ais] ? RK[b.ais]-RK[a.ais] : (sum(a) > sum(b) ? 1 : sum(a) < sum(b) ? -1 : 0);
-  const t = z => 'AIS '+z.ais+(z.nli ? ', niveau neurologique '+z.nli : '')+', tact léger '+(z.lt!=null?z.lt:'?')+'/112, piqûre '+
-                 (z.pp!=null?z.pp:'?')+'/112, moteur '+((z.uems||0)+(z.lems||0))+'/100';
-  return {dir:dir, txt:'score ASIA : '+t(b)+' (auparavant '+t(a)+')'};
+  return {dir:dir, txt:'score ASIA : '+asiaTxt(b)+' (auparavant '+asiaTxt(a)+')'};
 }
 
-/* Recompressions d'un dossier, par type de table. Une fiche qui porte une table compte pour le nombre de séances qu'elle
-   déclare (le plus grand de « séances réalisées » et de « séances depuis la dernière consultation », une au moins) ; les
-   séances déclarées sans table (fiche de suivi) sont comptées à part, sans type. fiches : de la plus ancienne à la plus récente.
-   Résultat : {types:[{code, lib, n}], sansType, total}, les types dans l'ordre de la liste des tables. */
+/* Une fiche porte-t-elle une séance de recompression RÉELLEMENT cotée dans l'encart « Recompression » ? Une recompression cotée sur
+   une fiche est UNE séance : il n'y a plus de « nombre de séances réalisées ».
+   - la table B18 est proposée d'office sur une consultation initiale (DEF_TABLE) : seule, elle ne prouve rien, la fiche peut ne porter aucune
+     recompression. Elle ne compte que si l'encart est rempli : heure de mise en pression ou de fin, ou complication thérapeutique ;
+   - une autre table, ou une table sur une fiche de suivi ou de sortie (où rien n'est proposé d'office), est un choix du praticien ;
+   - une heure de mise en pression sans table est une séance, de type inconnu ;
+   - les « séances réalisées depuis la dernière consultation » (encart Évolution) sont proposées d'après ces mêmes fiches : elles ne comptent pas
+     en plus. */
+function recompCotee(d){
+  if(d.tb_table==null) return !!d.tb_h_mep;
+  const office = (d.fiche_type||1)===1 && d.tb_table===DEF_TABLE;
+  return !office || !!(d.tb_h_mep || d.tb_h_fin || d.tb_complic===1);
+}
+/* Recompressions d'un dossier, par type de table : une fiche qui porte une recompression cotée (recompCotee) compte pour une séance ;
+   une séance dont la table n'est pas connue (heure de mise en pression seule) est comptée à part, sans type. fiches : de la plus
+   ancienne à la plus récente. Résultat : {types:[{code, lib, n}], sansType, total}, les types dans l'ordre de la liste des tables. */
 function recompCounts(fiches){
   const by = {}; let sans = 0;
   fiches.forEach(f=>{
-    const d = f.d, n = Math.max(+d.tb_nb_seances || 0, +d.ev_seances || 0), lib = tableLib(d);
+    const d = f.d; if(!recompCotee(d)) return;
+    const lib = tableLib(d);
     if(lib){
       const connue = TABLES.some(t=>t.v===d.tb_table && t.v!==9), key = connue ? 'c'+d.tb_table : 'x'+lib.toLowerCase();
       const o = by[key] || (by[key] = {code:connue ? d.tb_table : 9, lib:lib, n:0});
-      o.n += Math.max(1, n);
-    } else if(n > 0) sans += n;
+      o.n += 1;
+    } else sans += 1;
   });
   const rang = o => { const i = TABLES.findIndex(t=>t.v===o.code && o.code!==9); return i < 0 ? 99 : i; };
   const types = Object.keys(by).map(k=>by[k]).sort((a,b)=>rang(a)-rang(b) || a.lib.localeCompare(b.lib, 'fr'));
@@ -7182,7 +7432,8 @@ function crhBlocks(){
   act0.forEach(l=>pec.push(l));
   ST.forEach(st=>{ if(st===init) return;
     const cd = pick(st, 'Conduite à tenir');
-    if(cd && (st.d.tb_table || st.d.tb_h_mep || st.d.rx_o2===1 || st.d.rx_solu===1 || st.d.rx_nacl===1)){
+    /* la prednisolone reprise d'une fiche à l'autre (même dose) n'est pas répétée : elle n'ouvre pas non plus de rubrique datée */
+    if(cd && (st.d.tb_table || st.d.tb_h_mep || st.d.rx_o2===1 || (st.d.rx_solu===1 && !st.cortRep) || st.d.rx_nacl===1)){
       pec.push(crhWhen(st.f)+jour(st)+' :'); cd.lines.forEach(l=>pec.push('- '+l));
     }
   });
@@ -7196,10 +7447,9 @@ function crhBlocks(){
     if(st.d.ev_exam_faits) e.push(fin('Examens complémentaires réalisés depuis la consultation précédente : '+flat(st.d.ev_exam_faits)));
     if(e.length){ pcl.push(crhWhen(st.f)+jour(st)+' :'); e.forEach(x=>pcl.push('- '+x)); }
   });
-  /* la case « ne pas mentionner les scores » d'une fiche du dossier vaut pour tout le compte rendu (le score ASIA reste) */
+  /* la case « ne pas mentionner les scores » d'une fiche du dossier vaut pour tout le compte rendu (le score ASIA reste) ; les scores ont leur
+     paragraphe, avant le diagnostic retenu */
   const noSc = FI.some(f=>f.d.sc_masquer);
-  const sc = last.pce.filter(x=>x.cat==='score' && !(noSc && x.sub!=='asia')).map(x=>x.text);
-  sc.forEach(t=>pcl.push(t));
   sect('Examens paracliniques', pcl, false);
   /* la biologie de tout le dossier, dans un tableau : le plus récent à gauche */
   bioSynth(B, FI);
@@ -7227,6 +7477,9 @@ function crhBlocks(){
     if(g) sect('À la sortie, à l’examen général, on retrouve', g.lines, false);
     if(n) sect('À la sortie, à l’examen neurologique, on retrouve', n.lines, false);
   }
+
+  /* évolution des scores : MEDSUBHYP, score vestibulaire, score ASIA, rassemblés avant le diagnostic retenu */
+  sect('Évolution des scores', scoresCRH(ST, noSc), false);
 
   /* diagnostic retenu : le plus récent */
   const dg = ST.slice().reverse().find(s=>s.diag);
@@ -7279,7 +7532,7 @@ function crhBlock(){
     '<button class="mini" onclick="copyCRH()">copier le CRH</button></span></h3>'+
     '<div class="body"><div class="note" style="background:#f2f6fb;border-color:#c9d8ea">Texte enrichi, sans en-tête, écrit à partir de '+
     '<b>toutes les fiches de ce dossier</b> : histoire et examen d’admission, prise en charge, examens paracliniques réunis, évolution horodatée '+
-    '(améliorations, aggravations, autres modifications d’une fiche à l’autre), examen de sortie, diagnostic retenu, examens à réaliser '+
+    '(améliorations, aggravations, autres modifications d’une fiche à l’autre), examen de sortie, évolution des scores, diagnostic retenu, examens à réaliser '+
     'secondairement et inaptitude à la plongée. <b>Gras</b> : ce qui est anormal. Collez-le dans le dossier du patient, puis relisez-le.</div>'+
     '<div id="crh" class="rich"></div></div></div>';
 }
@@ -7296,7 +7549,7 @@ function evolTexte(){
   const d = REC.d, P = [];
   const quand = d.date_ex ? 'Le '+frDate(d.date_ex)+(d.heure_ex?' à '+TXT.hFr(d.heure_ex):'') : '';
   const s1 = [];
-  if(d.ev_seances!=null)
+  if(d.ev_seances>0)
     s1.push(d.ev_seances+' séance'+(d.ev_seances>1?'s':'')+' de recompression '+
             (d.ev_seances>1?'ont été réalisées':'a été réalisée')+' depuis la consultation précédente');
   if(d.ev_complic===0) s1.push('sans complication thérapeutique');
@@ -8332,7 +8585,7 @@ function sortedDB(){
    l'explique (diagnostic) et propose ce qui fonctionne : « Exporter tout en JSON » (dossier choisi, ou archive
    ZIP), téléchargement du JSON à chaque enregistrement, import d'un dossier ou d'une archive.
    ===================================================================== */
-const APP_VERSION = '8.2.1';
+const APP_VERSION = '9.0.0';
 /* hasPicker teste une fonction de l'API au moment de s'en servir : une extension ou un réglage du navigateur peut la retirer */
 const hasPicker = name => { try{ return typeof window[name] === 'function'; }catch(e){ return false; } };
 let FSA = hasPicker('showDirectoryPicker');
@@ -9674,11 +9927,11 @@ function xlsCtx(){
   X.zero = (init.d.fiche_type||1) === 1;
   X.lieu = xlsLieu(d0.pl_lieu);
   /* table initiale et séances complémentaires par famille de table */
-  X.tb0 = d0.tb_table!=null && XLS_TABLE[d0.tb_table]!=null ? XLS_TABLE[d0.tb_table] : (d0.tb_table==null ? 0 : 6);
+  X.tb0 = (d0.tb_table!=null && recompCotee(d0)) ? (XLS_TABLE[d0.tb_table]!=null ? XLS_TABLE[d0.tb_table] : 6) : 0;
   const fam = code => (code===1 || code===2) ? 'o2' : (code>=3 && code<=8) ? 'a28' : 'x';
   X.seances = {o2:0, a28:0};
   X.rc.types.forEach(t=>{ const f = fam(t.code); if(X.seances[f]!=null) X.seances[f] += t.n; });
-  const f0 = d0.tb_table!=null ? fam(d0.tb_table) : null;
+  const f0 = (d0.tb_table!=null && recompCotee(d0)) ? fam(d0.tb_table) : null;
   if(f0 && X.seances[f0]!=null) X.seances[f0] = Math.max(0, X.seances[f0]-1);
   return X;
 }
@@ -10004,27 +10257,12 @@ function cohbResidence(d){
   if(a && xlsLieu(a) === 2) return 'VAR';
   return etr ? (COHB_PAYS[d.nationalite] || null) : null;
 }
-/* Une fiche porte-t-elle une séance de recompression RÉELLEMENT cotée dans l'encart « Recompression » ? (ligne Excel COHB)
-   - la table B18 est proposée d'office sur une consultation initiale (DEF_TABLE) : seule, elle ne prouve rien, la fiche peut ne porter aucune
-     recompression. Elle ne compte que si l'encart est rempli : heure de mise en pression ou de fin, nombre de séances réalisées, complication ;
-   - une autre table, ou une table sur une fiche de suivi ou de sortie (où rien n'est proposé d'office), est un choix du praticien ;
-   - « Nombre de séances réalisées » à 0 : le praticien dit qu'il n'y en a eu aucune ;
-   - une heure de mise en pression sans table est une séance, de type inconnu ;
-   - les « séances réalisées depuis la dernière consultation » (encart Évolution) ne sont pas une cotation de recompression : jamais lues ici.
-   Une fiche compte pour une séance au plus : les nombres de séances déclarés ne multiplient rien. */
-function recompCotee(d){
-  const nb = (d.tb_nb_seances==null || d.tb_nb_seances==='') ? null : +d.tb_nb_seances;
-  if(nb===0) return false;
-  if(d.tb_table==null) return !!d.tb_h_mep;
-  const office = (d.fiche_type||1)===1 && d.tb_table===DEF_TABLE;
-  return !office || !!(d.tb_h_mep || d.tb_h_fin || nb>0 || d.tb_complic===1);
-}
 /* tout ce que la ligne lit en plus du contexte de la ligne principale, calculé une fois */
 function cohbCtx(X){
   const c = {n:{}}, i0 = X.init.d;
-  /* une séance de recompression est comptée quand elle est réellement cotée dans l'encart « Recompression » (recompCotee), dans la colonne de
-     sa table, pour sa période (heures ouvrables, nuit, week-end ou jour férié) d'après sa date et son heure de mise en pression ; sans heure,
-     en heures ouvrables. Une table « autre » n'a pas de colonne. */
+  /* une recompression cotée dans l'encart « Recompression » (recompCotee) est une séance : elle est comptée dans la colonne de sa table, pour sa
+     période (heures ouvrables, nuit, week-end ou jour férié) d'après sa date et son heure de mise en pression ; sans heure, en heures
+     ouvrables. Une table « autre » n'a pas de colonne. */
   X.FI.forEach(f=>{
     const d = f.d; if(!recompCotee(d)) return;
     const code = TABLES.some(t=>t.v===d.tb_table && t.v!==9) ? d.tb_table : 9, col = COHB_TAB[code]; if(col==null) return;
@@ -10294,6 +10532,97 @@ function genMotif(d, cochl, gm){
   }
   return M;
 }
+/* =====================================================================
+   EXAMENS PROPOSÉS À LA SORTIE : CE QUE LE GÉNÉRATEUR PRÉVOIT POUR LE DIAGNOSTIC
+   Selon le diagnostic, le générateur pré-coche des documents (constante PRESETS : accident de désaturation, avec ou sans atteinte vestibulaire ;
+   œdème pulmonaire d'immersion). Ceux qui portent une liste d'examens (courrier au cardiologue, au pneumologue, à l'ORL ; ordonnance d'imagerie)
+   ont des examens cochés d'office (def:true). ADP en tire la proposition d'« examens à réaliser secondairement » de la consultation de sortie,
+   modifiable. Les tableaux sont lus dans le fichier du générateur quand il est connu (le fichier n'est pas exécuté : chaque constante est lue
+   comme un littéral), sinon dans la copie ci-dessous, celle de la première version du générateur.
+   ===================================================================== */
+const GEN_DEFAUT = {
+  presets:{
+    add:     ['recoADD','ordonnance','imagerie','certifMed','cmpc'],
+    addVest: ['recoADD','ordonnance','imagerie','certifMed','cmpc','orl','kineVestib'],
+    opi:     ['recoOPI','cardio','pneumo','ordonnance','imagerie','certifMed','cmpc']
+  },
+  exams:{
+    cardio:[
+      {txt:"une évaluation tensionnelle par holter sur 24h", def:true},
+      {txt:"une ETT", def:true},
+      {txt:"une épreuve d'effort", def:true},
+      {txt:"un holter ECG des 24h", def:true},
+      {txt:"une ETO avec épreuve de contraste à la recherche d'un foramen ovale perméable", def:false},
+      {txt:"un coronaro-scanner", def:false},
+      {txt:"une IRM cardiaque", def:false}],
+    pneumo:[
+      {txt:"une évaluation fonctionnelle respiratoire par EFR avec calcul des débits et mesure des volumes", def:true},
+      {txt:"une mesure de la DLCO", def:true},
+      {txt:"un test de provocation bronchique", def:false},
+      {txt:"un scanner thoracique", def:false}],
+    orl:[
+      {txt:"un audiogramme tonal et vocal", def:true},
+      {txt:"une tympanométrie", def:true},
+      {txt:"un examen vestibulaire (vidéonystagmographie)", def:true},
+      {txt:"une nasofibroscopie", def:false},
+      {txt:"une évaluation de la perméabilité tubaire", def:false}],
+    imagerie:[
+      {txt:"une IRM médullaire, à la recherche de facteurs compressifs médullaires", def:true},
+      {txt:"une IRM cérébrale", def:false},
+      {txt:"un scanner thoracique", def:false}]
+  }
+};
+/* la valeur d'une constante « const NOM = … ; » du texte d'un fichier, lue comme un littéral (guillemets, commentaires et parenthèses
+   respectés) ; undefined si elle est introuvable ou n'est pas un littéral */
+function genConst(src, nom){
+  const m = new RegExp('(?:^|\\n)[ \\t]*const '+nom+'[ \\t]*=[ \\t]*').exec(src); if(!m) return undefined;
+  const debut = m.index + m[0].length;
+  let i = debut, prof = 0, q = '';
+  for(; i < src.length; i++){
+    const c = src[i];
+    if(q){ if(c === '\\') i++; else if(c === q) q = ''; continue; }
+    if(c === '"' || c === "'" || c === '`'){ q = c; continue; }
+    if(c === '/' && src[i+1] === '/'){ while(i < src.length && src[i] !== '\n') i++; continue; }
+    if(c === '/' && src[i+1] === '*'){ const j = src.indexOf('*/', i+2); i = j < 0 ? src.length : j+1; continue; }
+    if(c === '[' || c === '{' || c === '(') prof++;
+    else if(c === ']' || c === '}' || c === ')'){ if(--prof === 0){ i++; break; } }
+    else if(c === ';' && prof === 0) break;
+  }
+  try{ return (new Function('"use strict"; return ('+src.slice(debut, i)+');'))(); }catch(e){ return undefined; }
+}
+/* PRESETS et les listes d'examens du générateur ; null si le fichier n'a pas la forme attendue */
+function genLire(src){
+  const P = genConst(src, 'PRESETS');
+  const E = {cardio:genConst(src, 'EXAMENS_CARDIO'), pneumo:genConst(src, 'EXAMENS_PNEUMO'), orl:genConst(src, 'EXAMENS_ORL'), imagerie:genConst(src, 'EXAMENS_IMAGERIE')};
+  const liste = x => Array.isArray(x) && x.every(e=>e && typeof e.txt === 'string');
+  const ok = P && typeof P === 'object' && ['add','addVest','opi'].every(k=>Array.isArray(P[k])) && Object.keys(E).every(k=>liste(E[k]));
+  return ok ? {presets:P, exams:E} : null;
+}
+let GEN_EX = null;              // les examens du générateur, lus une fois : {key, data}
+function genExamData(){
+  const key = document.getElementById('gensrc') ? 'gensrc' : (GEN_CACHE ? 'c'+GEN_CACHE.at+':'+GEN_CACHE.size : '');
+  if(!key) return GEN_DEFAUT;
+  if(GEN_EX && GEN_EX.key === key) return GEN_EX.data;
+  const src = genSourceSync();
+  GEN_EX = {key:key, data:(src && genLire(src)) || GEN_DEFAUT};
+  return GEN_EX.data;
+}
+/* « une IRM médullaire, à la recherche… » → « IRM médullaire, à la recherche… » : une ligne du compte rendu */
+const genExamPhrase = t => { t = String(t==null ? '' : t).trim().replace(/^(?:un|une|des)\s+/i, ''); return t ? TXT.fin(TXT.cap(t)) : ''; };
+/* Les examens à réaliser secondairement, d'après le ou les diagnostics retenus : ceux que le générateur coche d'office pour ce diagnostic, une ligne
+   par examen ; null quand rien n'est prévu. Pour un œdème pulmonaire d'immersion, l'ordonnance d'imagerie n'est pas reprise : l'IRM médullaire
+   qu'elle coche d'office ne concerne que l'accident de désaturation. */
+function genExamsTexte(d){
+  const sel = Array.isArray(d.dg_liste) ? d.dg_liste : []; if(!sel.length) return null;
+  const G = genExamData(), types = Array.isArray(d.dg_add_types) ? d.dg_add_types : [], docs = [];
+  const ajoute = L => (L || []).forEach(x=>{ if(docs.indexOf(x) < 0) docs.push(x); });
+  if(sel.indexOf('add') >= 0) ajoute(G.presets[types.indexOf('vestibulaire') >= 0 ? 'addVest' : 'add']);
+  if(sel.indexOf('opi') >= 0) ajoute((G.presets.opi || []).filter(x=>x !== 'imagerie'));
+  const out = [];
+  docs.forEach(x=>{ (G.exams[x] || []).forEach(e=>{ if(!e.def) return; const t = genExamPhrase(e.txt); if(t && out.indexOf(t) < 0) out.push(t); }); });
+  return out.length ? out.join('\n') : null;
+}
+
 /* tout ce que la fiche sait, dans la forme du générateur (dates en AAAA-MM-JJ) */
 function genData(gm){
   const FI = crhFiches(); if(!FI.length) return null;
@@ -10309,7 +10638,10 @@ function genData(gm){
   else if(init.S.neu.neg.length || init.S.gen.neg.length) clin.push('Examen clinique sans anomalie.');
   const bl = crhBlocks().find(b=>b.h==='Examens paracliniques');
   const sortie = (d.fiche_type===3 ? d : FI[FI.length-1].d).date_ex;
-  return {
+  /* la prednisolone : prescrite dans le dossier ? encore à prendre à la date de sortie (dose, jours restants), ou terminée */
+  const cEnCours = FI.some(f=>f.d.rx_solu===1) ? corticoEnCours(FI, sortie) : undefined;
+  const cortico = cEnCours === undefined ? null : (cEnCours ? {dose:cEnCours.dose, reste:cEnCours.reste} : {fini:true});
+  return {cortico:cortico, 
     genre: d.sexe===1 ? 'H' : d.sexe===2 ? 'F' : '', civ: d.sexe===1 ? 'Mr' : d.sexe===2 ? 'Mme' : '',
     nom:d.nom||'', prenom:d.prenom||'', ddn:d.ddn||'', dateAcc:d.date_acc || init.d.date_acc || '',
     motif:genMotif(dgSt ? dgSt.d : {}, cochl, gm), entree:FI[0].d.date_ex||'', sortie:sortie||'',
@@ -10346,6 +10678,22 @@ function genFill(win){
   setv('signataire', D.signataire, ['change']);
   radio('inaptitude', D.inapt); setv('delaiReeval', D.inaptMois);
   setv('cmpcClinique', D.clinique); setv('cmpcExamens', D.examens);
+  /* ordonnance : la ligne « PREDNISOLONE xx mg … pendant 3 jours » reçoit la dose et les jours qui restent d'après les fiches ; décochée si le
+     traitement est terminé. Sans prednisolone dans le dossier, la ligne du générateur reste telle quelle. */
+  if(D.cortico){
+    const lignes = Array.prototype.slice.call(doc.querySelectorAll('input[type=text][data-liste="ordoFixe"]'));
+    const l = lignes.find(e=>/^\s*PREDNISOLONE\b/i.test(e.value));
+    const cb = l ? doc.querySelector('input[type=checkbox][data-liste="ordoFixe"][data-i="'+l.dataset.i+'"]') : null;
+    if(!l) miss.push('ordonnance (prednisolone)');
+    else if(D.cortico.fini){ if(cb && cb.checked){ cb.checked = false; fire(cb, ['change']); n++; } }
+    else {
+      let t = l.value;
+      if(D.cortico.dose != null) t = t.replace(/\b(?:x{2,}|\d+(?:[.,]\d+)?)(\s*mg\b)/i, D.cortico.dose+'$1');
+      if(D.cortico.reste != null) t = t.replace(/pendant\s+\d+\s+jours?/i, 'pendant '+D.cortico.reste+(D.cortico.reste > 1 ? ' jours' : ' jour'));
+      if(t !== l.value){ l.value = t; fire(l, ['input', 'change']); n++; }
+      if(cb && !cb.checked){ cb.checked = true; fire(cb, ['change']); }
+    }
+  }
   try{ win.render(); }catch(e){ miss.push('render'); }
   return {n:n, miss:miss};
 }
@@ -10852,7 +11200,10 @@ function openHelp(){
   'Si ce numero est deja connu, l\'identite et les donnees de l\'accident se remplissent seules, et les valeurs '+
   'de l\'examen precedent apparaissent en grise : cliquez dessus pour les reprendre, ou utilisez le bouton '+
   '<b>Reprendre tout l\'examen precedent</b>. '+
-  'Cliquez <b>Tout renseigner comme NORMAL</b>, puis ne modifiez que les items anormaux.</p>'+
+  'Cliquez <b>Tout renseigner comme NORMAL</b>, puis ne modifiez que les items anormaux. '+
+  'Dans une case de date ou d’heure, la touche <b>+</b> ou la barre d’espace écrit la date du jour ou l’heure du moment. '+
+  'Sur une fiche de suivi ou de sortie, le poids de la fiche initiale, le diagnostic retenu, la prednisolone encore à prescrire et les séances depuis '+
+  'la dernière consultation sont repris ou proposés d’après les fiches précédentes : tout reste modifiable.</p>'+
   '<p><b>2 ter. Six onglets et un bandeau.</b><br>'+
   'La fiche se remplit en six onglets : <b>Administratif</b>, <b>Anamnèse et plongée</b>, <b>Examen clinique général</b>, '+
   '<b>Examen neurologique</b>, <b>Examens complémentaires</b>, <b>Conclusion et évolution</b>. Le bandeau bleu sous la barre du haut rappelle en permanence le nom, '+
@@ -10864,28 +11215,28 @@ function openHelp(){
   'La synthèse, sous la fiche, se copie en texte enrichi : titres soulignés, anomalies en <b>gras</b>, examen dit en syndromes '+
   '(« absence de déficit moteur », « syndrome pyramidal »…). Sur une <b>consultation de sortie</b>, l’encart « Compte rendu '+
   'd’hospitalisation » (fin de l’onglet « Conclusion et évolution ») écrit, sans en-tête, un compte rendu à partir de toutes les fiches '+
-  'du dossier : examens paracliniques réunis, évolution horodatée, diagnostic retenu, examens à réaliser secondairement, inaptitude à la plongée.</p>'+
+  'du dossier : examens paracliniques réunis, évolution horodatée, évolution des scores, diagnostic retenu, examens à réaliser secondairement (proposés d’après le diagnostic), inaptitude à la plongée.</p>'+
   '<p><b>2 quinquies. Dictée vocale.</b><br>'+
   'Le bouton micro placé près d’un encart de texte dicte dans cet encart, à la place du curseur ; les commandes « à la ligne », « virgule », '+
-  '« point final », « point-virgule » et « deux points » sont comprises. Le micro s’éteint tout seul après une seconde sans parole (cinq secondes si '+
+  '« point final », « point-virgule » et « deux points » sont comprises. Le micro s’éteint tout seul après deux secondes sans parole (cinq secondes si '+
   'vous n’avez pas encore commencé) ; un second clic l’arrête aussitôt. La dictée est intégrée à Chrome, Edge et Safari : le navigateur transcrit la '+
   'voix avec un service en ligne (l’audio quitte l’ordinateur), n’y dictez aucune donnée identifiante. Firefox n’a pas cette fonction : cliquez dans '+
   'le champ, puis utilisez la dictée de Windows (touche <b>Windows + H</b>).</p>'+
   '<p><b>2 sexies. Documents de sortie.</b><br>'+
   'Sur une consultation de sortie, le bouton <b>Documents de sortie</b> (encart « Sortie », ou en-tête du compte rendu) ouvre le générateur de courriers '+
-  'du service : identité, sexe, naissance, date de l’accident, diagnostic, dates d’entrée et de sortie, signataire et inaptitude y sont repris de la '+
+  'du service : identité, sexe, naissance, date de l’accident, diagnostic, dates d’entrée et de sortie, signataire, inaptitude, dose et jours restants de la prednisolone y sont repris de la '+
   'fiche, tout reste modifiable. À la <b>première utilisation</b>, ADP demande de choisir votre copie du fichier '+
   '<code>Generateur-courriers-SMHEP.html</code> : il porte les signatures et les numéros RPPS des médecins, il n’est donc pas dans '+
   'l’application, et reste dans ce navigateur (lien « Fichier du générateur… » pour le remplacer). La fenêtre se referme avec '+
   '<b>Retour à la fiche</b> sans rien perdre ; <b>Ouvrir dans un onglet</b> sert si l’impression depuis la fenêtre intégrée pose problème.</p>'+
   '<p><b>2 septies. Examens complémentaires et biologie.</b><br>'+
-  'L’onglet « Examens complémentaires » réunit le <b>gaz du sang veineux</b>, la <b>biologie</b>, puis l’ECG, l’imagerie et les autres examens. '+
+  'L’onglet « Examens complémentaires » commence par les <b>actes</b> (voie veineuse, bilan biologique, sondage vésical), puis réunit le <b>gaz du sang veineux</b>, la <b>biologie</b>, l’ECG, l’imagerie et les autres examens. '+
   'Chaque encart de biologie est horodaté : la date et l’heure du prélèvement sont celles de la fiche, modifiables. Chaque résultat affiche ses '+
   'valeurs normales (VN) et son unité ; saisissez-le avec une virgule ou un point (« < » ou « > » est accepté devant). Hors des VN, la valeur '+
   's’écrit en <b>gras et en rouge</b>, dans la fiche comme dans la synthèse. L’hémoglobine et l’hématocrite de la biologie sont reprises du gaz du '+
   'sang du même jour tant que vous ne les saisissez pas vous-même. Dans la synthèse et le compte rendu, les prélèvements du dossier forment un '+
   '<b>tableau</b> qui s’enrichit de jour en jour, le plus récent à gauche. L’onglet « Conclusion et évolution » garde la décision et le suivi '+
-  '(recompression, actes, traitements, évolution, diagnostic, orientation, sortie).</p>'+
+  '(recompression, traitements, évolution, diagnostic, orientation, sortie).</p>'+
   '<p><b>2 bis. Les schemas corporels.</b><br>'+
   'Choisissez d\'abord la cotation a appliquer (hypoesthesie, hyperesthesie, anesthesie), puis cliquez les zones. '+
   'Chaque cotation a son propre motif. Re-cliquer une zone avec la meme cotation l\'efface ; la gomme efface aussi. '+
@@ -10918,7 +11269,7 @@ function openHelp(){
   'une ligne de 31 colonnes (A à AE) qui suit la feuille « Activité COHB » du service. Elle reprend la date de la dernière fiche, l’identité, le n° de dossier, le diagnostic, '+
   'le classement ARS, le nombre de consultations, la période de la première séance en urgence (O : lundi au vendredi de 7 h 45 à 16 h 00 hors jours fériés ; N : autre heure en semaine ; W : week-end ou jour férié), '+
   'les séances de recompression par table, comptées seulement quand elles sont réellement cotées dans l’encart « Recompression » (la table B18 proposée d’office sur une consultation initiale '+
-  'ne compte que si l’heure de mise en pression ou le nombre de séances est saisi ; les colonnes « HNO » comptent les séances qui ne tombent pas en heures ouvrables), '+
+  'ne compte que si l’encart est rempli : heure de mise en pression ou de fin, ou complication ; les colonnes « HNO » comptent les séances qui ne tombent pas en heures ouvrables), '+
   'les doppler transcrâniens, les complications et la résidence. '+
   'Les colonnes que l’application ne recueille pas restent vides ; vérifiez les valeurs affichées avant de coller.</p>'+
   '<p><b>6. Analyser.</b><br>'+
