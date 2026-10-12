@@ -8408,13 +8408,21 @@ function printCSS(){
        + '\nbody.printdoc{background:#fff}'
        + '\nbody.printdoc #print-root{display:block !important}';
 }
-/* Le nom proposé au PDF : NOM_Prénom_IPP_numéro de dossier (le navigateur ajoute « .pdf »). NOM en majuscules, Prénom avec l'initiale en majuscule, « IPP » écrit tel quel, puis le
-   numéro de dossier tel qu'il est inscrit dans la fiche ; ce que Windows interdit dans un nom de fichier devient « - » ; une partie absente est omise. */
+/* Le nom proposé au PDF : NOM_Prénom_IPP_numéro de dossier_EX1 (le navigateur ajoute « .pdf »). NOM en majuscules, Prénom avec l'initiale en majuscule, « IPP » écrit tel quel, puis le
+   numéro de dossier tel qu'il est inscrit dans la fiche, puis le numéro d'examen de la fiche (EX1, EX2, EX3b pour une séance de recompression sans examen), qui distingue les fiches
+   d'un même patient ; ce que Windows interdit dans un nom de fichier devient « - » ; une partie absente est omise (sans numéro de dossier, la fiche n'a pas de numéro d'examen). */
 const nomFichier = s => String(s==null ? '' : s).replace(/[\\\/:*?"<>|\u0000-\u001f]+/g, '-').replace(/\s+/g, ' ').trim().replace(/[. ]+$/, '');
+/* le numéro d'examen de la fiche ouverte, calculé à l'instant (même règle que computeAll et que le nom des fichiers JSON) : « EX1 », « EX3b » ; '' sans numéro de dossier */
+function examenCourant(){
+  const d = REC.d; if(!d.dossier) return '';
+  const fam = DB.filter(f=>f.d.dossier===d.dossier && f.id!==REC.id).concat([REC]).sort((a,b)=>stamp(a).localeCompare(stamp(b)));
+  const rk = exRanks(fam).get(REC);
+  return rk ? 'EX'+rk.n+rk.l : '';
+}
 function printName(){
   const d = REC.d, dos = nomFichier(d.dossier);
   const parts = [nomFichier(fmtNom(d.nom)), nomFichier(fmtPrenom(d.prenom))].filter(Boolean);
-  if(dos) parts.push('IPP', dos);
+  if(dos){ parts.push('IPP', dos); const ex = examenCourant(); if(ex) parts.push(ex); }
   return parts.length ? parts.join('_') : 'Fiche_ADP'+(d.date_ex ? '_'+d.date_ex : '');
 }
 /* Le navigateur propose, à « Enregistrer au format PDF », le titre de la page (Firefox, Chrome et Edge le lisent à l'ouverture de la fenêtre d'impression, puis la fenêtre
@@ -8883,7 +8891,7 @@ function sortedDB(){
    l'explique (diagnostic) et propose ce qui fonctionne : « Exporter tout en JSON » (dossier choisi, ou archive
    ZIP), téléchargement du JSON à chaque enregistrement, import d'un dossier ou d'une archive.
    ===================================================================== */
-const APP_VERSION = '9.3.2';
+const APP_VERSION = '9.3.3';
 /* hasPicker teste une fonction de l'API au moment de s'en servir : une extension ou un réglage du navigateur peut la retirer */
 const hasPicker = name => { try{ return typeof window[name] === 'function'; }catch(e){ return false; } };
 let FSA = hasPicker('showDirectoryPicker');
@@ -11705,7 +11713,8 @@ function openHelp(){
   'Reglages et pseudonymisation : bouton <b>Douchette</b> de la barre du haut.</p>'+
   '<p><b>3. Produire le PDF.</b><br>'+
   'Cliquez le bouton <b>Enregistrer en PDF</b> de la barre du haut, puis choisissez la destination <i>Enregistrer au format PDF</i> (ou <i>Microsoft Print to PDF</i>) : '+
-  'le navigateur ouvre sa fenêtre d’enregistrement, qui demande le dossier, avec le nom <b>NOM_Prénom_IPP_numéro de dossier.pdf</b> déjà écrit (la bulle du bouton l’annonce). '+
+  'le navigateur ouvre sa fenêtre d’enregistrement, qui demande le dossier, avec le nom <b>NOM_Prénom_IPP_numéro de dossier_numéro d’examen.pdf</b> déjà écrit, par exemple <b>DUPONT_Jean_IPP_50894855_EX1.pdf</b> ou <b>…_EX3b.pdf</b> '+
+  '(le numéro d’examen distingue les fiches d’un même patient ; la bulle du bouton annonce le nom). '+
   'Le document compte de 5 à 6 pages A4 (une page pour une séance de recompression) : la fiche, puis les schémas et la synthèse rédigée.</p>'+
   '<p><b>4. Ré-examiner un patient.</b><br>'+
   'Ouvrez une fiche du patient (sa pastille parmi les patients en cours, ou la liste de gauche), puis cliquez <b>Ré-examen du patient</b> dans la barre du haut. '+
