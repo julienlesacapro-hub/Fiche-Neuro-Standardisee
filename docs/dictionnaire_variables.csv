@@ -2,7 +2,8 @@
 fiche_id;Identifiant unique de la fiche;texte (cle primaire, sert au dedoublonnage)
 dossier;N. de dossier / identifiant du sujet;texte (cle sujet : relie les examens repetes)
 dossier_pseudo;Identifiant pseudonymise ?;"1 = empreinte salee SHA-256 d un identifiant scanne ou saisi (prefixe P-) ; 0 = valeur saisie telle quelle ; vide = non renseigne"
-num_ex;Rang de l'examen pour ce sujet;entier >= 1, ordonne par date et heure
+num_ex;Rang de l'examen pour ce sujet;"entier >= 1, ordonne par date et heure ; une seance de recompression sans examen (fiche_type 4) porte le rang du dernier examen qui la precede (0 si aucun)"
+num_ex_lettre;Lettre de la seance de recompression sans examen;"b, c, d... : EX3b est la premiere seance saisie sans examen apres l examen 3, EX3c la suivante ; vide pour une consultation"
 date_ex;Date de l'examen;AAAA-MM-JJ
 heure_ex;Heure de l'examen;HH:MM
 examinateur;Examinateur;texte
@@ -10,9 +11,10 @@ poste;Poste de saisie;texte (renseigne dans les reglages, utile a la fusion)
 date_acc;Date de l'accident;AAAA-MM-JJ
 heure_acc;Heure de l'accident;HH:MM
 delai_min;Delai accident vers examen;entier, minutes (calcule)
-fiche_type;Type de consultation;"1 = consultation initiale (prise en charge en urgence) ; 2 = consultation de suivi ; 3 = consultation de sortie / CRH ; vide = non renseigne (a lire comme 1)"
+fiche_type;Type de consultation;"1 = consultation initiale (prise en charge en urgence) ; 2 = consultation de suivi ; 3 = consultation de sortie / CRH ; 4 = seance de recompression sans examen clinique (fiche rapide, numeros EX3b, EX3c...) ; vide = non renseigne (a lire comme 1)"
 sexe;Sexe;"1 = M ; 2 = F ; 3 = Autre"
-age;Age a la date de l'examen;entier, annees (calcule)
+age;Age a la date de l'examen;entier, annees revolues (calcule)
+age_mois;Age - mois en plus des annees (mineur);"entier 0 a 11, calcule ; seulement pour un patient de moins de 18 ans, vide pour un adulte"
 nationalite;Nationalité (Identité complémentaire);"1 = Française ; 2 = Belge ; 3 = Allemande ; 4 = Suisse ; 5 = Italienne ; 6 = Espagnole ; 7 = Américaine (US) ; 8 = Anglaise ; 9 = Autre"
 nationalite_autre;Nationalité — à préciser (Identité complémentaire);texte libre
 profession;Profession (Identité complémentaire);texte libre
@@ -486,8 +488,13 @@ lab_pnn;Neutrophiles (Biologie);"numerique decimal (G/L) ; valeurs normales : fe
 lab_fib;Fibrinogène (Biologie);"numerique decimal (g/L) ; valeurs normales : 2,0 - 4,0 ; un signe < ou > peut preceder la valeur"
 lab_dd;D-dimères (Biologie);"numerique decimal (µg/mL) ; valeurs normales : 0,00 - 0,50 ; un signe < ou > peut preceder la valeur"
 lab_prot;Protéines totales (Biologie);"numerique decimal (g/L) ; valeurs normales : 64,0 - 83,0 ; un signe < ou > peut preceder la valeur"
+lab_gly;Glycémie (Biologie);"numerique decimal (mmol/L) ; valeurs normales : 4,1 - 6,1 ; un signe < ou > peut preceder la valeur"
 lab_creat;Créatinine (Biologie);"numerique decimal (µmol/L) ; valeurs normales : femme 45,0 - 84,0 ; homme 59,0 - 104,0 ; un signe < ou > peut preceder la valeur"
 lab_dfg;DFG CKD-EPI (Biologie);"numerique decimal (mL/min/1,73 m²) ; valeurs normales : 90 - 150 ; un signe < ou > peut preceder la valeur"
+lab_tg;Triglycérides (Biologie);"numerique decimal (mmol/L) ; valeurs normales : 0,10 - 1,70 ; un signe < ou > peut preceder la valeur"
+lab_chol;Cholestérol total (Biologie);"numerique decimal (mmol/L) ; valeurs normales : 3,00 - 5,20 ; un signe < ou > peut preceder la valeur"
+lab_hdl;HDL cholestérol (Biologie);"numerique decimal (mmol/L) ; valeurs normales : 1,03 - 1,55 ; un signe < ou > peut preceder la valeur"
+lab_ldl;LDL cholestérol (Biologie);"numerique decimal (mmol/L) ; valeurs normales : 1,75 - 3,40 ; un signe < ou > peut preceder la valeur ; proposition calculee (formule de Friedewald, en mmol/L) : cholesterol total - HDL - triglycerides / 2,2 ; modifiable"
 lab_ck;CK (Biologie);"numerique decimal (UI/L) ; valeurs normales : femme 26 - 192 ; homme 39 - 308 ; un signe < ou > peut preceder la valeur"
 lab_crp;CRP (Biologie);"numerique decimal (mg/L) ; valeurs normales : < 5,0 ; un signe < ou > peut preceder la valeur"
 lab_alb;Albumine (Biologie);"numerique decimal (g/L) ; valeurs normales : 35,0 - 52,0 ; un signe < ou > peut preceder la valeur"

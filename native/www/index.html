@@ -43,20 +43,48 @@ button,input,select,textarea{font-family:inherit;font-size:13px;color:inherit}
 .tb.gd:hover{background:#228152}
 .tb.dg{background:#8f2020;border-color:#b03030}
 .onlyphone{display:none}
-#tbmore{display:contents}
+/* boutons à icône de la barre du haut, bulle d'aide immédiate, menu « Plus » */
+.ib{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-width:36px;height:34px;padding:0 8px;background:#22304a;color:#fff;
+  border:1px solid #394a68;border-radius:6px;cursor:pointer;line-height:1;white-space:nowrap;font-size:13px}
+.ib:hover,.ib:focus-visible{background:#2e4066;outline:none}
+.ib:focus-visible{box-shadow:0 0 0 2px #7fb2f0}
+.ib svg{width:20px;height:20px;flex:0 0 auto;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.ib.pri{background:#1b6fd0;border-color:#3b8ae8}.ib.pri:hover{background:#2a80e4}
+.ib.gd{background:#1a6b43;border-color:#2a8a59}.ib.gd:hover{background:#228152}
+.ib.acc{background:#7a5516;border-color:#a8782a}.ib.acc:hover{background:#8e6419}
+#topbar .tbsep{width:1px;height:22px;background:#3a4558;margin:0 2px}
+#tip{position:fixed;z-index:400;max-width:300px;padding:6px 10px;background:#fffbe6;color:#14181f;border:1px solid #c9b458;border-radius:6px;font-size:12px;line-height:1.35;
+  box-shadow:0 3px 12px rgba(0,0,0,.28);pointer-events:none;display:none}
+#tip.on{display:block}
+#plusmenu{position:fixed;z-index:350;width:310px;max-height:calc(100vh - 70px);overflow:auto;background:#fff;color:var(--ink);border:1px solid var(--bd);border-radius:8px;
+  box-shadow:0 8px 26px rgba(0,0,0,.3);padding:6px}
+#plusmenu[hidden]{display:none}
+#plusmenu .pmi{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:none;border:0;border-radius:6px;padding:9px 10px;font-size:13px;color:var(--ink);cursor:pointer}
+#plusmenu .pmi:hover,#plusmenu .pmi:focus-visible{background:var(--acc-l);outline:none}
+#plusmenu .pmi svg{width:18px;height:18px;flex:0 0 auto;fill:none;stroke:var(--acc);stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+#plusmenu .pmi small{display:block;color:var(--ink2);font-size:11px;font-weight:400}
+#plusmenu hr{border:0;border-top:1px solid var(--bd2);margin:5px 4px}
+.pm-sm,.pm-ph{display:none !important}
+@media screen and (max-width:900px){ .pm-sm{display:flex !important} }
+@media screen and (max-width:560px){ .pm-ph{display:flex !important} hr.pm-ph{display:block !important} .tbp{display:none !important} #plusmenu{left:8px !important;right:8px;width:auto} }
 #dbstate{margin-left:auto;font-size:11.5px;color:#9fb0c8;display:flex;align-items:center;gap:8px}
 #dbstate b{color:#eaf1fb}
 .dot{width:8px;height:8px;border-radius:50%;background:#c0392b;display:inline-block}
 .dot.on{background:#27ae60}
 /* bandeau patient : nom, prénom, naissance, accident, dossier, sous la barre d'outils, en permanence */
-#patbar{display:flex;flex-wrap:nowrap;align-items:center;gap:2px 16px;background:#16396b;color:#fff;cursor:pointer;
-  padding:4px 14px 5px;border-top:1px solid #2a4f86;box-shadow:0 1px 6px rgba(0,0,0,.25);min-height:34px}
+#patbar{--pbg:#16396b;--pbd:#2a4f86;--plab:#a9c4e6;--pnd:#7f9cc3;--ptx:#cfe0f5;--pbtn:#1b6fd0;--pbtnb:#3b8ae8;--pbtnh:#2a80e4;--pbtnl:#d7e7fb;
+  display:flex;flex-wrap:nowrap;align-items:center;gap:2px 16px;background:var(--pbg);color:#fff;cursor:pointer;
+  padding:4px 14px 5px;border-top:1px solid var(--pbd);box-shadow:0 1px 6px rgba(0,0,0,.25);min-height:34px}
+/* rose : femme ; bleu : homme (par défaut) ; vert : enfant ; gris-bleu : sexe non renseigné */
+#patbar.pb-f{--pbg:#8c2d5e;--pbd:#b4558a;--plab:#f3c9df;--pnd:#d89ab9;--ptx:#f8e0ec;--pbtn:#b8467f;--pbtnb:#da74a8;--pbtnh:#c9588f;--pbtnl:#fbe6f1}
+#patbar.pb-e{--pbg:#1c6b46;--pbd:#3b9468;--plab:#c0e8d1;--pnd:#8cc6a6;--ptx:#dcf3e6;--pbtn:#238f5b;--pbtnb:#4cb888;--pbtnh:#2da56b;--pbtnl:#e4f7ec}
+#patbar.pb-n{--pbg:#3b4657;--pbd:#5b677b;--plab:#c3ccda;--pnd:#98a4b8;--ptx:#dde3ee;--pbtn:#53647f;--pbtnb:#7587a5;--pbtnh:#63769a;--pbtnl:#e6ebf4}
 #patbar .pitems{flex:1 1 0;min-width:0;display:flex;flex-wrap:wrap;align-items:flex-end;gap:2px 22px}
 #patbar .pright{flex:0 0 auto;display:flex;align-items:center;gap:12px}
 #patbar .pi{display:flex;flex-direction:column;line-height:1.15;min-width:0}
-#patbar .pi small{font-size:9.5px;letter-spacing:.07em;text-transform:uppercase;color:#a9c4e6}
+#patbar .pi small{font-size:9.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--plab)}
 #patbar .pi b{font-size:13.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:36vw}
-#patbar .pi b.nd{color:#7f9cc3;font-weight:400}
+#patbar .pi b.nd{color:var(--pnd);font-weight:400}
 #patbar .pi.dg b{max-width:min(46vw,620px)}
 .xlstab{width:100%;border-collapse:collapse;font-size:11.5px}
 .xlstab th{position:sticky;top:0;background:#eef2f7;text-align:left;padding:3px 6px;border-bottom:1px solid var(--bd)}
@@ -74,12 +102,12 @@ button,input,select,textarea{font-family:inherit;font-size:13px;color:inherit}
 #genov .grow{flex:1}
 #genframe{flex:1;border:0;width:100%;background:#fff}
 body.genopen{overflow:hidden}
-#patbar .pt{font-size:11px;color:#cfe0f5;text-align:right;white-space:nowrap}
+#patbar .pt{font-size:11px;color:var(--ptx);text-align:right;white-space:nowrap}
 /* bouton « onglet suivant » : à droite du bandeau, le nom court de l'onglet qui vient après celui-ci */
-#patbar .pn{display:flex;flex-direction:column;align-items:flex-start;line-height:1.15;background:#1b6fd0;color:#fff;
-  border:1px solid #3b8ae8;border-radius:6px;padding:3px 11px 4px;cursor:pointer}
-#patbar .pn:hover{background:#2a80e4}
-#patbar .pn small{font-size:9.5px;letter-spacing:.07em;text-transform:uppercase;color:#d7e7fb}
+#patbar .pn{display:flex;flex-direction:column;align-items:flex-start;line-height:1.15;background:var(--pbtn);color:#fff;
+  border:1px solid var(--pbtnb);border-radius:6px;padding:3px 11px 4px;cursor:pointer}
+#patbar .pn:hover{background:var(--pbtnh)}
+#patbar .pn small{font-size:9.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--pbtnl)}
 #patbar .pn b{font-size:13.5px;font-weight:700;white-space:nowrap}
 #patbar .pbr{display:none}
 #folderbanner{display:none}
@@ -476,9 +504,9 @@ svg.echo rect.z:hover{stroke-width:2.6;filter:brightness(.96)}
   .row.sub{padding-left:10px}
   .row.sub>.lbl{flex-basis:100%}
   .grid2{grid-template-columns:1fr}
-  #topbar{gap:5px;padding:6px 8px;flex-wrap:nowrap}
+  #topbar{gap:5px;padding:6px 8px;flex-wrap:wrap}
   #topbar .ttl{white-space:nowrap;flex:0 0 auto}
-  #tbmore,.nophone{display:none !important}
+  .nophone{display:none !important}
   .onlyphone{display:inline-block}
   .tb{padding:7px 10px;flex:0 0 auto}
   .opt{padding:6px 13px}
@@ -563,7 +591,7 @@ svg.echo rect.z:hover{stroke-width:2.6;filter:brightness(.96)}
   #topbar{padding:6px;gap:4px}
   #topbar .ttl{font-size:12px}
   #topbar .lbl2{display:none}
-  #tbmore,.nophone{display:none !important}
+  .nophone{display:none !important}
   .onlyphone{display:inline-block}
   #side{display:none}
   .tb{padding:9px 10px;font-size:13px}
@@ -628,7 +656,7 @@ svg.echo rect.z:hover{stroke-width:2.6;filter:brightness(.96)}
 /* ---------- impression ---------- */
 @media print{
   @page{size:A4 portrait;margin:8mm 9mm}
-  #hdr,#topbar,#side,#main,#mask,#toast,#navbar,#genov{display:none !important}
+  #hdr,#topbar,#side,#main,#mask,#toast,#navbar,#genov,#tip,#plusmenu{display:none !important}
   #patholder{display:block !important;position:absolute;width:0;height:0;overflow:hidden}
   body{background:#fff;font-size:8.3pt}
   #print-root{display:block}
@@ -706,30 +734,7 @@ svg.echo rect.z:hover{stroke-width:2.6;filter:brightness(.96)}
 </head>
 <body>
 <div id="hdr">
-<div id="topbar">
-  <span class="ttl" title="Accident de plongée — version 9.0.0">ADP <small style="font-weight:400;opacity:.65">9.0.0</small></span>
-  <button class="tb nophone" onclick="toggleSide()" title="Afficher / masquer la liste des fiches">&#9776;</button>
-  <span class="sep"></span>
-  <button class="tb pri" onclick="newFiche()">+<span class="lbl2"> Nouvelle</span> fiche</button>
-  <button class="tb nophone" onclick="newFollowUp()" title="Nouvel examen pour le même sujet, pré-rempli avec la fiche courante">+ Ré-examen du sujet</button>
-  <span class="sep"></span>
-  <button class="tb gd" onclick="saveFiche()">&#128190;<span class="lbl2"> Enregistrer <small style="opacity:.7">(Ctrl+S)</small></span></button>
-  <button class="tb pri" onclick="doPrint()">&#128424;<span class="lbl2"> PDF / Imprimer</span></button>
-  <span class="sep"></span>
-  <span id="tbmore">
-    <button class="tb" onclick="openFolders()" title="Choisir le dossier où chaque fiche est écrite en JSON à l'enregistrement, et relu à l'ouverture pour la recherche">&#128193; Dossier de données</button>
-    <button class="tb" onclick="openExport()">&#11015; Exporter</button>
-    <button class="tb" onclick="openImport()">&#11014; Importer / Fusionner</button>
-    <button class="tb" onclick="openScan()" title="Douchette code-barres et pseudonymisation">&#9906; Douchette</button>
-    <button class="tb" onclick="openDict()" title="Dictionnaire des variables">&#8505; Variables</button>
-    <button class="tb" onclick="openHelpLib()" title="Fiches techniques d'examen, photos et videos">&#9873; Aides a l'examen</button>
-    <button class="tb" onclick="openInstall()" title="Installation hors ligne et mises a jour">&#128241; Installation</button>
-    <button class="tb" onclick="openHelp()">? Aide</button>
-  </span>
-  <button class="tb pri" id="btninstall" style="display:none" onclick="openInstall()">&#11015;<span class="lbl2"> Installer</span></button>
-  <button class="tb onlyphone" onclick="openMenu()">&#9776;<span class="lbl2"> Menu</span></button>
-  <span id="dbstate"></span>
-</div>
+<div id="topbar"></div>
 <div id="patbar" onclick="goPage(1)" title="Aller à l’identification"></div>
 </div>
 
@@ -755,6 +760,8 @@ svg.echo rect.z:hover{stroke-width:2.6;filter:brightness(.96)}
 <div id="patholder" aria-hidden="true"></div>
 <div id="mask" onclick="if(event.target===this)closeModal()"><div id="modal"></div></div>
 <div id="toast"></div>
+<div id="tip" role="tooltip"></div>
+<div id="plusmenu" hidden></div>
 <div id="print-root"></div>
 <div id="genov" hidden>
   <div class="genbar">
@@ -778,6 +785,121 @@ svg.echo rect.z:hover{stroke-width:2.6;filter:brightness(.96)}
 const $  = s => document.querySelector(s);
 const $$ = s => Array.from(document.querySelectorAll(s));
 const esc = s => String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* =====================================================================
+   BARRE DU HAUT : boutons à icône (une bulle de texte s'ouvre dès que la souris les pointe) et menu « Plus »
+   En haut : nouvelle fiche, ré-examen du patient, séance de recompression sans examen, enregistrer, enregistrer en PDF, tout transférer en ZIP,
+   importer, puis les lignes Excel ADP et COHB et les documents de sortie, quel que soit le type de consultation. Tout le reste est dans « Plus ».
+   ===================================================================== */
+const ICO = {
+  list:'<path d="M8 6h13M8 12h13M8 18h13"/><path d="M3 6h.01M3 12h.01M3 18h.01"/>',
+  newfiche:'<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M12 11v6M9 14h6"/>',
+  reexam:'<path d="M11 2v2M5 2v2"/><path d="M5 3H4a2 2 0 0 0-2 2v4a6 6 0 0 0 12 0V5a2 2 0 0 0-2-2h-1"/><path d="M8 15a6 6 0 0 0 12 0v-3"/><circle cx="20" cy="10" r="2"/>',
+  seance:'<rect x="2" y="7" width="20" height="10" rx="5"/><circle cx="8.5" cy="12" r="2.2"/><path d="M15 7.5v9"/><path d="M6 17v2.5M18 17v2.5"/>',
+  save:'<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/>',
+  pdf:'<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><text x="12" y="17.2" text-anchor="middle" font-size="7.4" font-weight="700" font-family="Arial,Helvetica,sans-serif" textLength="11.6" lengthAdjust="spacingAndGlyphs" fill="currentColor" stroke="none">PDF</text>',
+  zip:'<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M10 3v2M12 5v2M10 7v2M12 9v2"/><rect x="9" y="13" width="4" height="4.6" rx="1"/>',
+  import:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/>',
+  adp:'<path d="M5.5 7h13A2.5 2.5 0 0 1 21 9.5V12a4.5 4.5 0 0 1-4.5 4.5H15a1.5 1.5 0 0 1-1.3-.75L13 14.5h-2l-.7 1.25A1.5 1.5 0 0 1 9 16.5H7.5A4.5 4.5 0 0 1 3 12V9.5A2.5 2.5 0 0 1 5.5 7z"/><path d="M19 7V4.5A1.5 1.5 0 0 1 20.5 3H22"/><path d="M3 10.5H1.5M21 10.5h1.5"/>',
+  cohb:'<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>',
+  docs:'<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><text x="7.4" y="14.2" font-size="6.6" font-weight="700" font-style="italic" font-family="Georgia,serif" fill="currentColor" stroke="none">Rx</text><path d="M8 17.6h8"/>',
+  more:'<circle cx="5" cy="12" r="1.4" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1.4" fill="currentColor" stroke="none"/>',
+  folder:'<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
+  export:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v12"/>',
+  braces:'<path d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5a2 2 0 0 0 2 2h1M16 3h1a2 2 0 0 1 2 2v5a2 2 0 0 0 2 2 2 2 0 0 0-2 2v5a2 2 0 0 1-2 2h-1"/>',
+  barcode:'<path d="M4 5v14M8 5v14M12 5v14M17 5v14M20 5v14" stroke-width="1.6"/><path d="M6 5v14M14.5 5v14" stroke-width="1"/>',
+  book:'<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>',
+  info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/>',
+  phone:'<rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/>',
+  help:'<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 1-1 1.7"/><path d="M12 17h.01"/>',
+  refresh:'<path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v5h-5"/>'
+};
+const ico = n => '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">'+ICO[n]+'</svg>';
+/* cl : classes du bouton ; tbp : masqué sur téléphone (le menu « Plus » le propose alors) ; nophone : masqué sur tablette comme sur téléphone */
+const TOP_BTNS = [
+  {id:'side',   ic:'list',     tip:'Liste des fiches enregistrées : afficher ou masquer', fn:'toggleSide()', cl:'nophone'},
+  '|',
+  {id:'new',    ic:'newfiche', tip:'Nouvelle fiche', fn:'newFiche()', cl:'pri'},
+  {id:'reexam', ic:'reexam',   tip:'Ré-examen du patient : un nouvel examen pour le même sujet, pré-rempli avec la fiche ouverte', fn:'newFollowUp()', cl:'tbp'},
+  {id:'seance', ic:'seance',   tip:'Séance de recompression, sans examen clinique : choisir la table, enregistrer (fiche numérotée EX3b…)', fn:'newSeance()', cl:'tbp acc'},
+  '|',
+  {id:'save',   ic:'save',     tip:'Enregistrer la fiche (Ctrl+S)', fn:'saveFiche()', cl:'gd'},
+  {id:'pdf',    ic:'pdf',      tip:'Enregistrer en PDF (ou imprimer) la fiche ouverte', fn:'doPrint()', cl:''},
+  {id:'zip',    ic:'zip',      tip:'Tout transférer : toutes les fiches dans une archive ZIP', fn:'expJSONZip()', cl:'tbp'},
+  {id:'imp',    ic:'import',   tip:'Importer ou fusionner des fiches (fichier JSON, archive ZIP, dossier)', fn:'openImport()', cl:'tbp'},
+  '|',
+  {id:'adp',    ic:'adp',      tip:'Ligne Excel ADP (accident de plongée) : une ligne pour le fichier Excel maître, d’après le dossier ouvert', fn:'openXls()', cl:'tbp'},
+  {id:'cohb',   ic:'cohb',     tip:'Ligne Excel COHB (activité) : une ligne pour la feuille Activité COHB, d’après le dossier ouvert', fn:'openXls(\'cohb\')', cl:'tbp'},
+  {id:'docs',   ic:'docs',     tip:'Documents de sortie : courriers, ordonnances, certificats (générateur de courriers du service)', fn:'openGen()', cl:'tbp'}
+];
+function buildTopbar(){
+  const el = $('#topbar'); if(!el) return;
+  el.innerHTML = '<span class="ttl" title="Accident de plongée — version '+APP_VERSION+'">ADP <small style="font-weight:400;opacity:.65">'+APP_VERSION+'</small></span>'+
+    TOP_BTNS.map(b=> b==='|' ? '<span class="tbsep tbp"></span>' :
+      '<button type="button" class="ib '+b.cl+'" id="tb_'+b.id+'" data-tip="'+esc(b.tip)+'" aria-label="'+esc(b.tip)+'" onclick="'+b.fn+'">'+ico(b.ic)+'</button>').join('')+
+    '<span class="tbsep tbp"></span>'+
+    '<button type="button" class="ib" id="btnplus" data-tip="Plus : dossier de données, exports, douchette, dictionnaire, aides, installation, mode d’emploi" aria-label="Plus" aria-haspopup="true" aria-expanded="false" onclick="openMenu(event)">'+ico('more')+'<span>Plus</span></button>'+
+    '<button type="button" class="ib pri" id="btninstall" style="display:none" onclick="openInstall()"></button>'+
+    '<span id="dbstate"></span>';
+}
+/* la bulle d'aide : elle s'ouvre dès que la souris (ou le clavier) atteint un élément qui porte data-tip, et se ferme dès qu'on le quitte */
+const TIP = {t:null};
+function tipHide(){ clearTimeout(TIP.t); const el = $('#tip'); if(el) el.classList.remove('on'); }
+function tipShow(b){
+  const el = $('#tip'), txt = b && b.getAttribute('data-tip'); if(!el || !txt){ tipHide(); return; }
+  el.textContent = txt; el.classList.add('on');
+  const r = b.getBoundingClientRect(), w = el.offsetWidth, h = el.offsetHeight;
+  const x = Math.max(6, Math.min(window.innerWidth - w - 6, r.left + r.width/2 - w/2));
+  let y = r.bottom + 8; if(y + h > window.innerHeight - 6) y = Math.max(6, r.top - h - 8);
+  el.style.left = x+'px'; el.style.top = y+'px';
+  clearTimeout(TIP.t); TIP.t = setTimeout(tipHide, 7000);
+}
+const tipOf = e => (e.target && e.target.closest) ? e.target.closest('[data-tip]') : null;
+document.addEventListener('mouseover', e=>{ const b = tipOf(e); if(b) tipShow(b); else tipHide(); }, true);
+document.addEventListener('focusin', e=>{ const b = tipOf(e); if(b) tipShow(b); else tipHide(); });
+document.addEventListener('focusout', tipHide);
+document.addEventListener('mousedown', tipHide, true);
+window.addEventListener('scroll', tipHide, true);
+window.addEventListener('blur', tipHide);
+/* le menu « Plus » : tout ce qui n'est pas dans la barre ; sur un petit écran, aussi ce que la barre ne montre pas (pm-sm : tablette, pm-ph : téléphone) */
+const PLUS_ITEMS = [
+  {ic:'list',    t:'Fiches enregistrées', s:'liste et recherche des fiches', fn:'openFiches()', cl:'pm-sm'},
+  {ic:'reexam',  t:'Ré-examen du patient', fn:'newFollowUp()', cl:'pm-ph'},
+  {ic:'seance',  t:'Séance de recompression sans examen', fn:'newSeance()', cl:'pm-ph'},
+  {ic:'zip',     t:'Tout transférer en archive ZIP', fn:'expJSONZip()', cl:'pm-ph'},
+  {ic:'import',  t:'Importer / fusionner', fn:'openImport()', cl:'pm-ph'},
+  {ic:'adp',     t:'Ligne Excel ADP', fn:'openXls()', cl:'pm-ph'},
+  {ic:'cohb',    t:'Ligne Excel COHB', fn:'openXls(\'cohb\')', cl:'pm-ph'},
+  {ic:'docs',    t:'Documents de sortie', fn:'openGen()', cl:'pm-ph'},
+  {sep:1, cl:'pm-sm'},
+  {ic:'folder',  t:'Dossier de données…', s:'où chaque fiche est écrite en JSON, relue pour la recherche', fn:'openFolders()'},
+  {ic:'export',  t:'Exporter les données…', s:'CSV, dictionnaire, sauvegarde JSON, réglages', fn:'openExport()'},
+  {ic:'braces',  t:'Exporter tout en JSON…', s:'dans un dossier au choix ou dans une archive ZIP', fn:'openExportJSON()'},
+  {ic:'barcode', t:'Douchette et pseudonymisation…', fn:'openScan()'},
+  {sep:1},
+  {ic:'book',    t:'Dictionnaire des variables', fn:'openDict()'},
+  {ic:'info',    t:'Aides à l’examen', s:'fiches techniques d’examen', fn:'openHelpLib()'},
+  {ic:'phone',   t:'Installation hors ligne', s:'et mises à jour', fn:'openInstall()'},
+  {ic:'help',    t:'Mode d’emploi', fn:'openHelp()'}
+];
+function plusHTML(){
+  return PLUS_ITEMS.map(it=> it.sep ? '<hr'+(it.cl ? ' class="'+it.cl+'"' : '')+'>' :
+    '<button type="button" class="pmi '+(it.cl||'')+'" onclick="closePlus();'+it.fn+'">'+ico(it.ic)+'<span>'+esc(it.t)+(it.s ? '<small>'+esc(it.s)+'</small>' : '')+'</span></button>').join('');
+}
+function closePlus(){ const m = $('#plusmenu'); if(m) m.hidden = true; const b = $('#btnplus'); if(b) b.setAttribute('aria-expanded', 'false'); }
+function openMenu(){
+  const m = $('#plusmenu'), b = $('#btnplus'); if(!m || !b) return;
+  if(!m.hidden){ closePlus(); return; }
+  tipHide();
+  m.innerHTML = plusHTML(); m.hidden = false; b.setAttribute('aria-expanded', 'true');
+  const r = b.getBoundingClientRect(), w = m.offsetWidth;
+  m.style.top = (r.bottom + 6)+'px';
+  m.style.left = Math.max(8, Math.min(window.innerWidth - w - 8, r.right - w))+'px';
+}
+document.addEventListener('click', e=>{
+  const m = $('#plusmenu');
+  if(m && !m.hidden && !(e.target.closest && (e.target.closest('#plusmenu') || e.target.closest('#btnplus')))) closePlus();
+}, true);
 
 /* ---------- jeux d'options ---------- */
 const ON  = [{v:1,l:'OUI',c:'v-ab'},{v:0,l:'NON',c:'v-ok'}];          // OUI = anormal
@@ -1127,7 +1249,7 @@ const AP_DECOMP = [{v:0,l:'Aucune'},{v:1,l:'Par réimmersion'},{v:2,l:'En surfac
 const isApnee = d => { d = d || REC.d; return d.pl_profil_type===5 || d.pl_type===5; };
 const NAPN = () => !isApnee();
 /* libellé d'un champ : certains en ont un autre en apnée (lApn) */
-const fLab = f => (f.lApn && isApnee()) ? f.lApn : f.l;
+const fLab = f => (f.lApn && isApnee()) ? f.lApn : (f.lab4 && REC && REC.d.fiche_type===4) ? f.lab4 : f.l;
 /* le texte sous le libellé : celui du champ ; pour un résultat de biologie, ses valeurs normales selon le sexe de la fiche */
 const fHint = f => (f.dec && f.bio) ? 'VN '+bioVNtxt(f.bio, bioSexe(), true)+(f.bio.note ? '. '+f.bio.note : '') : f.hint;
 /* type de profil effectif : celui choisi, sinon la remontée progressive ; l'apnée n'a pas de profil dessiné (carré, sans objet) */
@@ -1321,7 +1443,8 @@ const CERTIF_MED = [
 const FTYPE = [
  {v:1, l:'Consultation initiale', c:'v-ab', d:'prise en charge en urgence'},
  {v:2, l:'Consultation de suivi',  c:'v-wn', d:'évolution sous traitement'},
- {v:3, l:'Consultation de sortie / CRH', c:'v-ok', d:'synthèse de séjour'}
+ {v:3, l:'Consultation de sortie / CRH', c:'v-ok', d:'synthèse de séjour'},
+ {v:4, l:'Séance de recompression (sans examen)', c:'v-wn', d:'une séance cotée sans examen clinique : numéro du dernier examen et une lettre (EX3b)'}
 ];
 
 /* =====================================================================
@@ -1443,8 +1566,14 @@ const BIO_LAB = [
  {k:'lab_fib',   l:'Fibrinogène',       u:'g/L',    lo:2,    hi:4,     vn:'2,0 - 4,0'},
  {k:'lab_dd',    l:'D-dimères',         u:'µg/mL',  lo:0,    hi:0.5,   vn:'0,00 - 0,50'},
  {k:'lab_prot',  l:'Protéines totales', u:'g/L',    lo:64,   hi:83,    vn:'64,0 - 83,0'},
+ {k:'lab_gly',   l:'Glycémie',          u:'mmol/L', lo:4.1,  hi:6.1,   vn:'4,1 - 6,1'},
  {k:'lab_creat', l:'Créatinine',        u:'µmol/L', lo:45,   hi:84,    vn:'45,0 - 84,0', m:{lo:59, hi:104, vn:'59,0 - 104,0'}},
  {k:'lab_dfg',   l:'DFG CKD-EPI',       u:'mL/min/1,73 m²', lo:90, hi:150, vn:'90 - 150'},
+ {k:'lab_tg',    l:'Triglycérides',     u:'mmol/L', lo:0.1,  hi:1.7,   vn:'0,10 - 1,70'},
+ {k:'lab_chol',  l:'Cholestérol total', u:'mmol/L', lo:3,    hi:5.2,   vn:'3,00 - 5,20'},
+ {k:'lab_hdl',   l:'HDL cholestérol',   u:'mmol/L', lo:1.03, hi:1.55,  vn:'1,03 - 1,55'},
+ {k:'lab_ldl',   l:'LDL cholestérol',   u:'mmol/L', lo:1.75, hi:3.4,   vn:'1,75 - 3,40', note:'Calculé : cholestérol total − HDL − triglycérides ÷ 2,2 ; modifiable',
+  dico:'proposition calculee (formule de Friedewald, en mmol/L) : cholesterol total - HDL - triglycerides / 2,2 ; modifiable'},
  {k:'lab_ck',    l:'CK',                u:'UI/L',   lo:26,   hi:192,   vn:'26 - 192', m:{lo:39, hi:308, vn:'39 - 308'}},
  {k:'lab_crp',   l:'CRP',               u:'mg/L',   hi:5, hiStrict:1,  vn:'< 5,0'},
  {k:'lab_alb',   l:'Albumine',          u:'g/L',    lo:35,   hi:52,    vn:'35,0 - 52,0'},
@@ -1473,20 +1602,20 @@ const bioFields = (pre, L) => [
 const SPEC = [
 {id:'ident', t:'Identification', cols:2, page:1, tail:()=>identBox(), f:[
   {k:'fiche_type', l:'Type de consultation', t:'choice', o:FTYPE, full:1, req:1,
-   hint:"Initiale : prise en charge en urgence. Suivi : évolution. Sortie : compte rendu de séjour."},
+   hint:"Initiale : prise en charge en urgence. Suivi : évolution. Sortie : compte rendu de séjour. Séance : une recompression cotée en quelques clics, sans examen clinique (numérotée EX3b, EX3c…)."},
   {k:'dossier',   l:"N° de dossier / identifiant sujet", t:'txt', req:1, hint:"Identifiant que vous choisissez. Un numéro déjà connu remplit automatiquement l'identité et l'accident."},
-  {k:'nom',       l:'Nom',     t:'txt', pii:1},
-  {k:'prenom',    l:'Prénom',  t:'txt', pii:1},
-  {k:'sexe',      l:'Sexe',    t:'choice', o:[{v:1,l:'M'},{v:2,l:'F'},{v:3,l:'Autre'}]},
-  {k:'ddn',       l:'Date de naissance', t:'date', pii:1},
-  {k:'age',       l:'Âge (ans)', t:'calc'},
-  {k:'date_acc',  l:"Date de l'accident", t:'date'},
-  {k:'heure_acc', l:"Heure de l'accident", t:'time'},
-  {k:'date_ex',   l:"Date de l'examen", t:'date', req:1},
-  {k:'heure_ex',  l:"Heure de l'examen", t:'time', req:1},
-  {k:'delai_min', l:'Délai accident → examen (min)', t:'calc'},
+  {k:'nom',       l:'Nom',     t:'txt', pii:1, not:[4]},
+  {k:'prenom',    l:'Prénom',  t:'txt', pii:1, not:[4]},
+  {k:'sexe',      l:'Sexe',    t:'choice', o:[{v:1,l:'M'},{v:2,l:'F'},{v:3,l:'Autre'}], not:[4]},
+  {k:'ddn',       l:'Date de naissance', t:'date', pii:1, not:[4]},
+  {k:'age',       l:'Âge', t:'calc', hint:'Calculé à la date de l’examen ; en années et mois pour un mineur', not:[4]},
+  {k:'date_acc',  l:"Date de l'accident", t:'date', not:[4]},
+  {k:'heure_acc', l:"Heure de l'accident", t:'time', not:[4]},
+  {k:'date_ex',   l:"Date de l'examen", lab4:'Date de la séance', t:'date', req:1},
+  {k:'heure_ex',  l:"Heure de l'examen", t:'time', req:1, not:[4]},
+  {k:'delai_min', l:'Délai accident → examen (min)', t:'calc', not:[4]},
   {k:'examinateur',l:'Examinateur', t:'txt', list:'exlist'},
-  {k:'num_ex',    l:"N° d'examen pour ce sujet", t:'calc'}
+  {k:'num_ex',    l:"N° d'examen pour ce sujet", t:'calc', hint:'Une séance de recompression sans examen porte le numéro du dernier examen et une lettre : EX3b, EX3c…'}
 ]},
 
 /* Identité complémentaire : sur l'onglet Administratif, comme les contacts, et affichée après le mode d'entrée
@@ -2025,9 +2154,9 @@ const SPEC = [
   {k:'tb_table_autre', l:'Table — à préciser', t:'txt', wide:1, full:1, sub:1, dep:['tb_table',[9]]},
   {k:'tb_duree', l:'Durée de la table (min)', t:'calc', unit:'min', dep:['tb_table',[1,2,3,4,5,6,7,8]],
    hint:'Durée propre à la table choisie'},
-  {k:'tb_h_mep', l:'Heure de mise en pression', t:'time'},
+  {k:'tb_h_mep', l:'Heure de mise en pression', t:'time', hint:'Sur une séance sans examen : proposée (heure d’enregistrement), modifiable ; elle date la fiche'},
   {k:'tb_h_fin', l:'Heure de fin', t:'time', hint:'Calculée : mise en pression + durée de la table, modifiable'},
-  {k:'tb_delai', l:'Délai 1ers symptômes → recompression (min)', t:'calc', full:1,
+  {k:'tb_delai', l:'Délai 1ers symptômes → recompression (min)', t:'calc', full:1, not:[4],
    hint:'Facteur pronostique majeur. Un délai supérieur à 194 min a été associé à une récupération incomplète.'},
   {k:'tb_complic', l:'Complication thérapeutique', t:'choice', o:ON},
   {k:'tb_complic_txt', l:'Préciser', t:'txt', wide:1, full:1, nofill:1, dep:['tb_complic',[1]], sub:1,
@@ -2565,6 +2694,20 @@ function stampArrivee(){
 const iso  = d => d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 const hhmm = d => String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
 const stamp = f => (f.d.date_ex||'9999-99-99')+'T'+(f.d.heure_ex||'99:99')+'|'+(f.created||'');
+/* Rang des examens d'un dossier (fam : ses fiches, de la plus ancienne à la plus récente). Les consultations (initiale, suivi, sortie) sont numérotées
+   1, 2, 3… Une séance de recompression sans examen clinique (type 4) ne prend pas de numéro : elle porte celui du dernier examen qui la précède et une
+   lettre minuscule, dans l'ordre : EX3b, EX3c… (EX0b si elle précède tout examen). Rend une Map fiche → {n: numéro, l: lettre ou ''}. */
+const lettreSeance = k => { let n = k + 1, t = ''; while(n > 0){ n--; t = String.fromCharCode(97 + n % 26) + t; n = Math.floor(n / 26); } return t; };
+function exRanks(fam){
+  const R = new Map(); let n = 0, k = 0;
+  fam.forEach(f=>{
+    if((f.d.fiche_type||1) === 4){ k++; R.set(f, {n:n, l:lettreSeance(k)}); }
+    else { n++; k = 0; R.set(f, {n:n, l:''}); }
+  });
+  return R;
+}
+/* « 3 », ou « 3b » pour une séance sans examen */
+const exLabel = d => d.num_ex==null ? '' : d.num_ex+(d.num_ex_lettre||'');
 
 /* =====================================================================
    EXAMEN PRÉCÉDENT DU MÊME DOSSIER
@@ -2572,7 +2715,8 @@ const stamp = f => (f.d.date_ex||'9999-99-99')+'T'+(f.d.heure_ex||'99:99')+'|'+(
 function prevFiche(){
   const doss = REC && REC.d.dossier;
   if(!doss) return null;
-  const sibs = DB.filter(f=>f.d.dossier===doss && f.id!==REC.id)
+  /* l'examen précédent est une consultation : une séance de recompression saisie sans examen n'a aucune valeur à proposer */
+  const sibs = DB.filter(f=>f.d.dossier===doss && f.id!==REC.id && (f.d.fiche_type||1)!==4)
                  .sort((a,b)=>stamp(a).localeCompare(stamp(b)));
   if(!sibs.length) return null;
   const cur = stamp(REC);
@@ -2640,13 +2784,21 @@ function corticoRepete(d, avant){
   const c = corticoEnCours(avant, d.date_ex);
   return !!c && (c.dose == null ? d.rx_solu_dose == null : c.dose === d.rx_solu_dose);
 }
+/* Recompressions cotées depuis la dernière consultation : celle de la dernière consultation (elle se déroule après son examen) et celles des séances saisies
+   sans examen depuis ; null quand le dossier n'a pas de fiche avant celle-ci. */
+function seancesDepuis(){
+  const av = fichesAvant(); if(!av.length) return null;
+  let n = 0;
+  for(let i = av.length-1; i >= 0; i--){ if(recompCotee(av[i].d)) n++; if((av[i].d.fiche_type||1) !== 4) break; }
+  return n;
+}
 const DG_KEYS = ['dg_liste','dg_add_types','dg_add_grave','dg_baro_types','dg_bioch_types','dg_principal','dg_txt'];
 /* À la création d'une fiche de suivi ou de sortie, une seule fois (repère reprise_ok) : le diagnostic retenu de la dernière fiche qui en porte un, et
    la prednisolone encore à prescrire, avec les jours qui restent. Les champs déjà renseignés ne sont pas touchés ; une fiche déjà enregistrée
    non plus. */
 function reprisesInit(){
   const d = REC.d;
-  if(ftype()===1 || !d.dossier || d.reprise_ok) return;
+  if(ftype()===1 || ftype()===4 || !d.dossier || d.reprise_ok) return;
   if(DB.some(f=>f.id===REC.id)) return;
   const av = fichesAvant(); if(!av.length) return;
   d.reprise_ok = 1;
@@ -2665,7 +2817,7 @@ function reprisesInit(){
   }
 }
 /* valeur grisée proposée depuis l'examen précédent */
-const NOGHOST = {date_ex:1,heure_ex:1,num_ex:1,age:1,delai_min:1,gcs_tot:1,gcs_nc:1,pj:1,cst:1};
+const NOGHOST = {date_ex:1,heure_ex:1,num_ex:1,num_ex_lettre:1,age:1,age_mois:1,delai_min:1,gcs_tot:1,gcs_nc:1,pj:1,cst:1};
 /* clés propres à un examen donné : schémas d'échographie, scores et leurs cotations manuelles */
 const NOREPRISE = /^(ech_|msh_|vest_)/;
 function ghostVal(k){
@@ -2767,12 +2919,10 @@ function orlAudio(){
 
 function computeAll(){
   const d = REC.d;
-  if(d.ddn && d.date_ex){
-    const b=new Date(d.ddn), e=new Date(d.date_ex);
-    if(!isNaN(b)&&!isNaN(e)&&e>=b){ let a=e.getFullYear()-b.getFullYear();
-      const m=e.getMonth()-b.getMonth(); if(m<0||(m===0&&e.getDate()<b.getDate())) a--;
-      d.age = a; } else delete d.age;
-  } else delete d.age;
+  /* âge à la date de l'examen : en années ; pour un mineur, avec les mois en plus (age_mois, de 0 à 11) */
+  const ay = (d.ddn && d.date_ex) ? ageYM(d.ddn, d.date_ex) : null;
+  if(ay){ d.age = ay.a; if(ay.a < 18) d.age_mois = ay.m; else delete d.age_mois; }
+  else { delete d.age; delete d.age_mois; }
   if(d.date_acc && d.heure_acc && d.date_ex && d.heure_ex){
     const a=new Date(d.date_acc+'T'+d.heure_acc), e=new Date(d.date_ex+'T'+d.heure_ex);
     if(!isNaN(a)&&!isNaN(e)) d.delai_min = Math.round((e-a)/60000); else delete d.delai_min;
@@ -2786,13 +2936,15 @@ function computeAll(){
   if(d.dossier){
     const sib = DB.filter(f=>f.d.dossier===d.dossier && f.id!==REC.id).concat([REC])
                   .sort((a,b)=>stamp(a).localeCompare(stamp(b)));
-    d.num_ex = sib.findIndex(f=>f.id===REC.id)+1;
+    /* le rang parmi les consultations ; une séance de recompression sans examen porte celui du dernier examen et une lettre (EX3b) */
+    const rk = exRanks(sib).get(REC);
+    d.num_ex = rk.n; if(rk.l) d.num_ex_lettre = rk.l; else delete d.num_ex_lettre;
     /* Une fiche qui n'est pas la premiere du dossier est une fiche de suivi :
        on la propose, sans la forcer. Des que le praticien clique lui-meme le
        type, la proposition ne revient plus : il peut ressaisir apres coup une
        fiche initiale, ou demander un CRH intermediaire. */
     if(!TYPE_CHOISI && d.num_ex > 1 && d.fiche_type === 1){ d.fiche_type = 2; TYPE_PROPOSE = true; dropDefaults(); }
-  } else delete d.num_ex;
+  } else { delete d.num_ex; delete d.num_ex_lettre; }
 
   reprisesInit();
   adpCalc();
@@ -3026,6 +3178,7 @@ function depMatch(k, vals){
   return vals.indexOf(v)>=0;
 }
 function depOK(f){
+  if(f.not && REC && f.not.indexOf(ftype())>=0) return false;           // champ masqué pour ce type de fiche (sa valeur, elle, est conservée)
   if(f.t==='head') return !f.depFn || !!f.depFn();
   if(f.vis && !limbOpen(f.vis)) return false;
   if(f.depFn && !f.depFn()) return false;
@@ -3084,7 +3237,9 @@ function fieldHTML(f){
           '<span style="margin-left:8px;font-size:12px;color:var(--ink2)">'+esc(par)+
           ' — total sans objet, une modalité est cotée NC</span>';
     } else {
-      ctl='<span class="calc">'+(v==null||v===''?'—':esc(v)+(f.unit?' '+esc(f.unit):''))+(f.k==='gcs_tot'?' / 15':'')+'</span>';
+      ctl='<span class="calc">'+(f.k==='age' ? (v==null||v==='' ? '—' : esc(ageFr(d)))
+                                : f.k==='num_ex' ? (v==null||v==='' ? '—' : esc(exLabel(d)))
+                                : (v==null||v===''?'—':esc(v)+(f.unit?' '+esc(f.unit):'')))+(f.k==='gcs_tot'?' / 15':'')+'</span>';
     }
   } else if(f.t==='area'){
     ctl='<div class="micwrap"><textarea id="i_'+f.k+'" oninput="setRaw(\''+f.k+'\',this.value)"'+
@@ -3681,13 +3836,13 @@ function renderFormInner(){
   if(!pageSections(PAGE).length){ const v = visPages(); if(v.length) PAGE = (v.find(p=>p.n>PAGE) || v[v.length-1]).n; }
   const exs = Array.from(new Set(DB.map(f=>f.d.examinateur).filter(Boolean)));
   let h = '<datalist id="exlist">'+exs.map(e=>'<option value="'+esc(e)+'">').join('')+'</datalist>';
-  h += '<div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap">'+
+  if(ftype()!==4) h += '<div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap">'+
        '<button class="tb gd" style="background:#1a6b43" onclick="allNormal()">&#10003; Tout renseigner comme NORMAL</button>'+
        '<span style="font-size:11.5px;color:#5a6472">Puis ne modifiez que les items anormaux.</span>'+
        '<span id="globalfill" style="margin-left:auto"></span></div>';
-  if(PREV) h += '<div class="note prevnote" id="prevnote">'+
+  if(PREV && ftype()!==4) h += '<div class="note prevnote" id="prevnote">'+
        '<b>Dossier déjà connu.</b> Examen précédent du '+frDate(PREV.d.date_ex)+' à '+(PREV.d.heure_ex||'—')+
-       (PREV.d.num_ex?' (examen n°'+PREV.d.num_ex+')':'')+
+       (PREV.d.num_ex!=null?' (examen n°'+exLabel(PREV.d)+')':'')+
        (PREV.d.examinateur?', examinateur '+esc(PREV.d.examinateur):'')+
        '. Les valeurs <span class="opt gh" style="padding:1px 7px">grisées</span> sont celles de cet examen : cliquez pour les reprendre. '+
        '<button class="tb" style="background:#1b4f8f;margin-left:6px" onclick="takePrev()">Reprendre tout l\'examen précédent</button></div>';
@@ -3752,9 +3907,14 @@ let TYPE_PROPOSE = false;   /* le type a ete deduit du rang de l'examen */
 let TYPE_CHOISI  = false;   /* le praticien a cliqué le type lui-même */
 
 function ftype(){ return REC.d.fiche_type || 1; }
+/* Une séance de recompression sans examen (type 4) ne montre que l'identification et la recompression, réunies sur le premier onglet. */
+const SEANCE_SECS = ['ident','recomp'];
 /* une section s'affiche si elle concerne ce type de consultation */
-function secForType(s){ return (!s.only || s.only.indexOf(ftype()) >= 0) && (!s.when || s.when()); }
-function secOnPage(s, n){ return (s.page||1) === n && secForType(s); }
+function secForType(s){
+  if(ftype()===4) return SEANCE_SECS.indexOf(s.id) >= 0;
+  return (!s.only || s.only.indexOf(ftype()) >= 0) && (!s.when || s.when());
+}
+function secOnPage(s, n){ return (ftype()===4 ? 1 : (s.page||1)) === n && secForType(s); }
 function pageSections(n){
   const L = SPEC.filter(s=>secOnPage(s,n));
   /* after : la section s'affiche juste après celle qu'elle désigne (si celle-ci est sur la même page) */
@@ -3787,11 +3947,12 @@ function pageFill(n){
   pageSections(n).forEach(s=>{ const f=secFill(s); done+=f.done; tot+=f.tot; });
   return {done:done, tot:tot};
 }
-function pageLab(pg){ return (ftype()!==1 && pg.l2) ? pg.l2 : pg.l; }
+function pageLab(pg){ return ftype()===4 ? 'Séance de recompression' : (ftype()!==1 && pg.l2) ? pg.l2 : pg.l; }
 const pageShort = pg => pg.c || pageLab(pg);
-function pageSub(pg){ return (ftype()!==1 && pg.s2) ? pg.s2 : pg.s; }
+function pageSub(pg){ return ftype()===4 ? 'date, table, heures, complication' : (ftype()!==1 && pg.s2) ? pg.s2 : pg.s; }
 function pageBar(){
   const v = visPages();
+  if(v.length < 2) return '';                                  // un seul onglet (séance de recompression) : rien à choisir
   return '<div id="pagebar" style="--np:'+v.length+'">'+v.map((pg,i)=>{
     const f = pageFill(pg.n), plein = f.tot>0 && f.done===f.tot;
     return '<button class="wtab'+(PAGE===pg.n?' on':'')+(plein?' full':'')+'" onclick="goPage('+pg.n+')">'+
@@ -3904,9 +4065,9 @@ function autoSync(k, val){
   d[ak] = val;
 }
 /* les champs correspondants à l'écran suivent le calcul, sauf celui qui a le focus */
-const AUTOKEYS = ['tb_h_fin','rx_solu_dose','ev_seances','sortie_exam_second','ecg_txt','pl_dtr','pl_duree_tot','pl_rr_prof','pl_reimm_txt',
+const AUTOKEYS = ['tb_h_fin','tb_h_mep','rx_solu_dose','ev_seances','sortie_exam_second','ecg_txt','pl_dtr','pl_duree_tot','pl_rr_prof','pl_reimm_txt',
                   'pl_h_immersion','pl_h_depart_fond','pl_h_sortie',
-                  'gds_date','gds_h','lab_date','lab_h','lab_hb','lab_ht'];
+                  'gds_date','gds_h','lab_date','lab_h','lab_hb','lab_ht','lab_ldl'];
 function refreshAutoFields(){
   AUTOKEYS.forEach(k=>{
     const el = document.getElementById('i_'+k);
@@ -3944,6 +4105,7 @@ function setVal(k,v){ const avant = REC.d[k]; REC.d[k] = (REC.d[k]===v)?null:v; 
   if(k==='im_echopp'){ pruneDeps(); touch(); renderForm(); return; }
   if(k==='fiche_type'){ TYPE_CHOISI = true; TYPE_PROPOSE = false;
                         if(ftype()===1) giveDefaults(); else dropDefaults();
+                        if(ftype()===4 && REC.d.tb_h_mep==null) REC.d.seance_auto = 1;           // fiche sans mise en pression saisie : l'heure de la séance est proposée
                         pruneDeps(); touch(); renderForm(); return; }
   autofill(k);
   pruneDeps(); touch(); refreshField(k);
@@ -4053,6 +4215,13 @@ function bioCalc(d){
   autoSync('lab_hb', meme && d.gds_hb!=null ? d.gds_hb : null);
   autoSync('lab_ht', meme && d.gds_ht!=null ? d.gds_ht : null);
   autoSync('gds_date', hasG ? d.date_ex : null);  autoSync('gds_h', hasG ? d.heure_ex : null);
+  /* LDL cholestérol : proposé, modifiable, d'après le cholestérol total, le HDL et les triglycérides (mmol/L) :
+     LDL = cholestérol total − HDL − triglycérides ÷ 2,2 (Friedewald). Rien n'est proposé si l'une des trois valeurs manque ou s'écrit « < » / « > »,
+     ni quand le résultat n'est pas positif. */
+  const nb = k => { const x = decNum(d[k]); return (x && x.op==='') ? x.n : null; };
+  const ct = nb('lab_chol'), hdl = nb('lab_hdl'), tg = nb('lab_tg');
+  const ldl = (ct!=null && hdl!=null && tg!=null) ? Math.round((ct - hdl - tg/2.2)*100)/100 : null;
+  autoSync('lab_ldl', (ldl!=null && ldl > 0) ? ldl : null);
   const hasL = some(BIO_LAB);
   autoSync('lab_date', hasL ? d.date_ex : null);  autoSync('lab_h', hasL ? d.heure_ex : null);
 }
@@ -4727,14 +4896,16 @@ const norm = s => String(s==null?'':s).toLowerCase()
   .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
   .replace(/[^a-z0-9]+/g,' ').trim();
 
+/* « 3 examens », « 3 examens + 2 séances de recompression » */
+const exCompte = s => s.n+' examen'+(s.n>1?'s':'')+(s.ns ? ' + '+s.ns+' séance'+(s.ns>1?'s':'')+' de recompression' : '');
 /* index des sujets présents dans la base locale */
 function subjectIndex(){
   const by = {};
   DB.forEach(f=>{
     const k = f.d.dossier || '';
     if(!k) return;
-    const s = by[k] || (by[k] = {dossier:k, n:0, last:null, nom:'', prenom:'', ddn:'', sexe:null, ads:[]});
-    s.n++;
+    const s = by[k] || (by[k] = {dossier:k, n:0, ns:0, last:null, nom:'', prenom:'', ddn:'', sexe:null, ads:[]});
+    if((f.d.fiche_type||1) === 4) s.ns++; else s.n++;                 // n : les examens ; ns : les séances de recompression saisies sans examen
     /* numéros d'accident de plongée portés par les fiches du dossier */
     const ad = String(f.d.ad_num||'').trim(); if(ad && s.ads.indexOf(ad)<0) s.ads.push(ad);
     if(!s.last || stamp(f) > stamp(s.last)) s.last = f;
@@ -4771,12 +4942,14 @@ function applySubject(dossier, force){
   });
   touch(); autofillFromDossier(); renderForm();
   toast('Sujet repris : '+(s.nom? s.nom.toUpperCase()+' '+(s.prenom||'') : s.dossier)+
-        ' — '+s.n+' examen'+(s.n>1?'s':'')+' au dossier');
+        ' — '+exCompte(s)+' au dossier');
 }
 
-function openSubjectSearch(pre){
+let SUBJ_MODE = null;       // « seance » : le sujet choisi reçoit une séance de recompression, au lieu d'être repris dans la fiche ouverte
+function openSubjectSearch(pre, mode){
+  SUBJ_MODE = mode || null;
   const q = pre!=null ? pre : (REC.d.nom||'')+' '+(REC.d.prenom||'');
-  modalHTML('<h3>Rechercher un sujet</h3>'+
+  modalHTML('<h3>'+(SUBJ_MODE==='seance' ? 'Séance de recompression : choisir le patient' : 'Rechercher un sujet')+'</h3>'+
     '<p style="margin:0 0 8px;color:var(--ink2);font-size:12px">'+
     'Numéro de dossier, numéro d’accident de plongée, nom, prénom ou date de naissance. La recherche porte sur les fiches '+
     'de la base locale de ce poste, dont celles lues dans le dossier de données à l’ouverture.</p>'+
@@ -4797,12 +4970,12 @@ function renderSubjRes(){
   box.innerHTML = res.slice(0,40).map(s=>{
     const d = s.last.d;
     return '<button class="tb" style="width:100%;text-align:left;margin-bottom:6px;padding:10px 12px" '+
-      'onclick="closeModal();applySubject(\''+esc(s.dossier).replace(/'/g,"\\'")+'\')">'+
+      'onclick="closeModal();'+(SUBJ_MODE==='seance' ? 'seanceDe' : 'applySubject')+'(\''+esc(s.dossier).replace(/'/g,"\\'")+'\')">'+
       '<b>'+esc(s.nom? s.nom.toUpperCase()+' '+(s.prenom||'') : '(identité non renseignée)')+'</b>'+
       (s.ddn? ' <span style="opacity:.8">né(e) le '+frDate(s.ddn)+'</span>':'')+
       '<br><span style="color:#9fb0c8;font-size:11.5px">Dossier '+esc(s.dossier)+
       (s.ads.length ? ' · accident de plongée n° '+esc(s.ads.join(', ')) : '')+
-      ' · '+s.n+' examen'+(s.n>1?'s':'')+' · dernier le '+frDate(d.date_ex)+' '+(d.heure_ex||'')+
+      ' · '+exCompte(s)+' · dernier le '+frDate(d.date_ex)+' '+(d.heure_ex||'')+
       (d.examinateur?' · '+esc(d.examinateur):'')+'</span></button>';
   }).join('') + (res.length>40? '<div class="note">'+res.length+' sujets trouvés, 40 affichés. Affinez la recherche.</div>':'');
 }
@@ -4822,6 +4995,10 @@ function matchByIdentity(){
   return cand.length===1 ? cand[0] : (cand.length>1 ? {multi:cand.length} : null);
 }
 function identBox(){
+  if(ftype()===4)
+    return '<div class="note" style="background:#e8f0fa;border-color:#a9c4e6;margin-top:8px"><b>Séance de recompression, sans examen clinique.</b> '+
+      'Choisissez la table (celle de la dernière séance du dossier est reprise), vérifiez l’heure de mise en pression (proposée : l’heure d’enregistrement), '+
+      'puis enregistrez. La fiche porte le numéro du dernier examen suivi d’une lettre : <b>EX'+esc(exLabel(REC.d) || '…')+'</b>.</div>';
   const m = matchByIdentity();
   let h = '';
   /* Le type a bascule tout seul parce que le dossier porte deja un examen :
@@ -4846,7 +5023,7 @@ function identBox(){
     h += '<div class="note" style="background:#e8f0fa;border-color:#a9c4e6;margin-top:8px">'+
       '<b>Sujet déjà connu.</b> '+esc((m.nom||'').toUpperCase()+' '+(m.prenom||''))+
       (m.ddn?', né(e) le '+frDate(m.ddn):'')+' — dossier <b>'+esc(m.dossier)+'</b>, '+
-      m.n+' examen'+(m.n>1?'s':'')+'. '+
+      exCompte(m)+'. '+
       '<button class="tb" style="background:#1a6b43" onclick="applySubject(\''+esc(m.dossier).replace(/'/g,"\\'")+'\')">'+
       'Reprendre ce dossier</button></div>';
   return h;
@@ -5099,14 +5276,21 @@ function adpCalc(){
   put('tb_delai',      deltaMin(d.pl_h_symp, d.tb_h_mep));
   put('plp_interval',  d.plp_faite===1 ? deltaMin(d.plp_heure, d.pl_h_immersion) : null);
 
+  /* (avant l'heure de fin, qui en dépend) séance de recompression créée comme telle (seance_auto) : l'heure de la fiche est l'heure de la mise en pression, proposée d'après
+     l'heure d'enregistrement et modifiable. Une consultation dont on change le type en « séance » garde ses heures : rien n'est réécrit. */
+  if(ftype()===4 && d.seance_auto){
+    if(d.tb_h_mep && d.tb_h_mep !== d.tb_h_mep_auto) d.heure_ex = d.tb_h_mep;
+    autoSync('tb_h_mep', d.heure_ex);
+  }
   /* durée de la table choisie, et heure de fin proposée (modifiable) */
   put('tb_duree', tableDuree(d.tb_table));
   autoSync('tb_h_fin', (d.tb_h_mep && d.tb_duree!=null) ? addMin(d.tb_h_mep, d.tb_duree) : null);
   /* (méthyl)prednisolone : dose quotidienne proposée à 1 mg/kg, d'après le poids (celui de la fiche initiale sur une fiche de suivi) */
   const pds = poidsRef();
   autoSync('rx_solu_dose', (d.rx_solu===1 && pds>0) ? Math.round(pds*DEF_CORTICO_MGKG) : null);
-  /* séances réalisées depuis la dernière consultation : proposées d'après la fiche précédente (une recompression cotée = une séance) */
-  if(ftype()!==1){ const av = fichesAvant(); autoSync('ev_seances', av.length ? (recompCotee(av[av.length-1].d) ? 1 : 0) : null); }
+  /* séances réalisées depuis la dernière consultation : proposées d'après les fiches précédentes (une recompression cotée = une séance), séances saisies
+     sans examen comprises */
+  if(ftype()===2 || ftype()===3) autoSync('ev_seances', seancesDepuis());
   /* consultation de sortie : examens à réaliser, proposés d'après le ou les diagnostics retenus et le générateur de documents */
   if(ftype()===3 && !d.exam_prop_off) autoSync('sortie_exam_second', genExamsTexte(d));
   /* ECG : compte rendu rédigé à partir de la fréquence et du QTc, modifiable */
@@ -6779,8 +6963,26 @@ function bioSynth(B, fiches){
   B.push({h:'Résultats biologiques', lines:lines, inline:false, tbl:T.map(t=>t.html).join(''), tabs:T.map(t=>t.data)});
 }
 
+/* Séance de recompression sans examen clinique : un titre, la table avec ses heures, la complication. Même forme que la « Conduite à tenir » d'une
+   consultation, pour que le compte rendu d'hospitalisation la reprenne telle quelle. */
+function narrativeSeance(d){
+  const {fin, hFr, flat} = TXT, B = [];
+  const hd = ['Séance de recompression', 'Date : '+(d.date_ex ? frDate(d.date_ex) : ''), 'Heure de mise en pression : '+hFr(d.tb_h_mep||d.heure_ex||'')];
+  if(d.examinateur) hd.push(fin('Examinateur : '+d.examinateur));
+  B.push({title:true, lines:hd.map(x=>TXT.clean(x))});
+  const cat = [], tbl = tableLib(d), tb = [];
+  if(d.tb_h_mep) tb.push('mise en pression à '+hFr(d.tb_h_mep));
+  if(d.tb_h_fin) tb.push('fin à '+hFr(d.tb_h_fin));
+  cat.push(fin(bold('Table '+(tbl ? flat(tbl) : 'de recompression'))+(tb.length?' ('+tb.join(', ')+')':'')));
+  if(d.tb_complic===1) cat.push(bold(fin('Complication thérapeutique'+(d.tb_complic_txt?' : '+flat(d.tb_complic_txt):''))));
+  else if(d.tb_complic===0) cat.push('Sans complication thérapeutique.');
+  B.push({h:'Conduite à tenir', lines:cat.map(x=>TXT.clean(x).trim()).filter(Boolean), inline:false});
+  B.xf = examFindings(); B.sy = syndromes(B.xf); B.pce = [];
+  return B;
+}
 function narrativeBlocks(){
   const d = REC.d, TY = d.fiche_type||1, B = [];
+  if(TY===4) return narrativeSeance(d);
   const F = d.sexe===2;
   const {lst, cap, low, lc1, flat, fin, hFr, dureeFr} = TXT;
   const sect = (h, lines, inline) => {
@@ -6803,7 +7005,7 @@ function narrativeBlocks(){
   if(TY!==2){
     /* le plongeur */
     const pa = [];
-    if(d.age!=null) pa.push(' de '+d.age+' ans');
+    if(d.age!=null) pa.push(' de '+ageFr(d));
     if(d.nationalite && d.nationalite!==1){
       const nat = d.nationalite===9 ? flat(d.nationalite_autre) : NATIO_F[d.nationalite];
       if(nat) pa.push(', de nationalité '+nat);
@@ -7257,8 +7459,9 @@ function copyRich(html, txt, okMsg, rtf){
      examen de sortie : dernière fiche ; diagnostic retenu ; examens à réaliser secondairement ; inaptitude.
    ===================================================================== */
 function crhFiches(){
-  const doss = REC && REC.d.dossier; if(!doss) return [];
-  const cur = JSON.parse(JSON.stringify(REC));
+  if(!REC) return [];
+  const cur = JSON.parse(JSON.stringify(REC)), doss = REC.d.dossier;
+  if(!doss) return [cur];                                  // sans numéro de dossier : la fiche ouverte seule (lignes Excel et documents de sortie restent ouverts)
   return DB.filter(f=>f.d.dossier===doss && f.id!==REC.id).concat([cur]).sort((a,b)=>stamp(a).localeCompare(stamp(b)));
 }
 /* une précision déjà entre parenthèses ne se met pas entre deux autres */
@@ -7280,6 +7483,9 @@ function evolPartsCRH(d){
   if(d.ev_txt) P.push(TXT.fin(d.ev_txt));
   return P;
 }
+/* les consultations d'une liste d'états de fiches : une séance de recompression saisie sans examen n'a ni examen, ni évolution, ni score ; elle ne figure
+   que dans la prise en charge et dans le décompte des séances. Toute la liste si le dossier n'a que des séances. */
+const cliniques = ST => { const c = ST.filter(s=>(s.d.fiche_type||1)!==4); return c.length ? c : ST; };
 /* l'état d'une fiche : ses blocs de synthèse, ses constats, son score ASIA, son diagnostic, son encart d'évolution */
 function crhState(f){
   return withRec(f, ()=>{
@@ -7372,6 +7578,7 @@ function asiaDiff(a, b){
    - les « séances réalisées depuis la dernière consultation » (encart Évolution) sont proposées d'après ces mêmes fiches : elles ne comptent pas
      en plus. */
 function recompCotee(d){
+  if((d.fiche_type||1)===4) return true;                  // une fiche « séance de recompression » est, par définition, une séance
   if(d.tb_table==null) return !!d.tb_h_mep;
   const office = (d.fiche_type||1)===1 && d.tb_table===DEF_TABLE;
   return !office || !!(d.tb_h_mep || d.tb_h_fin || d.tb_complic===1);
@@ -7401,9 +7608,10 @@ function recompPhrase(rc){
   return 'Recompressions : '+rc.total+' séance'+(rc.total>1?'s':'')+' au total ('+parts.join(' ; ')+').';
 }
 function crhBlocks(){
+  if(!REC || !REC.d.dossier) return [];                     // le compte rendu se compose à partir du dossier : sans numéro de dossier, rien (les lignes Excel et les documents de sortie, eux, s'ouvrent)
   const FI = crhFiches(); if(!FI.length) return [];
-  const ST = FI.map(crhState);
-  const init = ST.find(s=>(s.d.fiche_type||1)===1) || ST[0], last = ST[ST.length-1], multi = ST.length>1;
+  const ST = FI.map(crhState), C = cliniques(ST);
+  const init = C.find(s=>(s.d.fiche_type||1)===1) || C[0], last = C[C.length-1], multi = C.length>1;
   const B = [];
   const {fin, flat, lst} = TXT;
   const sect = (h, lines, inline) => {
@@ -7442,7 +7650,7 @@ function crhBlocks(){
 
   /* examens paracliniques : tous ceux du dossier, par fiche et par date */
   const pcl = [];
-  ST.forEach(st=>{
+  C.forEach(st=>{
     const e = st.pce.filter(x=>['act','demande','score'].indexOf(x.cat)<0).map(x=>x.text);
     if(st.d.ev_exam_faits) e.push(fin('Examens complémentaires réalisés depuis la consultation précédente : '+flat(st.d.ev_exam_faits)));
     if(e.length){ pcl.push(crhWhen(st.f)+jour(st)+' :'); e.forEach(x=>pcl.push('- '+x)); }
@@ -7456,8 +7664,8 @@ function crhBlocks(){
 
   /* évolution : tout ce qui diffère d'une fiche à l'autre, horodaté */
   const evo = [];
-  for(let i=1; i<ST.length; i++){
-    const a = ST[i-1], b = ST[i], df = diffFindings(a.X, b.X, a.d, b.d), ad = asiaDiff(a.A, b.A);
+  for(let i=1; i<C.length; i++){
+    const a = C[i-1], b = C[i], df = diffFindings(a.X, b.X, a.d, b.d), ad = asiaDiff(a.A, b.A);
     if(ad) (ad.dir<0 ? df.better : ad.dir>0 ? df.worse : df.other).push(ad.txt);
     const parts = [];
     if(df.better.length) parts.push('Amélioration : '+df.better.join(' ; ')+'.');
@@ -7479,7 +7687,7 @@ function crhBlocks(){
   }
 
   /* évolution des scores : MEDSUBHYP, score vestibulaire, score ASIA, rassemblés avant le diagnostic retenu */
-  sect('Évolution des scores', scoresCRH(ST, noSc), false);
+  sect('Évolution des scores', scoresCRH(C, noSc), false);
 
   /* diagnostic retenu : le plus récent */
   const dg = ST.slice().reverse().find(s=>s.diag);
@@ -7526,10 +7734,7 @@ function crhBlock(){
   const closed = CLOSED.crh ? ' closed' : '';
   return '<div class="sec'+closed+'" id="s_crh"><h3 onclick="if(!event.target.closest(\'button\'))toggleSec(\'crh\')">'+
     '<span class="caret">&#9660;</span>Compte rendu d’hospitalisation (CRH)'+
-    '<span class="fill"><span class="badge" id="crhn"></span><button class="mini" onclick="openGen()" title="Courriers, ordonnances et certificats de sortie">documents de sortie</button>'+
-    '<button class="mini" onclick="openXls()" title="Ligne Excel ADP : une ligne à coller dans le fichier Excel maître (89 colonnes)">ligne Excel ADP</button>'+
-    '<button class="mini" onclick="openXls(\'cohb\')" title="Ligne Excel COHB : une ligne à coller dans la feuille Activité COHB (31 colonnes)">ligne Excel COHB</button>'+
-    '<button class="mini" onclick="copyCRH()">copier le CRH</button></span></h3>'+
+    '<span class="fill"><span class="badge" id="crhn"></span><button class="mini" onclick="copyCRH()">copier le CRH</button></span></h3>'+
     '<div class="body"><div class="note" style="background:#f2f6fb;border-color:#c9d8ea">Texte enrichi, sans en-tête, écrit à partir de '+
     '<b>toutes les fiches de ce dossier</b> : histoire et examen d’admission, prise en charge, examens paracliniques réunis, évolution horodatée '+
     '(améliorations, aggravations, autres modifications d’une fiche à l’autre), examen de sortie, évolution des scores, diagnostic retenu, examens à réaliser '+
@@ -7845,13 +8050,27 @@ function psco(){
    de séjour ne racontent pas la même chose. */
 function docTitre(){
   const t = REC.d.fiche_type || 1;
+  if(t===4) return "SÉANCE DE RECOMPRESSION THÉRAPEUTIQUE";
   if(t===2) return "FICHE DE SUIVI — ACCIDENT DE PLONGÉE";
   if(t===3) return "COMPTE RENDU D'HOSPITALISATION — ACCIDENT DE PLONGÉE";
   return "PRISE EN CHARGE EN URGENCE — ACCIDENT DE PLONGÉE";
 }
 
+/* une page : l'identité, la séance (table, heures, complication) */
+function buildPrintSeance(){
+  const d = REC.d;
+  return '<div class="pg"><div class="phead">'+docTitre()+'</div>'+
+    '<div class="pid">'+
+      pid('Nom',d.nom)+pid('Prénom',d.prenom)+pid('Sexe',lab('sexe'))+pid('Date de naissance',frDate(d.ddn))+
+      pid('N° de dossier',d.dossier)+pid('Âge',ageFr(d))+
+      pid('Date de la séance',frDate(d.date_ex))+pid("N° d'examen",exLabel(d))+pid('Examinateur',d.examinateur)+
+    '</div>'+
+    (pspec('recomp','Recompression') || box('RECOMPRESSION', '<div class="pl">Aucune donnée saisie.</div>'))+
+    '<div style="font-size:7pt;text-align:right;margin-top:1.5mm;color:#444">Fiche '+esc(REC.id)+' — '+frDate(d.date_ex)+'</div></div>';
+}
 function buildPrint(){
   const d=REC.d, A=ASIA||{}, TY=d.fiche_type||1;
+  if(TY===4) return buildPrintSeance();
   let h='';
 
   /* ---------- page d'accueil : seulement sur la consultation initiale et le CRH ---------- */
@@ -7865,7 +8084,7 @@ function buildPrint(){
       h += '<div class="pg"><div class="phead">'+docTitre()+'</div>'+
         '<div class="pid">'+
           pid('Nom',d.nom)+pid('Prénom',d.prenom)+pid('Sexe',lab('sexe'))+pid('Date de naissance',frDate(d.ddn))+
-          pid('N° de dossier',d.dossier)+pid('Âge',d.age!=null?d.age+' ans':'')+
+          pid('N° de dossier',d.dossier)+pid('Âge',ageFr(d))+
           pid('Accident de plongée n°',d.ad_num)+
           pid('Date / heure accident',(frDate(d.date_acc)+' '+(d.heure_acc||'')).trim())+
         '</div>'+ acc +
@@ -7878,11 +8097,11 @@ function buildPrint(){
   h+='<div class="phead">'+(TY===1||TY===3?'EXAMEN CLINIQUE':docTitre())+'</div>';
   h+='<div class="pid">'+
     pid('Nom',d.nom)+pid('Prénom',d.prenom)+pid('Sexe',lab('sexe'))+pid('Date de naissance',frDate(d.ddn))+
-    pid('N° de dossier',d.dossier)+pid('Âge',d.age!=null?d.age+' ans':'')+
+    pid('N° de dossier',d.dossier)+pid('Âge',ageFr(d))+
     pid('Date / heure accident',(frDate(d.date_acc)+' '+(d.heure_acc||'')).trim())+
     pid('Délai accident→examen',d.delai_min!=null?d.delai_min+' min':'')+
     pid('Examinateur',d.examinateur)+pid('Date examen',frDate(d.date_ex))+pid('Heure examen',d.heure_ex)+
-    pid("N° d'examen",d.num_ex)+'</div>';
+    pid("N° d'examen",exLabel(d))+'</div>';
 
   h+=box('CONSCIENCE', pline('AVPU',pv('avpu',1))+
       pline('Glasgow','Y : '+(d.gcs_y==null?'—':d.gcs_y)+(d.gcs_y==='NC'?'':'/4')+
@@ -8141,7 +8360,7 @@ function printCSS(){
        + '\nbody.printdoc #print-root{display:block !important}';
 }
 function printName(){
-  return 'Fiche_neuro_'+(REC.d.dossier||'sans-dossier')+'_'+(REC.d.date_ex||'')+(REC.d.num_ex?'_ex'+REC.d.num_ex:'');
+  return 'Fiche_neuro_'+(REC.d.dossier||'sans-dossier')+'_'+(REC.d.date_ex||'')+(REC.d.num_ex!=null?'_ex'+exLabel(REC.d):'');
 }
 function doPrint(){
   computeAll();
@@ -8179,7 +8398,7 @@ function codesOf(f){
   if(f.t==='check')  return '1 = coche ; vide = non coche';
   if(f.t==='date')   return 'AAAA-MM-JJ';
   if(f.t==='time')   return 'HH:MM';
-  if(f.t==='num' && f.bio) return 'numerique decimal'+(f.unit?' ('+f.unit+')':'')+' ; valeurs normales : '+(f.bio.m ? 'femme '+f.bio.vn+' ; homme '+f.bio.m.vn : f.bio.vn)+' ; un signe < ou > peut preceder la valeur';
+  if(f.t==='num' && f.bio) return 'numerique decimal'+(f.unit?' ('+f.unit+')':'')+' ; valeurs normales : '+(f.bio.m ? 'femme '+f.bio.vn+' ; homme '+f.bio.m.vn : f.bio.vn)+' ; un signe < ou > peut preceder la valeur'+(f.bio.dico ? ' ; '+f.bio.dico : '');
   if(f.t==='num')    return 'numerique'+(f.unit?' ('+f.unit+')':'');
   if(f.t==='calc')   return 'numerique, calcule'+(f.unit?' ('+f.unit+')':'');
   return 'texte libre';
@@ -8196,7 +8415,9 @@ function columns(pii){
   add('dossier_pseudo','Identifiant pseudonymise ?',
       '1 = empreinte salee SHA-256 d un identifiant scanne ou saisi (prefixe P-) ; 0 = valeur saisie telle quelle ; vide = non renseigne',
       r=>r.d.dossier_pseudo!=null?r.d.dossier_pseudo:'');
-  add('num_ex',"Rang de l'examen pour ce sujet",'entier >= 1, ordonne par date et heure');
+  add('num_ex',"Rang de l'examen pour ce sujet",'entier >= 1, ordonne par date et heure ; une seance de recompression sans examen (fiche_type 4) porte le rang du dernier examen qui la precede (0 si aucun)');
+  add('num_ex_lettre',"Lettre de la seance de recompression sans examen",'b, c, d... : EX3b est la premiere seance saisie sans examen apres l examen 3, EX3c la suivante ; vide pour une consultation',
+      r=>r.d.num_ex_lettre||'');
   add('date_ex',"Date de l'examen",'AAAA-MM-JJ');
   add('heure_ex',"Heure de l'examen",'HH:MM');
   add('examinateur','Examinateur','texte');
@@ -8206,10 +8427,12 @@ function columns(pii){
   add('delai_min','Delai accident vers examen','entier, minutes (calcule)');
   add('fiche_type',"Type de consultation",
       '1 = consultation initiale (prise en charge en urgence) ; 2 = consultation de suivi ; '+
-      '3 = consultation de sortie / CRH ; vide = non renseigne (a lire comme 1)',
+      '3 = consultation de sortie / CRH ; 4 = seance de recompression sans examen clinique (fiche rapide, numeros EX3b, EX3c...) ; vide = non renseigne (a lire comme 1)',
       r=>r.d.fiche_type!=null?r.d.fiche_type:'');
   add('sexe','Sexe','1 = M ; 2 = F ; 3 = Autre');
-  add('age',"Age a la date de l'examen",'entier, annees (calcule)');
+  add('age',"Age a la date de l'examen",'entier, annees revolues (calcule)');
+  add('age_mois',"Age - mois en plus des annees (mineur)",'entier 0 a 11, calcule ; seulement pour un patient de moins de 18 ans, vide pour un adulte',
+      r=>r.d.age_mois!=null?r.d.age_mois:'');
   if(pii){ add('nom','Nom','texte - DONNEE IDENTIFIANTE');
            add('prenom','Prenom','texte - DONNEE IDENTIFIANTE');
            add('ddn','Date de naissance','AAAA-MM-JJ - DONNEE IDENTIFIANTE'); }
@@ -8546,8 +8769,17 @@ async function renumberAll(){
   DB.forEach(f=>{ const k=f.d.dossier||''; if(!k) return; (by[k]=by[k]||[]).push(f); });
   const changed=[];
   Object.keys(by).forEach(k=>{
-    by[k].sort((a,b)=>stamp(a).localeCompare(stamp(b)))
-         .forEach((f,i)=>{ if(f.d.num_ex!==i+1){ f.d.num_ex=i+1; changed.push(f); } });
+    by[k].sort((a,b)=>stamp(a).localeCompare(stamp(b)));
+    const R = exRanks(by[k]);
+    by[k].forEach(f=>{
+      const r = R.get(f), l = f.d.num_ex_lettre || '';
+      if(f.d.num_ex!==r.n || l!==r.l){ f.d.num_ex = r.n; if(r.l) f.d.num_ex_lettre = r.l; else delete f.d.num_ex_lettre; changed.push(f); }
+    });
+  });
+  /* l'âge en mois d'un mineur (age_mois) : les fiches enregistrées avant la 9.2.0 le reçoivent à la première occasion */
+  DB.forEach(f=>{
+    const d = f.d, ay = (d.ddn && d.date_ex) ? ageYM(d.ddn, d.date_ex) : null, m = (ay && ay.a < 18) ? ay.m : undefined;
+    if(m !== d.age_mois){ if(m === undefined) delete d.age_mois; else d.age_mois = m; if(changed.indexOf(f) < 0) changed.push(f); }
   });
   for(const f of changed) await idbPut(f);
   if(changed.length) DB = await idbAll();
@@ -8585,7 +8817,7 @@ function sortedDB(){
    l'explique (diagnostic) et propose ce qui fonctionne : « Exporter tout en JSON » (dossier choisi, ou archive
    ZIP), téléchargement du JSON à chaque enregistrement, import d'un dossier ou d'une archive.
    ===================================================================== */
-const APP_VERSION = '9.0.0';
+const APP_VERSION = '9.2.0';
 /* hasPicker teste une fonction de l'API au moment de s'en servir : une extension ou un réglage du navigateur peut la retirer */
 const hasPicker = name => { try{ return typeof window[name] === 'function'; }catch(e){ return false; } };
 let FSA = hasPicker('showDirectoryPicker');
@@ -8610,7 +8842,8 @@ const modalOpen = () => $('#mask').classList.contains('on');
    xxx       numéro d'accident, sur trois chiffres au moins (le 1er de l'année donne 001)
    aaaa      année de la prise en charge
    bbbbbbbb  numéro de dossier
-   c         numéro de l'examen dans le dossier
+   c         numéro de l'examen dans le dossier ; une séance de recompression sans examen porte le numéro du dernier examen et une lettre
+             minuscule (187-2026_50987654-EX3b.json)
    Exemple : 187-2026_50987654-EX1.json. Le numéro d'accident est celui de la fiche initiale du dossier, l'année celle de son
    premier examen (la date d'entrée du bandeau) : tous les fichiers d'un dossier se rangent donc ensemble. Le numéro d'examen
    est le rang de la fiche parmi celles du dossier, comme num_ex. Un numéro d'accident ou une date inconnus laissent 000 ou
@@ -8635,11 +8868,12 @@ function ficheParts(rec, by){
   let acc = fnAcc(init.d.ad_num), year = '';
   for(let i = 0; !acc && i < fam.length; i++) acc = fnAcc(fam[i].d.ad_num);
   for(let i = 0; !year && i < fam.length; i++) year = fnYear(fam[i].d);
-  return {acc:acc, year:year, doss:fnDossier(key), ex:fam.indexOf(rec)+1};
+  const rk = exRanks(fam).get(rec);
+  return {acc:acc, year:year, doss:fnDossier(key), ex:rk.n, lettre:rk.l};
 }
 function ficheBase(rec, by){
   const q = ficheParts(rec, by);
-  return (q.acc || '000')+'-'+(q.year || '0000')+'_'+(q.doss || 'sans-dossier')+'-EX'+q.ex;
+  return (q.acc || '000')+'-'+(q.year || '0000')+'_'+(q.doss || 'sans-dossier')+'-EX'+q.ex+q.lettre;
 }
 const ficheFileName = (rec, by) => ficheBase(rec, by)+'.json';
 /* dans la corbeille, le nom habituel est suivi de l'identifiant : deux fiches supprimées ne portent jamais le même nom */
@@ -9403,6 +9637,36 @@ function newFollowUp(){
   REC=blank(); REC.d=nd; DIRTY=true; PAGE=1; TYPE_CHOISI=true; renderForm(); renderList(); updateBar();
   window.scrollTo(0,0); toast('Nouvel examen pour le dossier '+(nd.dossier||'-'));
 }
+/* La table de la dernière recompression cotée du dossier (fiches enregistrées et fiche ouverte) : {v, autre} ; null s'il n'y en a pas */
+function derniereTable(doss){
+  const L = DB.filter(f=>f.d.dossier===doss && f.id!==(REC && REC.id)).concat(REC && REC.d.dossier===doss ? [REC] : [])
+              .sort((a,b)=>stamp(b).localeCompare(stamp(a)));
+  const f = L.find(x=>x.d.tb_table!=null && recompCotee(x.d));
+  return f ? {v:f.d.tb_table, autre:f.d.tb_table_autre} : null;
+}
+/* la séance de recompression d'un sujet choisi dans la recherche (aucune fiche du patient n'était ouverte) */
+function seanceDe(dossier){
+  const s = subjectIndex().find(x=>x.dossier===dossier); if(!s){ toast('Sujet introuvable'); return; }
+  if(DIRTY && !confirm('Modifications non enregistrees. Continuer ?')) return;
+  const r = blank(), l = s.last.d;
+  r.d = {dossier:s.dossier, dossier_pseudo:l.dossier_pseudo || 0};
+  ID_KEYS.concat(['examinateur']).forEach(k=>{ if(l[k]!=null && l[k]!=='') r.d[k] = l[k]; });
+  REC = r; DIRTY = false; newSeance();
+}
+/* Séance de recompression cotée en quelques clics, sans examen clinique : une fiche de type 4 pour le dossier de la fiche ouverte, avec l'identité, la date et
+   l'heure du moment, la table de la dernière séance (B18 à défaut). Il reste à vérifier la table et l'heure, puis à enregistrer. */
+function newSeance(){
+  if(!REC || !REC.d.dossier){ toast('Choisissez le patient : la séance sera créée pour lui'); openSubjectSearch('', 'seance'); return; }
+  if(DIRTY && !confirm('Modifications non enregistrees. Continuer ?')) return;
+  if(DICT) dictAbort();
+  const src = REC.d, nd = {};
+  ['dossier','dossier_pseudo','nom','prenom','sexe','ddn','date_acc','heure_acc','ad_num','examinateur','sc_masquer'].forEach(k=>{ if(src[k]!=null) nd[k] = src[k]; });
+  const now = new Date(); nd.date_ex = iso(now); nd.heure_ex = hhmm(now); nd.fiche_type = 4; nd.seance_auto = 1;
+  const t = derniereTable(nd.dossier);
+  nd.tb_table = t ? t.v : DEF_TABLE; if(t && t.autre) nd.tb_table_autre = t.autre;
+  REC = blank(); REC.d = nd; DIRTY = true; PAGE = 1; TYPE_CHOISI = true; renderForm(); renderList(); updateBar();
+  window.scrollTo(0,0); toast('Séance de recompression pour le dossier '+nd.dossier+' : vérifiez la table et l’heure, puis enregistrez');
+}
 function loadFiche(id){
   if(DIRTY && !confirm('Modifications non enregistrees. Continuer ?')) return;
   const f=DB.find(x=>x.id===id); if(!f) return;
@@ -9434,21 +9698,35 @@ function renderList(){
     });
   const el=$('#list'); if(!el) return;
   el.innerHTML = recs.length? recs.map(f=>'<div class="fitem'+(REC&&f.id===REC.id?' cur':'')+'" onclick="loadFiche(\''+f.id+'\')">'+
-    '<div class="d">'+esc(f.d.dossier||'(sans numero de dossier)')+(f.d.num_ex?' <span class="badge">ex. '+f.d.num_ex+'</span>':'')+'</div>'+
+    '<div class="d">'+esc(f.d.dossier||'(sans numero de dossier)')+(f.d.num_ex!=null?' <span class="badge">ex. '+exLabel(f.d)+'</span>':'')+'</div>'+
     '<div class="m">'+frDate(f.d.date_ex)+' '+(f.d.heure_ex||'')+(f.d.ad_num?' &middot; AD n&deg; '+esc(f.d.ad_num):'')+(f.d.examinateur?' &middot; '+esc(f.d.examinateur):'')+
     '<button class="clr" style="float:right" title="Supprimer" onclick="delFiche(\''+f.id+'\',event)">&#10006;</button></div></div>').join('')
     : '<div style="color:#8a94a3;font-size:12px;padding:6px">Aucune fiche enregistree.</div>';
 }
 /* ---------- bandeau patient ---------- */
 let PATBAR_HTML = null;
-function ageOf(ddn, at){
-  const b = new Date(ddn), e = at ? new Date(at) : new Date();
-  if(isNaN(b) || isNaN(e) || e < b) return null;
-  let a = e.getFullYear() - b.getFullYear();
-  const m = e.getMonth() - b.getMonth();
-  if(m < 0 || (m === 0 && e.getDate() < b.getDate())) a--;
-  return a;
+/* Âge entre une date de naissance et une date (AAAA-MM-JJ, aujourd'hui par défaut) : {a: années révolues, m: mois révolus en plus} ; null si une date est
+   invalide ou si la naissance suit la date. Le mois n'est révolu qu'au même quantième (né le 31, 28 du mois suivant : pas encore un mois). */
+function ageYM(ddn, at){
+  const p = x => { const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(x==null ? '' : x)); if(!m) return null;
+                   const a = +m[1], b = +m[2], c = +m[3]; return (b < 1 || b > 12 || c < 1 || c > 31) ? null : [a, b, c]; };
+  const b = p(ddn), e = p(at || iso(new Date()));
+  if(!b || !e) return null;
+  let a = e[0] - b[0], m = e[1] - b[1];
+  if(e[2] < b[2]) m--;
+  if(m < 0){ a--; m += 12; }
+  return a < 0 ? null : {a:a, m:m};
 }
+/* l'âge en toutes lettres : « 38 ans » ; pour un mineur, avec les mois : « 14 ans et 3 mois », « 8 mois », « moins d’un mois » */
+function ageFrAM(a, m){
+  if(a == null) return '';
+  const ans = a + ' an' + (a > 1 ? 's' : '');
+  if(a >= 18 || m == null) return ans;
+  if(a === 0) return m === 0 ? 'moins d’un mois' : m + ' mois';
+  return ans + (m ? ' et ' + m + ' mois' : '');
+}
+const ageFr = d => ageFrAM(d.age, d.age_mois);
+function ageOf(ddn, at){ const r = ageYM(ddn, at); return r ? r.a : null; }
 /* fiches du dossier de la fiche ouverte, de la plus ancienne à la plus récente ; la fiche ouverte n'est pas copiée
    (ses pièces jointes pèsent lourd, et le bandeau se met à jour à chaque frappe) */
 function dossierFiches(){
@@ -9462,16 +9740,16 @@ function patBarHTML(){
   const d = (REC && REC.d) || {};
   const item = (lib, val, tip, cls) => '<span class="pi'+(cls?' '+cls:'')+'"'+(tip?' title="'+esc(tip)+'"':'')+'><small>'+lib+'</small>'+
     (val ? '<b>'+esc(val)+'</b>' : '<b class="nd">—</b>')+'</span>';
-  const a = d.ddn ? ageOf(d.ddn, d.date_ex) : null;
-  const naiss = d.ddn ? frDate(d.ddn)+(a!=null ? ' · '+a+' ans' : '') : '';
-  const typ = {1:'Consultation initiale', 2:'Consultation de suivi', 3:'Consultation de sortie'}[ftype()] || '';
+  const ay = d.ddn ? ageYM(d.ddn, d.date_ex) : null;
+  const naiss = d.ddn ? frDate(d.ddn)+(ay ? ' · '+ageFrAM(ay.a, ay.m) : '') : '';
+  const typ = {1:'Consultation initiale', 2:'Consultation de suivi', 3:'Consultation de sortie', 4:'Séance de recompression'}[ftype()] || '';
   /* entrée = date du premier examen du dossier ; diagnostic = le plus récent des diagnostics retenus du dossier */
   const FI = dossierFiches(), prem = FI.length ? FI[0].d : null;
   const entree = prem && prem.date_ex ? frDate(prem.date_ex) : '';
   const entreeTip = entree ? 'Premier examen du dossier : '+entree+(prem.heure_ex ? ' à '+prem.heure_ex : '') : '';
   let diag = ''; for(let i = FI.length-1; i >= 0 && !diag; i--) diag = diagCourt(FI[i].d);
   return '<div class="pitems">'+item('Nom', d.nom ? String(d.nom).toUpperCase() : '')+item('Prénom', d.prenom)+'<span class="pbr"></span>'+item('Naissance', naiss)+
-         item('Accident n°', d.ad_num)+item('Dossier', d.dossier)+item('Examen n°', d.num_ex)+item('Entrée', entree, entreeTip)+
+         item('Accident n°', d.ad_num)+item('Dossier', d.dossier)+item('Examen n°', exLabel(d))+item('Entrée', entree, entreeTip)+
          item('Dernier diagnostic retenu', diag, diag, 'dg')+'</div>'+
          '<div class="pright"><span class="pt">'+esc(typ)+'</span>'+patNextHTML()+'</div>';
 }
@@ -9483,11 +9761,17 @@ function patNextHTML(){
   return '<button type="button" class="pn" onclick="event.stopPropagation();goPage('+nx.n+')" title="Onglet suivant : '+esc(pageLab(nx))+'">'+
          '<small>Suivant</small><b>'+esc(pageShort(nx))+' &#9658;</b></button>';
 }
+/* la couleur du bandeau : rose pour une femme, bleu pour un homme, vert pour un enfant (mineur, quel que soit le sexe), gris-bleu quand le sexe n'est pas renseigné */
+function patBarClass(){
+  const d = (REC && REC.d) || {}, ay = d.ddn ? ageYM(d.ddn, d.date_ex) : null;
+  if(ay && ay.a < 18) return 'pb-e';
+  return d.sexe===2 ? 'pb-f' : d.sexe===1 ? 'pb-h' : 'pb-n';
+}
 function updatePatBar(){
   const el = $('#patbar'); if(!el || !REC) return;
-  const h = patBarHTML();
-  if(h === PATBAR_HTML) return;
-  PATBAR_HTML = h; el.innerHTML = h;
+  const h = patBarHTML(), cl = patBarClass();
+  if(h === PATBAR_HTML && el.className === cl) return;
+  PATBAR_HTML = h; el.className = cl; el.innerHTML = h;
   const hd = $('#hdr'); if(hd) document.documentElement.style.setProperty('--hdr', hd.offsetHeight+'px');
 }
 /* la hauteur de l'en-tête (barre d'outils et bandeau) décale la liste de gauche et les ancres de sections */
@@ -9512,11 +9796,11 @@ function updateBar(){
                  (typeof SW_WAITING!=='undefined' && SW_WAITING);
     ib.style.display = show ? '' : 'none';
     if(typeof SW_WAITING!=='undefined' && SW_WAITING){
-      ib.innerHTML = '&#8635;<span class="lbl2"> Mise a jour</span>';
-      ib.title = 'Une nouvelle version est prete';
+      ib.innerHTML = ico('refresh')+'<span class="lbl2">Mise à jour</span>';
+      ib.setAttribute('data-tip', 'Une nouvelle version est prête : l’appliquer');
     }else{
-      ib.innerHTML = '&#11015;<span class="lbl2"> Installer</span>';
-      ib.title = "Installer l'application hors ligne";
+      ib.innerHTML = ico('phone')+'<span class="lbl2">Installer</span>';
+      ib.setAttribute('data-tip', "Installer l'application hors ligne");
     }
   }
 }
@@ -9907,14 +10191,14 @@ function xlsEvol(s, init){
 /* tout ce que la ligne lit, calculé une fois : les fiches du dossier, de la plus ancienne à la plus récente */
 function xlsCtx(){
   const FI = crhFiches(); if(!FI.length) return null;
-  const ST = FI.map(crhState);
-  const init = ST.find(s=>(s.d.fiche_type||1)===1) || ST[0], last = ST[ST.length-1], d0 = init.d;
+  const ST = FI.map(crhState), C = cliniques(ST);            // C : les consultations ; les séances de recompression sans examen ne comptent que pour les séances
+  const init = C.find(s=>(s.d.fiche_type||1)===1) || C[0], last = C[C.length-1], d0 = init.d;
   const when = s => Date.parse((s.d.date_ex||'')+'T'+(s.d.heure_ex||'00:00'));
-  const after = ST.filter(s=>s!==init && when(s) >= when(init));
+  const after = C.filter(s=>s!==init && when(s) >= when(init));
   /* fiche proche de H+24 : la plus proche de 24 h après l'arrivée, entre 12 h et 40 h */
   let h24 = null, ecart = 1e18;
   after.forEach(s=>{ const h = (when(s)-when(init))/3600000; if(h >= 12 && h <= 40 && Math.abs(h-24) < ecart){ ecart = Math.abs(h-24); h24 = s; } });
-  const X = {FI:FI, ST:ST, init:init, last:last, d0:d0, after:after, premSuivi:after[0] || null, h24:h24,
+  const X = {FI:FI, ST:ST, FC:C.map(s=>s.f), lastAll:ST[ST.length-1], init:init, last:last, d0:d0, after:after, premSuivi:after[0] || null, h24:h24,
              rc:recompCounts(FI), noSc:FI.some(f=>f.d.sc_masquer)};
   X.TX0 = withRec(init.f, terrainTextes);
   for(let i = ST.length-1; i >= 0 && X.diag==null; i--){ const c = xlsDiagCode(ST[i].d); if(c!=null) X.diag = c; }
@@ -10284,12 +10568,12 @@ const cohbX = X => X.cohb || (X.cohb = cohbCtx(X));
 const cohbN = (X, i) => cohbX(X).n[i] || null;
 /* Une entrée par colonne de la feuille, dans l'ordre : mêmes champs que XLS. */
 const COHB = [
- /* A  */ {h:'Date cloture', n:'date de la dernière fiche du dossier', f:X=>XD(X.last.d.date_ex)},
+ /* A  */ {h:'Date cloture', n:'date de la dernière fiche du dossier (séances de recompression sans examen comprises)', f:X=>XD(X.lastAll.d.date_ex)},
  /* B  */ {h:'Nom prénom', nom:1, n:'nom en majuscules, puis prénom (identité)', f:X=>[X.d0.nom ? String(X.d0.nom).toUpperCase() : '', X.d0.prenom || ''].filter(Boolean).join(' ') || null},
  /* C  */ {h:'IPP', n:'numéro de dossier de la fiche', f:X=>xlsNum(X.d0.dossier)},
  /* D  */ {h:'Diagnostic', n:'dernier diagnostic retenu, abrégé (ADD médullaire + cutané)', f:X=>cohbX(X).diag},
  /* E  */ {h:'Classement ARS', n:'« accident de plongée » ; « intoxication CO » si le diagnostic est une intoxication au monoxyde de carbone', f:X=>cohbX(X).ars},
- /* F  */ {h:'CS', n:'nombre de consultations : une par fiche du dossier', f:X=>X.FI.length},
+ /* F  */ {h:'CS', n:'nombre de consultations : une par consultation du dossier (les séances de recompression saisies sans examen ne comptent pas)', f:X=>X.FC.length},
  /* G  */ {h:'1ere en urgence', n:'période de la mise en pression de la table initiale, quand elle est réellement cotée dans « Recompression » : O heures ouvrables (lundi au vendredi, de 7 h 45 à 16 h 00, hors jours fériés), N en semaine hors de ces heures, W week-end ou jour férié', f:X=>cohbX(X).g},
  /* H  */ {h:'nbre seance en repose pied', n:'non recueilli (la position du patient n’est pas saisie)', f:X=>null},
  /* I  */ {h:'nbre seance Alit', n:'non recueilli (la position du patient n’est pas saisie)', f:X=>null},
@@ -10412,7 +10696,7 @@ const XLS_T = {
 };
 function openXls(which){
   const T = XLS_T[which] || XLS_T.maitre;
-  if(!REC || !REC.d.dossier){ toast('Renseignez le numéro de dossier : la ligne est composée à partir de toutes les fiches de ce dossier'); return; }
+  if(!REC) return;
   const X = xlsCtx(); if(!X){ toast('Aucune fiche à exporter'); return; }
   const row = xlsRow(X, XLS_OPT, T), n = row.filter(c=>c!=null).length;
   const dates = X.FI.map(f=>frDate(f.d.date_ex)).filter(Boolean).join(', ');
@@ -10626,7 +10910,8 @@ function genExamsTexte(d){
 /* tout ce que la fiche sait, dans la forme du générateur (dates en AAAA-MM-JJ) */
 function genData(gm){
   const FI = crhFiches(); if(!FI.length) return null;
-  const ST = FI.map(crhState), init = ST.find(s=>(s.d.fiche_type||1)===1) || ST[0], d = REC.d;
+  const ST = FI.map(crhState), C = cliniques(ST), init = C.find(s=>(s.d.fiche_type||1)===1) || C[0], d = REC.d;
+  const dc = d.fiche_type===4 ? C[C.length-1].d : d;            // depuis une séance sans examen : l'inaptitude est celle de la dernière consultation
   const dgSt = ST.slice().reverse().find(s=>s.diag);
   const cochl = ST.some(s=>s.X.ves && s.X.ves.items.some(i=>i.grp==='c' && i.sev>0));
   const noms = noAcc(TXT.low([d.examinateur, d.medecin, init.d.medecin, init.d.examinateur].filter(Boolean).join(' ')));
@@ -10637,7 +10922,7 @@ function genData(gm){
   if(pos.length) clin.push('À l’examen, on retrouve : '+pos.join(' ; ')+'.');
   else if(init.S.neu.neg.length || init.S.gen.neg.length) clin.push('Examen clinique sans anomalie.');
   const bl = crhBlocks().find(b=>b.h==='Examens paracliniques');
-  const sortie = (d.fiche_type===3 ? d : FI[FI.length-1].d).date_ex;
+  const sortie = (d.fiche_type===3 ? d : C[C.length-1].d).date_ex;
   /* la prednisolone : prescrite dans le dossier ? encore à prendre à la date de sortie (dose, jours restants), ou terminée */
   const cEnCours = FI.some(f=>f.d.rx_solu===1) ? corticoEnCours(FI, sortie) : undefined;
   const cortico = cEnCours === undefined ? null : (cEnCours ? {dose:cEnCours.dose, reste:cEnCours.reste} : {fini:true});
@@ -10645,7 +10930,7 @@ function genData(gm){
     genre: d.sexe===1 ? 'H' : d.sexe===2 ? 'F' : '', civ: d.sexe===1 ? 'Mr' : d.sexe===2 ? 'Mme' : '',
     nom:d.nom||'', prenom:d.prenom||'', ddn:d.ddn||'', dateAcc:d.date_acc || init.d.date_acc || '',
     motif:genMotif(dgSt ? dgSt.d : {}, cochl, gm), entree:FI[0].d.date_ex||'', sortie:sortie||'',
-    signataire:sg ? sg[1] : '', inapt:d.inapt_type===1 ? 'reeval' : d.inapt_type===2 ? 'def' : '', inaptMois:d.inapt_type===1 && d.inapt_mois ? String(d.inapt_mois) : '',
+    signataire:sg ? sg[1] : '', inapt:dc.inapt_type===1 ? 'reeval' : dc.inapt_type===2 ? 'def' : '', inaptMois:dc.inapt_type===1 && dc.inapt_mois ? String(dc.inapt_mois) : '',
     clinique:TXT.clean(clin.join(' ')), examens:bl ? bl.lines.map(l=>plainTxt(l).replace(/^- /, '')).filter(l=>!/^Score /.test(l)).join('\n') : ''
   };
 }
@@ -10703,7 +10988,6 @@ function genReport(r){
 }
 async function openGen(){
   if(!REC) return;
-  if(!REC.d.dossier){ toast('Renseignez d’abord le numéro de dossier et l’identité du patient'); return; }
   const src = await genLoad();
   if(!src){ genSetup(); return; }
   const ov = $('#genov'), fr = $('#genframe'); if(!ov || !fr) return;
@@ -10908,7 +11192,7 @@ async function expJSONZip(){
 
 /* ---------- import / fusion ---------- */
 const NUMKEYS = (function(){
-  const s=new Set(['age','delai_min','gcs_tot','num_ex','sens_obj','dossier_pseudo',
+  const s=new Set(['age','age_mois','delai_min','gcs_tot','num_ex','sens_obj','dossier_pseudo',
                    'subj_nb','subj_nb_D','subj_nb_G','cut_nb','cut_nb_D','cut_nb_G',
                    'asia_lt','asia_pp','asia_uems','asia_lems','asia_sacral']);
   SPEC.forEach(sec=>sec.f.forEach(f=>{
@@ -11154,29 +11438,12 @@ function openDict(){
   '</tbody></table></div>');
 }
 
-/* ---------- menu compact (téléphone) ---------- */
-function openMenu(){
-  const it = (ic,l,fn) => '<button class="tb" style="width:100%;text-align:left;margin-bottom:6px;padding:12px" '+
-    'onclick="closeModal();'+fn+'">'+ic+' &nbsp;'+l+'</button>';
-  modalHTML('<h3>Menu</h3>'+
-    it('&#128100;','Fiches enregistrées','openFiches()')+
-    it('&#43;','Ré-examen du sujet','newFollowUp()')+
-    it('&#128193;','Dossier de données','openFolders()')+
-    it('&#11015;','Exporter','openExport()')+
-    it('&#128230;','Exporter tout en JSON','openExportJSON()')+
-    it('&#11014;','Importer / Fusionner','openImport()')+
-    it('&#9906;','Douchette et identifiants','openScan()')+
-    it('&#8505;','Dictionnaire des variables','openDict()')+
-    it('&#9873;','Aides à l\'examen','openHelpLib()')+
-    it('&#128241;','Installation hors ligne','openInstall()')+
-    it('?','Aide','openHelp()'));
-}
 function openFiches(){
   const recs = sortedDB().slice().reverse();
   modalHTML('<h3>Fiches enregistrées ('+DB.length+')</h3>'+
     (recs.length? recs.map(f=>'<button class="tb" style="width:100%;text-align:left;margin-bottom:6px;padding:11px" '+
       'onclick="closeModal();loadFiche(\''+f.id+'\')"><b>'+esc(f.d.dossier||'(sans numéro)')+'</b>'+
-      (f.d.num_ex?' — examen '+f.d.num_ex:'')+'<br><span style="color:#9fb0c8;font-size:11.5px">'+
+      (f.d.num_ex!=null?' — examen '+exLabel(f.d):'')+'<br><span style="color:#9fb0c8;font-size:11.5px">'+
       frDate(f.d.date_ex)+' '+(f.d.heure_ex||'')+(f.d.examinateur?' · '+esc(f.d.examinateur):'')+'</span></button>').join('')
       : '<div class="note">Aucune fiche enregistrée.</div>'));
 }
@@ -11223,12 +11490,19 @@ function openHelp(){
   'voix avec un service en ligne (l’audio quitte l’ordinateur), n’y dictez aucune donnée identifiante. Firefox n’a pas cette fonction : cliquez dans '+
   'le champ, puis utilisez la dictée de Windows (touche <b>Windows + H</b>).</p>'+
   '<p><b>2 sexies. Documents de sortie.</b><br>'+
-  'Sur une consultation de sortie, le bouton <b>Documents de sortie</b> (encart « Sortie », ou en-tête du compte rendu) ouvre le générateur de courriers '+
+  'Le bouton <b>Documents de sortie</b> de la barre du haut (icône ordonnance ; quel que soit le type de consultation, même sur une fiche incomplète ; aussi dans l’encart « Sortie ») ouvre le générateur de courriers '+
   'du service : identité, sexe, naissance, date de l’accident, diagnostic, dates d’entrée et de sortie, signataire, inaptitude, dose et jours restants de la prednisolone y sont repris de la '+
   'fiche, tout reste modifiable. À la <b>première utilisation</b>, ADP demande de choisir votre copie du fichier '+
   '<code>Generateur-courriers-SMHEP.html</code> : il porte les signatures et les numéros RPPS des médecins, il n’est donc pas dans '+
   'l’application, et reste dans ce navigateur (lien « Fichier du générateur… » pour le remplacer). La fenêtre se referme avec '+
   '<b>Retour à la fiche</b> sans rien perdre ; <b>Ouvrir dans un onglet</b> sert si l’impression depuis la fenêtre intégrée pose problème.</p>'+
+  '<p><b>2 octies. Barre du haut, séance de recompression, bandeau.</b><br>'+
+  'Chaque bouton de la barre du haut porte une icône et ouvre une bulle d’aide dès que la souris le pointe : <b>nouvelle fiche</b>, <b>ré-examen du patient</b>, '+
+  '<b>séance de recompression</b>, <b>enregistrer</b>, <b>enregistrer en PDF</b>, <b>tout transférer en archive ZIP</b>, <b>importer</b>, puis la <b>ligne Excel ADP</b>, la '+
+  '<b>ligne Excel COHB</b> et les <b>documents de sortie</b>. Tous les autres boutons (dossier de données, exports, douchette, dictionnaire, aides, installation, mode d’emploi) sont sous <b>Plus</b>. '+
+  'La <b>séance de recompression</b> cote une séance sans examen clinique, en quelques clics : ouvrez une fiche du patient (sans fiche ouverte, la recherche du patient s’ouvre), cliquez le bouton, vérifiez la table (celle de la dernière séance est reprise) '+
+  'et l’heure de mise en pression (proposée : maintenant), puis enregistrez. La fiche porte le numéro du dernier examen suivi d’une lettre minuscule (EX3b, EX3c…), y compris dans le nom du fichier JSON. '+
+  'Le bandeau du patient est <b>rose</b> pour une femme, <b>bleu</b> pour un homme, <b>vert</b> pour un enfant ; l’âge d’un mineur s’écrit en années et mois.</p>'+
   '<p><b>2 septies. Examens complémentaires et biologie.</b><br>'+
   'L’onglet « Examens complémentaires » commence par les <b>actes</b> (voie veineuse, bilan biologique, sondage vésical), puis réunit le <b>gaz du sang veineux</b>, la <b>biologie</b>, l’ECG, l’imagerie et les autres examens. '+
   'Chaque encart de biologie est horodaté : la date et l’heure du prélèvement sont celles de la fiche, modifiables. Chaque résultat affiche ses '+
@@ -11259,13 +11533,13 @@ function openHelp(){
   '<b>Importer / Fusionner</b> ce fichier. '+
   'La fusion se fait sur l\'identifiant de fiche, sans doublon et sans perte.</p>'+
   '<p><b>5 bis. Ligne Excel ADP (fichier Excel maître).</b><br>'+
-  'Bouton <b>Exporter</b> puis <b>Ligne Excel ADP du dossier ouvert</b> (ou « ligne Excel ADP » dans l’en-tête du compte rendu) : l’outil compose, à partir de '+
+  'Bouton <b>Ligne Excel ADP</b> de la barre du haut (icône de masque de plongée ; ou <b>Exporter</b> puis <b>Ligne Excel ADP du dossier ouvert</b>), quel que soit le type de consultation : l’outil compose, à partir de '+
   'toutes les fiches du dossier, une ligne de 89 colonnes (A à CK) qui suit le fichier maître du service. <b>Copier la ligne</b>, puis collez-la dans la '+
   'première cellule d’une ligne vide d’Excel (Ctrl+V) ; ou téléchargez un classeur .xlsx de même structure. Les valeurs sont affichées avant la copie : '+
   'vérifiez-les, les colonnes que l’application ne recueille pas restent vides. La colonne « ordinateur » (CA) porte la marque et le modèle, suivis des réglages, dans la même case. '+
   'Un menu laissé sur « — » (organisme, niveaux de plongée et d’enseignement, niveau militaire) s’écrit 0, et « Aucun » pour le niveau professionnel (colonne O).</p>'+
   '<p><b>5 ter. Ligne Excel COHB (activité COHB).</b><br>'+
-  'Même fenêtre (bouton <b>Ligne Excel COHB du dossier ouvert</b>, ou « ligne Excel COHB » dans l’en-tête du compte rendu ; les deux lignes se choisissent en haut de la fenêtre) : '+
+  'Même fenêtre (bouton <b>Ligne Excel COHB</b> de la barre du haut, icône d’activité ; ou <b>Exporter</b> puis <b>Ligne Excel COHB du dossier ouvert</b> ; les deux lignes se choisissent en haut de la fenêtre) : '+
   'une ligne de 31 colonnes (A à AE) qui suit la feuille « Activité COHB » du service. Elle reprend la date de la dernière fiche, l’identité, le n° de dossier, le diagnostic, '+
   'le classement ARS, le nombre de consultations, la période de la première séance en urgence (O : lundi au vendredi de 7 h 45 à 16 h 00 hors jours fériés ; N : autre heure en semaine ; W : week-end ou jour férié), '+
   'les séances de recompression par table, comptées seulement quand elles sont réellement cotées dans l’encart « Recompression » (la table B18 proposée d’office sur une consultation initiale '+
@@ -11429,6 +11703,7 @@ function openInstall(){
 async function saveDraft(){ if(DIRTY && REC) await metaSet('draft',JSON.parse(JSON.stringify(REC))); }
 
 (async function init(){
+  buildTopbar();
   $('#patholder').innerHTML = patternDefs();
   try{ await openDB(); }catch(e){ alert("Impossible d'ouvrir la base locale du navigateur : "+e); }
   DB = await idbAll();
@@ -11455,7 +11730,7 @@ window.addEventListener('beforeprint',()=>{ if(REC){ computeAll(); $('#print-roo
 window.addEventListener('beforeunload',e=>{ if(DIRTY){ e.preventDefault(); e.returnValue=''; } });
 document.addEventListener('keydown',e=>{
   if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='s'){ e.preventDefault(); saveFiche(); }
-  if(e.key==='Escape') closeModal();
+  if(e.key==='Escape'){ closeModal(); closePlus(); tipHide(); }
 });
 
 /* =====================================================================
