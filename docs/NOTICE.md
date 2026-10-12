@@ -1,4 +1,4 @@
-# ADP — accident de plongée, version 9.3.1
+# ADP — accident de plongée, version 9.3.2
 
 Fichier unique : `index.html`. Aucun réseau, aucune dépendance externe, aucun compte.
 Double-cliquez dessus, il s'ouvre dans votre navigateur et tout fonctionne.
@@ -16,15 +16,15 @@ plein écran, démarrage sans réseau. Voir *Installer sur téléphone et tablet
 
 | Sortie | Fichier | Comment l'obtenir |
 |---|---|---|
-| Document imprimable et enregistrable | PDF, 5 à 6 pages A4 (une page pour une séance de recompression) | Bouton **Enregistrer en PDF** de la barre du haut (icône PDF), puis *Enregistrer au format PDF* ou *Microsoft Print to PDF* |
+| Document imprimable et enregistrable | PDF, 5 à 6 pages A4 (une page pour une séance de recompression) | Bouton **Enregistrer en PDF** de la barre du haut (icône PDF) : choisir *Enregistrer au format PDF* (ou *Microsoft Print to PDF*), puis le dossier ; le fichier est proposé sous le nom `NOM_Prénom_IPP_numéro de dossier.pdf` (voir *Enregistrer en PDF : le nom du fichier*) |
 | Fichier exploitable, incrémental | `donnees_neuro.csv` | Réécrit automatiquement à chaque enregistrement de fiche |
 
-Un seul CSV pour tous les sujets, toutes les consultations et tous les types de document.
+Un seul CSV pour tous les patients, toutes les consultations et tous les types de document.
 Une ligne = une fiche. 935 colonnes.
 
 Sans bouton de plus, chaque enregistrement écrit aussi la fiche entière au format **JSON** dans le
 dossier de données (un fichier par fiche), et chaque ouverture relit ce dossier pour la recherche d'un
-sujet : voir *Mise en place, une seule fois*.
+patient : voir *Mise en place, une seule fois*.
 
 Sur une consultation de sortie, la fiche propose aussi le **compte rendu d'hospitalisation** : un texte enrichi
 à copier, sans en-tête, écrit à partir de toutes les fiches du dossier (voir *Le compte rendu d'hospitalisation*).
@@ -49,6 +49,22 @@ identité, numéro d'examen (3b), recompression.
 
 ---
 
+## Enregistrer en PDF : le nom du fichier
+
+Le bouton **Enregistrer en PDF** (barre du haut) ouvre la fenêtre d'impression du navigateur. Choisissez la destination **Enregistrer au format PDF** (dans Firefox : *Enregistrer au format PDF*, puis *Enregistrer* ; dans Edge ou
+Chrome : *Enregistrer au format PDF* ; sous Windows, *Microsoft Print to PDF* fait de même) : le navigateur ouvre alors **sa fenêtre d'enregistrement, qui demande le dossier**, avec le nom déjà écrit :
+
+`NOM_Prénom_IPP_numéro de dossier.pdf`, par exemple `DUPONT_Jean_IPP_50894855.pdf`.
+
+- **NOM** en majuscules et **Prénom** avec l'initiale en majuscule, comme ils sont inscrits dans la fiche (voir *Noms et prénoms : mise en forme automatique*) ; **« IPP »** est écrit tel quel ; **le numéro de dossier** est celui de la fiche, tel qu'il y est inscrit.
+- Ce que Windows interdit dans un nom de fichier (`\ / : * ? " < > |`) devient « - » ; les espaces et points de fin sont retirés ; **une partie absente est omise** (sans prénom : `DUPONT_IPP_50894855.pdf` ; sans numéro de dossier : `DUPONT_Jean.pdf` ; sans rien : `Fiche_ADP_<date>.pdf`).
+- C'est le **titre de la page** que le navigateur propose comme nom de fichier : ADP le remplace par ce nom au moment de l'impression, puis rend le titre « ADP — accident de plongée » à la fin (ou au bout de deux minutes si le navigateur n'annonce pas la fin). Avec **Ctrl+P**, l'événement « beforeprint » pose aussi le titre, mais certains navigateurs le lisent avant : pour être sûr du nom, utilisez le bouton PDF.
+  Cela a été vérifié dans le code d'impression de Firefox 137 (le titre est lu à l'ouverture de la fenêtre d'impression, « .pdf » est ajouté, les caractères interdits sont remplacés). La **bulle du bouton PDF** annonce le nom qui sera proposé.
+- Une page web **ne peut pas écrire elle-même** un fichier dans le dossier de votre choix : c'est la fenêtre d'enregistrement du navigateur qui demande le dossier. Selon le navigateur, elle reprend le dernier dossier utilisé.
+- Deux fiches du même patient (examen 1, examen 2…) portent **le même nom** : Windows demande alors s'il faut remplacer le fichier.
+
+---
+
 ## La barre du haut et le menu Plus
 
 La barre du haut (fond bleu foncé) ne porte que des boutons à **icône**. Dès que la souris pointe un bouton, ou que le clavier l'atteint, une **bulle de texte** s'ouvre
@@ -58,10 +74,10 @@ toute seule et dit ce qu'il fait ; elle se referme quand on le quitte.
 |---|---|---|
 | liste | **Volet de gauche** | affiche ou masque le volet de gauche : les patients en cours et la liste des fiches enregistrées (grands écrans ; voir *Le volet de gauche : les patients en cours*) |
 | fiche et « + » (bleu) | **Nouvelle fiche** | ouvre une fiche vide |
-| stéthoscope | **Ré-examen du patient** | ouvre une consultation de suivi pour le même sujet, avec l'identité de la fiche ouverte |
+| stéthoscope | **Ré-examen du patient** | ouvre une consultation de suivi pour le même patient, avec l'identité de la fiche ouverte |
 | caisson à hublot (brun) | **Séance de recompression** | cote une séance **sans examen clinique** (voir *La séance de recompression sans examen*) |
 | disquette (vert) | **Enregistrer** | enregistre la fiche (aussi Ctrl+S) |
-| page « PDF » | **Enregistrer en PDF** | prépare le document imprimable : choisir *Enregistrer au format PDF* ou *Microsoft Print to PDF* |
+| page « PDF » | **Enregistrer en PDF** | prépare le document imprimable : choisir *Enregistrer au format PDF* ou *Microsoft Print to PDF*, puis le dossier ; nom proposé `NOM_Prénom_IPP_numéro de dossier.pdf` (la bulle l'annonce) |
 | page à fermeture éclair | **Tout transférer en ZIP** | toutes les fiches du poste, une par fichier JSON, réunies en une archive ZIP |
 | flèche vers un plateau | **Importer** | importe ou fusionne un fichier JSON, une archive ZIP ou un dossier entier |
 | masque de plongée | **Ligne Excel ADP** | compose la ligne du fichier Excel maître (accident de plongée) d'après le dossier ouvert |
@@ -97,18 +113,20 @@ Une consultation de sortie enregistrée aujourd'hui laisse donc la pastille affi
 
 - la date retenue est celle de la **consultation de sortie** (la date de la fiche), à défaut le jour où la fiche a été créée ; s'il y a plusieurs consultations de sortie dans le dossier, la plus récente compte ;
 - une fiche **non enregistrée** ne compte pas : la pastille d'un nouveau patient apparaît à l'enregistrement de sa première fiche ;
-- une fiche **sans numéro de dossier** ne forme pas de patient (comme dans la recherche d'un sujet) ;
+- une fiche **sans numéro de dossier** ne forme pas de patient (comme dans la recherche d'un patient) ;
 - une fiche enregistrée **après** la consultation de sortie (un contrôle à un mois, par exemple) ne remet pas le patient en cours ;
 - à **minuit**, un minuteur recalcule les pastilles ; il le fait aussi au retour sur l'onglet si la nuit est passée entre-temps (ordinateur en veille).
 
-**Ce que fait une pastille.** Un clic **ouvre la fiche la plus récente** du patient (consultation ou séance) ; l'application demande confirmation s'il y a des modifications non enregistrées. Le patient dont une fiche est
-ouverte est **cerclé**. Au survol, une bulle donne le dossier, le nombre d'examens et de séances, la dernière fiche et, pour un patient sorti aujourd'hui, l'avertissement que sa pastille disparaîtra demain.
+**Ce que fait une pastille.** Un clic **ouvre la fiche la plus récente** du patient (consultation ou séance) ; l'application demande confirmation s'il y a des modifications non enregistrées. Il **inscrit aussi le numéro
+d'accident de plongée du patient dans la barre de recherche** (celui de sa fiche initiale ; à défaut celui d'une autre de ses fiches, à défaut son numéro de dossier) : **la liste du bas ne montre alors que les fiches de ce patient**, jamais celles d'un autre dossier dont les chiffres
+contiendraient le même numéro (le filtre est exact sur le dossier tant que le texte de la barre n'est pas modifié ; une recherche ordinaire de « 187 » ramènerait aussi un dossier « 50918731 »). Videz la barre pour revoir toutes les fiches. *Nouvelle fiche* (un autre patient)
+lève le filtre ; *Ré-examen du patient* et *Séance de recompression* le gardent ; ouvrir une fiche de la liste filtrée le garde aussi. Le patient dont une fiche est ouverte est **cerclé**. Au survol, une bulle donne le dossier, le nombre d'examens et de séances, la dernière fiche et, pour un patient sorti aujourd'hui, l'avertissement que sa pastille disparaîtra demain.
 Les patients sont classés **par ordre alphabétique** (nom, puis prénom, sans tenir compte des accents ni de la casse) ; un patient sans nom est désigné par son dossier. L'âge est celui de la dernière fiche,
 comme dans le bandeau de cette fiche.
 
-**La recherche** (en haut du volet) ne filtre que la liste du bas : les pastilles restent toutes affichées.
+**La recherche** (en haut du volet) ne filtre que la liste du bas : les pastilles restent toutes affichées. Une recherche saisie à la main reste une recherche ordinaire (sous-chaînes, dans le dossier, le numéro d'accident, l'examinateur, le nom, le prénom et la naissance).
 
-Sur **tablette et téléphone**, où le volet n'existe pas, **Plus** › **Fiches enregistrées** ouvre une fenêtre qui montre les mêmes deux parties : les patients en cours, puis toutes les fiches.
+Sur **tablette et téléphone**, où le volet n'existe pas, **Plus** › **Fiches enregistrées** ouvre une fenêtre qui montre les mêmes deux parties : les patients en cours, puis toutes les fiches (un clic sur une pastille y ouvre la fiche sans toucher à la recherche, qui n'est pas visible).
 
 ---
 
@@ -234,7 +252,7 @@ fichiers à la fois, une archive `.zip`, ou un **dossier entier** (tous les `.js
 sous-dossiers compris ; le sous-dossier `supprimees` et les `.csv` sont ignorés). La fusion se fait sur
 l'identifiant de fiche : une fiche n'est remplacée que par une version plus récente.
 
-**Données de santé.** Chaque fichier contient l'identité du sujet et ses pièces jointes, sans protection :
+**Données de santé.** Chaque fichier contient l'identité du patient et ses pièces jointes, sans protection :
 gardez-les sur un support chiffré ou à accès restreint, et supprimez-les de Téléchargements une fois copiés.
 
 ---
@@ -333,13 +351,16 @@ proposés en grisé depuis l'examen précédent ; les actes, les examens complé
 Quelques éléments suivent le dossier d'une fiche à l'autre, sans rien imposer : le poids de la fiche initiale (pour les doses), le
 diagnostic retenu, la prednisolone encore à prescrire et les séances depuis la consultation précédente (voir *Consultation de suivi ou de sortie*).
 
+Le **délai accident → examen** (identification) n'a d'intérêt que pour le premier examen : il n'est **calculé et affiché que sur la consultation initiale**. Sur un suivi, une sortie ou une séance il n'est ni calculé ni affiché
+(une valeur enregistrée avant la 9.3.2 disparaît au prochain calcul) ; la colonne `delai_min` du fichier de données reste, vide hors consultation initiale.
+
 Le type est proposé, jamais imposé : la première fiche d'un dossier part sur *initiale*, les
 suivantes sur *suivi*. Vous changez d'un clic, la fiche se recompose aussitôt (ce qui est masqué n'est pas effacé). La *séance de recompression* n'est jamais proposée
 d'office : on la choisit, ou on la crée d'un clic avec le bouton **Séance de recompression**.
 
 ### La séance de recompression sans examen
 
-Une séance de recompression thérapeutique se cote **en quelques clics, sans examen clinique**. Ouvrez une fiche du patient (sa pastille, la liste de gauche ou *Rechercher un sujet*), puis
+Une séance de recompression thérapeutique se cote **en quelques clics, sans examen clinique**. Ouvrez une fiche du patient (sa pastille, la liste de gauche ou *Rechercher un patient*), puis
 cliquez **Séance de recompression** dans la barre du haut (icône de caisson) ; sans fiche de patient ouverte, le bouton ouvre la recherche et crée la séance pour le patient choisi.
 Une fiche de type *séance* s'ouvre pour le même dossier :
 
@@ -1391,7 +1412,22 @@ s'affiche sous le champ avant d'être écrit.
 
 ---
 
-## Retrouver un sujet
+## Noms et prénoms : mise en forme automatique
+
+Les champs suivants se mettent **en forme tout seuls**, pendant la frappe (le curseur ne bouge pas ; une touche morte ou un accent composé attend la fin de la composition) :
+
+| Champ | Mise en forme | Exemple |
+|---|---|---|
+| **Nom** | tout en majuscules, accents conservés | `dupont` → `DUPONT`, `éloïse` → `ÉLOÏSE` |
+| **Prénom** | l'initiale de chaque élément en majuscule (après une espace ou un trait d'union), le reste en minuscules, accents conservés | `éloïse` → `Éloïse`, `JEAN-PIERRE` → `Jean-Pierre` |
+| **Examinateur**, **Médecin**, **Infirmier(e)** | tout en majuscules | `lesaca` → `LESACA` |
+
+La même mise en forme s'applique aux **valeurs reprises** d'un autre examen du dossier et aux **fiches enregistrées ou importées avant la 9.3.2** (elles s'ouvrent déjà en forme, sans être marquées « modifiées » ; la forme est enregistrée au prochain enregistrement), ainsi
+qu'au **nom du PDF**, aux **pastilles** et aux résultats de la recherche d'un patient. La liste de suggestions des examinateurs est en majuscules et sans doublon. La **dictée vocale** n'est plus proposée dans ces champs (le texte dicté n'aurait pas leur forme).
+
+---
+
+## Retrouver un patient
 
 Trois entrées mènent au même résultat.
 
@@ -1399,13 +1435,13 @@ Trois entrées mènent au même résultat.
    les données de l'accident se remplissent seules, et l'examen précédent est proposé en grisé.
 2. **Le bouton Rechercher**, à côté de ce champ. Une fenêtre accepte un numéro de dossier, un
    **numéro d'accident de plongée**, un nom, un prénom ou une date de naissance, écrite 12/04/1988 ou
-   1988-04-12 indifféremment. Les accents et la casse sont ignorés. Cliquez le sujet : tout se
+   1988-04-12 indifféremment. Les accents et la casse sont ignorés. Cliquez le patient : tout se
    remplit. La liste de gauche se filtre de la même façon et affiche le numéro d'accident ; les pastilles des patients en cours, au-dessus, ne sont pas filtrées (voir *Le volet de gauche : les patients en cours*).
 3. **Le nom saisi directement.** Si vous remplissez le nom ou la date de naissance avant le numéro
-   de dossier et qu'un sujet correspond, un bandeau propose de reprendre son dossier.
+   de dossier et qu'un patient correspond, un bandeau propose de reprendre son dossier.
 
 La recherche porte sur les fiches de la base locale de ce poste, qui comprend celles **lues dans le
-dossier de données à l'ouverture**. Sans dossier connecté, un sujet examiné ailleurs n'apparaît
+dossier de données à l'ouverture**. Sans dossier connecté, un patient examiné ailleurs n'apparaît
 qu'après un import (*Importer / Fusionner*).
 
 ---
@@ -1632,7 +1668,7 @@ courants. Quatre d'entre elles portent un schéma au trait.
 ### Photographies
 
 Les fiches techniques sont des textes et des schémas. Les photographies qui documentent un examen
-précis se joignent à la **fiche du sujet**, dans l'encart *Pièces jointes* en fin d'onglet « Conclusion et évolution » (jusqu'à
+précis se joignent à la **fiche du patient**, dans l'encart *Pièces jointes* en fin d'onglet « Conclusion et évolution » (jusqu'à
 douze photos, chacune avec un titre, réduites à 1600 pixels, enregistrées avec la fiche et imprimées
 sur des pages dédiées du PDF). La photo de l'ordonnance se joint depuis l'encart « Antécédents et
 traitements ». Elles n'entrent pas dans le fichier de données, qui ne reçoit que leur nombre et leurs
@@ -1705,9 +1741,9 @@ Pour pseudonymiser un identifiant sans douchette, utilisez le bouton **Scanner /
 
 ---
 
-## Ré-examiner un sujet
+## Ré-examiner un patient
 
-Ouvrez une fiche du sujet (sa pastille dans les patients en cours, ou la liste de gauche), puis le bouton **Ré-examen du patient** de la barre du haut (stéthoscope), ou saisissez
+Ouvrez une fiche du patient (sa pastille dans les patients en cours, ou la liste de gauche), puis le bouton **Ré-examen du patient** de la barre du haut (stéthoscope), ou saisissez
 simplement le numéro de dossier dans une fiche neuve. Pour une recompression sans examen, c'est le bouton **Séance de recompression** (voir *La séance de recompression sans examen*).
 
 **Ré-examen du patient** ouvre directement une **consultation de suivi** : l'identité, le dossier
@@ -1716,7 +1752,7 @@ fiche initiale. Le diagnostic retenu de la dernière fiche, la prednisolone enco
 sont proposés (voir *Consultation de suivi ou de sortie*). Changez le type en *sortie / CRH* pour la dernière consultation, ou pour une
 consultation intermédiaire dont vous voulez un compte rendu de séjour.
 
-`num_ex` classe les examens d'un sujet dans l'ordre chronologique et se recalcule automatiquement,
+`num_ex` classe les examens d'un patient dans l'ordre chronologique et se recalcule automatiquement,
 y compris si vous saisissez a posteriori un examen antérieur.
 
 ---
@@ -1826,6 +1862,51 @@ d = pd.read_csv("donnees_neuro.csv", sep=";", encoding="utf-8-sig")
 
 Pour les analyses courantes, les colonnes de synthèse suffisent. Les colonnes de détail servent
 aux analyses topographiques fines.
+
+---
+
+## Changements de la version 9.3.2
+
+Aucune colonne ne s'ajoute ni ne disparaît (935 colonnes) et les fiches de la 9.3.1 s'ouvrent telles quelles. Le dictionnaire change de **trois lignes** : les libellés de `dossier` et de `num_ex` disent « patient » à la place de « sujet », et la description de `delai_min` précise
+qu'il n'existe que sur la consultation initiale. Sur le papier, la consultation initiale est inchangée ; les fiches de suivi et de sortie n'impriment plus la ligne « Délai accident→examen ». `index.html` passe de 780 Ko à 788 Ko.
+Le dernier point de la liste que vous m'avez envoyée était vide : j'ai traité la liste comme complète. Les demandes sont regroupées par thème.
+
+### Enregistrer en PDF
+
+- **Nom proposé : `NOM_Prénom_IPP_numéro de dossier.pdf`** (par exemple `DUPONT_Jean_IPP_50894855.pdf`), dans la fenêtre d'enregistrement du navigateur, qui demande le dossier. La bulle du bouton PDF annonce le nom. Voir *Enregistrer en PDF : le nom du fichier*.
+
+### Noms et prénoms
+
+- **Nom en majuscules, Prénom avec l'initiale en majuscule** (accents conservés), **examinateur, médecin et infirmier(e) en majuscules**, automatiquement. Voir *Noms et prénoms : mise en forme automatique*.
+
+### Délai accident → examen
+
+- **Calculé et affiché sur la consultation initiale seulement.** Plus de délai sur les suivis, les sorties et les séances (ni à l'écran, ni sur le papier, ni dans le fichier de données).
+
+### « Patient » à la place de « sujet »
+
+- Dans tout ce qui s'affiche : libellés (« N° de dossier / identifiant patient », « N° d'examen pour ce patient »), recherche (« Rechercher un patient »), messages, fenêtres, mode d'emploi, aides à l'examen, dictionnaire des variables. Les noms de fonctions du code ne changent pas.
+
+### Pastille et recherche
+
+- **Un clic sur une pastille inscrit le numéro d'accident du patient dans la barre de recherche**, et la liste du bas ne montre que ses fiches (sans les autres patients). Voir *Le volet de gauche : les patients en cours*.
+
+### À valider de votre côté
+
+- **« IPP » est un texte fixe.** Votre modèle `NOM_Prénom_IPP_numéro de dossier` ne définissait que le nom, le prénom et le numéro de dossier : j'ai lu « IPP » comme un mot écrit tel quel, suivi du numéro de dossier (c'est aussi la colonne « IPP » de la ligne Excel, qui est le
+  numéro de dossier). La fiche n'a pas de champ « IPP » séparé. Dites-moi si vous attendiez autre chose.
+- **La fenêtre qui demande le dossier est celle du navigateur.** Un navigateur ne laisse pas une page écrire un PDF dans le dossier de votre choix : ADP donne le nom, le navigateur demande le dossier (selon le navigateur, le dernier dossier utilisé est proposé). Un enregistrement direct, sans fenêtre d'impression, demanderait
+  de fabriquer le PDF nous-mêmes (image des pages, texte non sélectionnable) : je ne l'ai pas fait.
+- **Deux fiches du même patient portent le même nom de PDF** (vous ne demandiez pas le numéro d'examen) : Windows demande s'il faut remplacer. Je peux ajouter `_EX2`, `_EX3b`… à la fin si vous le souhaitez.
+- **Prénom** : l'initiale de **chaque élément** (après une espace ou un trait d'union) en majuscule et **le reste en minuscules** (« JEAN-PIERRE » devient « Jean-Pierre », « jean-pierre » aussi ; « McArthur » deviendrait « Mcarthur »). Vous demandiez « la première lettre » : j'ai étendu aux prénoms composés.
+- **Dictée vocale retirée** du champ Infirmier(e) (c'était le seul des cinq champs à en avoir une) : le texte dicté n'aurait pas la forme du champ.
+- **Délai accident → examen : « premier examen » = consultation initiale** (type 1). Une fiche de suivi saisie avant toute fiche initiale n'affiche donc pas de délai. Il n'est ni calculé, ni affiché, ni imprimé, ni écrit dans le fichier de données pour les autres types.
+- **Quatre phrases des aides à l'examen** parlaient de la population générale (« sujets sains », « un sujet sur cinq ») : elles disent maintenant « personnes » plutôt que « patients ».
+- **Pastille et recherche** : le texte écrit est le numéro d'accident de la fiche **initiale** (à défaut une autre fiche, à défaut le numéro de dossier) ; la liste est filtrée sur le **dossier**, pas sur le texte, pour ne jamais montrer un autre patient (un numéro d'accident se retrouve dans des numéros de dossier
+  et des dates). Dès que vous modifiez le texte, c'est une recherche ordinaire. *Nouvelle fiche* efface la barre si elle venait d'une pastille. Dans la fenêtre « Fiches enregistrées » des tablettes et téléphones, les pastilles n'écrivent rien dans la recherche.
+- **Ce qui n'a pas pu être vérifié.** La **vraie fenêtre d'impression** de Firefox (impossible à piloter : je me suis appuyé sur son code source, version 137), ni Firefox ESR 140, ni Chrome. La frappe avec une **vraie touche morte** (accent circonflexe, tréma) n'a pas été essayée : la composition est simulée.
+- **Ce qui a été essayé.** Les suites de la 9.3.2 (nom du PDF et titre de la page autour de l'impression, mise en forme des noms à la frappe, au chargement et dans les listes, délai accident → examen pour les quatre types, absence du mot « sujet » dans les formulaires, le papier, les fenêtres, les aides et le dictionnaire,
+  pastille et recherche) et toutes celles des versions précédentes passent (1447 contrôles) ; la frappe réelle dans les champs a aussi été essayée dans **Firefox 137** (16 contrôles).
 
 ---
 
@@ -2676,6 +2757,8 @@ du script de `index.html`.
 
 ## Historique
 
+- **9.3.2** : le PDF est proposé sous le nom NOM_Prénom_IPP_numéro de dossier ; nom, prénom, examinateur, médecin et infirmier(e) mis en forme automatiquement (NOM en majuscules, Prénom avec l'initiale en majuscule, le reste en majuscules) ;
+  délai accident → examen limité à la consultation initiale ; « patient » à la place de « sujet » dans tout ce qui s'affiche ; un clic sur une pastille inscrit le numéro d'accident dans la barre de recherche et limite la liste du bas à ce patient.
 - **9.3.1** : le volet de gauche en deux parties : en haut, une pastille par patient en cours (NOM Prénom et âge, aux couleurs du bandeau : rose, bleu, vert), qui disparaît le lendemain de sa consultation de sortie ;
   en dessous, la liste des fiches, déroulante, dans la place restante ; mêmes deux parties dans la fenêtre « Fiches enregistrées » des petits écrans.
 - **9.2.0** : barre du haut à icônes (nouvelle fiche, ré-examen, séance de recompression, enregistrer, PDF, ZIP, importer, ligne Excel ADP, ligne Excel COHB, documents de sortie) avec bulle d'aide
@@ -2744,7 +2827,7 @@ support relèvent alors de votre responsabilité.
 
 **Les fichiers JSON du dossier de données, de l'export en JSON, des archives ZIP et des téléchargements
 automatiques contiennent la fiche entière, identité, santé et photographies comprises** : c'est ce qui permet
-de retrouver un sujet par son nom. Ils sont à traiter
+de retrouver un patient par son nom. Ils sont à traiter
 comme des données de santé identifiantes, quels que soient les réglages de l'export CSV. Choisissez
 un dossier protégé (disque chiffré, accès restreint). Si ce dossier est synchronisé avec un service
 en ligne, les fiches quittent le poste : vérifiez que ce service est compatible avec l'hébergement de

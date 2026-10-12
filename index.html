@@ -840,7 +840,7 @@ const TOP_BTNS = [
   {id:'side',   ic:'list',     tip:'Volet de gauche (patients en cours et liste des fiches) : afficher ou masquer', fn:'toggleSide()', cl:'nophone'},
   '|',
   {id:'new',    ic:'newfiche', tip:'Nouvelle fiche', fn:'newFiche()', cl:'pri'},
-  {id:'reexam', ic:'reexam',   tip:'Ré-examen du patient : un nouvel examen pour le même sujet, pré-rempli avec la fiche ouverte', fn:'newFollowUp()', cl:'tbp'},
+  {id:'reexam', ic:'reexam',   tip:'Ré-examen du patient : un nouvel examen pour le même patient, pré-rempli avec la fiche ouverte', fn:'newFollowUp()', cl:'tbp'},
   {id:'seance', ic:'seance',   tip:'Séance de recompression, sans examen clinique : choisir la table, enregistrer (fiche numérotée EX3b…)', fn:'newSeance()', cl:'tbp acc'},
   '|',
   {id:'save',   ic:'save',     tip:'Enregistrer la fiche (Ctrl+S)', fn:'saveFiche()', cl:'gd'},
@@ -995,7 +995,7 @@ oto:{t:'Otoscopie et classification de Haines et Harris modifiée par RUI et FLO
    '<b>Devant un stade 5, ne faites pas de Valsalva et n\'instillez aucun médicament ototoxique dans le conduit.</b></p>'},
 
 valsalva:{t:'Perméabilité tubaire — manœuvre de Valsalva',
- h:'<h4>Manœuvre</h4><p>Bouche fermée, narines pincées, le sujet souffle doucement. '+
+ h:'<h4>Manœuvre</h4><p>Bouche fermée, narines pincées, le patient souffle doucement. '+
    'Vous observez le tympan pendant l\'effort.</p>'+
    '<h4>Résultat</h4><ul>'+
    '<li><b>Perméable</b> — le tympan bombe franchement, souvent avec un claquement audible.</li>'+
@@ -1012,12 +1012,12 @@ weber:{t:'Test de Weber',
    '<li><b>Non latéralisé</b> — son perçu au milieu : audition symétrique.</li>'+
    '<li><b>Latéralisé</b> — le son part <i>vers</i> l\'oreille atteinte en transmission, '+
    'et <i>à l\'opposé</i> de l\'oreille atteinte en perception.</li></ul>'+
-   '<h4>Pièges</h4><p>Un diapason posé de travers latéralise faussement. Le sujet doit dire où il entend, '+
+   '<h4>Pièges</h4><p>Un diapason posé de travers latéralise faussement. Le patient doit dire où il entend, '+
    'pas de quel côté il entend le mieux. Une surdité ancienne connue fausse la lecture : demandez-la.</p>',
  svg:'weber'},
 
 rinne:{t:'Test de Rinne',
- h:'<h4>Manœuvre</h4><p>Pied du diapason sur la mastoïde jusqu\'à ce que le sujet cesse de percevoir le son, '+
+ h:'<h4>Manœuvre</h4><p>Pied du diapason sur la mastoïde jusqu\'à ce que le patient cesse de percevoir le son, '+
    'puis branches placées aussitôt devant le conduit auditif. Demandez s\'il entend de nouveau.</p>'+
    '<h4>Résultat</h4><ul>'+
    '<li><b>Positif</b> (CA &gt; CO) — il réentend devant l\'oreille. C\'est la situation normale, '+
@@ -1029,13 +1029,13 @@ rinne:{t:'Test de Rinne',
  svg:'rinne'},
 
 hoffmann:{t:'Signe de Hoffmann',
- h:'<h4>Manœuvre</h4><p>Main du sujet relâchée, poignet en légère extension. Tenez la deuxième phalange '+
+ h:'<h4>Manœuvre</h4><p>Main du patient relâchée, poignet en légère extension. Tenez la deuxième phalange '+
    'du majeur et chassez brusquement l\'ongle vers le bas, comme on fait claquer un doigt.</p>'+
    '<h4>Résultat</h4><ul>'+
    '<li><b>OUI = pathologique</b> — flexion-adduction du pouce, souvent accompagnée d\'une flexion de l\'index.</li>'+
    '<li><b>NON</b> — aucun mouvement.</li></ul>'+
    '<h4>Interprétation</h4><p>Signe pyramidal du membre supérieur, évocateur d\'une atteinte au-dessus de C5-C6. '+
-   'Un Hoffmann bilatéral isolé existe chez des sujets hyperréflexiques sains : c\'est son asymétrie, '+
+   'Un Hoffmann bilatéral isolé existe chez des personnes hyperréflexiques saines : c\'est son asymétrie, '+
    'ou son association à d\'autres signes pyramidaux, qui lui donne sa valeur.</p>',
  svg:'hoffmann'},
 
@@ -1053,8 +1053,8 @@ babinski:{t:'Réflexe cutané plantaire — signe de Babinski',
  svg:'babinski'},
 
 rot:{t:'Réflexes ostéotendineux : cotation, diffusion, polycinétisme',
- h:'<h4>Conditions</h4><p>Sujet détendu, membre en position intermédiaire. Frappez le tendon, jamais le muscle. '+
-   'Si le réflexe paraît absent, refaites-le avec une manœuvre de Jendrassik (le sujet tire ses mains '+
+ h:'<h4>Conditions</h4><p>Patient détendu, membre en position intermédiaire. Frappez le tendon, jamais le muscle. '+
+   'Si le réflexe paraît absent, refaites-le avec une manœuvre de Jendrassik (le patient tire ses mains '+
    'crochetées l\'une contre l\'autre) avant de conclure.</p>'+
    '<h4>Cotation retenue ici</h4><ul>'+
    '<li><b>Absent</b> — rien, même avec renforcement.</li>'+
@@ -1076,7 +1076,7 @@ trep:{t:'Trépidation épileptoïde (clonus) : épuisable ou inépuisable',
    'brusquement vers le bas, puis maintenez.</p>'+
    '<h4>Cotation</h4><ul>'+
    '<li><b>Épuisable</b> — quelques secousses (classiquement moins de cinq à six) puis arrêt malgré '+
-   'la pression maintenue. Peut se voir chez un sujet hypothermique ou hyperréflexique sain. '+
+   'la pression maintenue. Peut se voir chez un patient hypothermique ou chez une personne hyperréflexique saine. '+
    'La coter pathologique jusqu\'à preuve du contraire.</li>'+
    '<li><b>Inépuisable</b> — les secousses se poursuivent tant que vous maintenez la pression. '+
    '<b>Toujours pathologique</b> : syndrome pyramidal.</li></ul>'+
@@ -1096,11 +1096,11 @@ mrc:{t:'Cotation de la force musculaire (échelle MRC)',
    'Une douleur ou une raideur qui limite le testing se note « non testable », pas 4.</p>'},
 
 vac:{t:'Contraction anale volontaire et pression anale profonde',
- h:'<h4>VAC — contraction anale volontaire</h4><p>Doigt intrarectal, demandez au sujet de serrer '+
+ h:'<h4>VAC — contraction anale volontaire</h4><p>Doigt intrarectal, demandez au patient de serrer '+
    'comme pour se retenir. Cotez OUI seulement devant une contraction volontaire reproductible. '+
    'Une contraction réflexe à l\'introduction du doigt ne compte pas.</p>'+
    '<h4>DAP — pression anale profonde</h4><p>Comprimez la paroi rectale entre le doigt intrarectal '+
-   'et le pouce posé sur la peau périnéale. Demandez si le sujet perçoit la pression, sans lui montrer '+
+   'et le pouce posé sur la peau périnéale. Demandez si le patient perçoit la pression, sans lui montrer '+
    'le moment.</p>'+
    '<h4>Pourquoi ces deux items</h4><p>Ils décident du caractère complet ou incomplet de la lésion '+
    'dans la classification ASIA. Une VAC ou une DAP présente, ou une sensibilité conservée en S4-5, '+
@@ -1108,7 +1108,7 @@ vac:{t:'Contraction anale volontaire et pression anale profonde',
 
 derm:{t:'Tester les métamères : tact léger et piqûre',
  h:'<h4>Tact léger</h4><p>Effleurez avec un morceau de coton, sans appuyer. Le point de référence est '+
-   'la joue, supposée normale, ou la face externe du bras : montrez-la au sujet d\'abord, '+
+   'la joue, supposée normale, ou la face externe du bras : montrez-la au patient d\'abord, '+
    'puis comparez chaque métamère à cette référence.</p>'+
    '<h4>Piqûre</h4><p>Pointe mousse d\'un manche de marteau à réflexes.</p>'+
    '<h4>Cotation</h4><ul>'+
@@ -1116,14 +1116,14 @@ derm:{t:'Tester les métamères : tact léger et piqûre',
    '<li><b>1, hypoesthésie ou hyperesthésie</b> — perception diminuée ou exagérée. Les deux valent 1 '+
    'dans le score ASIA, la distinction est conservée pour le compte rendu.</li>'+
    '<li><b>0, anesthésie</b> — aucune perception.</li>'+
-   '<li><b>NT</b> — non testable : pansement, plâtre, sujet non coopérant.</li></ul>'+
+   '<li><b>NT</b> — non testable : pansement, plâtre, patient non coopérant.</li></ul>'+
    '<h4>Méthode</h4><p>Descendez de haut en bas jusqu\'au premier niveau anormal, puis servez-vous '+
    'du report vers le bas si l\'anomalie se répète sous l\'ensemble du niveau.</p>'},
 
 pal:{t:'Pallesthésie au diapason',
  h:'<h4>Manœuvre</h4><p>Diapason 128 Hz mis en vibration, pied posé fermement sur le relief osseux. '+
    'Demandez d\'abord « sentez-vous la vibration ? », puis « dites-moi quand elle s\'arrête », '+
-   'en arrêtant vous-même le diapason à un moment que le sujet ne voit pas.</p>'+
+   'en arrêtant vous-même le diapason à un moment que le patient ne voit pas.</p>'+
    '<h4>Cotation</h4><ul>'+
    '<li><b>Normale</b> — vibration perçue et fin de vibration correctement annoncée.</li>'+
    '<li><b>Diminuée</b> — vibration perçue plus brièvement que sur un relief sain de référence, ou de manière diminuée.</li>'+
@@ -1134,7 +1134,7 @@ pal:{t:'Pallesthésie au diapason',
 
 nys:{t:'Nystagmus, VNS et NIV',
  h:'<h4>Nystagmus</h4><p>Regard centré puis excursions de 30° environ à droite, à gauche, en haut et en bas. '+
-   'Ne dépassez pas 30° : au-delà, un nystagmus physiologique de fin de course apparaît chez la plupart des sujets sains. '+
+   'Ne dépassez pas 30° : au-delà, un nystagmus physiologique de fin de course apparaît chez la plupart des personnes saines. '+
    'Le côté noté est celui de la <b>secousse rapide</b>.</p>'+
    '<h4>VNS — vidéonystagmoscopie</h4><p>Sous lunettes occultantes, la fixation étant supprimée, '+
    'un nystagmus d\'origine périphérique apparaît ou s\'amplifie. Un nystagmus qui ne change pas '+
@@ -1156,12 +1156,12 @@ barre:{t:'Manœuvres de Barré et de Mingazzini',
    'Une chute asymétrique vaut un déficit, même avec une force cotée 5 partout.</p>'},
 
 pup:{t:'Examen pupillaire',
- h:'<h4>Conditions</h4><p>Lumière ambiante tamisée, le sujet fixe un point lointain : '+
+ h:'<h4>Conditions</h4><p>Lumière ambiante tamisée, le patient fixe un point lointain : '+
    'une pupille se contracte à la fixation rapprochée et l\'anisocorie disparaît alors à tort.</p>'+
    '<h4>Ce que vous cotez</h4><ul>'+
    '<li><b>Anisocorie</b> — différence de diamètre entre les deux pupilles. '+
    'Notez la pupille la plus large : c\'est elle qui oriente. Une anisocorie de moins d\'un millimètre '+
-   'existe chez environ un sujet sur cinq et n\'a pas de valeur, sauf si elle est nouvelle.</li>'+
+   'existe chez environ une personne sur cinq et n\'a pas de valeur, sauf si elle est nouvelle.</li>'+
    '<li><b>Mydriase</b> — pupille dilatée, classiquement au-delà de 5 mm en lumière ambiante.</li>'+
    '<li><b>Myosis</b> — pupille resserrée, en deçà de 2 mm.</li>'+
    '<li><b>Réflexe photomoteur</b> — éclairez une pupille par le côté, elle doit se contracter, '+
@@ -1623,7 +1623,7 @@ const SPEC = [
 {id:'ident', t:'Identification', cols:2, page:1, tail:()=>identBox(), f:[
   {k:'fiche_type', l:'Type de consultation', t:'choice', o:FTYPE, full:1, req:1,
    hint:"Initiale : prise en charge en urgence. Suivi : évolution. Sortie : compte rendu de séjour. Séance : une recompression cotée en quelques clics, sans examen clinique (numérotée EX3b, EX3c…)."},
-  {k:'dossier',   l:"N° de dossier / identifiant sujet", t:'txt', req:1, hint:"Identifiant que vous choisissez. Un numéro déjà connu remplit automatiquement l'identité et l'accident."},
+  {k:'dossier',   l:"N° de dossier / identifiant patient", t:'txt', req:1, hint:"Identifiant que vous choisissez. Un numéro déjà connu remplit automatiquement l'identité et l'accident."},
   {k:'nom',       l:'Nom',     t:'txt', pii:1, not:[4]},
   {k:'prenom',    l:'Prénom',  t:'txt', pii:1, not:[4]},
   {k:'sexe',      l:'Sexe',    t:'choice', o:[{v:1,l:'M'},{v:2,l:'F'},{v:3,l:'Autre'}], not:[4]},
@@ -1633,9 +1633,9 @@ const SPEC = [
   {k:'heure_acc', l:"Heure de l'accident", t:'time', not:[4]},
   {k:'date_ex',   l:"Date de l'examen", lab4:'Date de la séance', t:'date', req:1},
   {k:'heure_ex',  l:"Heure de l'examen", t:'time', req:1, not:[4]},
-  {k:'delai_min', l:'Délai accident → examen (min)', t:'calc', not:[4]},
+  {k:'delai_min', l:'Délai accident → examen (min)', t:'calc', not:[2,3,4]},
   {k:'examinateur',l:'Examinateur', t:'txt', list:'exlist'},
-  {k:'num_ex',    l:"N° d'examen pour ce sujet", t:'calc', hint:'Une séance de recompression sans examen porte le numéro du dernier examen et une lettre : EX3b, EX3c…'}
+  {k:'num_ex',    l:"N° d'examen pour ce patient", t:'calc', hint:'Une séance de recompression sans examen porte le numéro du dernier examen et une lettre : EX3b, EX3c…'}
 ]},
 
 /* Identité complémentaire : sur l'onglet Administratif, comme les contacts, et affichée après le mode d'entrée
@@ -2747,6 +2747,13 @@ function prevFiche(){
 /* identité et accident repris d'un examen précédent du même dossier (le n° d'accident de plongée suit les fiches de suivi,
    ainsi que la case « ne pas mentionner les scores », qui tient à la nature de l'accident) */
 const ID_KEYS = ['nom','prenom','sexe','ddn','date_acc','heure_acc','ad_num','sc_masquer'];
+/* Mise en forme automatique des noms propres : NOM en majuscules, Prénom avec l'initiale de chaque élément en majuscule (après une espace ou un trait d'union, le reste en
+   minuscules ; les accents sont conservés : « éloïse » devient « Éloïse »), examinateur, médecin et infirmier(e) en majuscules. Elle suit la frappe (setFmt), s'applique à
+   la fiche à chaque calcul (computeAll : valeurs reprises d'un autre examen, fiches enregistrées ou importées avant la 9.3.2) et au nom du PDF. */
+function fmtMaj(s){ return String(s==null ? '' : s).toUpperCase(); }
+function fmtNom(s){ return fmtMaj(s); }
+function fmtPrenom(s){ return String(s==null ? '' : s).toLowerCase().replace(/(^|[\s-])(\S)/g, (m, a, c)=>a + c.toUpperCase()); }
+const FMT = {nom:fmtNom, prenom:fmtPrenom, examinateur:fmtMaj, medecin:fmtMaj, infirmier:fmtMaj};
 function autofillFromDossier(){
   const before = PREV && PREV.id;
   PREV = prevFiche();
@@ -2939,14 +2946,11 @@ function orlAudio(){
 
 function computeAll(){
   const d = REC.d;
+  Object.keys(FMT).forEach(k=>{ const v = d[k]; if(typeof v === 'string' && v){ const w = FMT[k](v); if(w !== v) d[k] = w; } });
   /* âge à la date de l'examen : en années ; pour un mineur, avec les mois en plus (age_mois, de 0 à 11) */
   const ay = (d.ddn && d.date_ex) ? ageYM(d.ddn, d.date_ex) : null;
   if(ay){ d.age = ay.a; if(ay.a < 18) d.age_mois = ay.m; else delete d.age_mois; }
   else { delete d.age; delete d.age_mois; }
-  if(d.date_acc && d.heure_acc && d.date_ex && d.heure_ex){
-    const a=new Date(d.date_acc+'T'+d.heure_acc), e=new Date(d.date_ex+'T'+d.heure_ex);
-    if(!isNaN(a)&&!isNaN(e)) d.delai_min = Math.round((e-a)/60000); else delete d.delai_min;
-  } else delete d.delai_min;
   /* un total calculé sur une modalité manquante ou non cotable n'a pas de sens */
   const gy=gcsNum(d.gcs_y), gv=gcsNum(d.gcs_v), gm=gcsNum(d.gcs_m);
   if(gy!=null && gv!=null && gm!=null) d.gcs_tot = gy+gv+gm;
@@ -2965,6 +2969,12 @@ function computeAll(){
        fiche initiale, ou demander un CRH intermediaire. */
     if(!TYPE_CHOISI && d.num_ex > 1 && d.fiche_type === 1){ d.fiche_type = 2; TYPE_PROPOSE = true; dropDefaults(); }
   } else { delete d.num_ex; delete d.num_ex_lettre; }
+  /* Le délai accident → examen n'a d'intérêt que pour le premier examen : il se calcule sur la consultation initiale seulement (après la proposition de type ci-dessus) ;
+     sur une fiche de suivi, de sortie ou de séance il n'est ni calculé ni affiché, et une valeur enregistrée avant la 9.3.2 disparaît au prochain calcul. */
+  if(ftype()===1 && d.date_acc && d.heure_acc && d.date_ex && d.heure_ex){
+    const a=new Date(d.date_acc+'T'+d.heure_acc), e=new Date(d.date_ex+'T'+d.heure_ex);
+    if(!isNaN(a)&&!isNaN(e)) d.delai_min = Math.round((e-a)/60000); else delete d.delai_min;
+  } else delete d.delai_min;
 
   reprisesInit();
   adpCalc();
@@ -3285,7 +3295,9 @@ function fieldHTML(f){
         (f.list?' list="'+f.list+'"':'')+(f.req&&!v?' class="req"':'')+
         (f.mail?' inputmode="email" autocapitalize="off" spellcheck="false"':'')+
         (g!=null?' placeholder="'+esc(g)+'"':(f.ph?' placeholder="'+esc(f.ph)+'"':''))+
-        ' value="'+esc(v||'')+'" oninput="setRaw(\''+f.k+'\',this.value)">'+micHTML(f)+ghostBtn(f,g);
+        (FMT[f.k] ? ' autocapitalize="'+(f.k==='prenom' ? 'words' : 'characters')+'" spellcheck="false"' : '')+
+        ' value="'+esc(v||'')+'" '+(FMT[f.k] ? 'oninput="setFmt(\''+f.k+'\',this,event)" onblur="setFmt(\''+f.k+'\',this)"'
+                                             : 'oninput="setRaw(\''+f.k+'\',this.value)"')+'>'+micHTML(f)+ghostBtn(f,g);
   }
   if(f.k==='dossier'){
     ctl += '<button class="mini" style="margin-left:8px" onclick="openSubjectSearch()" '+
@@ -3322,7 +3334,7 @@ function fieldHTML(f){
    ===================================================================== */
 const dictClasse = () => window.SpeechRecognition || window.webkitSpeechRecognition;
 const dictDispo = () => typeof dictClasse() === 'function';
-const DICT_OK = f => f.t==='area' || (f.t==='txt' && !f.pii && !f.mail && !f.list && f.k!=='dossier' && !/(^|_)tel$/.test(f.k));
+const DICT_OK = f => f.t==='area' || (f.t==='txt' && !f.pii && !f.mail && !f.list && !FMT[f.k] && f.k!=='dossier' && !/(^|_)tel$/.test(f.k));
 /* délais en millisecondes (un objet pour que les essais puissent les raccourcir) :
    silence : aucun résultat depuis ce délai, le micro s'éteint ; attente : le navigateur écoute et personne n'a encore parlé ;
    demarrage : le navigateur n'écoute pas encore (il peut demander l'autorisation du micro) : l'attente ne court pas pendant ce temps ;
@@ -3854,7 +3866,7 @@ function renderFormInner(){
   PREV = prevFiche();
   /* l'onglet affiché n'existe plus pour ce type de consultation : on passe au plus proche */
   if(!pageSections(PAGE).length){ const v = visPages(); if(v.length) PAGE = (v.find(p=>p.n>PAGE) || v[v.length-1]).n; }
-  const exs = Array.from(new Set(DB.map(f=>f.d.examinateur).filter(Boolean)));
+  const exs = Array.from(new Set(DB.map(f=>fmtMaj(f.d.examinateur).trim()).filter(Boolean)));
   let h = '<datalist id="exlist">'+exs.map(e=>'<option value="'+esc(e)+'">').join('')+'</datalist>';
   if(ftype()!==4) h += '<div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap">'+
        '<button class="tb gd" style="background:#1a6b43" onclick="allNormal()">&#10003; Tout renseigner comme NORMAL</button>'+
@@ -4144,6 +4156,23 @@ function toggleCheck(k){
   if(k==='sc_masquer') refreshScores();
 }
 let DOSSIER_T=null;
+/* Champ de nom (nom, prénom, examinateur, médecin, infirmier(e)) : la mise en forme suit la frappe sans déplacer le curseur ; pendant une composition (touche morte, IME) elle attend
+   la fin de la composition ; la valeur n'est enregistrée que si elle change (sortir du champ sans rien modifier ne marque pas la fiche comme modifiée). */
+function setFmt(k, el, ev){
+  if(ev && ev.isComposing) return;
+  const f = FMT[k], v = el.value, nv = f(v);
+  if(nv !== v){
+    let pos = null; try{ pos = el.selectionStart; }catch(e){}
+    el.value = nv;
+    if(pos != null){ const np = f(v.slice(0, pos)).length; try{ el.setSelectionRange(np, np); }catch(e){} }
+  }
+  if((REC.d[k] || '') !== nv) setRaw(k, nv);
+}
+/* la fin d'une composition (touche morte, IME) : le dernier « input » est parti pendant la composition, la mise en forme se fait ici */
+document.addEventListener('compositionend', e=>{
+  const el = e.target, k = el && el.id && el.id.indexOf('i_') === 0 ? el.id.slice(2) : '';
+  if(k && FMT[k] && el.tagName === 'INPUT') setFmt(k, el);
+}, true);
 function setRaw(k,v){
   if(v==='') delete REC.d[k]; else REC.d[k]=v;
   touch();
@@ -4907,8 +4936,8 @@ function clearCut(){
 
 
 /* =====================================================================
-   RECHERCHE D'UN SUJET PAR NUMÉRO, NOM, PRÉNOM OU DATE DE NAISSANCE
-   Un sujet est identifié par son numéro de dossier. Les fiches d'un même
+   RECHERCHE D'UN PATIENT PAR NUMÉRO, NOM, PRÉNOM OU DATE DE NAISSANCE
+   Un patient est identifié par son numéro de dossier. Les fiches d'un même
    numéro forment une série ; c'est la plus récente qui sert de source au
    remplissage automatique de l'identité et des données de l'accident.
    ===================================================================== */
@@ -4918,7 +4947,7 @@ const norm = s => String(s==null?'':s).toLowerCase()
 
 /* « 3 examens », « 3 examens + 2 séances de recompression » */
 const exCompte = s => s.n+' examen'+(s.n>1?'s':'')+(s.ns ? ' + '+s.ns+' séance'+(s.ns>1?'s':'')+' de recompression' : '');
-/* index des sujets présents dans la base locale */
+/* index des patients présents dans la base locale */
 function subjectIndex(){
   const by = {};
   DB.forEach(f=>{
@@ -4948,11 +4977,11 @@ function searchSubjects(q){
   });
 }
 
-/* reprise d'un sujet : le numéro de dossier et l'identité passent dans la fiche
+/* reprise d'un patient : le numéro de dossier et l'identité passent dans la fiche
    courante, puis autofillFromDossier complète le reste depuis l'examen précédent. */
 function applySubject(dossier, force){
   const s = subjectIndex().find(x=>x.dossier===dossier);
-  if(!s){ toast('Sujet introuvable'); return; }
+  if(!s){ toast('Patient introuvable'); return; }
   REC.d.dossier = s.dossier;
   REC.d.dossier_pseudo = (s.last && s.last.d.dossier_pseudo) || 0;
   ID_KEYS.forEach(k=>{
@@ -4961,15 +4990,15 @@ function applySubject(dossier, force){
     if(force || REC.d[k]==null || REC.d[k]==='') REC.d[k]=v;
   });
   touch(); autofillFromDossier(); renderForm();
-  toast('Sujet repris : '+(s.nom? s.nom.toUpperCase()+' '+(s.prenom||'') : s.dossier)+
+  toast('Patient repris : '+(s.nom? fmtNom(s.nom)+' '+fmtPrenom(s.prenom) : s.dossier)+
         ' — '+exCompte(s)+' au dossier');
 }
 
-let SUBJ_MODE = null;       // « seance » : le sujet choisi reçoit une séance de recompression, au lieu d'être repris dans la fiche ouverte
+let SUBJ_MODE = null;       // « seance » : le patient choisi reçoit une séance de recompression, au lieu d'être repris dans la fiche ouverte
 function openSubjectSearch(pre, mode){
   SUBJ_MODE = mode || null;
   const q = pre!=null ? pre : (REC.d.nom||'')+' '+(REC.d.prenom||'');
-  modalHTML('<h3>'+(SUBJ_MODE==='seance' ? 'Séance de recompression : choisir le patient' : 'Rechercher un sujet')+'</h3>'+
+  modalHTML('<h3>'+(SUBJ_MODE==='seance' ? 'Séance de recompression : choisir le patient' : 'Rechercher un patient')+'</h3>'+
     '<p style="margin:0 0 8px;color:var(--ink2);font-size:12px">'+
     'Numéro de dossier, numéro d’accident de plongée, nom, prénom ou date de naissance. La recherche porte sur les fiches '+
     'de la base locale de ce poste, dont celles lues dans le dossier de données à l’ouverture.</p>'+
@@ -4985,19 +5014,19 @@ function renderSubjRes(){
   const q = ($('#subjq')&&$('#subjq').value)||'';
   if(!norm(q)){ box.innerHTML = '<div class="note">Tapez au moins un mot.</div>'; return; }
   const res = searchSubjects(q);
-  if(!res.length){ box.innerHTML = '<div class="note">Aucun sujet ne correspond. '+
+  if(!res.length){ box.innerHTML = '<div class="note">Aucun patient ne correspond. '+
     'Le numéro de dossier peut être saisi directement : une fiche neuve sera créée pour lui.</div>'; return; }
   box.innerHTML = res.slice(0,40).map(s=>{
     const d = s.last.d;
     return '<button class="tb" style="width:100%;text-align:left;margin-bottom:6px;padding:10px 12px" '+
       'onclick="closeModal();'+(SUBJ_MODE==='seance' ? 'seanceDe' : 'applySubject')+'(\''+esc(s.dossier).replace(/'/g,"\\'")+'\')">'+
-      '<b>'+esc(s.nom? s.nom.toUpperCase()+' '+(s.prenom||'') : '(identité non renseignée)')+'</b>'+
+      '<b>'+esc(s.nom? fmtNom(s.nom)+' '+fmtPrenom(s.prenom) : '(identité non renseignée)')+'</b>'+
       (s.ddn? ' <span style="opacity:.8">né(e) le '+frDate(s.ddn)+'</span>':'')+
       '<br><span style="color:#9fb0c8;font-size:11.5px">Dossier '+esc(s.dossier)+
       (s.ads.length ? ' · accident de plongée n° '+esc(s.ads.join(', ')) : '')+
       ' · '+exCompte(s)+' · dernier le '+frDate(d.date_ex)+' '+(d.heure_ex||'')+
       (d.examinateur?' · '+esc(d.examinateur):'')+'</span></button>';
-  }).join('') + (res.length>40? '<div class="note">'+res.length+' sujets trouvés, 40 affichés. Affinez la recherche.</div>':'');
+  }).join('') + (res.length>40? '<div class="note">'+res.length+' patients trouvés, 40 affichés. Affinez la recherche.</div>':'');
 }
 
 /* proposition automatique quand l'identité est saisie avant le numéro de dossier */
@@ -5032,16 +5061,16 @@ function identBox(){
     h += '<div class="note" style="background:#e8f0fa;border-color:#a9c4e6;margin-top:8px">Accident de plongée n° <b>'+esc(REC.d.ad_num)+'</b>, repris de la fiche initiale.</div>';
   h += '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px">'+
     '<button class="tb" style="background:#1b4f8f" onclick="openSubjectSearch()">'+
-    '&#128269; Rechercher un sujet (dossier, n° d’accident, nom, prénom, naissance)</button>'+
-    '<span style="font-size:11.5px;color:var(--ink2)">'+subjectIndex().length+' sujet'+
+    '&#128269; Rechercher un patient (dossier, n° d’accident, nom, prénom, naissance)</button>'+
+    '<span style="font-size:11.5px;color:var(--ink2)">'+subjectIndex().length+' patient'+
     (subjectIndex().length>1?'s':'')+' dans la base de ce poste</span></div>';
   if(m && m.multi)
     h += '<div class="note" style="background:#fbeee4;border-color:#e3bd9a;margin-top:8px">'+
-      '<b>'+m.multi+' sujets</b> portent cette identité. '+
+      '<b>'+m.multi+' patients</b> portent cette identité. '+
       '<button class="tb" style="background:#1b4f8f" onclick="openSubjectSearch()">Choisir lequel</button></div>';
   else if(m)
     h += '<div class="note" style="background:#e8f0fa;border-color:#a9c4e6;margin-top:8px">'+
-      '<b>Sujet déjà connu.</b> '+esc((m.nom||'').toUpperCase()+' '+(m.prenom||''))+
+      '<b>Patient déjà connu.</b> '+esc(fmtNom(m.nom)+' '+fmtPrenom(m.prenom))+
       (m.ddn?', né(e) le '+frDate(m.ddn):'')+' — dossier <b>'+esc(m.dossier)+'</b>, '+
       exCompte(m)+'. '+
       '<button class="tb" style="background:#1a6b43" onclick="applySubject(\''+esc(m.dossier).replace(/'/g,"\\'")+'\')">'+
@@ -8119,7 +8148,7 @@ function buildPrint(){
     pid('Nom',d.nom)+pid('Prénom',d.prenom)+pid('Sexe',lab('sexe'))+pid('Date de naissance',frDate(d.ddn))+
     pid('N° de dossier',d.dossier)+pid('Âge',ageFr(d))+
     pid('Date / heure accident',(frDate(d.date_acc)+' '+(d.heure_acc||'')).trim())+
-    pid('Délai accident→examen',d.delai_min!=null?d.delai_min+' min':'')+
+    (TY===1 ? pid('Délai accident→examen',d.delai_min!=null?d.delai_min+' min':'') : '')+
     pid('Examinateur',d.examinateur)+pid('Date examen',frDate(d.date_ex))+pid('Heure examen',d.heure_ex)+
     pid("N° d'examen",exLabel(d))+'</div>';
 
@@ -8379,8 +8408,26 @@ function printCSS(){
        + '\nbody.printdoc{background:#fff}'
        + '\nbody.printdoc #print-root{display:block !important}';
 }
+/* Le nom proposé au PDF : NOM_Prénom_IPP_numéro de dossier (le navigateur ajoute « .pdf »). NOM en majuscules, Prénom avec l'initiale en majuscule, « IPP » écrit tel quel, puis le
+   numéro de dossier tel qu'il est inscrit dans la fiche ; ce que Windows interdit dans un nom de fichier devient « - » ; une partie absente est omise. */
+const nomFichier = s => String(s==null ? '' : s).replace(/[\\\/:*?"<>|\u0000-\u001f]+/g, '-').replace(/\s+/g, ' ').trim().replace(/[. ]+$/, '');
 function printName(){
-  return 'Fiche_neuro_'+(REC.d.dossier||'sans-dossier')+'_'+(REC.d.date_ex||'')+(REC.d.num_ex!=null?'_ex'+exLabel(REC.d):'');
+  const d = REC.d, dos = nomFichier(d.dossier);
+  const parts = [nomFichier(fmtNom(d.nom)), nomFichier(fmtPrenom(d.prenom))].filter(Boolean);
+  if(dos) parts.push('IPP', dos);
+  return parts.length ? parts.join('_') : 'Fiche_ADP'+(d.date_ex ? '_'+d.date_ex : '');
+}
+/* Le navigateur propose, à « Enregistrer au format PDF », le titre de la page (Firefox, Chrome et Edge le lisent à l'ouverture de la fenêtre d'impression, puis la fenêtre
+   d'enregistrement demande le dossier) : le titre porte le nom de la fiche le temps de l'impression, puis redevient celui de l'application. */
+const TITRE_APP = document.title;
+let TITRE_T = null;
+function titreApp(){ clearTimeout(TITRE_T); document.title = TITRE_APP; }
+function titrePDF(){ clearTimeout(TITRE_T); document.title = printName(); TITRE_T = setTimeout(titreApp, 120000); }
+/* la bulle du bouton PDF annonce le nom proposé */
+function updatePdfTip(){
+  const b = $('#tb_pdf'); if(!b || !REC) return;
+  const tip = 'Enregistrer en PDF : le navigateur ouvre sa fenêtre d’enregistrement (destination « Enregistrer au format PDF », puis le dossier) et propose le nom '+printName()+'.pdf';
+  if(b.getAttribute('data-tip') !== tip){ b.setAttribute('data-tip', tip); b.setAttribute('aria-label', tip); }
 }
 function doPrint(){
   computeAll();
@@ -8400,10 +8447,8 @@ function doPrint(){
     return;
   }
 
-  const old=document.title;
-  document.title = printName();
+  titrePDF();
   window.print();
-  setTimeout(()=>{document.title=old;},800);
 }
 
 /* =====================================================================
@@ -8431,11 +8476,11 @@ function noAcc(t){ return String(t==null?'':t).normalize('NFD').replace(/[\u0300
 function columns(pii){
   const C=[], add=(k,l,codes,get)=>C.push({k:k,l:l,codes:codes,get:get||(r=>r.d[k])});
   add('fiche_id',"Identifiant unique de la fiche",'texte (cle primaire, sert au dedoublonnage)',r=>r.id);
-  add('dossier',"N. de dossier / identifiant du sujet",'texte (cle sujet : relie les examens repetes)');
+  add('dossier',"N. de dossier / identifiant du patient",'texte (cle patient : relie les examens repetes)');
   add('dossier_pseudo','Identifiant pseudonymise ?',
       '1 = empreinte salee SHA-256 d un identifiant scanne ou saisi (prefixe P-) ; 0 = valeur saisie telle quelle ; vide = non renseigne',
       r=>r.d.dossier_pseudo!=null?r.d.dossier_pseudo:'');
-  add('num_ex',"Rang de l'examen pour ce sujet",'entier >= 1, ordonne par date et heure ; une seance de recompression sans examen (fiche_type 4) porte le rang du dernier examen qui la precede (0 si aucun)');
+  add('num_ex',"Rang de l'examen pour ce patient",'entier >= 1, ordonne par date et heure ; une seance de recompression sans examen (fiche_type 4) porte le rang du dernier examen qui la precede (0 si aucun)');
   add('num_ex_lettre',"Lettre de la seance de recompression sans examen",'b, c, d... : EX3b est la premiere seance saisie sans examen apres l examen 3, EX3c la suivante ; vide pour une consultation',
       r=>r.d.num_ex_lettre||'');
   add('date_ex',"Date de l'examen",'AAAA-MM-JJ');
@@ -8444,7 +8489,8 @@ function columns(pii){
   add('poste','Poste de saisie','texte (renseigne dans les reglages, utile a la fusion)',()=>SET.poste);
   add('date_acc',"Date de l'accident",'AAAA-MM-JJ');
   add('heure_acc',"Heure de l'accident",'HH:MM');
-  add('delai_min','Delai accident vers examen','entier, minutes (calcule)');
+  add('delai_min','Delai accident vers examen','entier, minutes (calcule ; consultation initiale seulement, vide sur les fiches suivantes)',
+      r=>(r.d.fiche_type||1)===1 ? r.d.delai_min : '');
   add('fiche_type',"Type de consultation",
       '1 = consultation initiale (prise en charge en urgence) ; 2 = consultation de suivi ; '+
       '3 = consultation de sortie / CRH ; 4 = seance de recompression sans examen clinique (fiche rapide, numeros EX3b, EX3c...) ; vide = non renseigne (a lire comme 1)',
@@ -8837,7 +8883,7 @@ function sortedDB(){
    l'explique (diagnostic) et propose ce qui fonctionne : « Exporter tout en JSON » (dossier choisi, ou archive
    ZIP), téléchargement du JSON à chaque enregistrement, import d'un dossier ou d'une archive.
    ===================================================================== */
-const APP_VERSION = '9.3.1';
+const APP_VERSION = '9.3.2';
 /* hasPicker teste une fonction de l'API au moment de s'en servir : une extension ou un réglage du navigateur peut la retirer */
 const hasPicker = name => { try{ return typeof window[name] === 'function'; }catch(e){ return false; } };
 let FSA = hasPicker('showDirectoryPicker');
@@ -9565,7 +9611,7 @@ function openFolders(){
       '<button class="tb" onclick="rewriteFolder()">Réécrire tout le dossier</button>'+
       '<button class="tb" onclick="closeModal();openExportJSON()">Exporter tout en JSON…</button></div>'+
     '<div class="note" style="margin-top:14px;background:#fbeee4;border-color:#e3bd9a"><b>Données de santé.</b> Les fichiers JSON contiennent '+
-    'la fiche entière, identité comprise : c’est ce qui permet de retrouver un sujet par son nom. Choisissez un dossier protégé '+
+    'la fiche entière, identité comprise : c’est ce qui permet de retrouver un patient par son nom. Choisissez un dossier protégé '+
     '(disque chiffré, accès restreint). Si ce dossier est synchronisé avec un service en ligne, les fiches quittent ce poste : '+
     'vérifiez que cela est compatible avec l’hébergement de données de santé qui vous est imposé.</div>'+
     '<p style="margin:10px 0 0;font-size:11.5px"><a href="#" onclick="openDiag();return false">Diagnostic du navigateur</a></p>');
@@ -9640,6 +9686,7 @@ function saveNote(w, dn){
 function newFiche(){
   if(DIRTY && !confirm('La fiche en cours contient des modifications non enregistrees. Continuer ?')) return;
   if(DICT) dictAbort();
+  if(FILTRE_PAT){ FILTRE_PAT = null; const el = $('#search'); if(el) el.value = ''; }      // la liste du patient précédent ne doit pas cacher la fiche du nouveau
   REC=blank(); DIRTY=false; PAGE=1; TYPE_CHOISI=false; renderForm(); renderList(); updateBar();
   window.scrollTo(0,0); setTimeout(()=>{const i=$('#i_dossier'); if(i)i.focus();},60);
 }
@@ -9651,7 +9698,7 @@ function newFollowUp(){
   const keep=['dossier','nom','prenom','sexe','ddn','date_acc','heure_acc','ad_num','examinateur','sc_masquer'];
   const nd={}; keep.forEach(k=>{ if(src[k]!=null) nd[k]=src[k]; });
   const now=new Date(); nd.date_ex=iso(now); nd.heure_ex=hhmm(now);
-  /* Un re-examen du meme sujet est une fiche de suivi : les encarts de plongee
+  /* Un re-examen du meme patient est une fiche de suivi : les encarts de plongee
      appartiennent a la fiche initiale et ne sont pas ressaisis. */
   nd.fiche_type = 2;
   REC=blank(); REC.d=nd; DIRTY=true; PAGE=1; TYPE_CHOISI=true; renderForm(); renderList(); updateBar();
@@ -9664,9 +9711,9 @@ function derniereTable(doss){
   const f = L.find(x=>x.d.tb_table!=null && recompCotee(x.d));
   return f ? {v:f.d.tb_table, autre:f.d.tb_table_autre} : null;
 }
-/* la séance de recompression d'un sujet choisi dans la recherche (aucune fiche du patient n'était ouverte) */
+/* la séance de recompression d'un patient choisi dans la recherche (aucune fiche du patient n'était ouverte) */
 function seanceDe(dossier){
-  const s = subjectIndex().find(x=>x.dossier===dossier); if(!s){ toast('Sujet introuvable'); return; }
+  const s = subjectIndex().find(x=>x.dossier===dossier); if(!s){ toast('Patient introuvable'); return; }
   if(DIRTY && !confirm('Modifications non enregistrees. Continuer ?')) return;
   const r = blank(), l = s.last.d;
   r.d = {dossier:s.dossier, dossier_pseudo:l.dossier_pseudo || 0};
@@ -9687,10 +9734,11 @@ function newSeance(){
   REC = blank(); REC.d = nd; DIRTY = true; PAGE = 1; TYPE_CHOISI = true; renderForm(); renderList(); updateBar();
   window.scrollTo(0,0); toast('Séance de recompression pour le dossier '+nd.dossier+' : vérifiez la table et l’heure, puis enregistrez');
 }
-function loadFiche(id){
+function loadFiche(id, patient){
   if(DIRTY && !confirm('Modifications non enregistrees. Continuer ?')) return;
   const f=DB.find(x=>x.id===id); if(!f) return;
   if(DICT) dictAbort();
+  if(patient) filtrerPatient(f.d.dossier);                       // clic sur une pastille : la barre de recherche et la liste du bas suivent ce patient
   REC=JSON.parse(JSON.stringify(f)); DIRTY=false; PAGE=1; TYPE_CHOISI=true; renderForm(); renderList(); updateBar(); window.scrollTo(0,0);
 }
 async function delFiche(id,ev){
@@ -9708,11 +9756,18 @@ async function delFiche(id,ev){
   if(REC.id===id){ REC=blank(); DIRTY=false; }
   renderList(); renderForm(); updateBar(); toast('Fiche supprimee');
 }
+/* Filtre « patient » posé par un clic sur une pastille : {dossier, q}. Le texte de la barre de recherche est alors le numéro d'accident du patient (à défaut son numéro de dossier) ;
+   tant qu'il n'est pas modifié, la liste ne montre que les fiches de ce patient, jamais celles d'un autre dossier dont les chiffres contiendraient le même numéro. Dès que le texte change
+   (ou qu'on le vide), la recherche redevient ordinaire. */
+let FILTRE_PAT = null;
 function renderList(){
   renderEnCours();
-  const q=($('#search')?$('#search').value:'').toLowerCase().trim();
+  const raw = $('#search') ? $('#search').value : '';
+  const q = raw.toLowerCase().trim();
+  if(FILTRE_PAT && norm(raw) !== FILTRE_PAT.q) FILTRE_PAT = null;
   const recs=DB.slice().sort((a,b)=>stamp(b).localeCompare(stamp(a)))
     .filter(f=>{
+      if(FILTRE_PAT) return String(f.d.dossier==null ? '' : f.d.dossier) === FILTRE_PAT.dossier;
       if(!q) return true;
       const hay = norm([f.d.dossier, f.d.ad_num, f.d.examinateur, f.d.nom, f.d.prenom, f.d.ddn, frDate(f.d.ddn)].join(' '));
       return norm(q).split(' ').filter(Boolean).every(t=>hay.indexOf(t)>=0);
@@ -9731,6 +9786,20 @@ function renderList(){
    le laisse affiché jusqu'à minuit, il disparaît le lendemain. Un clic sur la pastille ouvre la fiche la plus récente du patient.
    ===================================================================== */
 const jsq = s => esc(String(s).replace(/\\/g, '\\\\').replace(/'/g, "\\'"));        // une chaîne dans un attribut onclick="f('…')"
+/* Le numéro d'accident de plongée d'un patient : celui de sa fiche initiale, à défaut celui de sa fiche la plus récente qui en porte un ; '' s'il n'y en a pas. */
+function accidentDe(dossier){
+  const L = DB.filter(f=>String(f.d.dossier==null ? '' : f.d.dossier) === String(dossier) && String(f.d.ad_num==null ? '' : f.d.ad_num).trim());
+  if(!L.length) return '';
+  const ini = L.filter(f=>(f.d.fiche_type||1)===1).sort((a,b)=>stamp(a).localeCompare(stamp(b)))[0];
+  return String((ini || L.sort((a,b)=>stamp(b).localeCompare(stamp(a)))[0]).d.ad_num).trim();
+}
+/* Un clic sur une pastille : le numéro d'accident du patient (à défaut son numéro de dossier) s'inscrit dans la barre de recherche, et la liste du bas ne montre que ses fiches. */
+function filtrerPatient(dossier){
+  const el = $('#search'); if(!el) return;
+  const txt = accidentDe(dossier) || String(dossier);
+  el.value = txt;
+  FILTRE_PAT = {dossier:String(dossier), q:norm(txt)};
+}
 /* le jour d'une fiche (AAAA-MM-JJ) : la date de la consultation, à défaut le jour de sa création */
 function jourFiche(f){
   if(f.d.date_ex) return String(f.d.date_ex);
@@ -9768,17 +9837,17 @@ function patientsEnCours(auj){
 /* La pastille d'un patient : NOM Prénom et âge ; la bulle d'aide donne le dossier, le nombre de fiches et la dernière fiche. cur : patient de la fiche ouverte ;
    modal : dans la fenêtre « Fiches enregistrées » (petit écran), qui se referme au clic. */
 function pastilleHTML(p, cur, modal){
-  const d = p.last.d, nom = p.nom ? String(p.nom).toUpperCase() : '', pre = p.prenom ? String(p.prenom) : '';
+  const d = p.last.d, nom = p.nom ? fmtNom(p.nom) : '', pre = p.prenom ? fmtPrenom(p.prenom) : '';
   const age = p.ay ? ageFrAM(p.ay.a, p.ay.m) : '';
   const ident = (nom || pre) ? (nom ? '<b>'+esc(nom)+'</b>' : '')+(nom && pre ? ' ' : '')+esc(pre) : '<i>Dossier '+esc(p.dossier)+'</i>';
   const tip = 'Dossier '+p.dossier+' · '+exCompte(p)+' · dernière fiche : '+(d.num_ex!=null ? 'examen '+exLabel(d)+', ' : '')+frDate(d.date_ex)+(d.heure_ex ? ' à '+d.heure_ex : '')+
-    (p.sortie ? ' · consultation de sortie enregistrée aujourd’hui : cette pastille disparaîtra demain' : '')+' — cliquer pour ouvrir cette fiche';
+    (p.sortie ? ' · consultation de sortie enregistrée aujourd’hui : cette pastille disparaîtra demain' : '')+' — cliquer pour ouvrir cette fiche'+(modal ? '' : ' ; la liste du bas ne montre alors que les fiches de ce patient');
   return '<button type="button" class="pst '+p.cls+(cur ? ' cur' : '')+'" data-dossier="'+esc(p.dossier)+'" data-tip="'+esc(tip)+'" '+
     'aria-label="'+esc(((nom+' '+pre).trim() || 'Dossier '+p.dossier)+(age ? ', '+age : '')+' : ouvrir la dernière fiche')+'" '+
-    'onclick="'+(modal ? 'closeModal();' : '')+'loadFiche(\''+jsq(p.last.id)+'\')">'+
+    'onclick="'+(modal ? 'closeModal();' : '')+'loadFiche(\''+jsq(p.last.id)+'\''+(modal ? '' : ',1')+')">'+
     '<span class="pstn">'+ident+'</span>'+(age ? ' <span class="psta">'+esc(age)+'</span>' : '')+'</button>';
 }
-const ENCOURS_TIP = 'Les patients dont la consultation de sortie n’est pas enregistrée. Une fois enregistrée, la pastille reste affichée jusqu’à la fin de la journée et disparaît le lendemain.';
+const ENCOURS_TIP = 'Les patients dont la consultation de sortie n’est pas enregistrée. Une fois enregistrée, la pastille reste affichée jusqu’à la fin de la journée et disparaît le lendemain. Un clic ouvre la dernière fiche du patient et limite la liste du bas à ses fiches.';
 function enCoursHTML(L, doss, modal){
   return '<div class="sidecap" data-tip="'+esc(ENCOURS_TIP)+'">Patients en cours<span class="badge">'+L.length+'</span></div>'+
     (L.length ? '<div class="pstl'+(modal ? ' pstm' : '')+'">'+L.map(p=>pastilleHTML(p, !modal && p.dossier === doss, modal)).join('')+'</div>'
@@ -9887,7 +9956,7 @@ function watchHdr(){
 }
 function updateBar(){
   const s=$('#dbstate'); if(!s) return;
-  updatePatBar();
+  updatePatBar(); updatePdfTip();
   const st = folderStatusHTML();
   s.innerHTML = '<b>'+DB.length+'</b> fiche'+(DB.length>1?'s':'')+
     (DIRTY?' <span style="color:#ffcf66">&#9679;<span class="lbl2"> modifications non enregistrees</span></span>':
@@ -10009,8 +10078,8 @@ function openExport(){
   '<div class="note" style="background:#eef4fb;border-color:#bcd4ee"><b>Le dossier de données.</b> '+
    'Sur Chrome ou Edge, le bouton <b>Dossier de données</b> de la barre du haut vous fait choisir un dossier une seule fois. '+
    'À chaque enregistrement, l’outil y écrit la fiche au format JSON (sous-dossier <code>fiches</code>), puis réécrit '+
-   '<code>donnees_neuro.csv</code> et <code>dictionnaire_variables.csv</code>, qui contiennent toutes les fiches de tous les sujets. '+
-   'À chaque ouverture, il relit ce dossier pour la recherche d’un sujet. La sauvegarde JSON ci-dessus reste le moyen '+
+   '<code>donnees_neuro.csv</code> et <code>dictionnaire_variables.csv</code>, qui contiennent toutes les fiches de tous les patients. '+
+   'À chaque ouverture, il relit ce dossier pour la recherche d’un patient. La sauvegarde JSON ci-dessus reste le moyen '+
    'd’emporter toutes les fiches en un seul fichier ; <b>Exporter tout en JSON</b> les écrit une par une dans le dossier de votre '+
    'choix (le sélecteur s’ouvre sur Téléchargements), ou les réunit dans une archive ZIP.</div>');
 }
@@ -11215,7 +11284,7 @@ function openExportJSON(){
     '<button class="tb '+(dirOk?'gd':'pri')+'" onclick="expJSONZip()"'+dis+'>Télécharger l’archive ZIP</button>'+
     '<div id="expJsonRes" style="margin-top:12px"></div>'+
     '<div class="note" style="background:#fbeee4;border-color:#e3bd9a"><b>Données de santé.</b> Ces fichiers contiennent l’identité des '+
-    'sujets et leurs pièces jointes, sans protection. Gardez-les sur un support chiffré ou à accès restreint, et supprimez-les de '+
+    'patients et leurs pièces jointes, sans protection. Gardez-les sur un support chiffré ou à accès restreint, et supprimez-les de '+
     'Téléchargements une fois copiés.</div>');
 }
 const sizeTxt = n => n < 1048576 ? Math.max(1, Math.round(n / 1024))+' Ko' : (n / 1048576).toFixed(n < 10485760 ? 1 : 0)+' Mo';
@@ -11559,7 +11628,7 @@ function openHelp(){
   '<p><b>1. Choisir le dossier de données (une seule fois).</b><br>'+
   'Cliquez <b>Dossier de données</b> et choisissez un dossier, ou laissez l’outil vous le demander au premier enregistrement. '+
   'Sur Chrome ou Edge, il y écrit la fiche au format JSON à chaque enregistrement, puis réécrit <code>donnees_neuro.csv</code> '+
-  'et son dictionnaire (toutes les fiches de tous les sujets, une ligne par fiche). À chaque ouverture, il relit ce dossier pour '+
+  'et son dictionnaire (toutes les fiches de tous les patients, une ligne par fiche). À chaque ouverture, il relit ce dossier pour '+
   'la recherche par nom, prénom ou numéro. Le dossier n’est jamais redemandé : au plus un clic pour l’autoriser à nouveau. '+
   'Sur un navigateur sans écriture directe (Firefox, Safari, téléphone, tablette), le bouton en explique la raison et propose ce qui '+
   'reste possible : télécharger le JSON de chaque fiche à l’enregistrement, exporter une archive ZIP, importer un dossier.</p>'+
@@ -11568,12 +11637,14 @@ function openHelp(){
   's’ouvre sur Téléchargements), soit réunies dans une archive ZIP enregistrée dans Téléchargements par défaut. '+
   '<b>Importer / Fusionner</b> relit ces fichiers, l’archive ou un dossier entier.</p>'+
   '<p><b>2. Remplir une fiche.</b><br>'+
-  'Saisissez le <b>numero de dossier</b> : c\'est lui qui relie plusieurs examens d\'un meme sujet. '+
+  'Saisissez le <b>numero de dossier</b> : c\'est lui qui relie plusieurs examens d\'un meme patient. '+
   'Si ce numero est deja connu, l\'identite et les donnees de l\'accident se remplissent seules, et les valeurs '+
   'de l\'examen precedent apparaissent en grise : cliquez dessus pour les reprendre, ou utilisez le bouton '+
   '<b>Reprendre tout l\'examen precedent</b>. '+
   'Cliquez <b>Tout renseigner comme NORMAL</b>, puis ne modifiez que les items anormaux. '+
   'Dans une case de date ou d’heure, la touche <b>+</b> ou la barre d’espace écrit la date du jour ou l’heure du moment. '+
+  'Le <b>nom</b> s’écrit en majuscules, le <b>prénom</b> avec l’initiale en majuscule (accents conservés), l’<b>examinateur</b>, le <b>médecin</b> et l’<b>infirmier(e)</b> en majuscules, tout seuls. '+
+  'Le délai accident → examen n’est calculé que sur la consultation initiale. '+
   'Sur une fiche de suivi ou de sortie, le poids de la fiche initiale, le diagnostic retenu, la prednisolone encore à prescrire et les séances depuis '+
   'la dernière consultation sont repris ou proposés d’après les fiches précédentes : tout reste modifiable.</p>'+
   '<p><b>2 ter. Six onglets et un bandeau.</b><br>'+
@@ -11611,7 +11682,7 @@ function openHelp(){
   '<p><b>2 nonies. Le volet de gauche : les patients en cours.</b><br>'+
   'Le volet de gauche (bouton « liste » de la barre du haut pour l’afficher ou le masquer) a deux parties. En haut, sous la recherche, une <b>pastille par patient en cours</b> : '+
   '<b>NOM</b> Prénom et âge, aux couleurs du bandeau (rose : femme, bleu : homme, vert : enfant). Un patient reste en cours tant que sa consultation de sortie n’est pas enregistrée ; '+
-  'une fois enregistrée, sa pastille reste affichée jusqu’à la fin de la journée et disparaît le lendemain. Un clic sur une pastille ouvre la fiche la plus récente du patient ; '+
+  'une fois enregistrée, sa pastille reste affichée jusqu’à la fin de la journée et disparaît le lendemain. Un clic sur une pastille ouvre la fiche la plus récente du patient et inscrit son numéro d’accident dans la barre de recherche : la liste du bas ne montre alors que ses fiches (videz la barre pour les revoir toutes) ; '+
   'la bulle d’aide donne son dossier et sa dernière fiche. En bas, la liste de toutes les fiches enregistrées défile dans la place que les pastilles laissent ; la recherche ne filtre que cette liste. '+
   'Sur tablette et téléphone, <b>Plus</b> › <b>Fiches enregistrées</b> montre les mêmes deux parties.</p>'+
   '<p><b>2 septies. Examens complémentaires et biologie.</b><br>'+
@@ -11633,10 +11704,11 @@ function openHelp(){
   'est tombee. Une frappe humaine n\'est jamais confondue avec un scan. '+
   'Reglages et pseudonymisation : bouton <b>Douchette</b> de la barre du haut.</p>'+
   '<p><b>3. Produire le PDF.</b><br>'+
-  'Cliquez <b>PDF / Imprimer</b>, puis choisissez <i>Enregistrer au format PDF</i> (ou <i>Microsoft Print to PDF</i>) '+
-  'comme imprimante. Deux pages A4 : la fiche complete, puis les schemas sensitifs et la synthese redigee.</p>'+
-  '<p><b>4. Re-examiner un sujet.</b><br>'+
-  'Ouvrez une fiche du sujet dans la liste de gauche, puis cliquez <b>Re-examen du sujet</b>. '+
+  'Cliquez le bouton <b>Enregistrer en PDF</b> de la barre du haut, puis choisissez la destination <i>Enregistrer au format PDF</i> (ou <i>Microsoft Print to PDF</i>) : '+
+  'le navigateur ouvre sa fenêtre d’enregistrement, qui demande le dossier, avec le nom <b>NOM_Prénom_IPP_numéro de dossier.pdf</b> déjà écrit (la bulle du bouton l’annonce). '+
+  'Le document compte de 5 à 6 pages A4 (une page pour une séance de recompression) : la fiche, puis les schémas et la synthèse rédigée.</p>'+
+  '<p><b>4. Ré-examiner un patient.</b><br>'+
+  'Ouvrez une fiche du patient (sa pastille parmi les patients en cours, ou la liste de gauche), puis cliquez <b>Ré-examen du patient</b> dans la barre du haut. '+
   'Identite, accident et examinateur sont repris, l\'examen repart vide, et le <code>num_ex</code> s\'incremente automatiquement.</p>'+
   '<p><b>5. Saisie sur tablette, puis fusion.</b><br>'+
   'Copiez le fichier HTML sur la tablette et ouvrez-le : il fonctionne hors ligne. En fin de mission, '+
@@ -11837,7 +11909,8 @@ async function saveDraft(){ if(DIRTY && REC) await metaSet('draft',JSON.parse(JS
   startupSync().catch(e=>console.error('dossier de données :', e));      // sans attendre : le dossier est relu pendant que la fiche s'affiche
 })();
 
-window.addEventListener('beforeprint',()=>{ if(REC){ computeAll(); $('#print-root').innerHTML=buildPrint(); } });
+window.addEventListener('beforeprint',()=>{ if(REC){ computeAll(); $('#print-root').innerHTML=buildPrint(); titrePDF(); } });
+window.addEventListener('afterprint', titreApp);
 window.addEventListener('beforeunload',e=>{ if(DIRTY){ e.preventDefault(); e.returnValue=''; } });
 document.addEventListener('keydown',e=>{
   if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='s'){ e.preventDefault(); saveFiche(); }
@@ -11852,7 +11925,7 @@ document.addEventListener('keydown',e=>{
    ===================================================================== */
 /* Aides à l'examen : fiches techniques seules. Le dépôt de photos et de vidéos
    dans ces fiches a été retiré : les images qui documentent un examen précis
-   appartiennent à la fiche du sujet, pas à une notice générique. Elles se
+   appartiennent à la fiche du patient, pas à une notice générique. Elles se
    déposent en fin de fiche, dans l'encart « Pièces jointes ». */
 function helpBtn(key){
   if(!key || !HELP[key]) return '';

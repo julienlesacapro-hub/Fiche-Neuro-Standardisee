@@ -1,8 +1,8 @@
 ﻿variable;libelle;codage
 fiche_id;Identifiant unique de la fiche;texte (cle primaire, sert au dedoublonnage)
-dossier;N. de dossier / identifiant du sujet;texte (cle sujet : relie les examens repetes)
+dossier;N. de dossier / identifiant du patient;texte (cle patient : relie les examens repetes)
 dossier_pseudo;Identifiant pseudonymise ?;"1 = empreinte salee SHA-256 d un identifiant scanne ou saisi (prefixe P-) ; 0 = valeur saisie telle quelle ; vide = non renseigne"
-num_ex;Rang de l'examen pour ce sujet;"entier >= 1, ordonne par date et heure ; une seance de recompression sans examen (fiche_type 4) porte le rang du dernier examen qui la precede (0 si aucun)"
+num_ex;Rang de l'examen pour ce patient;"entier >= 1, ordonne par date et heure ; une seance de recompression sans examen (fiche_type 4) porte le rang du dernier examen qui la precede (0 si aucun)"
 num_ex_lettre;Lettre de la seance de recompression sans examen;"b, c, d... : EX3b est la premiere seance saisie sans examen apres l examen 3, EX3c la suivante ; vide pour une consultation"
 date_ex;Date de l'examen;AAAA-MM-JJ
 heure_ex;Heure de l'examen;HH:MM
@@ -10,7 +10,7 @@ examinateur;Examinateur;texte
 poste;Poste de saisie;texte (renseigne dans les reglages, utile a la fusion)
 date_acc;Date de l'accident;AAAA-MM-JJ
 heure_acc;Heure de l'accident;HH:MM
-delai_min;Delai accident vers examen;entier, minutes (calcule)
+delai_min;Delai accident vers examen;"entier, minutes (calcule ; consultation initiale seulement, vide sur les fiches suivantes)"
 fiche_type;Type de consultation;"1 = consultation initiale (prise en charge en urgence) ; 2 = consultation de suivi ; 3 = consultation de sortie / CRH ; 4 = seance de recompression sans examen clinique (fiche rapide, numeros EX3b, EX3c...) ; vide = non renseigne (a lire comme 1)"
 sexe;Sexe;"1 = M ; 2 = F ; 3 = Autre"
 age;Age a la date de l'examen;entier, annees revolues (calcule)
