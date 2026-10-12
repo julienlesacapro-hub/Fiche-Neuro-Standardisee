@@ -1,4 +1,4 @@
-# ADP — accident de plongée, version 9.2.0
+# ADP — accident de plongée, version 9.3.1
 
 Fichier unique : `index.html`. Aucun réseau, aucune dépendance externe, aucun compte.
 Double-cliquez dessus, il s'ouvre dans votre navigateur et tout fonctionne.
@@ -56,7 +56,7 @@ toute seule et dit ce qu'il fait ; elle se referme quand on le quitte.
 
 | Icône | Bouton | Ce qu'il fait |
 |---|---|---|
-| liste | **Liste des fiches** | affiche ou masque la liste des fiches enregistrées, à gauche (grands écrans) |
+| liste | **Volet de gauche** | affiche ou masque le volet de gauche : les patients en cours et la liste des fiches enregistrées (grands écrans ; voir *Le volet de gauche : les patients en cours*) |
 | fiche et « + » (bleu) | **Nouvelle fiche** | ouvre une fiche vide |
 | stéthoscope | **Ré-examen du patient** | ouvre une consultation de suivi pour le même sujet, avec l'identité de la fiche ouverte |
 | caisson à hublot (brun) | **Séance de recompression** | cote une séance **sans examen clinique** (voir *La séance de recompression sans examen*) |
@@ -76,10 +76,39 @@ documents (avec le lien « Fichier du générateur… »).
 
 **Plus** ouvre un menu : **Dossier de données…**, **Exporter les données…** (CSV, dictionnaire, sauvegarde JSON, réglages), **Exporter tout en JSON…** (dossier au choix ou
 archive ZIP), **Douchette et pseudonymisation…**, **Dictionnaire des variables**, **Aides à l'examen**, **Installation hors ligne**, **Mode d'emploi**. Sur une tablette il
-propose aussi la **liste des fiches** ; sur un téléphone, la barre ne garde que *nouvelle fiche*, *enregistrer*, *PDF* et *Plus*, et le menu reprend tout le reste. Un bouton
+propose aussi les **fiches enregistrées** (les patients en cours, puis la liste) ; sur un téléphone, la barre ne garde que *nouvelle fiche*, *enregistrer*, *PDF* et *Plus*, et le menu reprend tout le reste. Un bouton
 **Installer** (ou **Mise à jour**) apparaît à côté de *Plus* quand l'installation, ou une nouvelle version, est possible.
 
 Les icônes sont dessinées dans le fichier lui-même : ni image, ni réseau.
+
+---
+
+## Le volet de gauche : les patients en cours
+
+Le volet de gauche (bouton « liste » de la barre du haut pour l'afficher ou le masquer ; grands écrans) a **deux parties**, sous le titre et la barre de recherche, qui n'ont pas changé :
+
+1. **En haut, les patients en cours** : une **pastille par patient**, qui porte **NOM Prénom** et l'**âge**, aux **couleurs du bandeau** : rose pour une femme, bleu pour un homme, vert pour un enfant
+   (moins de 18 ans), gris-bleu quand le sexe n'est pas renseigné. L'âge d'un mineur s'écrit en années et mois (« 14 ans et 5 mois »).
+2. **En dessous, la liste des fiches enregistrées**, telle qu'elle était, qui défile dans la place que les pastilles laissent : plus il y a de patients en cours, moins elle est haute. Au-delà de la moitié
+   de la hauteur du volet, ce sont les pastilles qui défilent, la liste gardant une hauteur utile.
+
+**Qui est « en cours ».** Un patient (identifié, comme partout, par son **numéro de dossier**) est en cours tant que sa **consultation de sortie n'est pas enregistrée à la date de la veille ou avant**.
+Une consultation de sortie enregistrée aujourd'hui laisse donc la pastille affichée jusqu'à minuit : elle **disparaît le lendemain**. Sans consultation de sortie, le patient reste en cours. Précisions :
+
+- la date retenue est celle de la **consultation de sortie** (la date de la fiche), à défaut le jour où la fiche a été créée ; s'il y a plusieurs consultations de sortie dans le dossier, la plus récente compte ;
+- une fiche **non enregistrée** ne compte pas : la pastille d'un nouveau patient apparaît à l'enregistrement de sa première fiche ;
+- une fiche **sans numéro de dossier** ne forme pas de patient (comme dans la recherche d'un sujet) ;
+- une fiche enregistrée **après** la consultation de sortie (un contrôle à un mois, par exemple) ne remet pas le patient en cours ;
+- à **minuit**, un minuteur recalcule les pastilles ; il le fait aussi au retour sur l'onglet si la nuit est passée entre-temps (ordinateur en veille).
+
+**Ce que fait une pastille.** Un clic **ouvre la fiche la plus récente** du patient (consultation ou séance) ; l'application demande confirmation s'il y a des modifications non enregistrées. Le patient dont une fiche est
+ouverte est **cerclé**. Au survol, une bulle donne le dossier, le nombre d'examens et de séances, la dernière fiche et, pour un patient sorti aujourd'hui, l'avertissement que sa pastille disparaîtra demain.
+Les patients sont classés **par ordre alphabétique** (nom, puis prénom, sans tenir compte des accents ni de la casse) ; un patient sans nom est désigné par son dossier. L'âge est celui de la dernière fiche,
+comme dans le bandeau de cette fiche.
+
+**La recherche** (en haut du volet) ne filtre que la liste du bas : les pastilles restent toutes affichées.
+
+Sur **tablette et téléphone**, où le volet n'existe pas, **Plus** › **Fiches enregistrées** ouvre une fenêtre qui montre les mêmes deux parties : les patients en cours, puis toutes les fiches.
 
 ---
 
@@ -310,7 +339,7 @@ d'office : on la choisit, ou on la crée d'un clic avec le bouton **Séance de r
 
 ### La séance de recompression sans examen
 
-Une séance de recompression thérapeutique se cote **en quelques clics, sans examen clinique**. Ouvrez une fiche du patient (liste de gauche, ou *Rechercher un sujet*), puis
+Une séance de recompression thérapeutique se cote **en quelques clics, sans examen clinique**. Ouvrez une fiche du patient (sa pastille, la liste de gauche ou *Rechercher un sujet*), puis
 cliquez **Séance de recompression** dans la barre du haut (icône de caisson) ; sans fiche de patient ouverte, le bouton ouvre la recherche et crée la séance pour le patient choisi.
 Une fiche de type *séance* s'ouvre pour le même dossier :
 
@@ -1371,7 +1400,7 @@ Trois entrées mènent au même résultat.
 2. **Le bouton Rechercher**, à côté de ce champ. Une fenêtre accepte un numéro de dossier, un
    **numéro d'accident de plongée**, un nom, un prénom ou une date de naissance, écrite 12/04/1988 ou
    1988-04-12 indifféremment. Les accents et la casse sont ignorés. Cliquez le sujet : tout se
-   remplit. La liste de gauche se filtre de la même façon et affiche le numéro d'accident.
+   remplit. La liste de gauche se filtre de la même façon et affiche le numéro d'accident ; les pastilles des patients en cours, au-dessus, ne sont pas filtrées (voir *Le volet de gauche : les patients en cours*).
 3. **Le nom saisi directement.** Si vous remplissez le nom ou la date de naissance avant le numéro
    de dossier et qu'un sujet correspond, un bandeau propose de reprendre son dossier.
 
@@ -1678,7 +1707,7 @@ Pour pseudonymiser un identifiant sans douchette, utilisez le bouton **Scanner /
 
 ## Ré-examiner un sujet
 
-Ouvrez une fiche du sujet dans la liste de gauche, puis le bouton **Ré-examen du patient** de la barre du haut (stéthoscope), ou saisissez
+Ouvrez une fiche du sujet (sa pastille dans les patients en cours, ou la liste de gauche), puis le bouton **Ré-examen du patient** de la barre du haut (stéthoscope), ou saisissez
 simplement le numéro de dossier dans une fiche neuve. Pour une recompression sans examen, c'est le bouton **Séance de recompression** (voir *La séance de recompression sans examen*).
 
 **Ré-examen du patient** ouvre directement une **consultation de suivi** : l'identité, le dossier
@@ -1797,6 +1826,38 @@ d = pd.read_csv("donnees_neuro.csv", sep=";", encoding="utf-8-sig")
 
 Pour les analyses courantes, les colonnes de synthèse suffisent. Les colonnes de détail servent
 aux analyses topographiques fines.
+
+---
+
+## Changements de la version 9.3.1
+
+Rien ne s'ajoute ni ne disparaît dans le fichier de données (935 colonnes, dictionnaire identique à celui de la 9.2.0) et les fiches de la 9.2.0 s'ouvrent telles quelles : seul le **volet de gauche** change.
+Sur le papier, rien ne change. `index.html` passe de 771 Ko à 780 Ko.
+
+### Volet de gauche
+
+- **Deux parties** sous la barre de recherche, inchangée : en haut, une **pastille par patient en cours** (NOM Prénom et âge, aux couleurs du bandeau : rose, bleu, vert) ; en dessous, la **liste des fiches**, comme avant,
+  déroulante, dont la hauteur s'adapte au nombre de pastilles. Voir *Le volet de gauche : les patients en cours*.
+- **« En cours »** : le patient n'a pas de consultation de sortie enregistrée à la date de la veille ou avant ; une sortie du jour laisse la pastille jusqu'à minuit, elle disparaît le lendemain.
+- **Un clic** sur une pastille ouvre la fiche la plus récente du patient ; au survol, une bulle donne le dossier et la dernière fiche.
+- **Tablette et téléphone** : la fenêtre *Plus* › *Fiches enregistrées* reprend les deux parties.
+
+### À valider de votre côté
+
+- **« Validée » = enregistrée.** L'application ne connaît pas de validation de fiche : une consultation de sortie compte dès qu'elle est **enregistrée** (fiche de type « consultation de sortie »), à la **date de
+  la consultation** (la date de la fiche). Si votre « validée » veut dire autre chose (le compte rendu rédigé, par exemple), dites-le-moi.
+- **Un patient sans consultation de sortie reste en cours**, sans limite de durée : un patient dont la sortie n'a jamais été saisie, ou une fiche d'essai, garde sa pastille tant qu'on n'en saisit pas une. Si cela encombre,
+  je peux ajouter un délai d'inactivité (par exemple 30 jours sans nouvelle fiche) ou un moyen de retirer une pastille.
+- **Une fiche enregistrée après la sortie** (un contrôle à un mois, par exemple) ne remet pas le patient en cours : seule compte la consultation de sortie.
+- **Plafond à la moitié du volet** : au-delà de la moitié de sa hauteur, la partie haute défile, pour garder une liste utilisable. C'est une proposition (`max-height: 50%` de `#encours`).
+- **Ordre alphabétique** des pastilles, et non l'ordre d'arrivée : une pastille ne change pas de place quand on enregistre une fiche. Dites-moi si vous préférez l'ordre d'arrivée ou de dernière fiche.
+- **L'âge** de la pastille est celui de la **dernière fiche** du patient (celui de son bandeau), pas celui d'aujourd'hui ; l'enfant (vert) est un patient de moins de 18 ans à cette date.
+- **Un patient est un numéro de dossier** : deux dossiers du même patient donnent deux pastilles ; une fiche sans numéro de dossier n'en donne pas.
+- **Ajouts non demandés** : le patient dont une fiche est ouverte est cerclé ; une bulle d'aide s'ouvre au survol d'une pastille ; la fenêtre « Fiches enregistrées » des tablettes et téléphones montre aussi les pastilles ;
+  la recherche ne filtre pas les pastilles.
+- **Ce qui a été essayé.** Les suites de la 9.3.1 (la règle « en cours » sur un jeu de fiches daté, l'affichage, le clic, minuit simulé, la fenêtre des fiches ; la mise en page mesurée dans Edge, fenêtre de 1100 px,
+  haute et basse) et toutes celles des versions précédentes passent (1354 contrôles). Le volet a aussi été essayé dans **Firefox 137** avec une vraie souris (survol, clic, défilement), pas dans Firefox ESR 140 ni sur
+  une vraie tablette (largeur émulée seulement).
 
 ---
 
@@ -2615,6 +2676,8 @@ du script de `index.html`.
 
 ## Historique
 
+- **9.3.1** : le volet de gauche en deux parties : en haut, une pastille par patient en cours (NOM Prénom et âge, aux couleurs du bandeau : rose, bleu, vert), qui disparaît le lendemain de sa consultation de sortie ;
+  en dessous, la liste des fiches, déroulante, dans la place restante ; mêmes deux parties dans la fenêtre « Fiches enregistrées » des petits écrans.
 - **9.2.0** : barre du haut à icônes (nouvelle fiche, ré-examen, séance de recompression, enregistrer, PDF, ZIP, importer, ligne Excel ADP, ligne Excel COHB, documents de sortie) avec bulle d'aide
   immédiate, tout le reste dans le menu « Plus » ; lignes Excel et documents de sortie ouverts quel que soit le type de consultation, même incomplète ; séance de recompression cotée sans
   examen clinique, numérotée EX3b (aussi dans le nom des fichiers JSON) ; âge d'un mineur en années et mois ; bandeau rose (femme), bleu (homme), vert (enfant) ; biologie : glycémie,

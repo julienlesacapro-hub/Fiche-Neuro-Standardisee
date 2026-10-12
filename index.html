@@ -72,13 +72,14 @@ button,input,select,textarea{font-family:inherit;font-size:13px;color:inherit}
 .dot{width:8px;height:8px;border-radius:50%;background:#c0392b;display:inline-block}
 .dot.on{background:#27ae60}
 /* bandeau patient : nom, prénom, naissance, accident, dossier, sous la barre d'outils, en permanence */
-#patbar{--pbg:#16396b;--pbd:#2a4f86;--plab:#a9c4e6;--pnd:#7f9cc3;--ptx:#cfe0f5;--pbtn:#1b6fd0;--pbtnb:#3b8ae8;--pbtnh:#2a80e4;--pbtnl:#d7e7fb;
-  display:flex;flex-wrap:nowrap;align-items:center;gap:2px 16px;background:var(--pbg);color:#fff;cursor:pointer;
+/* les couleurs du bandeau, que partagent les pastilles « patients en cours » du volet de gauche (.pst) */
+#patbar,.pst{--pbg:#16396b;--pbd:#2a4f86;--plab:#a9c4e6;--pnd:#7f9cc3;--ptx:#cfe0f5;--pbtn:#1b6fd0;--pbtnb:#3b8ae8;--pbtnh:#2a80e4;--pbtnl:#d7e7fb}
+#patbar{display:flex;flex-wrap:nowrap;align-items:center;gap:2px 16px;background:var(--pbg);color:#fff;cursor:pointer;
   padding:4px 14px 5px;border-top:1px solid var(--pbd);box-shadow:0 1px 6px rgba(0,0,0,.25);min-height:34px}
 /* rose : femme ; bleu : homme (par défaut) ; vert : enfant ; gris-bleu : sexe non renseigné */
-#patbar.pb-f{--pbg:#8c2d5e;--pbd:#b4558a;--plab:#f3c9df;--pnd:#d89ab9;--ptx:#f8e0ec;--pbtn:#b8467f;--pbtnb:#da74a8;--pbtnh:#c9588f;--pbtnl:#fbe6f1}
-#patbar.pb-e{--pbg:#1c6b46;--pbd:#3b9468;--plab:#c0e8d1;--pnd:#8cc6a6;--ptx:#dcf3e6;--pbtn:#238f5b;--pbtnb:#4cb888;--pbtnh:#2da56b;--pbtnl:#e4f7ec}
-#patbar.pb-n{--pbg:#3b4657;--pbd:#5b677b;--plab:#c3ccda;--pnd:#98a4b8;--ptx:#dde3ee;--pbtn:#53647f;--pbtnb:#7587a5;--pbtnh:#63769a;--pbtnl:#e6ebf4}
+#patbar.pb-f,.pst.pb-f{--pbg:#8c2d5e;--pbd:#b4558a;--plab:#f3c9df;--pnd:#d89ab9;--ptx:#f8e0ec;--pbtn:#b8467f;--pbtnb:#da74a8;--pbtnh:#c9588f;--pbtnl:#fbe6f1}
+#patbar.pb-e,.pst.pb-e{--pbg:#1c6b46;--pbd:#3b9468;--plab:#c0e8d1;--pnd:#8cc6a6;--ptx:#dcf3e6;--pbtn:#238f5b;--pbtnb:#4cb888;--pbtnh:#2da56b;--pbtnl:#e4f7ec}
+#patbar.pb-n,.pst.pb-n{--pbg:#3b4657;--pbd:#5b677b;--plab:#c3ccda;--pnd:#98a4b8;--ptx:#dde3ee;--pbtn:#53647f;--pbtnb:#7587a5;--pbtnh:#63769a;--pbtnl:#e6ebf4}
 #patbar .pitems{flex:1 1 0;min-width:0;display:flex;flex-wrap:wrap;align-items:flex-end;gap:2px 22px}
 #patbar .pright{flex:0 0 auto;display:flex;align-items:center;gap:12px}
 #patbar .pi{display:flex;flex-direction:column;line-height:1.15;min-width:0}
@@ -117,7 +118,7 @@ body.genopen{overflow:hidden}
 /* ---------- structure ---------- */
 #wrap{display:flex;gap:0;align-items:flex-start;min-width:0;max-width:100%}
 #side{width:250px;flex:0 0 250px;background:#fff;border-right:1px solid var(--bd);
-  height:calc(100vh - var(--hdr,40px));position:sticky;top:var(--hdr,40px);overflow:auto;padding:10px}
+  height:calc(100vh - var(--hdr,40px));position:sticky;top:var(--hdr,40px);overflow:hidden;padding:10px;display:flex;flex-direction:column}
 #side.hide{display:none}
 #main{flex:1;min-width:0;max-width:100%;padding:12px 16px 120px;overflow:hidden}
 #form,.sec,.sec>.body,.grid2,.bodywrap,.dbar,#sensTabs{min-width:0;max-width:100%}
@@ -130,6 +131,24 @@ body.genopen{overflow:hidden}
 .fitem.cur{background:var(--acc-l);border-left-color:#0a2f5c}
 .fitem .d{font-weight:700}
 .fitem .m{font-size:11px;color:var(--ink2)}
+/* le volet de gauche en deux parties : en haut les patients en cours (une pastille chacun, aux couleurs du bandeau), en dessous la liste des fiches,
+   qui défile dans la place que les pastilles laissent ; au-delà de la moitié de la hauteur, ce sont les pastilles qui défilent */
+#side>h4,#side>#search{flex:0 0 auto}
+#encours{flex:0 1 auto;min-height:0;max-height:50%;display:flex;flex-direction:column;margin:0 -6px 8px;padding:0 6px 8px;border-bottom:1px solid var(--bd)}
+#list{flex:1 1 0;min-height:56px;overflow-y:auto;margin:0 -6px;padding:0 6px}
+.sidecap{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:6px;margin:0 0 4px;font-size:11px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.06em;color:var(--ink2)}
+.encvide{font-size:12px;color:#8a94a3;padding:2px 2px 0}
+.pstl{flex:1 1 auto;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:5px;padding:4px}
+.pstl.pstm{overflow:visible;padding:2px 0 4px}
+.pst{flex:0 0 auto;display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:1px 8px;width:100%;margin:0;padding:5px 11px;text-align:left;
+  font:inherit;font-size:12.5px;line-height:1.25;color:#fff;background:var(--pbg);border:1px solid var(--pbd);border-radius:15px;cursor:pointer}
+.pst:hover{filter:brightness(1.15)}
+.pst:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.pst .pstn{flex:1 1 auto;min-width:0;overflow-wrap:anywhere}
+.pst .pstn i{font-style:italic;opacity:.85}
+.pst .psta{flex:0 0 auto;margin-left:auto;font-size:11px;color:var(--ptx);white-space:nowrap}
+.pst.cur{box-shadow:0 0 0 2px #fff,0 0 0 4px var(--pbg)}
 
 /* ---------- sections ---------- */
 .sec{background:var(--card);border:1px solid var(--bd);border-radius:7px;margin-bottom:10px;overflow:hidden;
@@ -742,6 +761,7 @@ svg.echo rect.z:hover{stroke-width:2.6;filter:brightness(.96)}
   <div id="side">
     <h4>Fiches enregistrées</h4>
     <input id="search" placeholder="Rechercher (dossier, n° d'accident, nom, prénom, naissance…)" oninput="renderList()">
+    <div id="encours" role="region" aria-label="Patients en cours"></div>
     <div id="list"></div>
   </div>
   <div id="main">
@@ -817,7 +837,7 @@ const ICO = {
 const ico = n => '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">'+ICO[n]+'</svg>';
 /* cl : classes du bouton ; tbp : masqué sur téléphone (le menu « Plus » le propose alors) ; nophone : masqué sur tablette comme sur téléphone */
 const TOP_BTNS = [
-  {id:'side',   ic:'list',     tip:'Liste des fiches enregistrées : afficher ou masquer', fn:'toggleSide()', cl:'nophone'},
+  {id:'side',   ic:'list',     tip:'Volet de gauche (patients en cours et liste des fiches) : afficher ou masquer', fn:'toggleSide()', cl:'nophone'},
   '|',
   {id:'new',    ic:'newfiche', tip:'Nouvelle fiche', fn:'newFiche()', cl:'pri'},
   {id:'reexam', ic:'reexam',   tip:'Ré-examen du patient : un nouvel examen pour le même sujet, pré-rempli avec la fiche ouverte', fn:'newFollowUp()', cl:'tbp'},
@@ -863,7 +883,7 @@ window.addEventListener('scroll', tipHide, true);
 window.addEventListener('blur', tipHide);
 /* le menu « Plus » : tout ce qui n'est pas dans la barre ; sur un petit écran, aussi ce que la barre ne montre pas (pm-sm : tablette, pm-ph : téléphone) */
 const PLUS_ITEMS = [
-  {ic:'list',    t:'Fiches enregistrées', s:'liste et recherche des fiches', fn:'openFiches()', cl:'pm-sm'},
+  {ic:'list',    t:'Fiches enregistrées', s:'patients en cours, liste et recherche des fiches', fn:'openFiches()', cl:'pm-sm'},
   {ic:'reexam',  t:'Ré-examen du patient', fn:'newFollowUp()', cl:'pm-ph'},
   {ic:'seance',  t:'Séance de recompression sans examen', fn:'newSeance()', cl:'pm-ph'},
   {ic:'zip',     t:'Tout transférer en archive ZIP', fn:'expJSONZip()', cl:'pm-ph'},
@@ -8817,7 +8837,7 @@ function sortedDB(){
    l'explique (diagnostic) et propose ce qui fonctionne : « Exporter tout en JSON » (dossier choisi, ou archive
    ZIP), téléchargement du JSON à chaque enregistrement, import d'un dossier ou d'une archive.
    ===================================================================== */
-const APP_VERSION = '9.2.0';
+const APP_VERSION = '9.3.1';
 /* hasPicker teste une fonction de l'API au moment de s'en servir : une extension ou un réglage du navigateur peut la retirer */
 const hasPicker = name => { try{ return typeof window[name] === 'function'; }catch(e){ return false; } };
 let FSA = hasPicker('showDirectoryPicker');
@@ -9689,6 +9709,7 @@ async function delFiche(id,ev){
   renderList(); renderForm(); updateBar(); toast('Fiche supprimee');
 }
 function renderList(){
+  renderEnCours();
   const q=($('#search')?$('#search').value:'').toLowerCase().trim();
   const recs=DB.slice().sort((a,b)=>stamp(b).localeCompare(stamp(a)))
     .filter(f=>{
@@ -9703,6 +9724,86 @@ function renderList(){
     '<button class="clr" style="float:right" title="Supprimer" onclick="delFiche(\''+f.id+'\',event)">&#10006;</button></div></div>').join('')
     : '<div style="color:#8a94a3;font-size:12px;padding:6px">Aucune fiche enregistree.</div>';
 }
+/* =====================================================================
+   PATIENTS EN COURS : la partie haute du volet de gauche
+   Une pastille par patient (un patient = un numéro de dossier) : NOM Prénom et âge, aux couleurs du bandeau (rose : femme, bleu : homme, vert : enfant).
+   Un patient reste « en cours » tant que sa consultation de sortie n'est pas enregistrée à la date de la veille ou avant : une sortie enregistrée aujourd'hui
+   le laisse affiché jusqu'à minuit, il disparaît le lendemain. Un clic sur la pastille ouvre la fiche la plus récente du patient.
+   ===================================================================== */
+const jsq = s => esc(String(s).replace(/\\/g, '\\\\').replace(/'/g, "\\'"));        // une chaîne dans un attribut onclick="f('…')"
+/* le jour d'une fiche (AAAA-MM-JJ) : la date de la consultation, à défaut le jour de sa création */
+function jourFiche(f){
+  if(f.d.date_ex) return String(f.d.date_ex);
+  const t = new Date(f.created || ''); return isNaN(t.getTime()) ? '' : iso(t);
+}
+/* auj : le jour pris pour « aujourd'hui » (AAAA-MM-JJ ; celui d'aujourd'hui par défaut). Rend les patients en cours, par ordre alphabétique :
+   {dossier, nom, prenom, sexe, ddn, ay (âge à la dernière fiche), cls (couleur), last (fiche la plus récente), n (examens), ns (séances), sortie (jour de la sortie enregistrée, s'il y en a une)} */
+function patientsEnCours(auj){
+  auj = auj || iso(new Date());
+  const by = new Map();
+  DB.forEach(f=>{
+    const k = f.d.dossier; if(k==null || k==='') return;                   // un patient est identifié par son numéro de dossier
+    const key = String(k); let p = by.get(key);
+    if(!p){ p = {dossier:key, fiches:[], n:0, ns:0, sortie:''}; by.set(key, p); }
+    p.fiches.push(f);
+    const t = f.d.fiche_type || 1;
+    if(t === 4) p.ns++; else p.n++;
+    if(t === 3){ const j = jourFiche(f); if(j > p.sortie) p.sortie = j; }    // la plus récente des consultations de sortie
+  });
+  const L = [];
+  by.forEach(p=>{
+    if(p.sortie && p.sortie < auj) return;                                    // sortie enregistrée la veille ou avant : le patient n'est plus en cours
+    p.fiches.sort((a,b)=>stamp(b).localeCompare(stamp(a)));                   // la fiche la plus récente d'abord
+    p.last = p.fiches[0];
+    const pick = k => { const f = p.fiches.find(x=>x.d[k]!=null && x.d[k]!==''); return f ? f.d[k] : ''; };    // la valeur de la fiche la plus récente qui en porte une
+    p.nom = pick('nom'); p.prenom = pick('prenom'); p.ddn = pick('ddn'); p.sexe = pick('sexe');
+    p.ay = p.ddn ? ageYM(p.ddn, p.last.d.date_ex || auj) : null;               // l'âge à la date de la dernière fiche, comme dans son bandeau
+    p.cls = pbClass(p.sexe, p.ay);
+    L.push(p);
+  });
+  const cle = p => ((p.nom || '') + ' ' + (p.prenom || '')).trim() || p.dossier;
+  L.sort((a,b)=>cle(a).localeCompare(cle(b), 'fr', {sensitivity:'base', numeric:true}));
+  return L;
+}
+/* La pastille d'un patient : NOM Prénom et âge ; la bulle d'aide donne le dossier, le nombre de fiches et la dernière fiche. cur : patient de la fiche ouverte ;
+   modal : dans la fenêtre « Fiches enregistrées » (petit écran), qui se referme au clic. */
+function pastilleHTML(p, cur, modal){
+  const d = p.last.d, nom = p.nom ? String(p.nom).toUpperCase() : '', pre = p.prenom ? String(p.prenom) : '';
+  const age = p.ay ? ageFrAM(p.ay.a, p.ay.m) : '';
+  const ident = (nom || pre) ? (nom ? '<b>'+esc(nom)+'</b>' : '')+(nom && pre ? ' ' : '')+esc(pre) : '<i>Dossier '+esc(p.dossier)+'</i>';
+  const tip = 'Dossier '+p.dossier+' · '+exCompte(p)+' · dernière fiche : '+(d.num_ex!=null ? 'examen '+exLabel(d)+', ' : '')+frDate(d.date_ex)+(d.heure_ex ? ' à '+d.heure_ex : '')+
+    (p.sortie ? ' · consultation de sortie enregistrée aujourd’hui : cette pastille disparaîtra demain' : '')+' — cliquer pour ouvrir cette fiche';
+  return '<button type="button" class="pst '+p.cls+(cur ? ' cur' : '')+'" data-dossier="'+esc(p.dossier)+'" data-tip="'+esc(tip)+'" '+
+    'aria-label="'+esc(((nom+' '+pre).trim() || 'Dossier '+p.dossier)+(age ? ', '+age : '')+' : ouvrir la dernière fiche')+'" '+
+    'onclick="'+(modal ? 'closeModal();' : '')+'loadFiche(\''+jsq(p.last.id)+'\')">'+
+    '<span class="pstn">'+ident+'</span>'+(age ? ' <span class="psta">'+esc(age)+'</span>' : '')+'</button>';
+}
+const ENCOURS_TIP = 'Les patients dont la consultation de sortie n’est pas enregistrée. Une fois enregistrée, la pastille reste affichée jusqu’à la fin de la journée et disparaît le lendemain.';
+function enCoursHTML(L, doss, modal){
+  return '<div class="sidecap" data-tip="'+esc(ENCOURS_TIP)+'">Patients en cours<span class="badge">'+L.length+'</span></div>'+
+    (L.length ? '<div class="pstl'+(modal ? ' pstm' : '')+'">'+L.map(p=>pastilleHTML(p, !modal && p.dossier === doss, modal)).join('')+'</div>'
+              : '<div class="encvide">Aucun patient en cours.</div>');
+}
+let ENCOURS_HTML = null, ENCOURS_JOUR = '';
+function renderEnCours(){
+  const el = $('#encours'); if(!el) return;
+  const auj = iso(new Date()), doss = (REC && REC.d && REC.d.dossier != null) ? String(REC.d.dossier) : '';
+  ENCOURS_JOUR = auj;
+  const html = enCoursHTML(patientsEnCours(auj), doss, false);
+  if(html === ENCOURS_HTML && el.firstChild) return;                          // rien n'a changé : on ne touche ni à l'affichage ni à la position de défilement
+  const l = el.querySelector('.pstl'), st = l ? l.scrollTop : 0;
+  ENCOURS_HTML = html; el.innerHTML = html;
+  const l2 = el.querySelector('.pstl'); if(l2) l2.scrollTop = st;
+}
+/* À minuit, les patients sortis la veille disparaissent : un minuteur recalcule les pastilles, et le retour sur l'onglet aussi si la nuit est passée entre-temps. */
+const msAvantMinuit = now => { now = now || new Date(); return new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1).getTime() - now.getTime(); };
+let MINUIT_T = null;
+function armMinuit(){
+  clearTimeout(MINUIT_T);
+  MINUIT_T = setTimeout(()=>{ renderEnCours(); armMinuit(); }, Math.min(msAvantMinuit() + 2000, 2147000000));
+}
+document.addEventListener('visibilitychange', ()=>{ if(!document.hidden && ENCOURS_JOUR && ENCOURS_JOUR !== iso(new Date())){ renderEnCours(); armMinuit(); } });
+
 /* ---------- bandeau patient ---------- */
 let PATBAR_HTML = null;
 /* Âge entre une date de naissance et une date (AAAA-MM-JJ, aujourd'hui par défaut) : {a: années révolues, m: mois révolus en plus} ; null si une date est
@@ -9762,10 +9863,13 @@ function patNextHTML(){
          '<small>Suivant</small><b>'+esc(pageShort(nx))+' &#9658;</b></button>';
 }
 /* la couleur du bandeau : rose pour une femme, bleu pour un homme, vert pour un enfant (mineur, quel que soit le sexe), gris-bleu quand le sexe n'est pas renseigné */
-function patBarClass(){
-  const d = (REC && REC.d) || {}, ay = d.ddn ? ageYM(d.ddn, d.date_ex) : null;
+function pbClass(sexe, ay){
   if(ay && ay.a < 18) return 'pb-e';
-  return d.sexe===2 ? 'pb-f' : d.sexe===1 ? 'pb-h' : 'pb-n';
+  return sexe===2 ? 'pb-f' : sexe===1 ? 'pb-h' : 'pb-n';
+}
+function patBarClass(){
+  const d = (REC && REC.d) || {};
+  return pbClass(d.sexe, d.ddn ? ageYM(d.ddn, d.date_ex) : null);
 }
 function updatePatBar(){
   const el = $('#patbar'); if(!el || !REC) return;
@@ -11440,7 +11544,8 @@ function openDict(){
 
 function openFiches(){
   const recs = sortedDB().slice().reverse();
-  modalHTML('<h3>Fiches enregistrées ('+DB.length+')</h3>'+
+  modalHTML('<h3>Fiches enregistrées ('+DB.length+')</h3>'+enCoursHTML(patientsEnCours(), '', true)+
+    '<div class="sidecap" style="margin-top:14px">Toutes les fiches</div>'+
     (recs.length? recs.map(f=>'<button class="tb" style="width:100%;text-align:left;margin-bottom:6px;padding:11px" '+
       'onclick="closeModal();loadFiche(\''+f.id+'\')"><b>'+esc(f.d.dossier||'(sans numéro)')+'</b>'+
       (f.d.num_ex!=null?' — examen '+exLabel(f.d):'')+'<br><span style="color:#9fb0c8;font-size:11.5px">'+
@@ -11503,6 +11608,12 @@ function openHelp(){
   'La <b>séance de recompression</b> cote une séance sans examen clinique, en quelques clics : ouvrez une fiche du patient (sans fiche ouverte, la recherche du patient s’ouvre), cliquez le bouton, vérifiez la table (celle de la dernière séance est reprise) '+
   'et l’heure de mise en pression (proposée : maintenant), puis enregistrez. La fiche porte le numéro du dernier examen suivi d’une lettre minuscule (EX3b, EX3c…), y compris dans le nom du fichier JSON. '+
   'Le bandeau du patient est <b>rose</b> pour une femme, <b>bleu</b> pour un homme, <b>vert</b> pour un enfant ; l’âge d’un mineur s’écrit en années et mois.</p>'+
+  '<p><b>2 nonies. Le volet de gauche : les patients en cours.</b><br>'+
+  'Le volet de gauche (bouton « liste » de la barre du haut pour l’afficher ou le masquer) a deux parties. En haut, sous la recherche, une <b>pastille par patient en cours</b> : '+
+  '<b>NOM</b> Prénom et âge, aux couleurs du bandeau (rose : femme, bleu : homme, vert : enfant). Un patient reste en cours tant que sa consultation de sortie n’est pas enregistrée ; '+
+  'une fois enregistrée, sa pastille reste affichée jusqu’à la fin de la journée et disparaît le lendemain. Un clic sur une pastille ouvre la fiche la plus récente du patient ; '+
+  'la bulle d’aide donne son dossier et sa dernière fiche. En bas, la liste de toutes les fiches enregistrées défile dans la place que les pastilles laissent ; la recherche ne filtre que cette liste. '+
+  'Sur tablette et téléphone, <b>Plus</b> › <b>Fiches enregistrées</b> montre les mêmes deux parties.</p>'+
   '<p><b>2 septies. Examens complémentaires et biologie.</b><br>'+
   'L’onglet « Examens complémentaires » commence par les <b>actes</b> (voie veineuse, bilan biologique, sondage vésical), puis réunit le <b>gaz du sang veineux</b>, la <b>biologie</b>, l’ECG, l’imagerie et les autres examens. '+
   'Chaque encart de biologie est horodaté : la date et l’heure du prélèvement sont celles de la fiche, modifiables. Chaque résultat affiche ses '+
@@ -11720,7 +11831,7 @@ async function saveDraft(){ if(DIRTY && REC) await metaSet('draft',JSON.parse(JS
   const draft = await metaGet('draft');
   if(!wantNew && draft && draft.d && Object.keys(draft.d).length>2){ REC=draft; DIRTY=true; }
   else REC=blank();
-  renderForm(); renderList(); updateBar(); watchHdr();
+  renderForm(); renderList(); updateBar(); watchHdr(); armMinuit();
   initPWA();
   setInterval(saveDraft,4000);
   startupSync().catch(e=>console.error('dossier de données :', e));      // sans attendre : le dossier est relu pendant que la fiche s'affiche
