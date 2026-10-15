@@ -148,6 +148,7 @@ body.genopen{overflow:hidden}
 .pst .pstn{flex:1 1 auto;min-width:0;overflow-wrap:anywhere}
 .pst .pstn i{font-style:italic;opacity:.85}
 .pst .psta{flex:0 0 auto;margin-left:auto;font-size:11px;color:var(--ptx);white-space:nowrap}
+.pst .psth{display:inline-block;margin-left:4px;padding:0 6px;border:1px solid var(--ptx);border-radius:9px;font-size:9.5px;font-weight:700;letter-spacing:.06em;line-height:1.5;color:var(--ptx);vertical-align:1px;white-space:nowrap}
 .pst.cur{box-shadow:0 0 0 2px #fff,0 0 0 4px var(--pbg)}
 
 /* ---------- sections ---------- */
@@ -1237,6 +1238,19 @@ const GAZ  = [{v:1,l:'Air'},{v:2,l:'Nitrox'},{v:3,l:'Trimix'},{v:4,l:'Héliox'},
 const PROC = [{v:1,l:'Ordinateur'},{v:2,l:'Tables MN23'},{v:5,l:'Tables MT 92'},
               {v:3,l:'Autres tables (préciser)'},{v:4,l:'Sans procédure'}];
 const TYPP = [{v:1,l:'Loisir'},{v:2,l:'Instruction'},{v:3,l:'Professionnelle'},{v:4,l:'Militaire'},{v:5,l:'Apnée'}];
+/* Type de tenue : 1, 2 et 3 sont aussi les codes de la colonne « Combinaison » du fichier Excel ADP ; « autre » se précise en texte */
+const TENUES = [{v:1,l:'Humide'},{v:2,l:'Semi-étanche'},{v:3,l:'Étanche'},{v:9,l:'Autre'}];
+/* Orientation « hospitalisation de jour » (valeur 6 de l'orientation) et lieu où le patient passe la nuit pendant cette hospitalisation */
+const ORIENT_HDJ = 6;
+const HDJ_LIEU = [{v:1,l:'Domicile'},{v:2,l:'Hôtel patient'},{v:3,l:'Autre établissement'}];
+/* le lieu en une locution : « à domicile », « à l’hôtel patient », « dans un autre établissement (X) » ; '' si le lieu n'est pas coté */
+function hdjLieuTxt(d){
+  if(!d) return '';
+  if(d.hdj_lieu===1) return 'à domicile';
+  if(d.hdj_lieu===2) return 'à l’hôtel patient';
+  if(d.hdj_lieu===3) return 'dans un autre établissement'+(d.hdj_lieu_autre ? ' ('+TXT.flat(d.hdj_lieu_autre)+')' : '');
+  return '';
+}
 /* Types de profil de plongée. Le dessin de chaque type est un schéma, pas un relevé : il
    reprend les quatre profils de la fiche de recueil du service (carré, inversé, yoyo,
    remontée progressive). Une plongée à yoyo se définit par des remontées et des
@@ -1348,7 +1362,7 @@ const DEF_TABLE = 5;          // B18 : table proposée d'office, modifiable
 /* Valeurs proposées d'office sur une consultation INITIALE. Elles restent modifiables ;
    elles ne s'appliquent ni aux fiches de suivi ni aux comptes rendus de sortie, et une
    fiche qui change de type les perd tant qu'elles n'ont pas été modifiées. */
-const DEF_INITIALE = {soin_aspirine:0, tb_table:DEF_TABLE, bio_add:1, bio_opi:1, pl_profil_type:DEF_PROFIL};
+const DEF_INITIALE = {soin_aspirine:0, tb_table:DEF_TABLE, bio_add:1, bio_opi:1, pl_profil_type:DEF_PROFIL, pl_deseq:1};
 /* (méthyl)prednisolone : dose proposée par kilo de poids, et durée en jours */
 const DEF_CORTICO_MGKG = 1;
 const DEF_CORTICO_JOURS = 3;
@@ -1759,6 +1773,10 @@ const SPEC = [
 {id:'plongee', t:'Paramètres de la plongée accidentelle', cols:2, page:2, only:[1], ptail:()=>profilPrint(), f:[
   {k:'pl_lieu', l:'Lieu / site', t:'txt', wide:1, full:1},
   {k:'pl_type', l:'Type de plongée', t:'choice', o:TYPP},
+  {k:'pl_tenue', l:'Type de tenue', t:'choice', o:TENUES, full:1},
+  {k:'pl_tenue_autre', l:'Préciser la tenue', t:'txt', wide:1, full:1, dep:['pl_tenue',[9]], sub:1},
+  {k:'pl_deseq', l:'Déséquipement sur le lieu de plongée', t:'choice', o:ONA, full:1,
+   hint:'OUI est proposé d’office, modifiable'},
   {k:'pl_gaz', l:'Mélange respiré', t:'choice', o:GAZ, depFn:NAPN},
   {k:'pl_gaz_autre', l:'Préciser le mélange', t:'txt', dep:['pl_gaz',[2,3,4,9]], sub:1},
   {k:'pl_proc', l:'Procédure de décompression', t:'choice', o:PROC, full:1, depFn:NAPN},
@@ -1853,9 +1871,10 @@ const SPEC = [
 ]},
 
 {id:'facteurs', t:'Facteurs favorisants', cols:2, page:2, only:[1],
- norm:{ff_proc:1,ff_entrainement:0,ff_ludion:0,ff_fatigue:0,ff_effort:0,ff_instruction:0,
+ norm:{ff_proc:1,ff_progress:1,ff_entrainement:0,ff_ludion:0,ff_fatigue:0,ff_effort:0,ff_instruction:0,
        ff_insomnie:0,ff_exercice24:0,ff_froid:0,ff_deshydrat:0}, f:[
   {k:'ff_proc', l:'Respect de la procédure de décompression', t:'choice', o:NO},
+  {k:'ff_progress', l:'Progressivité respectée', t:'choice', o:NO},
   {k:'ff_entrainement', l:'Manque d’entraînement à la plongée profonde', t:'choice', o:ON},
   {k:'ff_ludion', l:'Plongées ludion (yo-yo)', t:'choice', o:ON},
   {k:'ff_fatigue', l:'Fatigue', t:'choice', o:ON},
@@ -2141,11 +2160,15 @@ const SPEC = [
 
 {id:'scores', t:'Scores de sévérité', custom:'sco', cols:1, page:4, f:[]},
 
-/* Les scores MEDSUBHYP et vestibulaire n'ont de sens que pour un accident de décompression : pour un autre accident
-   (barotraumatisme, œdème pulmonaire d'immersion…), cette case les retire de la synthèse, du CRH et de l'impression. */
+/* Les scores MEDSUBHYP et vestibulaire n'ont pas toujours de sens : MEDSUBHYP pour un accident de désaturation médullaire, le score vestibulaire pour une atteinte vestibulaire. Une case par score
+   le retire de la synthèse, du CRH, de l'impression et de la ligne Excel ADP (avant la 9.3.5, une seule case, sc_masquer, les retirait tous les deux : elle est reprise dans les deux nouvelles). */
 {id:'scores_opt', t:'Scores dans la synthèse', cols:1, page:4, noghost:1, f:[
-  {k:'sc_masquer', l:'Scores MEDSUBHYP et vestibulaire', t:'check', cl:'Ne pas les mentionner dans la synthèse (autre accident qu’un accident de décompression)', full:1, nofill:1,
-   hint:'Retire aussi ces scores du compte rendu d’hospitalisation et de l’impression ; ils restent calculés dans la fiche. La case est reprise sur les autres fiches du dossier.'}
+  {k:'sc_masquer_msh', l:'Score MEDSUBHYP', dl:'Score MEDSUBHYP - ne pas le mentionner dans la synthese, le CRH et l impression', t:'check',
+   cl:'Ne pas le mentionner dans la synthèse (accident autre qu’un accident de désaturation médullaire)', full:1, nofill:1,
+   hint:'Retire le score MEDSUBHYP de la synthèse, du compte rendu d’hospitalisation, de l’impression et de la ligne Excel ADP ; il reste calculé dans la fiche. La case est reprise sur les autres fiches du dossier.'},
+  {k:'sc_masquer_vest', l:'Score vestibulaire', dl:'Score vestibulaire - ne pas le mentionner dans la synthese, le CRH et l impression', t:'check',
+   cl:'Ne pas le mentionner dans la synthèse (accident sans atteinte vestibulaire)', full:1, nofill:1,
+   hint:'Retire le score vestibulaire de la synthèse, du compte rendu d’hospitalisation, de l’impression et de la ligne Excel ADP ; il reste calculé dans la fiche. La case est reprise sur les autres fiches du dossier.'}
 ]},
 
 /* La conclusion de l'examen clinique ferme l'onglet « Examen neurologique » */
@@ -2317,12 +2340,17 @@ const SPEC = [
 
 {id:'concl', page:6, t:'Orientation et commentaires', cols:1, noghost:1, f:[
   {k:'orientation', l:'Orientation', t:'choice',
+   hint:'Hospitalisation de jour : le patient reste dans les « patients en cours » jusqu’à une consultation de sortie dont l’orientation n’est plus l’hospitalisation de jour.',
    o:[{v:1,l:'Retour au domicile',c:'v-ok'},
       {v:2,l:'Hospitalisation en service de médecine',c:'v-wn'},
       {v:3,l:'Hospitalisation en surveillance continue',c:'v-wn'},
       {v:4,l:'Hospitalisation en soins intensifs',c:'v-ab'},
-      {v:5,l:'Transfert vers une autre structure'}]},
+      {v:5,l:'Transfert vers une autre structure'},
+      {v:6,l:'Hospitalisation de jour',c:'v-wn'}]},
   {k:'orientation_autre', l:'Préciser la structure', t:'txt', wide:1, dep:['orientation',[5]], sub:1, nofill:1},
+  {k:'hdj_lieu', l:'Hospitalisation de jour — hébergement', dl:'Hospitalisation de jour - lieu d hebergement', t:'choice', o:HDJ_LIEU, full:1, dep:['orientation',[ORIENT_HDJ]], sub:1,
+   hint:'Où le patient passe la nuit pendant l’hospitalisation de jour'},
+  {k:'hdj_lieu_autre', l:'Préciser l’établissement', dl:'Hospitalisation de jour - autre etablissement (precision)', t:'txt', wide:1, dep:['hdj_lieu',[3]], sub:1, nofill:1},
   {k:'orientation_txt', l:"Précisions sur l'orientation", t:'area', wide:1, nofill:1,
    phr:['Surveillance neurologique horaire.','Réévaluation à H+1.','Réévaluation à H+4.','Réévaluation à H+24.',
         'Service d’USIC.','Service de neurovasculaire.','Service d’USC.','Service de réanimation.',
@@ -2745,8 +2773,10 @@ function prevFiche(){
 }
 /* remplissage automatique de l'identité et de l'accident */
 /* identité et accident repris d'un examen précédent du même dossier (le n° d'accident de plongée suit les fiches de suivi,
-   ainsi que la case « ne pas mentionner les scores », qui tient à la nature de l'accident) */
-const ID_KEYS = ['nom','prenom','sexe','ddn','date_acc','heure_acc','ad_num','sc_masquer'];
+   ainsi que les cases « ne pas mentionner » les scores MEDSUBHYP et vestibulaire, qui tiennent à la nature de l'accident ; sc_masquer est l'ancienne case unique, d'avant la 9.3.5) */
+const ID_KEYS = ['nom','prenom','sexe','ddn','date_acc','heure_acc','ad_num','sc_masquer','sc_masquer_msh','sc_masquer_vest'];
+/* Le score w ('msh' ou 'vest') est-il retiré de la synthèse, du CRH, de l'impression et de la ligne Excel ? Sa case, ou l'ancienne case unique d'une fiche d'avant la 9.3.5. */
+function scMasque(d, w){ return !!(d && (d.sc_masquer || d['sc_masquer_'+w])); }
 /* Mise en forme automatique des noms propres : NOM en majuscules, Prénom avec l'initiale de chaque élément en majuscule (après une espace ou un trait d'union, le reste en
    minuscules ; les accents sont conservés : « éloïse » devient « Éloïse »), examinateur, médecin et infirmier(e) en majuscules. Elle suit la frappe (setFmt), s'applique à
    la fiche à chaque calcul (computeAll : valeurs reprises d'un autre examen, fiches enregistrées ou importées avant la 9.3.2) et au nom du PDF. */
@@ -2947,6 +2977,9 @@ function orlAudio(){
 function computeAll(){
   const d = REC.d;
   Object.keys(FMT).forEach(k=>{ const v = d[k]; if(typeof v === 'string' && v){ const w = FMT[k](v); if(w !== v) d[k] = w; } });
+  /* fiche d'avant la 9.3.5 : l'ancienne case unique « ne pas mentionner les scores » est reprise dans les deux cases, une par score */
+  if(d.sc_masquer){ if(!d.sc_masquer_msh) d.sc_masquer_msh = 1; if(!d.sc_masquer_vest) d.sc_masquer_vest = 1; }
+  delete d.sc_masquer;
   /* âge à la date de l'examen : en années ; pour un mineur, avec les mois en plus (age_mois, de 0 à 11) */
   const ay = (d.ddn && d.date_ex) ? ageYM(d.ddn, d.date_ex) : null;
   if(ay){ d.age = ay.a; if(ay.a < 18) d.age_mois = ay.m; else delete d.age_mois; }
@@ -4153,7 +4186,12 @@ function setSel(k,val){
 function toggleCheck(k){
   if(REC.d[k]) delete REC.d[k]; else REC.d[k] = 1;
   pruneDeps(); touch(); refreshField(k);
-  if(k==='sc_masquer') refreshScores();
+  if(k==='sc_masquer_msh' || k==='sc_masquer_vest') refreshScores();
+}
+/* diagnostic retenu autre qu'un accident de décompression : les deux scores sont retirés d'un clic */
+function scMasquerTout(){
+  REC.d.sc_masquer_msh = 1; REC.d.sc_masquer_vest = 1; delete REC.d.sc_masquer;
+  pruneDeps(); touch(); refreshField('sc_masquer_msh'); refreshScores();
 }
 let DOSSIER_T=null;
 /* Champ de nom (nom, prénom, examinateur, médecin, infirmier(e)) : la mise en forme suit la frappe sans déplacer le curseur ; pendant une composition (touche morte, IME) elle attend
@@ -6293,14 +6331,19 @@ function scoBlock(){
    '</span></span></h3><div class="body"><div id="scoarea">'+scoArea()+'</div></div></div>';
 }
 function scoArea(){
-  const mask = REC.d.sc_masquer ? '<div class="note" style="background:#eef4fb;border-color:#bcd4ee;margin:0 0 8px">'+
-    'Ces deux scores restent calculés dans la fiche, mais ne sont <b>pas mentionnés</b> dans la synthèse, le compte rendu d’hospitalisation '+
-    'ni l’impression (case cochée dans « Scores dans la synthèse », plus bas).</div>' : '';
-  /* diagnostic retenu autre qu'un accident de décompression : on propose la case, sans la cocher à la place du praticien */
+  const nm = scMasque(REC.d, 'msh'), nv = scMasque(REC.d, 'vest');
+  const mask = (nm || nv) ? '<div class="note" style="background:#eef4fb;border-color:#bcd4ee;margin:0 0 8px">'+
+    (nm && nv
+      ? 'Ces deux scores restent calculés dans la fiche, mais ne sont <b>pas mentionnés</b> dans la synthèse, le compte rendu d’hospitalisation '+
+        'ni l’impression (cases cochées dans « Scores dans la synthèse », plus bas).'
+      : 'Le score '+(nm ? 'MEDSUBHYP' : 'vestibulaire')+' reste calculé dans la fiche, mais n’est <b>pas mentionné</b> dans la synthèse, le compte rendu d’hospitalisation '+
+        'ni l’impression (case cochée dans « Scores dans la synthèse », plus bas) ; le score '+(nm ? 'vestibulaire' : 'MEDSUBHYP')+' reste mentionné.')+
+    '</div>' : '';
+  /* diagnostic retenu autre qu'un accident de décompression : on propose de retirer les deux scores, sans cocher les cases à la place du praticien */
   const dg = Array.isArray(REC.d.dg_liste) ? REC.d.dg_liste : [];
-  const rappel = (!REC.d.sc_masquer && dg.length && dg.indexOf('add') < 0) ? '<div class="note" style="background:#fbeee4;border-color:#e3bd9a;margin:0 0 8px">'+
+  const rappel = (!(nm && nv) && dg.length && dg.indexOf('add') < 0) ? '<div class="note" style="background:#fbeee4;border-color:#e3bd9a;margin:0 0 8px">'+
     'Le diagnostic retenu n’est pas un accident de décompression : ces scores n’ont pas de sens ici. '+
-    '<button class="mini" onclick="toggleCheck(\'sc_masquer\')">Ne pas les mentionner dans la synthèse</button></div>' : '';
+    '<button class="mini" onclick="scMasquerTout()">Ne pas les mentionner dans la synthèse</button></div>' : '';
   return mask + rappel + mshHTML() + vestHTML();
 }
 
@@ -7095,6 +7138,7 @@ function narrativeBlocks(){
               : (d.pl_gaz===4||d.pl_gaz===5) ? 'à l’'+low(lab('pl_gaz')) : 'au '+low(lab('pl_gaz'));
       dv.push(g+(d.pl_gaz_autre?' ('+flat(d.pl_gaz_autre)+')':''));
     }
+    if(d.pl_tenue) dv.push(d.pl_tenue===9 ? (d.pl_tenue_autre ? 'tenue '+low(flat(d.pl_tenue_autre)) : 'autre tenue') : 'tenue '+low(lab('pl_tenue')));
     if(d.pl_prof!=null) dv.push(d.pl_prof+' m');
     const pft = profilTexte(d); if(pft) dv.push(pft);
     const du = [];
@@ -7139,10 +7183,11 @@ function narrativeBlocks(){
     const FS = SPEC.find(x=>x.id==='facteurs') || {f:[], norm:{}}, nrm = FS.norm || {};
     const fr = FS.f.filter(f=>f.o && !ENV_KEYS[f.k] && d[f.k]!=null && d[f.k]!==nrm[f.k])
                    .map(f=>{ if(f.k==='ff_proc') return 'procédure de décompression non respectée';
+                             if(f.k==='ff_progress') return 'progressivité non respectée';
                              const o = f.o.find(x=>x.v===d[f.k]);
                              return low(f.l)+(o && o.l!=='OUI' ? ' : '+low(o.l) : ''); });
     if(fr.length) l1.push(bold(fin('Facteurs favorisants : '+fr.join(', '))));
-    else if(FS.f.some(f=>f.o && !ENV_KEYS[f.k] && d[f.k]!=null)) l1.push('Pas de facteur favorisant retrouvé, procédure de décompression respectée.');
+    else if(FS.f.some(f=>f.o && !ENV_KEYS[f.k] && d[f.k]!=null)) l1.push('Pas de facteur favorisant retrouvé, procédure de décompression'+(d.ff_progress===1 ? ' et progressivité respectées.' : ' respectée.'));
     /* les conditions environnementales se décrivent à part : « mer calme » n'est pas un facteur favorisant */
     const env = [];
     if(d.ff_courant===1) env.push('courant'); else if(d.ff_courant===0) env.push('pas de courant');
@@ -7173,6 +7218,8 @@ function narrativeBlocks(){
       sp.push(o);
     } else if(d.soin_o2===0) sp.push('Pas d’oxygénothérapie normobare sur place');
     else if(d.heure_soins) sp.push('Premiers soins sur place à '+hFr(d.heure_soins));
+    if(d.pl_deseq===1) sp.push(sp.length ? 'déséquipement sur le lieu de plongée' : 'Déséquipement sur le lieu de plongée');
+    else if(d.pl_deseq===0) sp.push(sp.length ? 'pas de déséquipement sur le lieu de plongée' : 'Pas de déséquipement sur le lieu de plongée');
     if(d.soin_aspirine===1) sp.push('aspirine');
     if(d.soin_hydrat!=null) sp.push('hydratation de '+d.soin_hydrat+' mL');
     if(d.soin_autres) sp.push(flat(d.soin_autres).replace(/\.$/,''));
@@ -7305,14 +7352,16 @@ function narrativeBlocks(){
   if(d.im_demande) PC('demande', 'Examens demandés : '+flat(d.im_demande).replace(/\.$/,'')+'.');
   /* les deux scores s'écrivent par leur seule valeur, sans maximum, seuil ni détail des items ;
      le moment de la cotation n'est précisé que quand le dossier en compte plusieurs */
-  /* la case « ne pas mentionner les scores » les retire pour un accident autre qu'un accident de décompression ;
+  /* les cases « ne pas mentionner » retirent chacune son score (MEDSUBHYP, vestibulaire) pour un accident qui n'a pas de sens pour lui ;
      le score ASIA, lui, reste */
-  if(!d.sc_masquer){
+  if(!scMasque(d, 'msh')){
     const Rn = mshCalc();
     if(!Rn.horsFenetre){
       const sr = mshSerie();
       if(sr.length) PC('score', 'Score MEDSUBHYP : '+sr.map(x=>x.t+(sr.length>1 ? ' '+x.lab : '')).join(', ')+'.', false, 'msh');
     }
+  }
+  if(!scMasque(d, 'vest')){
     const Vn = vestCalc();
     if(Vn && Vn.total!=null) PC('score', Vn.nom+' : '+Vn.total+'.', false, 'vest');
   }
@@ -7328,7 +7377,8 @@ function narrativeBlocks(){
   /* ---------- conduite à tenir ---------- */
   const cat = [];
   const ORIENT = {1:'retour au domicile', 2:'hospitalisation en service de médecine', 3:'hospitalisation en surveillance continue',
-                  4:'hospitalisation en soins intensifs', 5:'transfert vers '+(d.orientation_autre?flat(d.orientation_autre):'une autre structure')};
+                  4:'hospitalisation en soins intensifs', 5:'transfert vers '+(d.orientation_autre?flat(d.orientation_autre):'une autre structure'),
+                  6:'hospitalisation de jour'+(hdjLieuTxt(d) ? ', hébergement '+hdjLieuTxt(d) : '')};
   const ori = ORIENT[d.orientation] || '';
   const tbl = tableLib(d);
   if(tbl || d.tb_h_mep){
@@ -7581,14 +7631,17 @@ const asiaTxt = z => 'AIS '+z.ais+(z.nli ? ', niveau neurologique '+z.nli : '')+
    - MEDSUBHYP : celui d'entrée, puis ceux du premier jour (H12, H24) quand ils sont connus ;
    - score vestibulaire : le premier connu ;
    - score ASIA : celui d'entrée, le plus péjoratif s'il diffère de celui d'entrée et de celui de sortie (daté), celui de sortie.
-   noSc : la case « ne pas mentionner les scores » retire MEDSUBHYP et le score vestibulaire, pas le score ASIA. */
-function scoresCRH(ST, noSc){
+   noMsh, noVest : les cases « ne pas mentionner » retirent MEDSUBHYP et le score vestibulaire, chacun pour son compte, pas le score ASIA (un seul argument : les deux). */
+function scoresCRH(ST, noMsh, noVest){
+  if(noVest === undefined) noVest = noMsh;
   const L = [];
-  if(!noSc){
+  if(!noMsh){
     const m = {};
     ST.forEach(st=>{ const mo = st.d.msh_moment_eff || st.d.msh_moment; if(mo && mo!=='nr' && st.d.msh_total!=null) m[mo] = st.d.msh_total; });
     const ms = [['t0','à l’arrivée'],['t12','à H12'],['t24','à H24']].filter(x=>m[x[0]]!=null).map(x=>m[x[0]]+' '+x[1]);
     if(ms.length) L.push('Score MEDSUBHYP : '+ms.join(', ')+'.');
+  }
+  if(!noVest){
     const v = ST.find(st=>st.d.vest_total!=null);
     if(v) L.push(VEST.nom+' initial : '+v.d.vest_total+'.');
   }
@@ -7704,9 +7757,9 @@ function crhBlocks(){
     if(st.d.ev_exam_faits) e.push(fin('Examens complémentaires réalisés depuis la consultation précédente : '+flat(st.d.ev_exam_faits)));
     if(e.length){ pcl.push(crhWhen(st.f)+jour(st)+' :'); e.forEach(x=>pcl.push('- '+x)); }
   });
-  /* la case « ne pas mentionner les scores » d'une fiche du dossier vaut pour tout le compte rendu (le score ASIA reste) ; les scores ont leur
+  /* la case « ne pas mentionner » d'un score, cochée sur une fiche du dossier, vaut pour tout le compte rendu (le score ASIA reste) ; les scores ont leur
      paragraphe, avant le diagnostic retenu */
-  const noSc = FI.some(f=>f.d.sc_masquer);
+  const noMsh = FI.some(f=>scMasque(f.d, 'msh')), noVest = FI.some(f=>scMasque(f.d, 'vest'));
   sect('Examens paracliniques', pcl, false);
   /* la biologie de tout le dossier, dans un tableau : le plus récent à gauche */
   bioSynth(B, FI);
@@ -7736,7 +7789,7 @@ function crhBlocks(){
   }
 
   /* évolution des scores : MEDSUBHYP, score vestibulaire, score ASIA, rassemblés avant le diagnostic retenu */
-  sect('Évolution des scores', scoresCRH(C, noSc), false);
+  sect('Évolution des scores', scoresCRH(C, noMsh, noVest), false);
 
   /* diagnostic retenu : le plus récent */
   const dg = ST.slice().reverse().find(s=>s.diag);
@@ -7745,7 +7798,8 @@ function crhBlocks(){
   /* orientation à la sortie */
   const ori = (last.d.fiche_type===3 && last.d.orientation!=null) ? (FIELDS.orientation.o.find(o=>o.v===last.d.orientation) || null) : null;
   if(ori){
-    const o = (ori.v===5 && last.d.orientation_autre) ? 'Transfert vers '+flat(last.d.orientation_autre) : ori.l;
+    const o = (ori.v===5 && last.d.orientation_autre) ? 'Transfert vers '+flat(last.d.orientation_autre)
+            : ori.v===ORIENT_HDJ ? 'Hospitalisation de jour'+(hdjLieuTxt(last.d) ? ', hébergement '+hdjLieuTxt(last.d) : '') : ori.l;
     sect('Orientation', [fin(o)].concat(last.d.orientation_txt ? String(last.d.orientation_txt).split(/\n+/).map(l=>l.trim() ? fin(l) : '') : []), false);
   }
 
@@ -7906,7 +7960,7 @@ const PMERGE = {
   soin_o2:['soin_o2_debit','soin_o2_duree'],
   niv_loisir:['niv_loisir_autre'], niv_pro:['niv_pro_autre'], niv_ens:['niv_ens_autre'],
   organisme:['organisme_autre'], certif_medecin:['certif_medecin_autre'],
-  pl_proc:['pl_ordi_modele','pl_ordi_reglage','pl_proc_autre'],
+  pl_proc:['pl_ordi_modele','pl_ordi_reglage','pl_proc_autre'], pl_tenue:['pl_tenue_autre'],
   im_ecg:['ecg_txt'], tb_table:['tb_table_autre'],
   rx_solu:['rx_solu_dose','rx_solu_jours'],
   im_rp:['im_rp_res'], im_tdm_thor:['im_tdm_thor_res'], im_tdm_cer:['im_tdm_cer_res'],
@@ -8060,10 +8114,13 @@ function pcst(){
 
 /* ---------- scores de sévérité ---------- */
 function psco(){
-  if(REC.d.sc_masquer) return '';
+  const nm = scMasque(REC.d, 'msh'), nv = scMasque(REC.d, 'vest');
+  if(nm && nv) return '';
   const R = mshCalc(), V = vestCalc();
   let inner = '';
-  if(R.horsFenetre){
+  if(nm){
+    /* MEDSUBHYP n'est pas mentionné : seul le score vestibulaire peut figurer */
+  } else if(R.horsFenetre){
     inner += '<div class="pl"><b>MEDSUBHYP :</b> non renseigné — la cotation perd son intérêt pronostique '+
              'au-delà de 24 heures.</div>';
   } else {
@@ -8082,8 +8139,8 @@ function psco(){
     inner += '<div class="pl" style="font-size:6.6pt;color:#444">Le poids de « parésies » ('+MSH_PARESIE+
       ') ne figure pas sur la fiche papier du service : valeur retenue par hypothèse, à confirmer.</div>';
   }
-  if(V.items.some(i=>i.v!=null)){
-    inner += '<div class="pl" style="border-top:.3mm solid #000;margin-top:.8mm;padding-top:.8mm"><b>'+esc(V.nom)+' :</b> '+
+  if(!nv && V.items.some(i=>i.v!=null)){
+    inner += '<div class="pl" style="'+(inner ? 'border-top:.3mm solid #000;margin-top:.8mm;padding-top:.8mm' : '')+'"><b>'+esc(V.nom)+' :</b> '+
       (V.total==null ? '<span class="pv">non calculable</span> <span class="pf">'+V.manque+' item'+(V.manque>1?'s':'')+' sans valeur</span>'
         : '<span class="pv'+((V.seuil!=null&&V.total>=V.seuil)?' ab':'')+'"><b>'+V.total+' / '+V.max+'</b></span>'+
           (V.seuil!=null?' <span class="pf">seuil défini '+V.seuil+'</span>':''))+
@@ -8091,7 +8148,7 @@ function psco(){
     if(V.total!=null)
       inner += '<div class="pl" style="font-size:6.8pt">'+V.items.map(it=>esc(it.l)+' : '+(it.lab?esc(it.lab):'—')).join(' · ')+'</div>';
   }
-  return '<div class="pbox"><h4 class="small">SCORES DE SÉVÉRITÉ</h4><div class="pb">'+inner+'</div></div>';
+  return inner ? '<div class="pbox"><h4 class="small">SCORES DE SÉVÉRITÉ</h4><div class="pb">'+inner+'</div></div>' : '';
 }
 
 /* Titre et contenu du document dépendent du type de consultation :
@@ -8317,7 +8374,7 @@ function buildPrint(){
   h+='</div>';
 
   /* ---------- schémas corporels et pallesthésie ---------- */
-  h+='<div class="pg"><div class="phead" style="font-size:10.5pt">SCHÉMAS, PALLESTHÉSIE'+(d.sc_masquer ? '' : ' ET SCORES DE SÉVÉRITÉ')+'</div>';
+  h+='<div class="pg"><div class="phead" style="font-size:10.5pt">SCHÉMAS, PALLESTHÉSIE'+((scMasque(d, 'msh') && scMasque(d, 'vest')) ? '' : ' ET SCORES DE SÉVÉRITÉ')+'</div>';
   h+='<div class="pgrid2">';
   h+='<div class="pbox"><h4 class="small">SIGNES SUBJECTIFS<span class="sb"> localisation du ressenti</span></h4>'+
      '<div class="pb psvg">'+VIEWS.map(v=>'<div><div class="pcap">'+esc(v.l.replace('Face ','')).toUpperCase()+'</div>'+subjSVG(v.v,false)+'</div>').join('')+'</div>'+
@@ -8368,7 +8425,8 @@ function buildPrint(){
   h+=box('DIAGNOSTIC RETENU', dgt ? '<div class="pl"><b>'+esc(dgt)+'</b></div>' : '<div class="pl"><span style="color:#888">—</span></div>');
 
   h+='<div class="pbox" style="margin-top:1.4mm"><h4>ORIENTATION ET COMMENTAIRES</h4><div class="pb">'+
-     pline('Orientation',pv('orientation')+(d.orientation===5&&d.orientation_autre?' — '+esc(d.orientation_autre):''))+
+     pline('Orientation',pv('orientation')+(d.orientation===5&&d.orientation_autre?' — '+esc(d.orientation_autre):'')+
+                         (d.orientation===ORIENT_HDJ&&hdjLieuTxt(d)?' — hébergement '+esc(hdjLieuTxt(d)):''))+
      (d.orientation_txt?pline("Précisions sur l'orientation",esc(d.orientation_txt).replace(/\n/g,'<br>')):'')+
      (d.notes?pline('Commentaires',esc(d.notes).replace(/\n/g,'<br>')):'')+'</div></div>';
   h+='<div class="pbox"><h4>SYNTHÈSE</h4><div class="pb psyn">'+narrativeHTML()+'</div></div>';
@@ -8891,7 +8949,7 @@ function sortedDB(){
    l'explique (diagnostic) et propose ce qui fonctionne : « Exporter tout en JSON » (dossier choisi, ou archive
    ZIP), téléchargement du JSON à chaque enregistrement, import d'un dossier ou d'une archive.
    ===================================================================== */
-const APP_VERSION = '9.3.3';
+const APP_VERSION = '9.3.5';
 /* hasPicker teste une fonction de l'API au moment de s'en servir : une extension ou un réglage du navigateur peut la retirer */
 const hasPicker = name => { try{ return typeof window[name] === 'function'; }catch(e){ return false; } };
 let FSA = hasPicker('showDirectoryPicker');
@@ -9703,7 +9761,7 @@ function newFollowUp(){
   if(DICT) dictAbort();
   const src=JSON.parse(JSON.stringify(REC.d));
   /* les photographies appartiennent à l'examen où elles ont été prises : un ré-examen repart sans elles */
-  const keep=['dossier','nom','prenom','sexe','ddn','date_acc','heure_acc','ad_num','examinateur','sc_masquer'];
+  const keep=['dossier','nom','prenom','sexe','ddn','date_acc','heure_acc','ad_num','examinateur','sc_masquer','sc_masquer_msh','sc_masquer_vest'];
   const nd={}; keep.forEach(k=>{ if(src[k]!=null) nd[k]=src[k]; });
   const now=new Date(); nd.date_ex=iso(now); nd.heure_ex=hhmm(now);
   /* Un re-examen du meme patient est une fiche de suivi : les encarts de plongee
@@ -9735,7 +9793,7 @@ function newSeance(){
   if(DIRTY && !confirm('Modifications non enregistrees. Continuer ?')) return;
   if(DICT) dictAbort();
   const src = REC.d, nd = {};
-  ['dossier','dossier_pseudo','nom','prenom','sexe','ddn','date_acc','heure_acc','ad_num','examinateur','sc_masquer'].forEach(k=>{ if(src[k]!=null) nd[k] = src[k]; });
+  ['dossier','dossier_pseudo','nom','prenom','sexe','ddn','date_acc','heure_acc','ad_num','examinateur','sc_masquer','sc_masquer_msh','sc_masquer_vest'].forEach(k=>{ if(src[k]!=null) nd[k] = src[k]; });
   const now = new Date(); nd.date_ex = iso(now); nd.heure_ex = hhmm(now); nd.fiche_type = 4; nd.seance_auto = 1;
   const t = derniereTable(nd.dossier);
   nd.tb_table = t ? t.v : DEF_TABLE; if(t && t.autre) nd.tb_table_autre = t.autre;
@@ -9791,7 +9849,9 @@ function renderList(){
    PATIENTS EN COURS : la partie haute du volet de gauche
    Une pastille par patient (un patient = un numéro de dossier) : NOM Prénom et âge, aux couleurs du bandeau (rose : femme, bleu : homme, vert : enfant).
    Un patient reste « en cours » tant que sa consultation de sortie n'est pas enregistrée à la date de la veille ou avant : une sortie enregistrée aujourd'hui
-   le laisse affiché jusqu'à minuit, il disparaît le lendemain. Un clic sur la pastille ouvre la fiche la plus récente du patient.
+   le laisse affiché jusqu'à minuit, il disparaît le lendemain. Une consultation de sortie qui oriente le patient vers l'hospitalisation de jour (orientation 6) ne le fait pas sortir :
+   il reste en cours (mention « HDJ ») jusqu'à une nouvelle consultation de sortie, plus récente, dont l'orientation n'est plus l'hospitalisation de jour.
+   Un clic sur la pastille ouvre la fiche la plus récente du patient.
    ===================================================================== */
 const jsq = s => esc(String(s).replace(/\\/g, '\\\\').replace(/'/g, "\\'"));        // une chaîne dans un attribut onclick="f('…')"
 /* Le numéro d'accident de plongée d'un patient : celui de sa fiche initiale, à défaut celui de sa fiche la plus récente qui en porte un ; '' s'il n'y en a pas. */
@@ -9814,7 +9874,8 @@ function jourFiche(f){
   const t = new Date(f.created || ''); return isNaN(t.getTime()) ? '' : iso(t);
 }
 /* auj : le jour pris pour « aujourd'hui » (AAAA-MM-JJ ; celui d'aujourd'hui par défaut). Rend les patients en cours, par ordre alphabétique :
-   {dossier, nom, prenom, sexe, ddn, ay (âge à la dernière fiche), cls (couleur), last (fiche la plus récente), n (examens), ns (séances), sortie (jour de la sortie enregistrée, s'il y en a une)} */
+   {dossier, nom, prenom, sexe, ddn, ay (âge à la dernière fiche), cls (couleur), last (fiche la plus récente), n (examens), ns (séances), sortie (jour de la sortie enregistrée, s'il y en a une),
+   hdj ({depuis, lieu} : le patient est en hospitalisation de jour depuis la consultation de sortie de ce jour-là)} */
 function patientsEnCours(auj){
   auj = auj || iso(new Date());
   const by = new Map();
@@ -9825,10 +9886,14 @@ function patientsEnCours(auj){
     p.fiches.push(f);
     const t = f.d.fiche_type || 1;
     if(t === 4) p.ns++; else p.n++;
-    if(t === 3){ const j = jourFiche(f); if(j > p.sortie) p.sortie = j; }    // la plus récente des consultations de sortie
   });
   const L = [];
+  const stp = f => jourFiche(f)+'T'+(f.d.heure_ex || '99:99')+'|'+(f.created || '');
   by.forEach(p=>{
+    /* la consultation de sortie qui compte est la plus récente ; si elle oriente le patient vers l'hospitalisation de jour, il reste en cours jusqu'à la suivante */
+    const S = p.fiches.filter(f=>(f.d.fiche_type || 1) === 3).sort((a, b)=>stp(a).localeCompare(stp(b)));
+    const ls = S[S.length-1];
+    if(ls){ if(ls.d.orientation === ORIENT_HDJ) p.hdj = {depuis:jourFiche(ls), lieu:hdjLieuTxt(ls.d)}; else p.sortie = jourFiche(ls); }
     if(p.sortie && p.sortie < auj) return;                                    // sortie enregistrée la veille ou avant : le patient n'est plus en cours
     p.fiches.sort((a,b)=>stamp(b).localeCompare(stamp(a)));                   // la fiche la plus récente d'abord
     p.last = p.fiches[0];
@@ -9849,13 +9914,15 @@ function pastilleHTML(p, cur, modal){
   const age = p.ay ? ageFrAM(p.ay.a, p.ay.m) : '';
   const ident = (nom || pre) ? (nom ? '<b>'+esc(nom)+'</b>' : '')+(nom && pre ? ' ' : '')+esc(pre) : '<i>Dossier '+esc(p.dossier)+'</i>';
   const tip = 'Dossier '+p.dossier+' · '+exCompte(p)+' · dernière fiche : '+(d.num_ex!=null ? 'examen '+exLabel(d)+', ' : '')+frDate(d.date_ex)+(d.heure_ex ? ' à '+d.heure_ex : '')+
-    (p.sortie ? ' · consultation de sortie enregistrée aujourd’hui : cette pastille disparaîtra demain' : '')+' — cliquer pour ouvrir cette fiche'+(modal ? '' : ' ; la liste du bas ne montre alors que les fiches de ce patient');
+    (p.sortie ? ' · consultation de sortie enregistrée aujourd’hui : cette pastille disparaîtra demain' : '')+
+    (p.hdj ? ' · hospitalisation de jour depuis le '+frDate(p.hdj.depuis)+(p.hdj.lieu ? ' ('+p.hdj.lieu+')' : '')+' : la pastille reste jusqu’à la consultation de sortie qui met fin à l’hospitalisation de jour' : '')+
+    ' — cliquer pour ouvrir cette fiche'+(modal ? '' : ' ; la liste du bas ne montre alors que les fiches de ce patient');
   return '<button type="button" class="pst '+p.cls+(cur ? ' cur' : '')+'" data-dossier="'+esc(p.dossier)+'" data-tip="'+esc(tip)+'" '+
-    'aria-label="'+esc(((nom+' '+pre).trim() || 'Dossier '+p.dossier)+(age ? ', '+age : '')+' : ouvrir la dernière fiche')+'" '+
+    'aria-label="'+esc(((nom+' '+pre).trim() || 'Dossier '+p.dossier)+(age ? ', '+age : '')+(p.hdj ? ', hospitalisation de jour' : '')+' : ouvrir la dernière fiche')+'" '+
     'onclick="'+(modal ? 'closeModal();' : '')+'loadFiche(\''+jsq(p.last.id)+'\''+(modal ? '' : ',1')+')">'+
-    '<span class="pstn">'+ident+'</span>'+(age ? ' <span class="psta">'+esc(age)+'</span>' : '')+'</button>';
+    '<span class="pstn">'+ident+(p.hdj ? ' <span class="psth">HDJ</span>' : '')+'</span>'+(age ? ' <span class="psta">'+esc(age)+'</span>' : '')+'</button>';
 }
-const ENCOURS_TIP = 'Les patients dont la consultation de sortie n’est pas enregistrée. Une fois enregistrée, la pastille reste affichée jusqu’à la fin de la journée et disparaît le lendemain. Un clic ouvre la dernière fiche du patient et limite la liste du bas à ses fiches.';
+const ENCOURS_TIP = 'Les patients dont la consultation de sortie n’est pas enregistrée. Une fois enregistrée, la pastille reste affichée jusqu’à la fin de la journée et disparaît le lendemain. Un patient orienté en hospitalisation de jour (mention « HDJ ») reste affiché jusqu’à la consultation de sortie qui met fin à l’hospitalisation de jour. Un clic ouvre la dernière fiche du patient et limite la liste du bas à ses fiches.';
 function enCoursHTML(L, doss, modal){
   return '<div class="sidecap" data-tip="'+esc(ENCOURS_TIP)+'">Patients en cours<span class="badge">'+L.length+'</span></div>'+
     (L.length ? '<div class="pstl'+(modal ? ' pstm' : '')+'">'+L.map(p=>pastilleHTML(p, !modal && p.dossier === doss, modal)).join('')+'</div>'
@@ -10313,6 +10380,7 @@ const XLS_PROC = {1:2, 2:1, 5:1, 3:3, 4:3};
 const XLS_EVAC = {1:5, 2:3, 3:2, 6:5, 7:1, 8:1};
 const XLS_TABLE = {1:1, 2:1, 3:2, 4:2, 5:3, 6:5, 7:5, 8:4, 9:6};      // O2 2,5 ATA, A18, B18, C18, héliox, autre
 const XLS_EV = {0:2, 1:3, 2:4};                                       // amélioré, stable, aggravé
+const XLS_TENUE = {1:1, 2:2, 3:3};                                    // humide, semi-étanche, étanche : les codes de la colonne « Combinaison »
 
 /* diagnostic retenu, en code du fichier maître (1 à 13) */
 function xlsDiagCode(d){
@@ -10380,7 +10448,7 @@ function xlsCtx(){
   let h24 = null, ecart = 1e18;
   after.forEach(s=>{ const h = (when(s)-when(init))/3600000; if(h >= 12 && h <= 40 && Math.abs(h-24) < ecart){ ecart = Math.abs(h-24); h24 = s; } });
   const X = {FI:FI, ST:ST, FC:C.map(s=>s.f), lastAll:ST[ST.length-1], init:init, last:last, d0:d0, after:after, premSuivi:after[0] || null, h24:h24,
-             rc:recompCounts(FI), noSc:FI.some(f=>f.d.sc_masquer)};
+             rc:recompCounts(FI), noMsh:FI.some(f=>scMasque(f.d, 'msh')), noVest:FI.some(f=>scMasque(f.d, 'vest'))};
   X.TX0 = withRec(init.f, terrainTextes);
   for(let i = ST.length-1; i >= 0 && X.diag==null; i--){ const c = xlsDiagCode(ST[i].d); if(c!=null) X.diag = c; }
   if(X.diag==null) X.diag = null;
@@ -10434,7 +10502,8 @@ const XLS = [
  /* Z  */ {h:'Appareil utilisé', n:'apnée 1 ; sinon circuit ouvert 2 par défaut (l’appareil n’est pas recueilli)', f:X=>isApnee(X.d0) ? 1 : ((X.d0.pl_prof!=null || X.d0.pl_gaz!=null || X.d0.pl_h_sortie) ? 2 : null)},
  /* AA */ {h:'Mélange', n:'air 1, nitrox 2, trimix 3, autres 4', f:X=>X.d0.pl_gaz!=null ? XN(XLS_GAZ[X.d0.pl_gaz]) : null},
  /* AB */ {h:'Procédure de décompression', n:'tables 1, ordinateur 2, autre 3', f:X=>X.d0.pl_proc!=null ? XN(XLS_PROC[X.d0.pl_proc]) : null},
- /* AC */ {h:'Combinaison', n:'non recueillie', f:X=>null},
+ /* AC */ {h:'Combinaison', n:'type de tenue : humide 1, semi-étanche 2, étanche 3 ; « autre » : le texte précisé', f:X=>{ const t = X.d0.pl_tenue; if(t==null) return null;
+          return t===9 ? (XT(X.d0.pl_tenue_autre) || 'autre') : XN(XLS_TENUE[t]); }},
  /* AD */ {h:'Heure immersion', n:'heure d’immersion (DS)', f:X=>XH(X.d0.pl_h_immersion)},
  /* AE */ {h:'Profondeur max', n:'profondeur maximale (Pmax) ; en apnée, celle des apnées', f:X=>XN(X.d0.pl_prof)},
  /* AF */ {h:'Durée de travail', n:'durée de travail (DT)', f:X=>XM(X.d0.pl_dt)},
@@ -10468,7 +10537,7 @@ const XLS = [
           if(d.histoire) c.push(TXT.fin(d.histoire));
           return c.length ? c.join(' ') : null; }},
  /* AX */ {h:'Signes initiaux', n:'signes fonctionnels à l’arrivée', f:X=>XT(X.d0.sf_arrivee)},
- /* AY */ {h:'Déséquipement', n:'non recueilli', f:X=>null},
+ /* AY */ {h:'Déséquipement', n:'déséquipement sur le lieu de plongée : 1 ou 0 (la protection thermique n’est pas recueillie)', f:X=>XB(X.d0.pl_deseq)},
  /* AZ */ {h:'Oxygénothérapie normobare', n:'oxygène sur place : 1 (masque à haute concentration) ou 0', f:X=>XB(X.d0.soin_o2)},
  /* BA */ {h:'Hydratation', n:'hydratation sur place (mL)', f:X=>XN(X.d0.soin_hydrat)},
  /* BB */ {h:'Aspirine', n:'aspirine sur place : 1 ou 0', f:X=>XB(X.d0.soin_aspirine)},
@@ -10482,9 +10551,9 @@ const XLS = [
           return (st.X.mot.tested || st.X.sen.tested) ? 0 : null; }},
  /* BG */ {h:'Douleur vertébrale', n:'douleur rachidienne du premier examen : 1 ou 0', f:X=>XB(X.d0.sf_rachis)},
  /* BH */ {h:'Troubles sphict', n:'troubles vésico-sphinctériens du premier examen', f:X=>X.init.X.sph.items.some(i=>i.sev>0) ? 1 : (X.init.X.sph.tested ? 0 : null)},
- /* BI */ {h:'Score MEDSUBHYP', n:'à l’arrivée si coté, sinon le premier disponible ; vide si la case « ne pas mentionner les scores » est cochée', f:X=>{ if(X.noSc) return null;
+ /* BI */ {h:'Score MEDSUBHYP', n:'à l’arrivée si coté, sinon le premier disponible ; vide si la case « ne pas mentionner » le score MEDSUBHYP est cochée', f:X=>{ if(X.noMsh) return null;
           const L = X.ST.filter(s=>s.d.msh_total!=null), a = L.find(s=>s.d.msh_moment_eff==='t0') || L[0]; return a ? XN(a.d.msh_total) : null; }},
- /* BJ */ {h:'Score sévérité OI', n:'score vestibulaire du premier examen coté ; « ns » sinon', f:X=>{ if(X.noSc) return 'ns';
+ /* BJ */ {h:'Score sévérité OI', n:'score vestibulaire du premier examen coté ; « ns » sinon, ou si la case « ne pas mentionner » le score vestibulaire est cochée', f:X=>{ if(X.noVest) return 'ns';
           const a = X.ST.find(s=>s.d.vest_total!=null); return a ? XN(a.d.vest_total) : 'ns'; }},
  /* BK */ {h:'Table Initiale', n:'O2 2,5 ATA 1 (A15, A15IOT), A18 2, B18 3, C18 4, héliox 5, autre 6, aucune 0', f:X=>X.tb0},
  /* BL */ {h:'Heure de mise en pression', n:'heure de mise en pression de la table initiale', f:X=>XH(X.d0.tb_h_mep)},
@@ -10513,7 +10582,7 @@ const XLS = [
           if(st.X.sen.items.some(i=>i.grp==='subj') || st.X.dou.items.length) return 1;
           return NEU.some(k=>st.X[k] && st.X[k].tested) ? 0 : null; }},
  /* BV */ {h:'Médecin ayant pris en charge', n:'médecin de la fiche initiale (sinon l’examinateur)', f:X=>XT(X.d0.medecin || X.d0.examinateur)},
- /* BW */ {h:'Observations', n:'lieu non codé, apnées, conditions environnementales, tables « autres »', f:X=>{ const d = X.d0, o = [];
+ /* BW */ {h:'Observations', n:'lieu non codé, apnées, conditions environnementales, progressivité (facteur favorisant, sans colonne dans le fichier maître), tables « autres »', f:X=>{ const d = X.d0, o = [];
           if(d.pl_lieu && !X.lieu) o.push('Lieu : '+TXT.flat(d.pl_lieu));
           if(isApnee(d)) o.push('Apnée : '+apneeTexte(d)+(d.pl_prof>0 ? ', profondeur maximale '+d.pl_prof+' m' : ''));
           const env = [];
@@ -10522,6 +10591,7 @@ const XLS = [
           if(d.ff_visib!=null) env.push('visibilité '+TXT.low(xlsOpt('ff_visib', d.ff_visib)));
           if(d.ff_env) env.push(TXT.flat(d.ff_env).replace(/[.;,:\s]+$/,''));
           if(env.length) o.push('Conditions : '+env.join(', '));
+          if(d.ff_progress!=null) o.push('Progressivité '+(d.ff_progress===1 ? 'respectée' : 'non respectée'));
           const au = X.rc.types.filter(t=>t.code===9); if(au.length) o.push('Autre table : '+au.map(t=>t.lib+' × '+t.n).join(', '));
           return o.length ? o.join(' ; ') : null; }},
  /* BX */ {h:'Score MJOAS', n:'non recueilli', f:X=>null},
@@ -11690,7 +11760,7 @@ function openHelp(){
   '<p><b>2 nonies. Le volet de gauche : les patients en cours.</b><br>'+
   'Le volet de gauche (bouton « liste » de la barre du haut pour l’afficher ou le masquer) a deux parties. En haut, sous la recherche, une <b>pastille par patient en cours</b> : '+
   '<b>NOM</b> Prénom et âge, aux couleurs du bandeau (rose : femme, bleu : homme, vert : enfant). Un patient reste en cours tant que sa consultation de sortie n’est pas enregistrée ; '+
-  'une fois enregistrée, sa pastille reste affichée jusqu’à la fin de la journée et disparaît le lendemain. Un clic sur une pastille ouvre la fiche la plus récente du patient et inscrit son numéro d’accident dans la barre de recherche : la liste du bas ne montre alors que ses fiches (videz la barre pour les revoir toutes) ; '+
+  'une fois enregistrée, sa pastille reste affichée jusqu’à la fin de la journée et disparaît le lendemain. Quand la consultation de sortie oriente le patient vers l’<b>hospitalisation de jour</b> (rubrique « Orientation », avec l’hébergement : domicile, hôtel patient ou autre établissement), le patient reste en cours, avec la mention « HDJ » : il ne sort des patients en cours que le lendemain d’une nouvelle consultation de sortie dont l’orientation n’est plus l’hospitalisation de jour. Un clic sur une pastille ouvre la fiche la plus récente du patient et inscrit son numéro d’accident dans la barre de recherche : la liste du bas ne montre alors que ses fiches (videz la barre pour les revoir toutes) ; '+
   'la bulle d’aide donne son dossier et sa dernière fiche. En bas, la liste de toutes les fiches enregistrées défile dans la place que les pastilles laissent ; la recherche ne filtre que cette liste. '+
   'Sur tablette et téléphone, <b>Plus</b> › <b>Fiches enregistrées</b> montre les mêmes deux parties.</p>'+
   '<p><b>2 septies. Examens complémentaires et biologie.</b><br>'+

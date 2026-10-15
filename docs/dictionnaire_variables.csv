@@ -113,6 +113,9 @@ club_tel;Club — téléphone (Le plongeur);texte libre
 club_resp;Club — responsable (Le plongeur);texte libre
 pl_lieu;Lieu / site (Paramètres de la plongée accidentelle);texte libre
 pl_type;Type de plongée (Paramètres de la plongée accidentelle);"1 = Loisir ; 2 = Instruction ; 3 = Professionnelle ; 4 = Militaire ; 5 = Apnée"
+pl_tenue;Type de tenue (Paramètres de la plongée accidentelle);"1 = Humide ; 2 = Semi-étanche ; 3 = Étanche ; 9 = Autre"
+pl_tenue_autre;Préciser la tenue (Paramètres de la plongée accidentelle);texte libre
+pl_deseq;Déséquipement sur le lieu de plongée (Paramètres de la plongée accidentelle);"1 = OUI ; 0 = NON"
 pl_gaz;Mélange respiré (Paramètres de la plongée accidentelle);"1 = Air ; 2 = Nitrox ; 3 = Trimix ; 4 = Héliox ; 5 = Oxygène ; 9 = Autre"
 pl_gaz_autre;Préciser le mélange (Paramètres de la plongée accidentelle);texte libre
 pl_proc;Procédure de décompression (Paramètres de la plongée accidentelle);"1 = Ordinateur ; 2 = Tables MN23 ; 5 = Tables MT 92 ; 3 = Autres tables (préciser) ; 4 = Sans procédure"
@@ -165,6 +168,7 @@ plp_duree_tot;Durée totale (min) (Paramètres de la plongée précédente);nume
 plp_paliers;Paliers (Paramètres de la plongée précédente);texte libre
 plp_interval;Intervalle de surface (min) (Paramètres de la plongée précédente);numerique, calcule
 ff_proc;Respect de la procédure de décompression (Facteurs favorisants);"1 = OUI ; 0 = NON"
+ff_progress;Progressivité respectée (Facteurs favorisants);"1 = OUI ; 0 = NON"
 ff_entrainement;Manque d’entraînement à la plongée profonde (Facteurs favorisants);"1 = OUI ; 0 = NON"
 ff_ludion;Plongées ludion (yo-yo) (Facteurs favorisants);"1 = OUI ; 0 = NON"
 ff_fatigue;Fatigue (Facteurs favorisants);"1 = OUI ; 0 = NON"
@@ -364,7 +368,8 @@ etoile_cote;Marche en étoile — côté de la déviation (Coordination et exame
 funambule;Marche funambule (Coordination et examen vestibulaire);"0 = Normale ; 1 = Anormale"
 funambule_cote;Marche funambule — côté de la déviation (Coordination et examen vestibulaire);"1 = D ; 2 = G"
 sens_examinee;Examen des sensibilités réalisé (Sensibilités);"1 = OUI ; 0 = NON"
-sc_masquer;Scores MEDSUBHYP et vestibulaire (Scores dans la synthèse);"1 = coche ; vide = non coche"
+sc_masquer_msh;Score MEDSUBHYP - ne pas le mentionner dans la synthese, le CRH et l impression (Scores dans la synthèse);"1 = coche ; vide = non coche"
+sc_masquer_vest;Score vestibulaire - ne pas le mentionner dans la synthese, le CRH et l impression (Scores dans la synthèse);"1 = coche ; vide = non coche"
 conclusion;Conclusion de l'examen (Conclusion de l'examen clinique);"1 = Examen neurologique normal ; 2 = Examen neurologique anormal ; 3 = À recontrôler"
 cut_present;Lésions cutanées présentes (Lésions cutanées de désaturation);"1 = OUI ; 0 = NON"
 cut_delai;Délai d'apparition après émersion (min) (Lésions cutanées de désaturation);numerique (min)
@@ -465,8 +470,10 @@ dg_txt;Autre diagnostic ou précisions (Diagnostic retenu);texte libre
 sortie_exam_second;Examens à réaliser secondairement (Sortie : examens à prévoir et aptitude à la plongée);texte libre
 inapt_type;Inaptitude à la plongée (Sortie : examens à prévoir et aptitude à la plongée);"1 = Temporaire (durée en mois) ; 2 = Définitive"
 inapt_mois;Durée de l’inaptitude (mois) (Sortie : examens à prévoir et aptitude à la plongée);numerique (mois)
-orientation;Orientation (Orientation et commentaires);"1 = Retour au domicile ; 2 = Hospitalisation en service de médecine ; 3 = Hospitalisation en surveillance continue ; 4 = Hospitalisation en soins intensifs ; 5 = Transfert vers une autre structure"
+orientation;Orientation (Orientation et commentaires);"1 = Retour au domicile ; 2 = Hospitalisation en service de médecine ; 3 = Hospitalisation en surveillance continue ; 4 = Hospitalisation en soins intensifs ; 5 = Transfert vers une autre structure ; 6 = Hospitalisation de jour"
 orientation_autre;Préciser la structure (Orientation et commentaires);texte libre
+hdj_lieu;Hospitalisation de jour - lieu d hebergement (Orientation et commentaires);"1 = Domicile ; 2 = Hôtel patient ; 3 = Autre établissement"
+hdj_lieu_autre;Hospitalisation de jour - autre etablissement (precision) (Orientation et commentaires);texte libre
 orientation_txt;Précisions sur l'orientation (Orientation et commentaires);texte libre
 notes;Commentaires libres (Orientation et commentaires);texte libre
 gds_date;Date du prélèvement (Gaz du sang veineux);AAAA-MM-JJ

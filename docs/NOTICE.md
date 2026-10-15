@@ -1,4 +1,4 @@
-# ADP — accident de plongée, version 9.3.2
+# ADP — accident de plongée, version 9.3.5
 
 Fichier unique : `index.html`. Aucun réseau, aucune dépendance externe, aucun compte.
 Double-cliquez dessus, il s'ouvre dans votre navigateur et tout fonctionne.
@@ -16,11 +16,11 @@ plein écran, démarrage sans réseau. Voir *Installer sur téléphone et tablet
 
 | Sortie | Fichier | Comment l'obtenir |
 |---|---|---|
-| Document imprimable et enregistrable | PDF, 5 à 6 pages A4 (une page pour une séance de recompression) | Bouton **Enregistrer en PDF** de la barre du haut (icône PDF) : choisir *Enregistrer au format PDF* (ou *Microsoft Print to PDF*), puis le dossier ; le fichier est proposé sous le nom `NOM_Prénom_IPP_numéro de dossier.pdf` (voir *Enregistrer en PDF : le nom du fichier*) |
+| Document imprimable et enregistrable | PDF, 5 à 6 pages A4 (une page pour une séance de recompression) | Bouton **Enregistrer en PDF** de la barre du haut (icône PDF) : choisir *Enregistrer au format PDF* (ou *Microsoft Print to PDF*), puis le dossier ; le fichier est proposé sous le nom `NOM_Prénom_IPP_numéro de dossier_EX1.pdf` : le numéro d'examen termine le nom (voir *Enregistrer en PDF : le nom du fichier*) |
 | Fichier exploitable, incrémental | `donnees_neuro.csv` | Réécrit automatiquement à chaque enregistrement de fiche |
 
 Un seul CSV pour tous les patients, toutes les consultations et tous les types de document.
-Une ligne = une fiche. 935 colonnes.
+Une ligne = une fiche. 942 colonnes.
 
 Sans bouton de plus, chaque enregistrement écrit aussi la fiche entière au format **JSON** dans le
 dossier de données (un fichier par fiche), et chaque ouverture relit ce dossier pour la recherche d'un
@@ -54,14 +54,18 @@ identité, numéro d'examen (3b), recompression.
 Le bouton **Enregistrer en PDF** (barre du haut) ouvre la fenêtre d'impression du navigateur. Choisissez la destination **Enregistrer au format PDF** (dans Firefox : *Enregistrer au format PDF*, puis *Enregistrer* ; dans Edge ou
 Chrome : *Enregistrer au format PDF* ; sous Windows, *Microsoft Print to PDF* fait de même) : le navigateur ouvre alors **sa fenêtre d'enregistrement, qui demande le dossier**, avec le nom déjà écrit :
 
-`NOM_Prénom_IPP_numéro de dossier.pdf`, par exemple `DUPONT_Jean_IPP_50894855.pdf`.
+`NOM_Prénom_IPP_numéro de dossier_EX1.pdf`, par exemple `DUPONT_Jean_IPP_50894855_EX1.pdf` (consultation initiale) ou `DUPONT_Jean_IPP_50894855_EX3b.pdf` (séance de recompression sans examen, après le 3ᵉ examen).
 
 - **NOM** en majuscules et **Prénom** avec l'initiale en majuscule, comme ils sont inscrits dans la fiche (voir *Noms et prénoms : mise en forme automatique*) ; **« IPP »** est écrit tel quel ; **le numéro de dossier** est celui de la fiche, tel qu'il y est inscrit.
-- Ce que Windows interdit dans un nom de fichier (`\ / : * ? " < > |`) devient « - » ; les espaces et points de fin sont retirés ; **une partie absente est omise** (sans prénom : `DUPONT_IPP_50894855.pdf` ; sans numéro de dossier : `DUPONT_Jean.pdf` ; sans rien : `Fiche_ADP_<date>.pdf`).
+- **Le numéro d'examen termine le nom** (`EX1`, `EX2`, `EX3`…) : c'est le « N° d'examen pour ce patient » de la fiche, celui du bandeau (« Examen n° 3b ») et de la fin du nom des fichiers JSON, et il **distingue les fiches d'un même patient**.
+  Les consultations (initiale, suivi, sortie) sont numérotées 1, 2, 3… dans l'ordre de la date et de l'heure de l'examen ; une **séance de recompression sans examen** porte le numéro du dernier examen qui la précède, suivi d'une lettre : `EX3b`, `EX3c`…
+  (`EX0b` si elle précède tout examen). Le numéro est **calculé à l'instant** d'après les fiches enregistrées du même numéro de dossier, la fiche en cours comprise même si elle n'est pas encore enregistrée : la bulle du bouton PDF le suit quand vous changez la date de l'examen, le type de la fiche ou le numéro de dossier.
+- Ce que Windows interdit dans un nom de fichier (`\ / : * ? " < > |`) devient « - » ; les espaces et points de fin sont retirés ; **une partie absente est omise** (sans prénom : `DUPONT_IPP_50894855_EX1.pdf` ; sans numéro de dossier : `DUPONT_Jean.pdf`, sans numéro d'examen non plus puisque ce numéro se compte par dossier ; sans rien : `Fiche_ADP_<date>.pdf`).
 - C'est le **titre de la page** que le navigateur propose comme nom de fichier : ADP le remplace par ce nom au moment de l'impression, puis rend le titre « ADP — accident de plongée » à la fin (ou au bout de deux minutes si le navigateur n'annonce pas la fin). Avec **Ctrl+P**, l'événement « beforeprint » pose aussi le titre, mais certains navigateurs le lisent avant : pour être sûr du nom, utilisez le bouton PDF.
   Cela a été vérifié dans le code d'impression de Firefox 137 (le titre est lu à l'ouverture de la fenêtre d'impression, « .pdf » est ajouté, les caractères interdits sont remplacés). La **bulle du bouton PDF** annonce le nom qui sera proposé.
 - Une page web **ne peut pas écrire elle-même** un fichier dans le dossier de votre choix : c'est la fenêtre d'enregistrement du navigateur qui demande le dossier. Selon le navigateur, elle reprend le dernier dossier utilisé.
-- Deux fiches du même patient (examen 1, examen 2…) portent **le même nom** : Windows demande alors s'il faut remplacer le fichier.
+- Grâce au numéro d'examen, **deux fiches du même patient n'ont plus le même nom** (`…_EX1.pdf`, `…_EX2.pdf`, `…_EX2b.pdf`…) : Windows ne propose plus de remplacer l'une par l'autre. Il le propose encore si vous enregistrez deux fois le PDF de la même fiche, ou deux fiches **sans numéro de dossier**.
+- **Le numéro est celui de l'instant.** Si vous saisissez plus tard une fiche datée avant d'autres, les numéros des suivantes se décalent (comme dans le nom des fichiers JSON) ; un PDF déjà enregistré n'est pas renommé et garde l'ancien numéro.
 
 ---
 
@@ -77,7 +81,7 @@ toute seule et dit ce qu'il fait ; elle se referme quand on le quitte.
 | stéthoscope | **Ré-examen du patient** | ouvre une consultation de suivi pour le même patient, avec l'identité de la fiche ouverte |
 | caisson à hublot (brun) | **Séance de recompression** | cote une séance **sans examen clinique** (voir *La séance de recompression sans examen*) |
 | disquette (vert) | **Enregistrer** | enregistre la fiche (aussi Ctrl+S) |
-| page « PDF » | **Enregistrer en PDF** | prépare le document imprimable : choisir *Enregistrer au format PDF* ou *Microsoft Print to PDF*, puis le dossier ; nom proposé `NOM_Prénom_IPP_numéro de dossier.pdf` (la bulle l'annonce) |
+| page « PDF » | **Enregistrer en PDF** | prépare le document imprimable : choisir *Enregistrer au format PDF* ou *Microsoft Print to PDF*, puis le dossier ; nom proposé `NOM_Prénom_IPP_numéro de dossier_EX1.pdf` (la bulle l'annonce) |
 | page à fermeture éclair | **Tout transférer en ZIP** | toutes les fiches du poste, une par fichier JSON, réunies en une archive ZIP |
 | flèche vers un plateau | **Importer** | importe ou fusionne un fichier JSON, une archive ZIP ou un dossier entier |
 | masque de plongée | **Ligne Excel ADP** | compose la ligne du fichier Excel maître (accident de plongée) d'après le dossier ouvert |
@@ -112,6 +116,10 @@ Le volet de gauche (bouton « liste » de la barre du haut pour l'afficher ou le
 Une consultation de sortie enregistrée aujourd'hui laisse donc la pastille affichée jusqu'à minuit : elle **disparaît le lendemain**. Sans consultation de sortie, le patient reste en cours. Précisions :
 
 - la date retenue est celle de la **consultation de sortie** (la date de la fiche), à défaut le jour où la fiche a été créée ; s'il y a plusieurs consultations de sortie dans le dossier, la plus récente compte ;
+- une consultation de sortie qui **oriente le patient vers l'hospitalisation de jour** (rubrique *Orientation* de l'onglet « Conclusion et évolution », avec l'hébergement : domicile, hôtel patient ou autre
+  établissement) ne le fait **pas sortir** : il reste en cours, avec la mention **HDJ** sur sa pastille, pendant toute la durée de l'hospitalisation de jour (les fiches de suivi et les séances de ces jours-là ne changent rien).
+  Il **disparaît le lendemain d'une nouvelle consultation de sortie, plus récente, dont l'orientation n'est plus l'hospitalisation de jour** : c'est la sortie de l'hospitalisation de jour, que vous cotez ainsi.
+  La consultation de sortie qui compte est toujours la plus récente (à date égale, la plus tardive dans la journée) ;
 - une fiche **non enregistrée** ne compte pas : la pastille d'un nouveau patient apparaît à l'enregistrement de sa première fiche ;
 - une fiche **sans numéro de dossier** ne forme pas de patient (comme dans la recherche d'un patient) ;
 - une fiche enregistrée **après** la consultation de sortie (un contrôle à un mois, par exemple) ne remet pas le patient en cours ;
@@ -120,7 +128,7 @@ Une consultation de sortie enregistrée aujourd'hui laisse donc la pastille affi
 **Ce que fait une pastille.** Un clic **ouvre la fiche la plus récente** du patient (consultation ou séance) ; l'application demande confirmation s'il y a des modifications non enregistrées. Il **inscrit aussi le numéro
 d'accident de plongée du patient dans la barre de recherche** (celui de sa fiche initiale ; à défaut celui d'une autre de ses fiches, à défaut son numéro de dossier) : **la liste du bas ne montre alors que les fiches de ce patient**, jamais celles d'un autre dossier dont les chiffres
 contiendraient le même numéro (le filtre est exact sur le dossier tant que le texte de la barre n'est pas modifié ; une recherche ordinaire de « 187 » ramènerait aussi un dossier « 50918731 »). Videz la barre pour revoir toutes les fiches. *Nouvelle fiche* (un autre patient)
-lève le filtre ; *Ré-examen du patient* et *Séance de recompression* le gardent ; ouvrir une fiche de la liste filtrée le garde aussi. Le patient dont une fiche est ouverte est **cerclé**. Au survol, une bulle donne le dossier, le nombre d'examens et de séances, la dernière fiche et, pour un patient sorti aujourd'hui, l'avertissement que sa pastille disparaîtra demain.
+lève le filtre ; *Ré-examen du patient* et *Séance de recompression* le gardent ; ouvrir une fiche de la liste filtrée le garde aussi. Le patient dont une fiche est ouverte est **cerclé**. Au survol, une bulle donne le dossier, le nombre d'examens et de séances, la dernière fiche et, pour un patient sorti aujourd'hui, l'avertissement que sa pastille disparaîtra demain ; pour un patient en hospitalisation de jour, depuis quand et avec quel hébergement.
 Les patients sont classés **par ordre alphabétique** (nom, puis prénom, sans tenir compte des accents ni de la casse) ; un patient sans nom est désigné par son dossier. L'âge est celui de la dernière fiche,
 comme dans le bandeau de cette fiche.
 
@@ -456,6 +464,11 @@ L'encart « Paramètres de la plongée accidentelle » (onglet « Anamnèse et p
 paliers, type de profil et, le cas échéant, la procédure de ré-immersion. Le schéma se dessine seul,
 se redessine à chaque frappe et s'imprime en noir et blanc sur la page 1 du PDF.
 
+Depuis la 9.3.5, l'encart porte aussi, sous le type de plongée, le **type de tenue** (humide, semi-étanche, étanche, ou autre à préciser : `pl_tenue`, `pl_tenue_autre`) et le **déséquipement sur le lieu de plongée**
+(OUI / NON : `pl_deseq`), **OUI proposé d'office** sur une consultation initiale et modifiable (une fiche enregistrée avant la 9.3.5 n'est pas remplie d'office : rien n'est inventé). La synthèse écrit la tenue dans la phrase de la plongée
+(« …, à l'air, tenue étanche, 40 m, … ») et le déséquipement avec les soins sur place (« déséquipement sur le lieu de plongée », ou « pas de déséquipement… » si vous cochez NON) ; le papier les imprime avec les autres
+paramètres, et la **ligne Excel ADP** les reprend (colonnes AC et AY : voir *La ligne Excel ADP*).
+
 ### Heures, profondeur et paliers
 
 - **DS** départ surface (heure d'immersion), **DF** départ fond (heure), **HS** heure de sortie de
@@ -583,7 +596,9 @@ reste modifiable à la main, et passe dans la synthèse et sur le PDF.
 
 ## Facteurs favorisants et conditions environnementales
 
-L'encart « Facteurs favorisants » (onglet « Anamnèse et plongée ») garde ses dix questions OUI / NON. Sous elles, un
+L'encart « Facteurs favorisants » (onglet « Anamnèse et plongée ») compte onze questions OUI / NON : les dix d'origine et, depuis la 9.3.5, **« Progressivité respectée »** (`ff_progress`), juste sous le respect de la procédure
+de décompression. OUI est la réponse normale (« Tout normal » la coche) ; NON est un facteur favorisant : la synthèse écrit « progressivité non respectée » avec les autres facteurs, et « procédure de décompression et progressivité
+respectées » quand aucun facteur n'est retrouvé. La ligne Excel ADP n'a pas de colonne pour elle : elle s'écrit dans « Observations » (BW). Sous ces questions, un
 bloc **Conditions environnementales** cote à chaque plongée :
 
 - le **courant** : OUI ou NON (`ff_courant`) ;
@@ -810,22 +825,22 @@ et sur le PDF ; il ne part pas dans le CSV, où une ligne par fiche est la règl
 
 L'encart se trouve en fin d'onglet « Examen neurologique », après la grille ASIA.
 
-### Ne pas mentionner les scores
+### Ne pas mentionner un score
 
-MEDSUBHYP et le score vestibulaire n'ont de sens que pour un **accident de décompression**. Pour un autre
-accident (barotraumatisme, œdème pulmonaire d'immersion, noyade…), la case **« Ne pas les mentionner dans la
-synthèse »** (encart **Scores dans la synthèse**, juste sous les scores, onglet « Examen neurologique », `sc_masquer`)
-les retire :
+MEDSUBHYP n'a de sens que pour un **accident de désaturation médullaire**, le score vestibulaire que pour une **atteinte vestibulaire** : un accident vestibulaire n'a pas à porter un MEDSUBHYP, ni un accident médullaire un score
+vestibulaire à zéro, et un barotraumatisme, un œdème pulmonaire d'immersion ou une noyade n'ont ni l'un ni l'autre. **Chaque score a sa case**, dans l'encart **Scores dans la synthèse** (juste sous les scores, onglet « Examen
+neurologique ») : **« Score MEDSUBHYP — ne pas le mentionner dans la synthèse »** (`sc_masquer_msh`) et **« Score vestibulaire — ne pas le mentionner dans la synthèse »** (`sc_masquer_vest`). Cochée, une case retire **son** score,
+l'autre restant mentionné (les deux sont décochées par défaut : les deux scores sont mentionnés) :
 
 - de la **synthèse rédigée** ;
 - du **compte rendu d'hospitalisation**, dès qu'une fiche du dossier porte la case (le score ASIA reste) ;
-- de l'**impression** (l'encart « Scores de sévérité » n'est pas imprimé, et le titre de la page ne les cite plus) ;
-- de la **ligne Excel ADP** (colonne BI vide, colonne BJ à « ns »).
+- de l'**impression** (le score concerné n'est plus dans l'encart « Scores de sévérité », qui n'est plus imprimé quand les deux sont retirés, et le titre de la page ne les cite plus) ;
+- de la **ligne Excel ADP** (MEDSUBHYP : colonne BI vide ; score vestibulaire : colonne BJ à « ns »).
 
-Les scores restent **calculés dans la fiche** (colonnes `msh_total`, `vest_total` du CSV) et visibles à l'écran, avec un
-bandeau qui le rappelle. La case est **reprise sur les autres fiches du dossier** (nouvelle fiche, ré-examen).
-Quand le **diagnostic retenu** n'est pas un accident de décompression, un **rappel** s'affiche en tête de l'encart des
-scores, avec un bouton qui coche la case : elle n'est jamais cochée à votre place.
+Les scores restent **calculés dans la fiche** (colonnes `msh_total`, `vest_total` du CSV) et visibles à l'écran, avec un bandeau qui dit lequel est retiré et lequel reste mentionné. Les cases sont **reprises sur les autres fiches
+du dossier** (nouvelle fiche, ré-examen, séance). Quand le **diagnostic retenu** n'est pas un accident de décompression, un **rappel** s'affiche en tête de l'encart des scores, avec un bouton qui coche les deux cases : elles ne sont jamais
+cochées à votre place. *Avant la 9.3.5, une seule case (`sc_masquer`) retirait les deux scores : une fiche enregistrée avec cette case s'ouvre avec les deux nouvelles cases cochées, et la colonne `sc_masquer` du fichier de données est
+remplacée par `sc_masquer_msh` et `sc_masquer_vest`.*
 
 ### MEDSUBHYP
 
@@ -1007,7 +1022,7 @@ Les fiches sont rangées par date et heure d'examen ; **J0** est la date de la p
 | Examen de sortie | la dernière fiche : « À la sortie, à l'examen général / neurologique, on retrouve » |
 | Évolution des scores | MEDSUBHYP, score vestibulaire et score ASIA, en un paragraphe **avant le diagnostic retenu** (voir ci-dessous) |
 | Diagnostic retenu | le plus récent des diagnostics saisis |
-| Orientation | l'orientation de la fiche de sortie (retour au domicile, hospitalisation, transfert) et ses précisions |
+| Orientation | l'orientation de la fiche de sortie (retour au domicile, hospitalisation, transfert, **hospitalisation de jour avec son hébergement** : « Hospitalisation de jour, hébergement à l'hôtel patient. ») et ses précisions |
 | Examens à réaliser secondairement | le champ de la consultation de sortie (proposé d'après le diagnostic retenu et le générateur, modifiable), puis les examens demandés de la dernière fiche quand elle en porte |
 | Aptitude à la plongée | « Inaptitude temporaire à la plongée de N mois » ou « Inaptitude définitive à la plongée » (en gras) ; rien si non précisée |
 
@@ -1042,7 +1057,7 @@ Un paragraphe **Évolution des scores**, juste **avant le diagnostic retenu**, r
 - le **score ASIA d'entrée**, puis le **plus péjoratif** s'il diffère de celui d'entrée et de celui de sortie (avec sa date), puis celui de **sortie** (« Score ASIA
   d'entrée : AIS C, niveau neurologique T10, tact léger 70/112… »). Un score dont l'AIS n'est pas E s'écrit en gras. Un seul examen : « Score ASIA : … ».
 
-La case « ne pas mentionner les scores » retire MEDSUBHYP et le score vestibulaire de ce paragraphe, pas le score ASIA. Un dossier sans score n'a pas de paragraphe.
+Les cases « ne pas mentionner » retirent chacune son score (MEDSUBHYP, score vestibulaire) de ce paragraphe, pas le score ASIA. Un dossier sans score n'a pas de paragraphe.
 
 ### Les recompressions, par type de table
 
@@ -1227,7 +1242,7 @@ l'IRM et les traitements.
 | Z | Appareil utilisé | apnée 1 ; sinon circuit ouvert 2 par défaut (l’appareil n’est pas recueilli) |
 | AA | Mélange uilisé | air 1, nitrox 2, trimix 3, autres 4 |
 | AB | Procédure de décompression | tables 1, ordinateur 2, autre 3 |
-| AC | Combinaison | non recueillie |
+| AC | Combinaison | type de tenue : humide 1, semi-étanche 2, étanche 3 ; « autre » : le texte précisé (« autre » sans précision) ; vide si la tenue n'est pas cotée |
 | AD | Heure immersion (hh:mm) | heure d’immersion (DS) |
 | AE | Profondeur max (msw) | profondeur maximale (Pmax) ; en apnée, celle des apnées |
 | AF | Durée de travail (hh:mm) | durée de travail (DT) |
@@ -1249,7 +1264,7 @@ l'IRM et les traitements.
 | AV | Heure début des soins (hh:mm) | heure des 1ers soins sur place |
 | AW | Circonstances de survenue de l'accident | remontée, profil, commentaire des paliers, histoire de la maladie |
 | AX | Signes initiaux | signes fonctionnels à l’arrivée |
-| AY | Déséquipement + protection thermique | non recueilli |
+| AY | Déséquipement + protection thermique | déséquipement sur le lieu de plongée : 1 ou 0 (la protection thermique n'est pas recueillie) ; OUI proposé d'office sur une consultation initiale |
 | AZ | Oxygénothérapie normobare | oxygène sur place : 1 (masque à haute concentration) ou 0 |
 | BA | Hydratation per os et IV (ml) | hydratation sur place (mL) |
 | BB | Aspirine | aspirine sur place : 1 ou 0 |
@@ -1259,8 +1274,8 @@ l'IRM et les traitements.
 | BF | Signes au SMHEP : | déficit moteur 3, déficit sensitif objectif 2, paresthésies isolées 1, aucun 0 |
 | BG | Douleur vertébrale | douleur rachidienne du premier examen : 1 ou 0 |
 | BH | Troubles sphictériens | troubles vésico-sphinctériens du premier examen |
-| BI | Score MEDSUBHYP | à l’arrivée si coté, sinon le premier disponible ; vide si la case « ne pas mentionner les scores » est cochée |
-| BJ | Score sévérité OI | score vestibulaire du premier examen coté ; « ns » sinon |
+| BI | Score MEDSUBHYP | à l’arrivée si coté, sinon le premier disponible ; vide si la case « ne pas mentionner » le score MEDSUBHYP est cochée |
+| BJ | Score sévérité OI | score vestibulaire du premier examen coté ; « ns » sinon, ou si la case « ne pas mentionner » le score vestibulaire est cochée |
 | BK | Table Initiale | O2 2,5 ATA 1 (A15, A15IOT), A18 2, B18 3, C18 4, héliox 5, autre 6, aucune 0 ; **seulement si la recompression de la fiche initiale est cotée** (la B18 d'office seule vaut « aucune ») |
 | BL | Heure de mise en pression (hh:mm) | heure de mise en pression de la table initiale |
 | BM | Délai de recompression après 1ers symptômes (hh:mm) | délai 1ers symptômes → mise en pression |
@@ -1273,7 +1288,7 @@ l'IRM et les traitements.
 | BT | Nb séances d'OHB complémentaires (table O2, 2,5 ATA) | séances **cotées** du dossier à l’oxygène 2,5 ATA (A15, A15IOT), la table initiale déduite |
 | BU | Séquelles sortie service | dernier examen : signes objectifs 2, signes subjectifs 1, aucun 0 |
 | BV | Médecin ayant pris en charge le patient | médecin de la fiche initiale (sinon l’examinateur) |
-| BW | Observations | lieu non codé, apnées, conditions environnementales, tables « autres » |
+| BW | Observations | lieu non codé, apnées, conditions environnementales, **progressivité** (« Progressivité respectée » ou « non respectée » : facteur favorisant sans colonne dans le fichier maître), tables « autres » |
 | BX | Score MJOAS | non recueilli |
 | BY | nombre j AT | non recueilli |
 | BZ | nombre j inaptitude plongée | inaptitude temporaire : mois × 30 jours ; « définitive » sinon |
@@ -1289,7 +1304,7 @@ l'IRM et les traitements.
 | CJ | MAPA anormale | non recueillie |
 | CK | G | colonne sans équivalent |
 
-Les colonnes qu'ADP **ne recueille pas** (AC, AQ, AT, AY, BX, BY, CE, CF, CG, CI, CJ, CK) restent vides. La colonne Z
+Les colonnes qu'ADP **ne recueille pas** (AQ, AT, BX, BY, CE, CF, CG, CI, CJ, CK) restent vides. La colonne Z
 (appareil utilisé) est **« circuit ouvert » par défaut** hors apnée : ADP ne demande ni recycleur ni caisson. Les niveaux
 professionnel et militaire (O, P) sont repris en toutes lettres, la mention (A à D) et la catégorie n'étant pas recueillies.
 
@@ -1786,7 +1801,7 @@ d = pd.read_csv("donnees_neuro.csv", sep=";", encoding="utf-8-sig")
 
 - Séparateur par défaut : point-virgule. Modifiable dans **Plus** › **Exporter les données** (virgule pour R et Python).
 - **Cellule vide = valeur manquante (NA).** Aucune valeur par défaut n'est inventée.
-- `dictionnaire_variables.csv` donne le libellé et le codage des 935 colonnes.
+- `dictionnaire_variables.csv` donne le libellé et le codage des 942 colonnes.
 
 ### Codages principaux
 
@@ -1811,7 +1826,8 @@ d = pd.read_csv("donnees_neuro.csv", sep=";", encoding="utf-8-sig")
 | Grade AIS | `A` à `E`, texte. `asia_nli` : métamère, texte |
 | Zones des signes subjectifs | `1` à `6` selon le ressenti, `0 = aucun` |
 | Identifiant | `dossier_pseudo` : `1 = empreinte salée SHA-256`, `0 = valeur saisie telle quelle` |
-| Orientation | `1 = domicile`, `2 = médecine`, `3 = surveillance continue`, `4 = soins intensifs`, `5 = transfert` ; `orientation_txt` : texte libre complémentaire |
+| Orientation | `1 = domicile`, `2 = médecine`, `3 = surveillance continue`, `4 = soins intensifs`, `5 = transfert`, `6 = hospitalisation de jour` ; `hdj_lieu` (hébergement pendant l'hospitalisation de jour) : `1 = domicile`, `2 = hôtel patient`, `3 = autre établissement` (`hdj_lieu_autre` : texte) ; `orientation_txt` : texte libre complémentaire |
+| Tenue, déséquipement, progressivité | `pl_tenue` : `1 = humide`, `2 = semi-étanche`, `3 = étanche`, `9 = autre` (`pl_tenue_autre` : texte) ; `pl_deseq` (déséquipement sur le lieu de plongée) et `ff_progress` (progressivité respectée) : `1 = OUI`, `0 = NON` |
 | Position du regard | une colonne binaire par position + une colonne texte (valeurs séparées par `\|`) |
 | Trépidation | `trep_pied_qual_D`, `trep_pied_qual_G` : `1 = épuisable`, `2 = inépuisable` |
 | Adressé par | `adresse_par` : `1 = SAMU 83`, `2 = SCMM`, `3 = autre SAMU`, `5 = SAU HNIA SA`, `4 = autre` (établissement, avec son type et son nom) ; `adresse_etab_type` : `1 = SAU`, `2 = centre hyperbare`, `3 = non défini` |
@@ -1823,7 +1839,7 @@ d = pd.read_csv("donnees_neuro.csv", sep=";", encoding="utf-8-sig")
 | Type de profil de plongée | `pl_profil_type` : `1 = carré`, `2 = inversé`, `3 = yoyo`, `4 = remontée progressive` (proposée d'office), `5 = apnée` ; inversé : `pl_prof1`, `pl_h_inv` ; yoyo : `pl_yoyo_nb`, `pl_yoyo_amp`, `pl_yoyo_surf` (`1 = oui`, `0 = non`), `pl_yoyo_int`, et `pl_yoyo_crit` (`1` si les critères du yoyo sont remplis, `0` sinon, calculé) ; remontée progressive : `pl_dpmax` (durée à la profondeur maximale, min), `pl_prof_df` (profondeur au départ du fond) |
 | Apnée | `ap_nb` (nombre d'apnées), `ap_interval` (intervalle de surface, min), `ap_decomp` : `0 = aucune`, `1 = par réimmersion`, `2 = en surface` ; réimmersion : `ap_rim_int`, `ap_rim_duree` (min), `ap_rim_prof` (m), `ap_rim_gaz` ; en surface : `ap_surf_int`, `ap_surf_duree` (min), `ap_surf_gaz` ; gaz : `1 = air`, `2 = nitrox`, `3 = trimix`, `4 = héliox`, `5 = oxygène`, `9 = autre` ; la profondeur maximale des apnées est `pl_prof` ; type de plongée `pl_type = 5` |
 | Conditions environnementales | `ff_courant`, `ff_houle` : `1 = OUI`, `0 = NON` ; `ff_visib` : `1 = bonne`, `2 = mauvaise`, `3 = inférieure à 1 m` ; `ff_env` : précisions, texte libre |
-| Scores dans la synthèse | `sc_masquer` : `1` = scores MEDSUBHYP et vestibulaire non mentionnés (synthèse, CRH, impression), vide sinon ; `msh_total` et `vest_total` restent calculés |
+| Scores dans la synthèse | `sc_masquer_msh` : `1` = score MEDSUBHYP non mentionné (synthèse, CRH, impression, ligne Excel), vide sinon ; `sc_masquer_vest` : de même pour le score vestibulaire ; `msh_total` et `vest_total` restent calculés |
 | Score vestibulaire | `vest_vertige`, `vest_nystagmus`, `vest_nv`, `vest_instab` : `0` à `3` ; `vest_cochl` : `0` ou `1` (8 points) ; `vest_total` : `0` à `19` |
 | Échographie pleuro-pulmonaire | 24 colonnes de zones `ech_<a ou p>_<D ou G>_<s ou i>_<lat, mdn ou mdl>` : `1 = A`, `2 = B`, `3 = B++`, `4 = C`, `5 = PNO`, vide = zone non examinée ; `ech_nb` (zones cotées), `ech_nb_A`, `ech_nb_B`, `ech_nb_Bpp`, `ech_nb_C`, `ech_nb_PNO`, `ech_anom_D`, `ech_anom_G` (zones hors A par poumon), `ech_pno`, `ech_zones` (liste), `ech_txt` (commentaire) |
 | Procédure de décompression | `pl_proc` : `1 = ordinateur`, `2 = tables MN23`, `5 = tables MT 92`, `3 = autres tables`, `4 = sans procédure` |
@@ -1865,6 +1881,77 @@ aux analyses topographiques fines.
 
 ---
 
+## Changements de la version 9.3.5
+
+Trois demandes. Le fichier de données passe de 935 à **942 colonnes** (sept de plus : voir ci-dessous) et le dictionnaire des variables est régénéré ; les fiches de la 9.3.3 s'ouvrent telles quelles. Sur le papier, la consultation
+initiale gagne la tenue, le déséquipement et la progressivité dans leurs encarts. `index.html` passe de 789 Ko à 797 Ko. Le numéro 9.3.4 n'existe pas (vous aviez demandé la 9.3.5).
+
+### Scores MEDSUBHYP et vestibulaire
+
+- **Une case par score**, au lieu d'une case pour les deux : on retire MEDSUBHYP, ou le score vestibulaire, ou les deux, de la synthèse, du CRH, de l'impression et de la ligne Excel ADP. Voir *Ne pas mentionner un score*.
+- Colonnes : `sc_masquer` est remplacée par `sc_masquer_msh` et `sc_masquer_vest` (une fiche enregistrée avec l'ancienne case s'ouvre avec les deux cochées).
+
+### Tenue, déséquipement, progressivité
+
+- **Type de tenue** (humide, semi-étanche, étanche, autre à préciser) et **déséquipement sur le lieu de plongée** (OUI proposé d'office, modifiable) dans l'encart « Paramètres de la plongée accidentelle » ; **« Progressivité respectée »**
+  (OUI / NON) dans les « Facteurs favorisants », sous le respect de la procédure de décompression. Synthèse, papier, fichier de données (`pl_tenue`, `pl_tenue_autre`, `pl_deseq`, `ff_progress`).
+- **Ligne Excel ADP** : la tenue en colonne AC (« Combinaison » : 1, 2, 3 ; « autre » en texte), le déséquipement en colonne AY (1 ou 0), la progressivité dans « Observations » (BW). Les 89 colonnes du fichier maître sont inchangées.
+
+### Hospitalisation de jour
+
+- Nouvelle **orientation « Hospitalisation de jour »** (onglet « Conclusion et évolution »), avec l'**hébergement** : domicile, hôtel patient ou autre établissement (à préciser) ; elle s'écrit dans la synthèse, le compte rendu d'hospitalisation et sur le papier.
+- **Le patient reste dans les patients en cours** (pastille avec la mention **HDJ**) tant que la consultation de sortie la plus récente l'oriente vers l'hospitalisation de jour ; il disparaît le lendemain d'une nouvelle consultation de sortie dont
+  l'orientation est autre : c'est ainsi que vous cotez la sortie de l'hospitalisation de jour. Voir *Le volet de gauche : les patients en cours*.
+- Colonnes : `hdj_lieu`, `hdj_lieu_autre`, et la modalité `6` de `orientation`.
+
+### À valider de votre côté
+
+- **« Décochés individuellement ».** J'ai compris : chaque score se retire à part. Il y a donc **deux cases** (« ne pas mentionner MEDSUBHYP », « ne pas mentionner le score vestibulaire »), cochées = retiré, comme l'ancienne case unique,
+  décochées par défaut. Je n'ai pas touché aux lignes (items) d'un score. Dites-moi si vous vouliez autre chose : décocher une ligne d'un score (par exemple une valeur déduite), ou des cases inversées (cochées = mentionné).
+- **Pour le CRH et la ligne Excel, il suffit qu'une fiche du dossier porte la case** (règle d'avant, inchangée) : décocher sur la dernière fiche ne remet pas le score dans le CRH si la fiche initiale l'a cochée.
+- **Tenue « autre ».** Votre fichier maître n'a pas de code pour « autre » (0 aucune, 1 humide, 2 semi-étanche, 3 étanche) : la colonne AC reçoit le **texte précisé**. Il n'y a pas d'option « aucune » (vous aviez listé quatre choix).
+- **Déséquipement.** « OUI d'office » vaut pour une **nouvelle** consultation initiale ; une fiche déjà enregistrée reste vide (je n'invente pas de réponse). Votre colonne AY s'intitule « Déséquipement + protection thermique » : je n'y écris
+  que le déséquipement (la protection thermique n'est pas recueillie).
+- **Progressivité : pas de colonne dans votre fichier maître.** Les 89 colonnes (A à CK) de la ligne Excel doivent rester alignées sur votre fichier : je n'en ai donc pas ajouté, et la progressivité s'écrit dans « Observations » (BW).
+  Si une colonne existe (ou si vous en créez une), dites-moi laquelle. Je n'ai pas défini « progressivité » dans le formulaire (aucune aide sous la ligne) : le sens est le vôtre.
+- **Sortie de l'hospitalisation de jour = une nouvelle consultation de sortie** dont l'orientation n'est plus « Hospitalisation de jour » (par exemple « Retour au domicile »), qui donne aussi un CRH sur l'ensemble du dossier. Je n'ai créé ni
+  nouveau type de fiche ni case « fin d'hospitalisation de jour » : une fiche de suivi ou une séance ne fait pas sortir le patient. Si vous préférez une case sur ces fiches, dites-le-moi.
+- **Les jours d'hospitalisation de jour** se cotent avec les fiches habituelles (suivi, séance de recompression). La ligne Excel ADP, la ligne COHB et la « date de clôture » (dernière fiche du dossier) ne distinguent pas l'hospitalisation de jour.
+- **La mention « HDJ » sur la pastille** est un ajout de ma part : elle distingue d'un coup d'œil les patients en hospitalisation de jour des patients hospitalisés.
+- **Ce qui n'a pas pu être vérifié.** Excel : les colonnes AC, AY et BW n'ont pas été collées dans votre vrai fichier maître ; Firefox ESR 140, Chrome et un vrai téléphone ne sont pas essayés.
+- **Ce qui a été essayé.** Les suites des versions précédentes (mises à jour : 942 colonnes, une case par score, colonne AY recueillie) et une suite propre à la 9.3.5 passent (1595 contrôles) : chaque score retiré à part (synthèse, papier, CRH, Excel),
+  l'ancienne case unique, le formulaire, la reprise d'une fiche à l'autre, la tenue, le déséquipement et la progressivité (formulaire, synthèse, papier, fichier de données, colonnes AC, AY et BW), l'orientation et l'hébergement,
+  les patients en cours (sorties successives, même jour, horloge simulée, clic sur la pastille, parcours complet). Dans **Firefox 137** réel, les nouveaux champs, les cases des scores et la pastille « HDJ » ont été manipulés avec de vrais clics (43 contrôles).
+
+---
+
+## Changements de la version 9.3.3
+
+Une seule modification : le **nom proposé au PDF**. Aucune colonne ne s'ajoute ni ne disparaît (935 colonnes), le dictionnaire des variables est identique à celui de la 9.3.2, rien ne change sur le papier et les fiches de la 9.3.2 s'ouvrent telles quelles.
+`index.html` passe de 788 Ko à 789 Ko.
+
+### Enregistrer en PDF
+
+- **Le nom se termine par le numéro d'examen de la fiche** : `NOM_Prénom_IPP_numéro de dossier_EX1.pdf`, `…_EX2.pdf`, `…_EX3.pdf`, et `…_EX3b.pdf` pour une séance de recompression sans examen cotée après le 3ᵉ examen (`…_EX3c.pdf` pour la suivante).
+  Les fiches d'un même patient se distinguent ainsi dans le dossier où vous rangez les PDF. Voir *Enregistrer en PDF : le nom du fichier*.
+- C'est le numéro déjà affiché dans le bandeau (« Examen n° 3b ») et à la fin du nom des fichiers JSON. Il est **recalculé à l'instant** : la bulle du bouton PDF, le titre de la page au moment d'imprimer et le nom transmis par l'application native le portent,
+  même pour une fiche pas encore enregistrée.
+- Le mode d'emploi (« 3. Produire le PDF ») donne le nouveau nom et des exemples.
+
+### À valider de votre côté
+
+- **Séparateur `_EX1`.** J'ai mis le numéro à la suite avec un souligné, comme entre les autres parties du nom (`…_IPP_50894855_EX1.pdf`), et non avec le trait d'union des fichiers JSON (`187-2026_50894855-EX1.json`). Si vous préférez `-EX1`, c'est un changement d'un caractère.
+- **Sans numéro de dossier, pas de numéro d'examen.** Ce numéro se compte par dossier : une fiche sans numéro de dossier garde le nom `NOM_Prénom.pdf` (comme dans la 9.3.2), et deux telles fiches du même patient porteraient donc le même nom.
+- **Une séance qui précède tout examen** du dossier s'appelle `…_EX0b.pdf` (comme dans le nom des fichiers JSON).
+- **Le numéro est celui de l'instant.** Si vous saisissez plus tard une fiche datée avant d'autres, les numéros des suivantes se décalent ; un PDF déjà enregistré n'est pas renommé et garde l'ancien numéro (ADP n'a pas la main sur un fichier que le navigateur a écrit).
+- **Ce qui n'a pas pu être vérifié.** La **vraie fenêtre d'impression** de Firefox, d'Edge et de Chrome n'est pas pilotable : j'ai vérifié le nom que l'application annonce (bulle, titre de la page au moment d'imprimer, nom transmis à l'impression native), pas le nom écrit dans la fenêtre
+  d'enregistrement ; que le navigateur reprenne ce titre a été contrôlé dans le code d'impression de Firefox 137 (9.3.2). Ni Firefox ESR 140, ni Chrome.
+- **Ce qui a été essayé.** Les suites des versions précédentes, mises à jour pour le nouveau nom, et une suite propre à la 9.3.3 passent (1493 contrôles) : numéro de chaque fiche d'une famille (EX1, EX2, EX2b, EX2c, EX3, EX3b), noms tous différents, accord avec le numéro de la fiche et avec le nom des fichiers JSON,
+  fiche rouverte depuis la liste, ordre des dates, autres patients, fiche pas encore enregistrée, bouton « Séance », changement de date ou de numéro de dossier, impression (titre, native), 45 fiches d'un même dossier (jusqu'à `EX12` et `EX1aa`), caractères interdits. Dans **Firefox 137** réel, la bulle du bouton PDF et le titre
+  de la page au moment d'imprimer portent le numéro d'examen (19 contrôles).
+
+---
+
 ## Changements de la version 9.3.2
 
 Aucune colonne ne s'ajoute ni ne disparaît (935 colonnes) et les fiches de la 9.3.1 s'ouvrent telles quelles. Le dictionnaire change de **trois lignes** : les libellés de `dossier` et de `num_ex` disent « patient » à la place de « sujet », et la description de `delai_min` précise
@@ -1873,7 +1960,7 @@ Le dernier point de la liste que vous m'avez envoyée était vide : j'ai traité
 
 ### Enregistrer en PDF
 
-- **Nom proposé : `NOM_Prénom_IPP_numéro de dossier.pdf`** (par exemple `DUPONT_Jean_IPP_50894855.pdf`), dans la fenêtre d'enregistrement du navigateur, qui demande le dossier. La bulle du bouton PDF annonce le nom. Voir *Enregistrer en PDF : le nom du fichier*.
+- **Nom proposé : `NOM_Prénom_IPP_numéro de dossier.pdf`** (par exemple `DUPONT_Jean_IPP_50894855.pdf`), dans la fenêtre d'enregistrement du navigateur, qui demande le dossier. La bulle du bouton PDF annonce le nom. Voir *Enregistrer en PDF : le nom du fichier* (depuis la 9.3.3, le numéro d'examen termine le nom).
 
 ### Noms et prénoms
 
@@ -1897,7 +1984,7 @@ Le dernier point de la liste que vous m'avez envoyée était vide : j'ai traité
   numéro de dossier). La fiche n'a pas de champ « IPP » séparé. Dites-moi si vous attendiez autre chose.
 - **La fenêtre qui demande le dossier est celle du navigateur.** Un navigateur ne laisse pas une page écrire un PDF dans le dossier de votre choix : ADP donne le nom, le navigateur demande le dossier (selon le navigateur, le dernier dossier utilisé est proposé). Un enregistrement direct, sans fenêtre d'impression, demanderait
   de fabriquer le PDF nous-mêmes (image des pages, texte non sélectionnable) : je ne l'ai pas fait.
-- **Deux fiches du même patient portent le même nom de PDF** (vous ne demandiez pas le numéro d'examen) : Windows demande s'il faut remplacer. Je peux ajouter `_EX2`, `_EX3b`… à la fin si vous le souhaitez.
+- **Deux fiches du même patient portent le même nom de PDF** (vous ne demandiez pas le numéro d'examen) : Windows demande s'il faut remplacer. Je peux ajouter `_EX2`, `_EX3b`… à la fin si vous le souhaitez. *(Fait dans la 9.3.3.)*
 - **Prénom** : l'initiale de **chaque élément** (après une espace ou un trait d'union) en majuscule et **le reste en minuscules** (« JEAN-PIERRE » devient « Jean-Pierre », « jean-pierre » aussi ; « McArthur » deviendrait « Mcarthur »). Vous demandiez « la première lettre » : j'ai étendu aux prénoms composés.
 - **Dictée vocale retirée** du champ Infirmier(e) (c'était le seul des cinq champs à en avoir une) : le texte dicté n'aurait pas la forme du champ.
 - **Délai accident → examen : « premier examen » = consultation initiale** (type 1). Une fiche de suivi saisie avant toute fiche initiale n'affiche donc pas de délai. Il n'est ni calculé, ni affiché, ni imprimé, ni écrit dans le fichier de données pour les autres types.
@@ -2757,7 +2844,11 @@ du script de `index.html`.
 
 ## Historique
 
-- **9.3.2** : le PDF est proposé sous le nom NOM_Prénom_IPP_numéro de dossier ; nom, prénom, examinateur, médecin et infirmier(e) mis en forme automatiquement (NOM en majuscules, Prénom avec l'initiale en majuscule, le reste en majuscules) ;
+- **9.3.5** : les scores MEDSUBHYP et vestibulaire se retirent chacun à part (une case par score) ; plongée : type de tenue, déséquipement sur le lieu de plongée (OUI d'office), facteur favorisant « progressivité respectée »,
+  repris dans la ligne Excel ADP (colonnes AC et AY, et « Observations ») ; orientation « hospitalisation de jour » (hébergement : domicile, hôtel patient, autre établissement) : le patient reste dans les patients en cours (mention HDJ)
+  jusqu'à une consultation de sortie dont l'orientation n'est plus l'hospitalisation de jour.
+- **9.3.3** : le nom proposé au PDF se termine par le numéro d'examen de la fiche (`NOM_Prénom_IPP_numéro de dossier_EX1.pdf`, `…_EX3b.pdf` pour une séance de recompression sans examen), pour distinguer les fiches d'un même patient.
+- **9.3.2** : le PDF est proposé sous le nom NOM_Prénom_IPP_numéro de dossier ; nom, prénom, examinateur, médecin et infirmier(e) mis en forme automatiquement (NOM en majuscules, Prénom avec l'initiale en majuscule, le reste en minuscules) ;
   délai accident → examen limité à la consultation initiale ; « patient » à la place de « sujet » dans tout ce qui s'affiche ; un clic sur une pastille inscrit le numéro d'accident dans la barre de recherche et limite la liste du bas à ce patient.
 - **9.3.1** : le volet de gauche en deux parties : en haut, une pastille par patient en cours (NOM Prénom et âge, aux couleurs du bandeau : rose, bleu, vert), qui disparaît le lendemain de sa consultation de sortie ;
   en dessous, la liste des fiches, déroulante, dans la place restante ; mêmes deux parties dans la fenêtre « Fiches enregistrées » des petits écrans.
