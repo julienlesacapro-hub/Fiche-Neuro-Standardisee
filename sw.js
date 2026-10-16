@@ -7,7 +7,7 @@
    Les fiches ne transitent PAS par ce cache : elles vivent dans IndexedDB
    et dans le dossier choisi par l'utilisateur. Vider le cache ne les efface pas.
 */
-const VERSION = 'v9.3.5';
+const VERSION = 'v9.4.2';
 const CACHE   = 'adp-' + VERSION;
 
 const SHELL = [

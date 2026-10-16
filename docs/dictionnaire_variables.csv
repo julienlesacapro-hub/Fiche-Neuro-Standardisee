@@ -28,6 +28,8 @@ adresse_samu;Autre SAMU — à préciser (Mode d'entrée et prise en charge init
 adresse_etab_type;Type d’établissement (Mode d'entrée et prise en charge initiale);"1 = SAU (service d’accueil des urgences) ; 2 = Centre hyperbare ; 3 = Non défini"
 adresse_etab;Établissement — à préciser (Mode d'entrée et prise en charge initiale);texte libre
 heure_appel;Heure d'appel (Mode d'entrée et prise en charge initiale);HH:MM
+loc_appel;Localisation de l’accidenté au moment de l’appel (Mode d'entrée et prise en charge initiale);"1 = En mer ; 2 = À quai ; 3 = Dans un SAU ; 4 = Autre"
+loc_appel_autre;Autre lieu — à préciser (Mode d'entrée et prise en charge initiale);texte libre
 evac_moyen;Moyen d'évacuation (Mode d'entrée et prise en charge initiale);"1 = Moyens propres ; 2 = VSAV / pompiers ; 3 = SMUR routier ; 7 = Hélicoptère médicalisé ; 8 = Hélicoptère non médicalisé ; 6 = Autre"
 evac_autre;Autre moyen — à préciser (Mode d'entrée et prise en charge initiale);texte libre
 pl_h_symp;Heure des 1ers symptômes (Mode d'entrée et prise en charge initiale);HH:MM
@@ -348,25 +350,25 @@ mict;Miction depuis l'accident (Miction);"1 = OUI ; 0 = NON"
 mict_type;Caractéristiques (Miction);"1 = Normale ; 2 = Avec effort ; 3 = Rétention"
 mict_residu_pre;Résidu pré-mictionnel (mL) (Miction);numerique (mL)
 mict_residu_post;Résidu post-mictionnel (mL) (Miction);numerique (mL)
-vertic;Verticalisation possible (Coordination et examen vestibulaire);"1 = OUI ; 0 = NON"
-equil_yo;Équilibre statique conservé — yeux OUVERTS (Coordination et examen vestibulaire);"1 = OUI ; 0 = NON"
-equil_yf;Équilibre statique conservé — yeux FERMÉS (Coordination et examen vestibulaire);"1 = OUI ; 0 = NON"
-marche;Marche possible (Coordination et examen vestibulaire);"1 = OUI ; 0 = NON"
-marche_yo;Marche yeux OUVERTS (Coordination et examen vestibulaire);"0 = Normale ; 1 = Anormale"
-marche_yf;Marche yeux FERMÉS (Coordination et examen vestibulaire);"0 = Normale ; 1 = Anormale"
-devia_cote;Marche — côté de la déviation (Coordination et examen vestibulaire);"1 = D ; 2 = G"
-talon_genou;Talon-genou réalisé correctement (Coordination et examen vestibulaire);"1 = OUI ; 0 = NON"
-talon_genou_cote;Côté déficitaire (Coordination et examen vestibulaire);"1 = D ; 2 = G ; 3 = Bilat."
-doigt_nez;Doigt-nez réalisé correctement (Coordination et examen vestibulaire);"1 = OUI ; 0 = NON"
-doigt_nez_cote;Côté déficitaire (Coordination et examen vestibulaire);"1 = D ; 2 = G ; 3 = Bilat."
-romberg;Romberg (Coordination et examen vestibulaire);"0 = Négatif ; 1 = Positif"
-romberg_cote;Romberg — côté de la chute (Coordination et examen vestibulaire);"1 = D ; 2 = G ; 3 = Non latéralisée"
-fukuda;Fukuda (Coordination et examen vestibulaire);"0 = Normale ; 1 = Anormale"
-fukuda_cote;Fukuda — côté de la rotation ou de la déviation (Coordination et examen vestibulaire);"1 = D ; 2 = G"
-etoile;Marche en étoile (Coordination et examen vestibulaire);"0 = Normale ; 1 = Anormale"
-etoile_cote;Marche en étoile — côté de la déviation (Coordination et examen vestibulaire);"1 = D ; 2 = G"
-funambule;Marche funambule (Coordination et examen vestibulaire);"0 = Normale ; 1 = Anormale"
-funambule_cote;Marche funambule — côté de la déviation (Coordination et examen vestibulaire);"1 = D ; 2 = G"
+vertic;Verticalisation possible (Coordination, équilibre et marche);"1 = OUI ; 0 = NON"
+equil_yo;Équilibre statique conservé — yeux OUVERTS (Coordination, équilibre et marche);"1 = OUI ; 0 = NON"
+equil_yf;Équilibre statique conservé — yeux FERMÉS (Coordination, équilibre et marche);"1 = OUI ; 0 = NON"
+marche;Marche possible (Coordination, équilibre et marche);"1 = OUI ; 0 = NON"
+marche_yo;Marche yeux OUVERTS (Coordination, équilibre et marche);"0 = Normale ; 1 = Anormale"
+marche_yf;Marche yeux FERMÉS (Coordination, équilibre et marche);"0 = Normale ; 1 = Anormale"
+devia_cote;Marche — côté de la déviation (Coordination, équilibre et marche);"1 = D ; 2 = G"
+talon_genou;Talon-genou réalisé correctement (Coordination, équilibre et marche);"1 = OUI ; 0 = NON"
+talon_genou_cote;Côté déficitaire (Coordination, équilibre et marche);"1 = D ; 2 = G ; 3 = Bilat."
+doigt_nez;Doigt-nez réalisé correctement (Coordination, équilibre et marche);"1 = OUI ; 0 = NON"
+doigt_nez_cote;Côté déficitaire (Coordination, équilibre et marche);"1 = D ; 2 = G ; 3 = Bilat."
+romberg;Romberg (Examen vestibulaire);"0 = Négatif ; 1 = Positif"
+romberg_cote;Romberg — côté de la chute (Examen vestibulaire);"1 = D ; 2 = G ; 3 = Non latéralisée"
+fukuda;Fukuda (Examen vestibulaire);"0 = Normale ; 1 = Anormale"
+fukuda_cote;Fukuda — côté de la rotation ou de la déviation (Examen vestibulaire);"1 = D ; 2 = G"
+etoile;Marche en étoile (Examen vestibulaire);"0 = Normale ; 1 = Anormale"
+etoile_cote;Marche en étoile — côté de la déviation (Examen vestibulaire);"1 = D ; 2 = G"
+funambule;Marche funambule (Examen vestibulaire);"0 = Normale ; 1 = Anormale"
+funambule_cote;Marche funambule — côté de la déviation (Examen vestibulaire);"1 = D ; 2 = G"
 sens_examinee;Examen des sensibilités réalisé (Sensibilités);"1 = OUI ; 0 = NON"
 sc_masquer_msh;Score MEDSUBHYP - ne pas le mentionner dans la synthese, le CRH et l impression (Scores dans la synthèse);"1 = coche ; vide = non coche"
 sc_masquer_vest;Score vestibulaire - ne pas le mentionner dans la synthese, le CRH et l impression (Scores dans la synthèse);"1 = coche ; vide = non coche"
@@ -405,9 +407,18 @@ im_irm_cer;IRM cérébrale (Examens complémentaires);"1 = OUI ; 0 = NON"
 im_irm_cer_res;IRM cérébrale — résultat (Examens complémentaires);texte libre
 im_irm_med;IRM médullaire (Examens complémentaires);"1 = OUI ; 0 = NON"
 im_irm_med_res;IRM médullaire — résultat (Examens complémentaires);texte libre
+im_irm_med_fc;IRM médullaire — facteur compressif (Examens complémentaires);"1 = OUI ; 0 = NON"
+im_irm_med_fc_type;IRM médullaire — type de facteur compressif (Examens complémentaires);texte libre
+im_irm_med_conc;IRM médullaire — concordance radio-clinique (Examens complémentaires);"1 = OUI ; 0 = NON"
 im_eto;Échographie cardiaque (Examens complémentaires);"1 = OUI ; 0 = NON"
 im_eto_fop;Échographie cardiaque — recherche de FOP (Examens complémentaires);"1 = coche ; vide = non coche"
 im_eto_res;Échographie cardiaque — résultat (Examens complémentaires);texte libre
+im_effort;Épreuve d’effort (Examens complémentaires);"1 = OUI ; 0 = NON"
+im_effort_res;Épreuve d’effort — résultat (Examens complémentaires);"0 = Normale ; 1 = Anormale"
+im_effort_txt;Épreuve d’effort — commentaire (Examens complémentaires);texte libre
+im_mapa;MAPA (Examens complémentaires);"1 = OUI ; 0 = NON"
+im_mapa_res;MAPA — résultat (Examens complémentaires);"0 = Normale ; 1 = Anormale"
+im_mapa_txt;MAPA — commentaire (Examens complémentaires);texte libre
 im_dtc;Doppler transcrânien (Examens complémentaires);"1 = OUI ; 0 = NON"
 dtc_repos;Doppler transcrânien — sans sensibilisation (Examens complémentaires);"0 = Absence de shunt D-G ; 1 = Shunt de bas grade ; 2 = Shunt de haut grade"
 dtc_sensib;Doppler transcrânien — après sensibilisation allongée (Examens complémentaires);"0 = Absence de shunt D-G ; 1 = Shunt de bas grade ; 2 = Shunt de haut grade"
@@ -467,6 +478,8 @@ dg_bioch_types_co;Accident biochimique — type - Intoxication au monoxyde de ca
 dg_bioch_types;Accident biochimique — type - liste (Diagnostic retenu);texte, valeurs separees par |
 dg_principal;Diagnostic principal (Diagnostic retenu);"add = Accident de désaturation ; opi = Œdème pulmonaire d’immersion ; baro = Barotraumatisme ; bioch = Accident biochimique ; noyade = Noyade"
 dg_txt;Autre diagnostic ou précisions (Diagnostic retenu);texte libre
+mjoas;Score MJOAS (Sortie : séquelles et arrêt de travail);numerique (/ 17)
+at_jours;Arrêt de travail (AT) — nombre de jours (Sortie : séquelles et arrêt de travail);numerique (jours)
 sortie_exam_second;Examens à réaliser secondairement (Sortie : examens à prévoir et aptitude à la plongée);texte libre
 inapt_type;Inaptitude à la plongée (Sortie : examens à prévoir et aptitude à la plongée);"1 = Temporaire (durée en mois) ; 2 = Définitive"
 inapt_mois;Durée de l’inaptitude (mois) (Sortie : examens à prévoir et aptitude à la plongée);numerique (mois)

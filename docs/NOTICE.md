@@ -1,4 +1,4 @@
-# ADP — accident de plongée, version 9.3.5
+# ADP — accident de plongée, version 9.4.2
 
 Fichier unique : `index.html`. Aucun réseau, aucune dépendance externe, aucun compte.
 Double-cliquez dessus, il s'ouvre dans votre navigateur et tout fonctionne.
@@ -20,7 +20,7 @@ plein écran, démarrage sans réseau. Voir *Installer sur téléphone et tablet
 | Fichier exploitable, incrémental | `donnees_neuro.csv` | Réécrit automatiquement à chaque enregistrement de fiche |
 
 Un seul CSV pour tous les patients, toutes les consultations et tous les types de document.
-Une ligne = une fiche. 942 colonnes.
+Une ligne = une fiche. 955 colonnes.
 
 Sans bouton de plus, chaque enregistrement écrit aussi la fiche entière au format **JSON** dans le
 dossier de données (un fichier par fiche), et chaque ouverture relit ce dossier pour la recherche d'un
@@ -411,12 +411,12 @@ de vert quand il est complet.
 
 | Onglet | Contenu |
 |---|---|
-| 1. Administratif | Identification, mode d'entrée et prise en charge initiale (arrivée, médecin, adressé par, alerte, évacuation, soins sur place), **identité complémentaire** (nationalité, profession, adresse, téléphone, e-mail), contacts |
+| 1. Administratif | Identification, mode d'entrée et prise en charge initiale (arrivée, médecin, adressé par, alerte avec le **lieu de l'accidenté au moment de l'appel**, évacuation, soins sur place), **identité complémentaire** (nationalité, profession, adresse, téléphone, e-mail), contacts |
 | 2. Anamnèse et plongée | Le plongeur (poids, taille et IMC, antécédents, habitudes toxiques, traitement, niveaux de plongée, avec photo de l'ordonnance), plongée (profil, apnée, durées, paliers, procédure de ré-immersion), plongée précédente, facteurs favorisants et conditions environnementales, anamnèse |
-| 3. Examen clinique général | Constantes et surveillance, examen par appareil, conscience, pupilles et fonctions supérieures, ORL, signes fonctionnels, signes subjectifs, lésions cutanées |
-| 4. Examen neurologique | Réflexes, force motrice, miction, coordination et examen vestibulaire, sensibilités, grille ASIA, scores de sévérité, conclusion de l'examen clinique |
-| 5. Examens complémentaires | **Actes** (voie veineuse, bilan biologique, sondage vésical), **gaz du sang veineux** et **biologie** (horodatés, avec leurs valeurs normales), examens complémentaires (ECG, radiographie et scanners, IRM, échographie cardiaque, doppler transcrânien, autres examens, examens demandés), échographie pleuro-pulmonaire |
-| 6. Conclusion et évolution | Recompression, traitements prescrits, évolution (suivi et sortie), diagnostic retenu, sortie (consultation de sortie), orientation et commentaires, compte rendu d'hospitalisation (consultation de sortie), pièces jointes |
+| 3. Examen clinique général | Constantes et surveillance, examen par appareil, conscience, pupilles et fonctions supérieures, ORL et barotraumatisme, **examen vestibulaire**, signes fonctionnels, signes subjectifs, lésions cutanées |
+| 4. Examen neurologique | Réflexes, force motrice, miction, **coordination, équilibre et marche**, sensibilités, grille ASIA, scores de sévérité, conclusion de l'examen clinique |
+| 5. Examens complémentaires | **Actes** (voie veineuse, bilan biologique, sondage vésical), **gaz du sang veineux** et **biologie** (horodatés, avec leurs valeurs normales), examens complémentaires (ECG, radiographie et scanners, IRM, échographie cardiaque, **épreuve d'effort, MAPA**, doppler transcrânien, autres examens, examens demandés), échographie pleuro-pulmonaire |
+| 6. Conclusion et évolution | Recompression, traitements prescrits, évolution (suivi et sortie), diagnostic retenu, **séquelles (score MJOAS) et arrêt de travail** (consultation de sortie), sortie (consultation de sortie), orientation et commentaires, compte rendu d'hospitalisation (consultation de sortie), pièces jointes |
 
 Sur une **consultation de suivi ou de sortie**, l'onglet « Anamnèse et plongée » n'a plus rien à montrer (la
 plongée reste sur la fiche initiale) : il disparaît, et les onglets se renumérotent. Une **séance de recompression sans examen** n'a qu'**un seul onglet**.
@@ -632,7 +632,7 @@ la recompression, les traitements, l'évolution, le diagnostic et l'orientation 
    **sondage vésical** (à demeure, évacuateur, ou non) avec le **volume initial évacué**.
 3. **Examens complémentaires** : chaque examen réalisé (OUI) ouvre son **résultat**. ECG ; radiographie
    thoracique ; scanner thoracique (le plus fréquent) ou cérébral ; IRM cérébrale (la plus fréquente en
-   consultation initiale) ou médullaire ; échographie cardiaque ; doppler transcrânien ;
+   consultation initiale) ou médullaire ; échographie cardiaque ; épreuve d'effort ; MAPA ; doppler transcrânien ;
    échographie pleuro-pulmonaire ; autres examens ; examens demandés.
    - **Échographie cardiaque** : la recherche de shunt droite-gauche se fait au doppler transcrânien.
      Quand l'échographie est faite pour chercher un FOP, cochez **Recherche de FOP**, qui apparaît dès
@@ -645,6 +645,12 @@ la recompression, les traitements, l'évolution, le diagnostic et l'orientation 
      **après sensibilisation allongée** et **pendant un test de Flack** : absence de shunt D-G, shunt
      de bas grade, shunt de haut grade.
    - **Échographie pleuro-pulmonaire** : cocher OUI ouvre l'encart du même nom, plus bas.
+   - **IRM médullaire** : OUI ouvre le **résultat** (texte libre) puis, depuis la 9.4.1, trois réponses : **facteur compressif** (OUI / NON), son **type** (texte libre, avec des phrases à cliquer : hernie discale,
+     protrusion discale, canal rachidien étroit, ostéophytes, hématome épidural ; il ne se demande que si le facteur compressif est OUI) et **concordance radio-clinique** (OUI / NON). Répondre NON à l'IRM, ou NON au facteur
+     compressif, retire ce qui en dépend. La synthèse les écrit dans une seule phrase (« IRM médullaire : hypersignal médullaire dorsal ; facteur compressif (hernie discale) ; concordance radio-clinique. »), le
+     compte rendu et le papier les reprennent, et la ligne Excel ADP les met dans les colonnes CE, CF et CG.
+   - **Épreuve d'effort** et **MAPA** (depuis la 9.4.1, juste après l'échographie cardiaque) : OUI ouvre le **résultat**, *Normale* ou *Anormale*, et un **commentaire** libre. Les deux vont dans la synthèse
+     (« Épreuve d'effort : anormale ; positive à 150 W. », « MAPA : normale. »), le compte rendu, le papier et la ligne Excel ADP (colonnes CI et CJ). « Réalisée » seul est écrit quand aucun résultat n'est coté.
 4. **Échographie pleuro-pulmonaire** : douze champs par poumon, soit 24, sur deux thorax dessinés (face
    antérieure, patient vu de face ; face postérieure, patient vu de dos). Chaque poumon porte deux
    rangées (supérieure, inférieure) de trois champs, de l'extérieur vers la ligne médiane :
@@ -1020,7 +1026,7 @@ Les fiches sont rangées par date et heure d'examen ; **J0** est la date de la p
 | Résultats biologiques | **tous** les prélèvements du dossier (gaz du sang veineux, biologie), en **tableaux** : une colonne par prélèvement, le plus récent à gauche ; valeurs hors des valeurs normales en gras et en rouge |
 | Évolution | tout ce qui **diffère d'une fiche à l'autre**, horodaté (voir ci-dessous) |
 | Examen de sortie | la dernière fiche : « À la sortie, à l'examen général / neurologique, on retrouve » |
-| Évolution des scores | MEDSUBHYP, score vestibulaire et score ASIA, en un paragraphe **avant le diagnostic retenu** (voir ci-dessous) |
+| Évolution des scores | MEDSUBHYP, score vestibulaire, score ASIA et **score MJOAS**, en un paragraphe **avant le diagnostic retenu** (voir ci-dessous) |
 | Diagnostic retenu | le plus récent des diagnostics saisis |
 | Orientation | l'orientation de la fiche de sortie (retour au domicile, hospitalisation, transfert, **hospitalisation de jour avec son hébergement** : « Hospitalisation de jour, hébergement à l'hôtel patient. ») et ses précisions |
 | Examens à réaliser secondairement | le champ de la consultation de sortie (proposé d'après le diagnostic retenu et le générateur, modifiable), puis les examens demandés de la dernière fiche quand elle en porte |
@@ -1056,8 +1062,9 @@ Un paragraphe **Évolution des scores**, juste **avant le diagnostic retenu**, r
 - le **score vestibulaire initial** (le premier connu du dossier) ;
 - le **score ASIA d'entrée**, puis le **plus péjoratif** s'il diffère de celui d'entrée et de celui de sortie (avec sa date), puis celui de **sortie** (« Score ASIA
   d'entrée : AIS C, niveau neurologique T10, tact léger 70/112… »). Un score dont l'AIS n'est pas E s'écrit en gras. Un seul examen : « Score ASIA : … ».
+- le **score MJOAS** de fin de séjour (depuis la 9.4.1), celui de la consultation la plus récente qui en porte un : « Score MJOAS à la sortie : 15/17. », en gras quand il est inférieur à 17.
 
-Les cases « ne pas mentionner » retirent chacune son score (MEDSUBHYP, score vestibulaire) de ce paragraphe, pas le score ASIA. Un dossier sans score n'a pas de paragraphe.
+Les cases « ne pas mentionner » retirent chacune son score (MEDSUBHYP, score vestibulaire) de ce paragraphe, pas le score ASIA ni le score MJOAS. Un dossier sans score n'a pas de paragraphe.
 
 ### Les recompressions, par type de table
 
@@ -1079,6 +1086,22 @@ séance** (l'encart n'a plus de « nombre de séances réalisées ») et la règ
 La table **B18 proposée d'office** sur une fiche initiale ne compte donc plus **seule** : saisissez l'heure de mise en pression quand la recompression a eu
 lieu, ou videz le champ quand elle n'a pas eu lieu. Le texte de la synthèse, lui, écrit « Table B18 » dès que la table est choisie. Le compte rendu, la ligne Excel
 ADP (colonnes BK, BS et BT) et la ligne Excel COHB suivent la même règle (*La ligne Excel COHB (activité COHB)*).
+
+### Sortie : le score MJOAS et l'arrêt de travail
+
+Depuis la 9.4.1, la consultation de sortie porte, dans l'onglet « Conclusion et évolution », juste avant l'encart *Sortie : examens à prévoir et aptitude à la plongée*, un encart **Sortie : séquelles et arrêt de travail**
+(`mjoas`, `at_jours`). Il n'existe que sur une consultation de sortie.
+
+- **Score MJOAS** (Modified Japanese Orthopedic Association) : un nombre de 0 à 17, **coté 17 d'office** (le score normal) quand la fiche devient une consultation de sortie, modifiable. Le bouton **?** à côté du libellé
+  ouvre la **grille du service** (celle de votre protocole « Accidents de plongée SMHEP 2024 ») : six items — motricité des membres supérieurs (0 à 4), motricité des membres inférieurs (0 à 4), sensibilité des membres
+  supérieurs, du thorax-abdomen et des membres inférieurs (0 à 2 chacune), fonction sphinctérienne (0 à 3) —, un niveau à cocher par item (« RAS » est coché au départ), un total qui se calcule (« Score MJOAS : 15 / 17 —
+  séquelles ») et le bouton **Reporter ce score dans la fiche**, qui écrit le total dans le champ. La fiche ne garde que le total (pas le détail des items). Le 17 d'office n'est donné qu'à une consultation de sortie : une fiche
+  qui change de type le perd s'il n'a pas été modifié, et une consultation de sortie enregistrée avant la 9.4.1 n'est pas remplie d'office (rien n'est inventé). La grille est aussi dans *Aides à l'examen*.
+- **Arrêt de travail (AT) — nombre de jours** : les jours d'AT prescrits à la sortie. Un encart sous le champ donne la durée d'**hospitalisation** (de la date d'entrée, celle du premier examen du dossier, à la date de la
+  consultation de sortie, **les deux jours extrêmes compris** : du 02/10 au 05/10, 4 jours) et le calcul fait pour la ligne Excel ADP : **nombre j AT = jours d'AT + jours d'hospitalisation** (20 jours d'AT donnent 24).
+  **Sans jours d'AT saisis**, la ligne reçoit les jours d'hospitalisation seuls (4). L'encart se met à jour à la frappe et dit ce que la colonne contiendra.
+- Le score s'écrit dans la synthèse (« Score MJOAS : 15/17. », avec les autres scores, en gras s'il est inférieur à 17), dans le compte rendu (*L'évolution des scores*) et sur le papier (encart « Sortie : séquelles et
+  arrêt de travail », avec les jours d'AT) ; le fichier de données reçoit `mjoas` et `at_jours`, et la ligne Excel ADP les colonnes **BX** (score MJOAS) et **BY** (nombre j AT).
 
 ### La sortie
 
@@ -1188,6 +1211,9 @@ Le fichier maître du service compte **89 colonnes (A à CK)** : identité, plon
 évolution, recompression, examens. Le bouton **Ligne Excel ADP** de la barre du haut (icône de masque de plongée ; aussi dans la fenêtre *Exporter les données*), **quel que soit le type de
 consultation** et même sur une fiche incomplète, compose **une ligne** à partir de **toutes les fiches du dossier**, la fiche ouverte comprise (les séances de recompression saisies sans
 examen comptent comme séances, mais ne sont pas des consultations : la « dernière fiche » des séquelles et de l'inaptitude est la dernière consultation). Rien n'est enregistré : la ligne est recalculée à chaque ouverture de la fenêtre.
+**Quelle que soit la fiche ouverte** (initiale, suivi, séance, sortie, ou un contrôle postérieur à la sortie), **la ligne est la même** : elle reprend la totalité des données de l'ensemble des fiches du dossier. La fenêtre dit
+combien de fiches elle a lues, avec leurs dates. Les fiches sont réunies par leur **numéro de dossier** : une fiche du même patient saisie sous un autre numéro n'en fait pas partie, et une fiche sans numéro de dossier est lue seule
+(la fenêtre le signale).
 Votre fichier maître n'est ni lu ni modifié.
 
 La fenêtre affiche, pour chaque colonne, sa **valeur** et la **règle** suivie ; les colonnes vides sont grisées. Vérifiez,
@@ -1208,9 +1234,10 @@ La case **inclure le nom et le prénom (colonne A)** est cochée par défaut, la
 
 La **fiche initiale** (la première de type initial) donne l'identité, le plongeur, la plongée, l'alerte, les soins sur
 place, le premier examen et la table initiale ; la **fiche proche de H+24** (entre 12 h et 40 h après l'arrivée, la plus
-proche de 24 h) et la **première fiche de suivi** donnent l'évolution ; la **dernière fiche** donne les séquelles et l'inaptitude ;
+proche de 24 h) et la **première fiche de suivi** donnent l'évolution ; la **dernière fiche** donne les séquelles ;
 **toutes les fiches** donnent le diagnostic (le dernier), les recompressions, le doppler transcrânien, les échographies,
-l'IRM et les traitements.
+l'IRM (image, facteur compressif, concordance), l'épreuve d'effort, la MAPA et les traitements ; la **fiche la plus récente qui les porte** donne le score MJOAS, les jours d'AT et l'inaptitude (la consultation de
+sortie, qu'une fiche de contrôle saisie après elle ne masque pas).
 
 | Col. | Colonne du fichier maître | Source dans ADP et règle de codage |
 |---|---|---|
@@ -1259,7 +1286,7 @@ l'IRM et les traitements.
 | AQ | Nb de plongées 15 derniers jours (< 20 m / > 20 m) | non recueilli |
 | AR | Heure d'appel SMHEP (hh:mm) | heure d’appel |
 | AS | Identité de l'appelant | SAMU 1 (SAMU 83, SCMM, autre SAMU), SAU HNIA SA 2, autre SAU 3, autre 5 |
-| AT | Localisation accidenté moment de l'appel | non recueillie |
+| AT | Localisation accidenté moment de l'appel | lieu de l’accidenté au moment de l’appel (prise en charge initiale) : en mer 1, à quai 2, dans un SAU 3, autre 4 ; la précision d’« autre » passe dans « Observations » ; vide si non coté |
 | AU | Moyen d'évacuation vers SMHEP | hélicoptère 1, SMUR 2, VSAV 3, autre 5 |
 | AV | Heure début des soins (hh:mm) | heure des 1ers soins sur place |
 | AW | Circonstances de survenue de l'accident | remontée, profil, commentaire des paliers, histoire de la maladie |
@@ -1288,23 +1315,23 @@ l'IRM et les traitements.
 | BT | Nb séances d'OHB complémentaires (table O2, 2,5 ATA) | séances **cotées** du dossier à l’oxygène 2,5 ATA (A15, A15IOT), la table initiale déduite |
 | BU | Séquelles sortie service | dernier examen : signes objectifs 2, signes subjectifs 1, aucun 0 |
 | BV | Médecin ayant pris en charge le patient | médecin de la fiche initiale (sinon l’examinateur) |
-| BW | Observations | lieu non codé, apnées, conditions environnementales, **progressivité** (« Progressivité respectée » ou « non respectée » : facteur favorisant sans colonne dans le fichier maître), tables « autres » |
-| BX | Score MJOAS | non recueilli |
-| BY | nombre j AT | non recueilli |
-| BZ | nombre j inaptitude plongée | inaptitude temporaire : mois × 30 jours ; « définitive » sinon |
+| BW | Observations | lieu non codé, lieu de l’accidenté à l’appel (« autre »), apnées, conditions environnementales, **progressivité** (« Progressivité respectée » ou « non respectée » : facteur favorisant sans colonne dans le fichier maître), tables « autres » |
+| BX | Score MJOAS | score MJOAS de la consultation de sortie (la fiche la plus récente qui en porte un) ; 17 = normal |
+| BY | nombre j AT | jours d’arrêt de travail de la consultation de sortie **+ jours d’hospitalisation**, du jour d’entrée (premier examen du dossier) au jour de sortie **compris** (du 02/10 au 05/10 : 4 jours) ; **sans jours d’AT saisis, les jours d’hospitalisation seuls** (jusqu’à la consultation de sortie la plus récente) ; vide sans consultation de sortie |
+| BZ | nombre j inaptitude plongée | inaptitude temporaire : mois × 30 jours ; « définitive » sinon ; lue sur la fiche la plus récente qui la porte |
 | CA | GF ORDINATEUR | marque et modèle de l’ordinateur, suivis de ses réglages, dans la même case (« Suunto D5 - GF 35/75 ») ; l’un des deux seulement si l’autre est vide |
 | CB | Echodoppler transcrânien | meilleur grade de shunt noté au doppler transcrânien (0, 1, 2) |
 | CC | IRM délai/accident (jours) | jours entre l’accident et la première IRM médullaire |
 | CD | IRM Image | IRM médullaire : image anormale 1, normale 0 |
-| CE | IRM Facteur compressif | non recueilli |
-| CF | IRM Facteur compressif Type | non recueilli |
-| CG | IRM concordance radio clinique | non recueillie |
+| CE | IRM Facteur compressif | facteur compressif à l’IRM médullaire (la première IRM où il est coté) : oui 1, non 0 (les codes 2, 3 et 4 de votre légende — en regard de la lésion, en dessous, au-dessus — ne sont pas recueillis) |
+| CF | IRM Facteur compressif Type | type du facteur compressif (texte, sans point final), quand il y en a un |
+| CG | IRM concordance radio clinique | concordance radio-clinique de l’IRM médullaire (la première IRM où elle est cotée) : oui 1, non 0 |
 | CH | Echographie cardiaque anormale | résultat de l’échographie cardiaque : anormal 1, normal 0 |
-| CI | Epreuve d'effort anormale | non recueillie |
-| CJ | MAPA anormale | non recueillie |
+| CI | Epreuve d'effort anormale | épreuve d’effort réalisée : anormale 1 (dans une fiche du dossier au moins), normale 0 ; vide si elle n’est pas faite ou sans résultat |
+| CJ | MAPA anormale | MAPA réalisée : anormale 1 (dans une fiche du dossier au moins), normale 0 ; vide si elle n’est pas faite ou sans résultat |
 | CK | G | colonne sans équivalent |
 
-Les colonnes qu'ADP **ne recueille pas** (AQ, AT, BX, BY, CE, CF, CG, CI, CJ, CK) restent vides. La colonne Z
+Les colonnes qu'ADP **ne recueille pas** (AQ, CK) restent vides. La colonne Z
 (appareil utilisé) est **« circuit ouvert » par défaut** hors apnée : ADP ne demande ni recycleur ni caisson. Les niveaux
 professionnel et militaire (O, P) sont repris en toutes lettres, la mention (A à D) et la catégorie n'étant pas recueillies.
 
@@ -1345,7 +1372,7 @@ que la ligne Excel ADP : le bouton **Ligne Excel COHB** de la barre du haut (ic�
 puis **Copier la ligne** (texte à tabulations, 31 cellules, à coller dans la première cellule d'une ligne vide) ou **Télécharger le
 classeur .xlsx** (`ligne_excel_COHB_AAAA-MM-JJ.xlsx` : les en-têtes de votre feuille en ligne 1, la ligne du dossier en ligne 2, sur
 le fond bleu des lignes « plongée »). La case « inclure le nom et le prénom » concerne la colonne B. Rien n'est enregistré, votre
-feuille n'est ni lue ni modifiée.
+feuille n'est ni lue ni modifiée. Comme la ligne ADP, **la ligne COHB est la même quelle que soit la fiche ouverte** : elle est composée à partir de toutes les fiches du dossier.
 
 | Col. | En-tête | Règle |
 |---|---|---|
@@ -1362,7 +1389,8 @@ feuille n'est ni lue ni modifiée.
 | Y | DTC | nombre de doppler transcrâniens réalisés (fiches du dossier) |
 | Z | Audio / Tympan | non recueilli |
 | AA | Complication | nombre de fiches du dossier avec une complication thérapeutique |
-| AB, AC, AD | EE / plateau technique, Echo-doppler, CACI plongée | non recueillis (le doppler transcrânien est compté en Y) |
+| AB | EE / plateau technique | nombre d'**épreuves d'effort** (EE) réalisées : les fiches du dossier où l'épreuve d'effort est cochée OUI (comme le DTC en Y ; une épreuve cochée de nouveau sur une autre fiche est une nouvelle épreuve) ; vide s'il n'y en a pas |
+| AC, AD | Echo-doppler, CACI plongée | non recueillis (le doppler transcrânien est compté en Y) |
 | AE | Résidence | voir ci-dessous |
 
 **Séances cotées.** Depuis la 8.2.1, la ligne ne compte une séance que lorsqu'elle est **réellement cotée dans l'encart « Recompression »** : une fiche n'est
@@ -1498,8 +1526,10 @@ disparaissent du fichier de données. Aucune valeur fantôme ne subsiste.
 
 ### Coordination et examen vestibulaire
 
-L'encart de l'onglet « Examen neurologique » réunit la coordination (verticalisation, équilibre statique, marche,
-talon-genou, doigt-nez) et quatre **épreuves vestibulaires** :
+Depuis la 9.4.2, ces deux groupes sont dans **deux encarts** : **Coordination, équilibre et marche** (verticalisation, équilibre statique, marche, talon-genou, doigt-nez) reste dans l'onglet « Examen neurologique » ;
+l'**examen vestibulaire** (les quatre épreuves ci-dessous) est dans l'onglet « **Examen clinique général** », dans son propre encart **Examen vestibulaire**, **juste après « ORL et barotraumatisme »**. Chaque encart a son
+bouton « tout normal ». Le fichier de données (colonnes et ordre) et le papier ne changent pas : sur le papier, les épreuves vestibulaires gardent leur place dans l'encart « Coordination et examen vestibulaire » de la page de
+l'examen neurologique. *Avant la 9.4.2, les quatre épreuves terminaient l'encart de coordination de l'onglet « Examen neurologique ».* Les quatre **épreuves vestibulaires** :
 
 | Épreuve | Réponses | Côté demandé si anormale |
 |---|---|---|
@@ -1675,7 +1705,7 @@ apparaissent quand la trépidation est bilatérale, un seul quand elle est unila
 Un bouton **?** apparaît à côté des items techniquement délicats : Hoffmann, Babinski,
 trépidations, réflexes polycinétiques et étendus, Weber, Rinne, Valsalva, otoscopie, cotation MRC,
 VAC et DAP, nystagmus, VNS, NIV, Barré, Mingazzini, Glasgow, test des métamères, pallesthésie,
-résidu mictionnel, consommation d'alcool.
+résidu mictionnel, consommation d'alcool et, depuis la 9.4.1, le score MJOAS (la grille du service, avec le calcul du total).
 
 Chaque fiche donne la manœuvre, le résultat normal, ce qui compte comme pathologique et les pièges
 courants. Quatre d'entre elles portent un schéma au trait.
@@ -1801,7 +1831,7 @@ d = pd.read_csv("donnees_neuro.csv", sep=";", encoding="utf-8-sig")
 
 - Séparateur par défaut : point-virgule. Modifiable dans **Plus** › **Exporter les données** (virgule pour R et Python).
 - **Cellule vide = valeur manquante (NA).** Aucune valeur par défaut n'est inventée.
-- `dictionnaire_variables.csv` donne le libellé et le codage des 942 colonnes.
+- `dictionnaire_variables.csv` donne le libellé et le codage des 955 colonnes.
 
 ### Codages principaux
 
@@ -1832,6 +1862,7 @@ d = pd.read_csv("donnees_neuro.csv", sep=";", encoding="utf-8-sig")
 | Trépidation | `trep_pied_qual_D`, `trep_pied_qual_G` : `1 = épuisable`, `2 = inépuisable` |
 | Adressé par | `adresse_par` : `1 = SAMU 83`, `2 = SCMM`, `3 = autre SAMU`, `5 = SAU HNIA SA`, `4 = autre` (établissement, avec son type et son nom) ; `adresse_etab_type` : `1 = SAU`, `2 = centre hyperbare`, `3 = non défini` |
 | Moyen d'évacuation | `evac_moyen` : `1` moyens propres, `2` VSAV / pompiers, `3` SMUR routier, `7` hélicoptère médicalisé, `8` hélicoptère non médicalisé, `6` autre |
+| Localisation à l'appel | `loc_appel` (lieu de l'accidenté au moment de l'appel) : `1 = en mer`, `2 = à quai`, `3 = dans un SAU`, `4 = autre` (`loc_appel_autre` : texte) |
 | Sonde vésicale | `ac_sonde` : `2 = sonde à demeure`, `3 = sondage évacuateur`, `0 = non` ; `ac_sonde_vol` : volume initial évacué (mL) |
 | Table de recompression | `tb_table` : `1 = A15`, `2 = A15IOT`, `3 = A18IOT`, `4 = A18`, `5 = B18`, `6 = A18HeOx`, `7 = B18HeOx`, `8 = C18`, `9 = autre` (texte dans `tb_table_autre`) ; `tb_duree` : durée de la table en minutes, calculée (A15 : 95) |
 | ECG | `im_ecg`, `ecg_fc` (bpm), `ecg_qtc` (ms), `ecg_txt` (compte rendu, texte) |
@@ -1847,6 +1878,8 @@ d = pd.read_csv("donnees_neuro.csv", sep=";", encoding="utf-8-sig")
 | Procédure de ré-immersion | `pl_reimm_type` : `1 = remontée rapide (RR)`, `2 = remontée non conforme` ; `pl_reimm_faite` : `1 = réalisée`, `0 = non réalisée` ; `pl_rr_emersion` (`1`/`0`), `pl_rr_delai`, `pl_rr_prof`, `pl_rr_duree`, `pl_rr_pal6`, `pl_rr_pal3` (minutes ou mètres) ; `pl_reimm_txt` : description |
 | Alcool sevré | `tox_alcool_sevre` (case), `alcool_sevre_date`, `alcool_sevre_stade` : `1` à `4`, comme `alcool_stade` |
 | Examens complémentaires | `im_rp`, `im_tdm_thor`, `im_tdm_cer`, `im_irm_cer`, `im_irm_med`, `im_eto`, `im_dtc`, `im_echopp` : `1 = OUI`, `0 = NON` ; résultat de chacun dans `<examen>_res` (texte) ; `im_eto_fop` : case *recherche de FOP* de l'échographie cardiaque (`1` = cochée, vide sinon) |
+| IRM médullaire (suite), épreuve d'effort, MAPA | `im_irm_med_fc` (facteur compressif) et `im_irm_med_conc` (concordance radio-clinique) : `1 = OUI`, `0 = NON` ; `im_irm_med_fc_type` : type du facteur compressif (texte) ; `im_effort`, `im_mapa` : `1 = OUI`, `0 = NON` ; `im_effort_res`, `im_mapa_res` : `0 = normale`, `1 = anormale` ; `im_effort_txt`, `im_mapa_txt` : commentaire (texte) |
+| Sortie : score MJOAS, arrêt de travail | `mjoas` : entier de `0` à `17` (`17` = score normal) ; `at_jours` : jours d'arrêt de travail (entier) ; la ligne Excel ADP y ajoute les jours d'hospitalisation |
 | Épreuves vestibulaires | `romberg` : `0 = négatif`, `1 = positif` ; `fukuda`, `etoile` (marche en étoile), `funambule` : `0 = normale`, `1 = anormale` ; côtés : `romberg_cote` (`1 = D`, `2 = G`, `3 = non latéralisée`), `fukuda_cote`, `etoile_cote`, `funambule_cote` (`1 = D`, `2 = G`) |
 | Doppler transcrânien | `dtc_repos` (sans sensibilisation), `dtc_sensib` (après sensibilisation allongée), `dtc_flack` (pendant un test de Flack) : `0 = absence de shunt D-G`, `1 = shunt de bas grade`, `2 = shunt de haut grade` ; `dtc_txt` : commentaire |
 | Oxygène prescrit | `rx_o2_mode` : `1 = masque à haute concentration`, `2 = VNI` ; `rx_o2_debit` (L/min) ; `rx_vni_pep`, `rx_vni_ai` (cmH₂O), `rx_vni_fr` (/min), `rx_vni_fio2` (%) |
@@ -1878,6 +1911,107 @@ d = pd.read_csv("donnees_neuro.csv", sep=";", encoding="utf-8-sig")
 
 Pour les analyses courantes, les colonnes de synthèse suffisent. Les colonnes de détail servent
 aux analyses topographiques fines.
+
+---
+
+## Changements de la version 9.4.2
+
+Trois modifications, **dans le même dossier** : `ADP-9.4.1` contient maintenant la 9.4.2 (l'ancien `index.html` est gardé à côté du dossier : `ADP-9.4.1_index_avant_9.4.2.html`). Aucune colonne ne s'ajoute ni ne disparaît
+(955 colonnes, dans le même ordre) ; le dictionnaire des variables change par **19 libellés** (le nom de la section des épreuves vestibulaires et celui de la coordination) ; le papier ne change pas ; les fiches de la 9.4.1
+s'ouvrent telles quelles. `index.html` passe de 814 Ko à 816 Ko.
+
+### Feuille COHB : colonne « EE / plateau technique »
+
+- « EE » veut dire « épreuve d'effort » : la colonne **AB** de la ligne Excel COHB reçoit le **nombre d'épreuves d'effort réalisées** dans le dossier (les fiches où l'épreuve d'effort est cochée OUI), comme le DTC en colonne Y ;
+  elle reste vide s'il n'y en a pas. Comme les autres colonnes, elle est la même quelle que soit la fiche ouverte.
+
+### Ligne Excel ADP : « nombre j AT »
+
+- Les jours d'hospitalisation comptent **les deux jours extrêmes** : du 02/10 au 05/10, **4 jours** (3 dans la 9.4.1).
+- **Sans jours d'AT saisis**, la colonne BY reçoit **les jours d'hospitalisation seuls** (elle restait vide dans la 9.4.1) : 20 jours d'AT donnent 24, aucun jour d'AT donne 4.
+- L'encart sous les jours d'AT et la colonne partagent le même calcul : l'encart dit ce que la ligne contiendra (et sur quelle consultation de sortie elle s'appuie, quand ce n'est pas celle qui est ouverte).
+
+### Examen vestibulaire
+
+- L'**examen vestibulaire** (Romberg, Fukuda, marche en étoile, marche funambule, avec leur côté) passe de l'onglet « Examen neurologique » à l'onglet « **Examen clinique général** », dans un encart **Examen vestibulaire**
+  **juste après « ORL et barotraumatisme »**, avec son bouton « tout normal ». L'encart de l'onglet « Examen neurologique » s'appelle maintenant **Coordination, équilibre et marche** (verticalisation, équilibre statique,
+  marche, talon-genou, doigt-nez). Le sous-titre de l'onglet 3 cite « vestibulaire ».
+- Rien d'autre ne bouge : colonnes et ordre du fichier de données, synthèse, compte rendu, score vestibulaire, ligne Excel et **papier** (l'encart « Coordination et examen vestibulaire » garde sa place dans la page de l'examen
+  neurologique). Voir *Coordination et examen vestibulaire*.
+
+### À valider de votre côté
+
+- **Jusqu'à quelle sortie compte-t-on les jours d'hospitalisation ?** Avec des jours d'AT, jusqu'à la consultation de sortie qui les porte (la plus récente qui en porte) ; sans jours d'AT, jusqu'à la consultation de sortie la plus
+  récente du dossier. Avec une hospitalisation de jour, la dernière sortie est celle de la fin de l'hospitalisation de jour : ses jours comptent alors dans les jours d'hospitalisation. Si vous ne voulez compter que jusqu'à la
+  première sortie, dites-le-moi. **Sans aucune consultation de sortie dans le dossier, la colonne BY reste vide.**
+- **Colonne AB = nombre d'épreuves d'effort** (comme le DTC en Y compte les doppler transcrâniens), et non « 1 ou 0 » ni « anormale » : dites-moi si vous attendiez autre chose.
+- **« Examen vestibulaire » = les quatre épreuves vestibulaires.** Le nystagmus, la VNS et le NIV sont déjà dans l'onglet « Examen clinique général » (encart « Fonctions supérieures »). Je n'ai pas déplacé la coordination, l'équilibre
+  statique ni la marche : dites-moi si vous voulez tout dans le même encart, ou le nystagmus et la VNS avec l'examen vestibulaire.
+- **Le papier ne change pas** : les épreuves vestibulaires restent sur la page de l'examen neurologique. Dites-moi si le papier doit suivre le nouvel ordre.
+- **Ce qui n'a pas pu être vérifié.** Aucun collage dans votre vrai fichier maître ni dans votre vraie feuille COHB (colonnes BY et AB) ; Firefox ESR 140, Chrome et un vrai téléphone ne sont pas essayés.
+- **Ce qui a été essayé.** Les suites des versions précédentes (mises à jour : onglets 3 et 4, jours d'hospitalisation, colonne AB) et une suite propre à la 9.4.2 passent (1731 contrôles) : colonne AB (nombre d'épreuves
+  d'effort, ligne identique depuis chaque fiche, fenêtre COHB) ; colonne BY (jours extrêmes compris, sans jours d'AT, sans consultation de sortie, plusieurs sorties, encart, même résultat depuis chaque fiche) ; examen vestibulaire
+  (sections par onglet, formulaire, côté conditionnel, « tout normal », compteurs, dictionnaire, ordre des colonnes, synthèse et papier inchangés). Dans **Firefox 137** réel, l'examen vestibulaire a été manipulé avec de vrais clics,
+  et les colonnes AB et BY lues dans le presse-papiers de Windows après un vrai clic « Copier la ligne » (16 contrôles).
+
+---
+
+## Changements de la version 9.4.1
+
+Sept demandes, dans un **nouveau dossier** : `ADP-9.4.1` (copié de `ADP-9.3.2`, qui reste la 9.3.5, intacte). Le fichier de données passe de 942 à **955 colonnes** (treize de plus : `loc_appel`, `loc_appel_autre`, `im_irm_med_fc`,
+`im_irm_med_fc_type`, `im_irm_med_conc`, `im_effort`, `im_effort_res`, `im_effort_txt`, `im_mapa`, `im_mapa_res`, `im_mapa_txt`, `mjoas`, `at_jours`) et le dictionnaire des variables est régénéré ; les fiches de la 9.3.5
+s'ouvrent telles quelles (les nouvelles colonnes y sont vides) et leur papier ne change pas ; seule une consultation de sortie créée en 9.4.1, qui porte le 17 d'office, imprime l'encart « Sortie : séquelles et arrêt de travail ». `index.html` passe de 797 Ko à 814 Ko. Le numéro 9.4.0 n'existe pas (vous aviez demandé la 9.4.1).
+
+### Les lignes Excel ADP et COHB : toutes les fiches, quelle que soit la fiche ouverte
+
+- La ligne Excel ADP et la ligne Excel COHB étaient **déjà** composées à partir de toutes les fiches du dossier ; la 9.4.1 en fait la règle écrite et la vérifie : sur un dossier de six fiches (initiale, suivi, séance, sortie, contrôle
+  après la sortie) dont les données sont réparties entre elles, la ligne copiée est **identique depuis chacune des fiches** (essai à l'écran, puis par un vrai clic « Copier la ligne » et lecture du presse-papiers de Windows, dans Firefox).
+- Les données qui ne vivent que sur une fiche (score MJOAS, jours d'AT, inaptitude, IRM médullaire, épreuve d'effort, MAPA) sont lues sur **la fiche qui les porte**, même si une fiche de contrôle plus récente n'en porte aucune.
+- La fenêtre de la ligne dit maintenant : « la ligne est composée à partir de **toutes** ces fiches, quelle que soit celle qui est ouverte », avec le nombre de fiches et leurs dates, et signale une fiche **sans numéro de dossier**
+  (seule celle-là peut alors être lue).
+
+### Lieu de l'accidenté au moment de l'appel
+
+- Dans « Mode d'entrée et prise en charge initiale », sous l'heure d'appel : **en mer, à quai, dans un SAU, autre** (à préciser), les lieux de votre fichier. Synthèse (« Au moment de l'appel, l'accidenté était en mer. »), papier,
+  fichier de données, et **colonne AT** de la ligne Excel ADP (1 à 4 ; la précision d'« autre » passe dans « Observations »).
+
+### Score MJOAS
+
+- Dans l'onglet « Conclusion et évolution » d'une consultation de sortie, encart **Sortie : séquelles et arrêt de travail** : **score MJOAS** coté **17 d'office**, modifiable, avec un **?** qui ouvre la grille du service et calcule le
+  total. Synthèse, compte rendu, papier, fichier de données, **colonne BX** de la ligne Excel ADP. Voir *Sortie : le score MJOAS et l'arrêt de travail*.
+
+### IRM médullaire
+
+- Si l'IRM médullaire est réalisée : **facteur compressif** (OUI / NON), **type** de facteur compressif (si OUI), **concordance radio-clinique** (OUI / NON) ; synthèse, compte rendu, papier, fichier de données, **colonnes CE, CF, CG**.
+
+### Épreuve d'effort et MAPA
+
+- Chacune : réalisée (OUI / NON) puis **normale ou anormale** et un commentaire ; synthèse, compte rendu, papier, fichier de données, **colonnes CI et CJ** (anormale 1, normale 0).
+
+### Arrêt de travail
+
+- À la sortie, **nombre de jours d'AT** ; la ligne Excel ADP reçoit, en **colonne BY**, **jours d'AT + jours d'hospitalisation** (date d'entrée → date de la consultation de sortie).
+
+### À valider de votre côté
+
+- **« Totalité des fiches ».** Je ne l'ai pas changée : elle fonctionnait déjà ainsi (les lignes ADP et COHB sont identiques depuis chaque fiche du dossier). Si vous avez vu une ligne incomplète, la cause la plus probable est un patient dont
+  les fiches portent des **numéros de dossier différents** (faute de frappe, identifiant scanné autrement) : elles ne sont alors pas réunies. Dites-moi le cas, je regarde.
+- **Score MJOAS.** La grille (six items, 17 points) est **celle de votre protocole « Accidents de plongée SMHEP 2024 » (page 7)** ; je ne l'ai pas modifiée. La fiche ne garde que le **total** : votre fichier maître n'a qu'une colonne pour
+  le MJOAS, et la grille repart de « RAS » à chaque ouverture (elle ne relit pas le total saisi à la main).
+- **Jours d'hospitalisation = date de sortie − date d'entrée** (du 02/10 au 05/10 : 3 jours ; entrée et sortie le même jour : 0). Si vous comptez les deux jours extrêmes (4 jours), dites-le-moi : c'est une constante du code. La date
+  d'entrée est celle du **premier examen du dossier** (une séance de recompression saisie avant la consultation initiale compte) ; la date de sortie est celle de la consultation de sortie qui porte les jours d'AT. **Sans jours d'AT saisis, la
+  colonne BY reste vide** (rien n'est supposé). *(Modifié dans la 9.4.2 : les deux jours extrêmes comptent, du 02/10 au 05/10 = 4 jours, et sans jours d'AT saisis la colonne BY reçoit les jours d'hospitalisation.)*
+- **IRM, colonne CE.** Votre légende prévoit 0 non, 1 oui, 2 en regard de la lésion, 3 en dessous, 4 au-dessus. Je ne code que **1 ou 0** : les positions 2, 3 et 4 ne sont pas demandées. Si vous les voulez, j'ajoute un choix « position par
+  rapport à la lésion » sous le facteur compressif.
+- **Type de facteur compressif.** Texte libre (colonne CF, sans point final), avec cinq phrases proposées : hernie discale, protrusion discale, canal rachidien étroit, ostéophytes, hématome épidural. Dites-moi si vous préférez une liste fermée.
+- **Épreuve d'effort et MAPA.** Si plusieurs fiches du dossier en portent une, **une seule anormale suffit** pour coder 1. Je n'ai pas touché à la feuille COHB : sa colonne AB (« EE / plateau technique ») reste non recueillie, car je ne sais pas si
+  « EE » veut dire « épreuve d'effort » ; si oui, dites-le-moi et je la compte. *(Fait dans la 9.4.2 : « EE » = épreuve d'effort, la colonne AB est remplie.)*
+- **Lieu à l'appel.** Quatre choix, ceux de votre légende ; la précision d'« autre » va dans « Observations » (pas de colonne pour elle).
+- **Ce qui n'a pas pu être vérifié.** Aucun collage dans votre vrai fichier maître (colonnes AT, BX, BY, CE, CF, CG, CI, CJ) ; Firefox ESR 140, Chrome et un vrai téléphone ne sont pas essayés.
+- **Ce qui a été essayé.** Les suites des versions précédentes (mises à jour : 955 colonnes, l'encart de plus de la sortie, les colonnes de la ligne Excel désormais recueillies) et une suite propre à la 9.4.1 passent (1675 contrôles) :
+  ligne Excel ADP et COHB identique depuis chacune des six fiches d'un dossier ; score MJOAS (17 d'office et son retrait, « ? », grille, calcul, report, synthèse, CRH, papier, Excel) ; jours d'AT et d'hospitalisation (dates, cas limites) ;
+  IRM médullaire, épreuve d'effort, MAPA (formulaire, dépendances, synthèse, CRH, papier, Excel) ; lieu à l'appel. Dans **Firefox 137** réel, tous les nouveaux champs ont été manipulés avec de vrais clics et de vraies frappes, la grille du MJOAS
+  utilisée, et la ligne Excel copiée par un vrai clic puis lue dans le presse-papiers de Windows, depuis chacune des quatre fiches d'un dossier : texte identique (31 contrôles). Le PDF d'une fiche de sortie complète garde ses 7 pages.
 
 ---
 
@@ -2844,6 +2978,11 @@ du script de `index.html`.
 
 ## Historique
 
+- **9.4.2** : feuille COHB : la colonne « EE / plateau technique » (AB) compte les épreuves d'effort réalisées ; ligne Excel ADP : « nombre j AT » compte les jours d'hospitalisation jours extrêmes compris (du 02/10 au 05/10 : 4 jours)
+  et reçoit les jours d'hospitalisation seuls quand aucun jour d'AT n'est saisi ; l'examen vestibulaire (Romberg, Fukuda, marche en étoile, marche funambule) passe dans l'onglet « Examen clinique général », après « ORL et barotraumatisme ».
+- **9.4.1** : lignes Excel ADP et COHB composées à partir de toutes les fiches du dossier quelle que soit la fiche ouverte (écrit et vérifié) ; lieu de l'accidenté au moment de l'appel (colonne AT) ; score MJOAS à la sortie,
+  coté 17 d'office, avec la grille du service en aide (colonne BX) ; IRM médullaire : facteur compressif, type, concordance radio-clinique (colonnes CE, CF, CG) ; épreuve d'effort et MAPA, normales ou anormales (colonnes CI, CJ) ;
+  jours d'arrêt de travail + jours d'hospitalisation (colonne BY). Nouveau dossier `ADP-9.4.1`.
 - **9.3.5** : les scores MEDSUBHYP et vestibulaire se retirent chacun à part (une case par score) ; plongée : type de tenue, déséquipement sur le lieu de plongée (OUI d'office), facteur favorisant « progressivité respectée »,
   repris dans la ligne Excel ADP (colonnes AC et AY, et « Observations ») ; orientation « hospitalisation de jour » (hébergement : domicile, hôtel patient, autre établissement) : le patient reste dans les patients en cours (mention HDJ)
   jusqu'à une consultation de sortie dont l'orientation n'est plus l'hospitalisation de jour.

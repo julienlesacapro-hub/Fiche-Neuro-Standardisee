@@ -149,6 +149,13 @@ body.genopen{overflow:hidden}
 .pst .pstn i{font-style:italic;opacity:.85}
 .pst .psta{flex:0 0 auto;margin-left:auto;font-size:11px;color:var(--ptx);white-space:nowrap}
 .pst .psth{display:inline-block;margin-left:4px;padding:0 6px;border:1px solid var(--ptx);border-radius:9px;font-size:9.5px;font-weight:700;letter-spacing:.06em;line-height:1.5;color:var(--ptx);vertical-align:1px;white-space:nowrap}
+/* la grille du score MJOAS : un cadre par item, un niveau par ligne */
+.mjsc{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:6px 0 10px}
+.mjg{margin:8px 0;padding:8px 10px;border:1px solid var(--bd);border-radius:8px;background:#fff}
+.mjt{margin:0 0 4px;font-size:12.5px;font-weight:700}
+.mjo{display:block;padding:2px 0;font-size:12.5px;font-weight:400;line-height:1.35;cursor:pointer}
+.mjo input{margin:0 6px 0 0;vertical-align:-1px}
+.mjo b{display:inline-block;min-width:14px}
 .pst.cur{box-shadow:0 0 0 2px #fff,0 0 0 4px var(--pbg)}
 
 /* ---------- sections ---------- */
@@ -1189,7 +1196,13 @@ sphincter:{t:'Troubles sphinctériens et résidu mictionnel',
    '<h4>Méthode</h4><p>Mesurez avant la miction, faites uriner, mesurez à nouveau dans les cinq minutes. '+
    'Un résidu post-mictionnel supérieur à 100 mL est anormal. Au-delà de 300 mL, discutez le sondage.</p>'+
    '<h4>En médecine de plongée</h4><p>Un trouble mictionnel après plongée est un signe d\'accident '+
-   'de désaturation médullaire sévère jusqu\'à preuve du contraire, même isolé.</p>'}
+   'de désaturation médullaire sévère jusqu\'à preuve du contraire, même isolé.</p>'},
+
+mjoas:{t:'Score MJOAS (Modified Japanese Orthopedic Association) — évaluation des séquelles',
+ h:'<p>Score d’évaluation des séquelles, à réaliser à la fin du séjour au SMHEP (grille du protocole « Accidents de plongée SMHEP 2024 »). Il comprend la motricité des membres supérieurs et inférieurs, '+
+   'la sensibilité des membres supérieurs, du thorax-abdomen et des membres inférieurs, et la fonction sphinctérienne. <b>Score normal = 17.</b></p>'+
+   '<p>Le bouton « ? » du champ « Score MJOAS » d’une consultation de sortie ouvre la grille, avec le calcul du score.</p>',
+ fn:()=>mjoasModal()}
 
 };
 
@@ -1304,6 +1317,8 @@ const ENV_KEYS = {ff_courant:1, ff_houle:1, ff_visib:1};
 /* code 5 : SAU HNIA SA (service d'accueil des urgences de l'HNIA Sainte-Anne) ; les codes 1 à 4 ne changent pas */
 const ADRP = [{v:1,l:'SAMU 83'},{v:2,l:'SCMM'},{v:3,l:'Autre SAMU'},{v:5,l:'SAU HNIA SA'},{v:4,l:'Autre'}];
 const ADRP_ETAB = [{v:1,l:'SAU (service d’accueil des urgences)'},{v:2,l:'Centre hyperbare'},{v:3,l:'Non défini'}];
+/* où se trouvait l'accidenté au moment de l'appel : les lieux du fichier Excel ADP (colonne « Localisation accidenté moment de l'appel ») */
+const LOC_APPEL = [{v:1,l:'En mer'},{v:2,l:'À quai'},{v:3,l:'Dans un SAU'},{v:4,l:'Autre'}];
 const PP_LIEN = [{v:1,l:'Conjoint / Compagnon'},{v:2,l:'Parent'},{v:3,l:'Enfant'},{v:4,l:'Ami'},{v:5,l:'Autre'}];
 const DEF_O2_DEBIT = 15;      // L/min proposés quand l'oxygène normobare est coché OUI
 
@@ -1363,6 +1378,29 @@ const DEF_TABLE = 5;          // B18 : table proposée d'office, modifiable
    elles ne s'appliquent ni aux fiches de suivi ni aux comptes rendus de sortie, et une
    fiche qui change de type les perd tant qu'elles n'ont pas été modifiées. */
 const DEF_INITIALE = {soin_aspirine:0, tb_table:DEF_TABLE, bio_add:1, bio_opi:1, pl_profil_type:DEF_PROFIL, pl_deseq:1};
+/* Score MJOAS (Modified Japanese Orthopedic Association) : évaluation des séquelles à la fin du séjour au SMHEP. La grille est celle du protocole « Accidents de plongée SMHEP 2024 »
+   (page 7) : motricité des membres supérieurs (0 à 4), des membres inférieurs (0 à 4), sensibilité des membres supérieurs, du thorax-abdomen et des membres inférieurs
+   (0 à 2 chacun), fonction sphinctérienne (0 à 3) ; le score normal est 17. */
+const MJ_SENS = [[0,'douleur ou perte de sensibilité majeure'],[1,'déficit sensitif modéré'],[2,'RAS']];
+const MJOAS = [
+ {k:'ms', l:'Atteinte motrice des membres supérieurs', o:[[0,'incapable de se nourrir seul'],
+   [1,'incapable d’utiliser un couteau ou une fourchette, mais capable d’utiliser une cuillère pour s’alimenter'],
+   [2,'arrive à utiliser un couteau ou une fourchette avec grande difficulté'], [3,'arrive à utiliser un couteau ou une fourchette avec une gêne modérée'], [4,'RAS']]},
+ {k:'mi', l:'Atteinte motrice des membres inférieurs', o:[[0,'incapable de marcher'], [1,'peut marcher sur un sol plat avec un système d’aide à la marche'],
+   [2,'peut monter des escaliers avec main courante, accès à un étage'], [3,'marche possible sans aide mais avec instabilité'], [4,'RAS']]},
+ {k:'ss', l:'Atteinte sensitive : membres supérieurs', o:MJ_SENS},
+ {k:'st', l:'Atteinte sensitive : thorax-abdomen', o:MJ_SENS},
+ {k:'si', l:'Atteinte sensitive : membres inférieurs', o:MJ_SENS},
+ {k:'sp', l:'Atteinte sphinctérienne', o:[[0,'miction impossible, sondage permanent et/ou constipation majeure, évacuation mécanique permanente'],
+   [1,'rétention fréquente, sondage intermittent et/ou constipation sévère, évacuation mécanique intermittente'],
+   [2,'difficultés mictionnelles, pas de sondage et/ou constipation modérée'], [3,'RAS']]}
+];
+const MJOAS_NORMAL = MJOAS.reduce((t, g)=>t + g.o[g.o.length-1][0], 0);          // 17
+const MJOAS_MAX = MJOAS_NORMAL;
+/* Valeurs proposées d'office sur une consultation de SORTIE : le score MJOAS normal, modifiable (voir DEFAUTS) */
+const DEF_SORTIE = {mjoas:MJOAS_NORMAL};
+/* Jours d'hospitalisation = date de sortie − date d'entrée + AT_JOUR_PLUS : 1 compte les deux jours extrêmes (du 02/10 au 05/10 : 4 jours) ; 0 donnerait une durée de séjour en nuits (3 jours) */
+const AT_JOUR_PLUS = 1;
 /* (méthyl)prednisolone : dose proposée par kilo de poids, et durée en jours */
 const DEF_CORTICO_MGKG = 1;
 const DEF_CORTICO_JOURS = 3;
@@ -1680,6 +1718,9 @@ const SPEC = [
   {k:'adresse_etab_type', l:'Type d’établissement', t:'choice', o:ADRP_ETAB, full:1, sub:1, dep:['adresse_par',[4]]},
   {k:'adresse_etab', l:'Établissement — à préciser', t:'txt', wide:1, full:1, sub:1, dep:['adresse_par',[4]]},
   {k:'heure_appel', l:"Heure d'appel", t:'time'},
+  {k:'loc_appel', l:'Localisation de l’accidenté au moment de l’appel', dl:'Localisation de l’accidenté au moment de l’appel', t:'choice', o:LOC_APPEL, full:1,
+   hint:'SAU : service d’accueil des urgences'},
+  {k:'loc_appel_autre', l:'Autre lieu — à préciser', t:'txt', wide:1, full:1, sub:1, dep:['loc_appel',[4]]},
   {k:'evac_moyen', l:"Moyen d'évacuation", t:'choice', o:EVAC, full:1},
   {k:'evac_autre', l:'Autre moyen — à préciser', t:'txt', wide:1, full:1, sub:1, dep:['evac_moyen',[6]]},
   {k:'pl_h_symp', l:'Heure des 1ers symptômes', t:'time'},
@@ -2125,9 +2166,8 @@ const SPEC = [
   {k:'mict_residu_post', help:'sphincter', l:'Résidu post-mictionnel (mL)', t:'num', min:0, max:3000, unit:'mL'}
 ]},
 
-{id:'coord', page:4, t:'Coordination et examen vestibulaire', cols:1,
- norm:{vertic:1,equil_yo:1,equil_yf:1,marche:1,marche_yo:0,marche_yf:0,talon_genou:1,doigt_nez:1,
-       romberg:0,fukuda:0,etoile:0,funambule:0}, f:[
+{id:'coord', page:4, t:'Coordination, équilibre et marche', cols:1,
+ norm:{vertic:1,equil_yo:1,equil_yf:1,marche:1,marche_yo:0,marche_yf:0,talon_genou:1,doigt_nez:1}, f:[
   {k:'vertic', l:'Verticalisation possible', t:'choice', o:NO},
   {k:'equil_yo', l:'Équilibre statique conservé — yeux OUVERTS', t:'choice', o:NO, dep:['vertic',[1]], sub:1},
   {k:'equil_yf', l:'Équilibre statique conservé — yeux FERMÉS',  t:'choice', o:NO, dep:['vertic',[1]], sub:1},
@@ -2138,7 +2178,12 @@ const SPEC = [
   {k:'talon_genou', l:'Talon-genou réalisé correctement', t:'choice', o:NO},
   {k:'talon_genou_cote', l:'Côté déficitaire', t:'choice', o:CO, dep:['talon_genou',[0]], sub:1},
   {k:'doigt_nez', l:'Doigt-nez réalisé correctement', t:'choice', o:NO},
-  {k:'doigt_nez_cote', l:'Côté déficitaire', t:'choice', o:CO, dep:['doigt_nez',[0]], sub:1},
+  {k:'doigt_nez_cote', l:'Côté déficitaire', t:'choice', o:CO, dep:['doigt_nez',[0]], sub:1}
+]},
+
+/* Examen vestibulaire : dans l'onglet « Examen clinique général », juste après « ORL et barotraumatisme » (avant la 9.4.2, il terminait la section « Coordination et examen vestibulaire » de l'onglet
+   « Examen neurologique »). La section suit « coord » dans SPEC : l'ordre des colonnes du fichier de données ne change pas. Le papier garde son ordre (encart « Coordination et examen vestibulaire »). */
+{id:'vestib', page:3, after:'orl', t:'Examen vestibulaire', cols:1, norm:{romberg:0,fukuda:0,etoile:0,funambule:0}, f:[
   {k:'h_vestib', t:'head', l:'Épreuves vestibulaires', full:1,
    sub2:'Une épreuve non réalisée reste vide. Une épreuve anormale demande son côté.'},
   {k:'romberg', l:'Romberg', t:'choice', o:ROMBERG, hint:'Debout, pieds joints, yeux fermés'},
@@ -2242,11 +2287,21 @@ const SPEC = [
   {k:'im_irm_cer_res', l:'Résultat', dl:'IRM cérébrale — résultat', t:'txt', wide:1, sub:1, nofill:1, dep:['im_irm_cer',[1]], phr:['Normale.']},
   {k:'im_irm_med', l:'IRM médullaire', t:'choice', o:ONA},
   {k:'im_irm_med_res', l:'Résultat', dl:'IRM médullaire — résultat', t:'txt', wide:1, sub:1, nofill:1, dep:['im_irm_med',[1]], phr:['Normale.','Hypersignal médullaire.']},
+  {k:'im_irm_med_fc', l:'Facteur compressif', dl:'IRM médullaire — facteur compressif', t:'choice', o:ONA, sub:1, dep:['im_irm_med',[1]]},
+  {k:'im_irm_med_fc_type', l:'Type de facteur compressif', dl:'IRM médullaire — type de facteur compressif', t:'txt', wide:1, sub:1, nofill:1, dep:['im_irm_med_fc',[1]],
+   phr:['Hernie discale.','Protrusion discale.','Canal rachidien étroit.','Ostéophytes.','Hématome épidural.']},
+  {k:'im_irm_med_conc', l:'Concordance radio-clinique', dl:'IRM médullaire — concordance radio-clinique', t:'choice', o:ONA, sub:1, dep:['im_irm_med',[1]]},
   {k:'im_eto', l:'Échographie cardiaque', t:'choice', o:ONA},
   {k:'im_eto_fop', l:'Indication', dl:'Échographie cardiaque — recherche de FOP', t:'check', cl:'Recherche de FOP', sub:1, nofill:1, dep:['im_eto',[1]],
    hint:'À cocher quand l’échographie est faite pour chercher un FOP ; le shunt droite-gauche se recherche au doppler transcrânien'},
   {k:'im_eto_res', l:'Résultat', dl:'Échographie cardiaque — résultat', t:'txt', wide:1, sub:1, nofill:1, dep:['im_eto',[1]],
    phr:['Normale.','Foramen ovale perméable retrouvé.','Absence de foramen ovale perméable.']},
+  {k:'im_effort', l:'Épreuve d’effort', t:'choice', o:ONA},
+  {k:'im_effort_res', l:'Résultat', dl:'Épreuve d’effort — résultat', t:'choice', o:EPR, sub:1, dep:['im_effort',[1]]},
+  {k:'im_effort_txt', l:'Commentaire', dl:'Épreuve d’effort — commentaire', t:'txt', wide:1, sub:1, nofill:1, dep:['im_effort',[1]]},
+  {k:'im_mapa', l:'MAPA', t:'choice', o:ONA, hint:'Mesure ambulatoire de la pression artérielle'},
+  {k:'im_mapa_res', l:'Résultat', dl:'MAPA — résultat', t:'choice', o:EPR, sub:1, dep:['im_mapa',[1]]},
+  {k:'im_mapa_txt', l:'Commentaire', dl:'MAPA — commentaire', t:'txt', wide:1, sub:1, nofill:1, dep:['im_mapa',[1]]},
   {k:'im_dtc', l:'Doppler transcrânien', t:'choice', o:ONA},
   {k:'dtc_repos', l:'Sans sensibilisation', dl:'Doppler transcrânien — sans sensibilisation', t:'choice', o:DTC_GRADES, sub:1, dep:['im_dtc',[1]]},
   {k:'dtc_sensib', l:'Après sensibilisation allongée', dl:'Doppler transcrânien — après sensibilisation allongée', t:'choice', o:DTC_GRADES, sub:1, dep:['im_dtc',[1]]},
@@ -2323,6 +2378,17 @@ const SPEC = [
    oflt:o=>(Array.isArray(REC.d.dg_liste) ? REC.d.dg_liste : []).indexOf(o.v) >= 0,
    hint:'Parmi les diagnostics retenus, s’il est déterminé'},
   {k:'dg_txt', l:'Autre diagnostic ou précisions', t:'txt', wide:1, full:1, nofill:1}
+]},
+
+/* Sortie : les séquelles (score MJOAS, 17 d'office, modifiable) et l'arrêt de travail (AT). Consultation de sortie seulement. La ligne Excel ADP lit ces deux données sur la
+   consultation de sortie, quelle que soit la fiche ouverte ; « nombre j AT » y est la somme des jours d'AT et des jours d'hospitalisation (de la date d'entrée à la date de sortie, jours extrêmes compris) ;
+   sans jours d'AT saisis, ce sont les jours d'hospitalisation seuls. */
+{id:'sortie_sc', page:6, t:'Sortie : séquelles et arrêt de travail', cols:1, only:[3], noghost:1, f:[
+  {k:'mjoas', l:'Score MJOAS', t:'num', min:0, max:MJOAS_MAX, unit:'/ '+MJOAS_MAX, help:'mjoas',
+   hint:'Évaluation des séquelles à la fin du séjour : '+MJOAS_NORMAL+' (score normal) est proposé d’office, modifiable. Le « ? » donne la grille du service et calcule le score.'},
+  {k:'at_jours', l:'Arrêt de travail (AT) — nombre de jours', t:'num', min:0, max:1000, unit:'jours',
+   hint:'Arrêt de travail prescrit à la sortie. La ligne Excel ADP y ajoute les jours d’hospitalisation (de la date d’entrée à la date de la consultation de sortie, jours extrêmes compris) ; laissé vide, elle reçoit les jours d’hospitalisation seuls.'},
+  {k:'at_box', t:'html', fn:()=>atBox(), full:1, nofill:1}
 ]},
 
 /* Sortie : ce que le compte rendu d'hospitalisation doit encore dire. Consultation de sortie seulement. */
@@ -2717,14 +2783,18 @@ function blank(){
            created:now.toISOString(), updated:now.toISOString(),
            d:Object.assign({ date_ex: iso(now), heure_ex: hhmm(now), fiche_type: 1 }, DEF_INITIALE) };
 }
-/* Valeurs proposées d'office sur une consultation initiale (DEF_INITIALE). Quand la fiche
-   quitte le type « initiale », celles qui n'ont pas été modifiées sont retirées ; quand elle
-   y revient, les cases restées vides les retrouvent. */
+/* Valeurs proposées d'office, par type de consultation : DEF_INITIALE (consultation initiale) et DEF_SORTIE (consultation de sortie : le score MJOAS normal). Quand la fiche quitte
+   un type, celles de ce type qui n'ont pas été modifiées sont retirées ; quand elle y revient, les cases restées vides les retrouvent. Une fiche enregistrée n'est jamais remplie d'office. */
+const DEFAUTS = {1:DEF_INITIALE, 3:DEF_SORTIE};
 function dropDefaults(){
-  Object.keys(DEF_INITIALE).forEach(k=>{ if(REC.d[k]===DEF_INITIALE[k]) delete REC.d[k]; });
+  Object.keys(DEFAUTS).forEach(t=>{
+    if(Number(t) === ftype()) return;
+    const m = DEFAUTS[t]; Object.keys(m).forEach(k=>{ if(REC.d[k]===m[k]) delete REC.d[k]; });
+  });
 }
 function giveDefaults(){
-  Object.keys(DEF_INITIALE).forEach(k=>{ if(REC.d[k]==null) REC.d[k]=DEF_INITIALE[k]; });
+  const m = DEFAUTS[ftype()]; if(!m) return;
+  Object.keys(m).forEach(k=>{ if(REC.d[k]==null) REC.d[k]=m[k]; });
 }
 /* Date et heure d'arrivée : horodatées à l'enregistrement du n° de dossier (saisie, scan),
    sans jamais écraser une valeur déjà saisie. Un dossier déjà connu porte une fiche de
@@ -3961,7 +4031,7 @@ const PAGES = [
  {n:1, l:'Administratif', c:'Administratif', s:'identification, identité, entrée, contacts',
   s2:'identification de la consultation'},
  {n:2, l:'Anamnèse et plongée', c:'Anamnèse', s:'plongeur, plongée, facteurs, anamnèse'},
- {n:3, l:'Examen clinique général', c:'Examen', s:'constantes, conscience, ORL, cutané'},
+ {n:3, l:'Examen clinique général', c:'Examen', s:'constantes, conscience, ORL, vestibulaire, cutané'},
  {n:4, l:'Examen neurologique', c:'Neuro', s:'réflexes, force, sensibilités, scores'},
  {n:5, l:'Examens complémentaires', c:'Examens compl.', s:'actes, gaz du sang, biologie, ECG, imagerie'},
  {n:6, l:'Conclusion et évolution', c:'Conclusion', s:'recompression, traitements, diagnostic, orientation',
@@ -4169,7 +4239,7 @@ function setVal(k,v){ const avant = REC.d[k]; REC.d[k] = (REC.d[k]===v)?null:v; 
   /* changer de type de consultation change les sections affichées */
   if(k==='im_echopp'){ pruneDeps(); touch(); renderForm(); return; }
   if(k==='fiche_type'){ TYPE_CHOISI = true; TYPE_PROPOSE = false;
-                        if(ftype()===1) giveDefaults(); else dropDefaults();
+                        dropDefaults(); giveDefaults();
                         if(ftype()===4 && REC.d.tb_h_mep==null) REC.d.seance_auto = 1;           // fiche sans mise en pression saisie : l'heure de la séance est proposée
                         pruneDeps(); touch(); renderForm(); return; }
   autofill(k);
@@ -4353,6 +4423,7 @@ function refreshField(k){
 }
 function softRefresh(){ computeAll();
   refreshCalcs();
+  const ab = $('#atbox'); if(ab) ab.outerHTML = atBox();                 // les jours d'hospitalisation d'une consultation de sortie suivent la frappe (jours d'AT, date)
   refreshBadges(); updateGlobalFill(); renderSynth();
 }
 function refreshBadges(){
@@ -7232,6 +7303,8 @@ function narrativeBlocks(){
     const ev = [];
     if(adr) ev.push((F?'Adressée':'Adressé')+' par '+adr);
     if(d.heure_appel) ev.push('Alerte à '+hFr(d.heure_appel));
+    if(d.loc_appel) ev.push('Au moment de l’appel, '+(F?'l’accidentée':'l’accidenté')+' était '+
+      ({1:'en mer', 2:'à quai', 3:'dans un service d’accueil des urgences', 4:(d.loc_appel_autre ? 'dans un autre lieu ('+flat(d.loc_appel_autre)+')' : 'dans un autre lieu')}[d.loc_appel]));
     const evm = {1:'Venu par ses propres moyens', 2:'Transporté par VSAV / pompiers à l’'+HOPITAL_PEC,
                  3:'Transporté par SMUR routier à l’'+HOPITAL_PEC, 7:'Héliporté sur l’'+HOPITAL_PEC+' (hélicoptère médicalisé)',
                  8:'Héliporté sur l’'+HOPITAL_PEC+' (hélicoptère non médicalisé)',
@@ -7333,8 +7406,27 @@ function narrativeBlocks(){
   exam('tdm_thor', 'im_tdm_thor', 'Scanner thoracique', 'im_tdm_thor_res', 0);
   exam('tdm_cer', 'im_tdm_cer', 'Scanner cérébral', 'im_tdm_cer_res', 0);
   exam('irm_cer', 'im_irm_cer', 'IRM cérébrale', 'im_irm_cer_res', 1);
-  exam('irm_med', 'im_irm_med', 'IRM médullaire', 'im_irm_med_res', 1);
+  /* IRM médullaire : le résultat, puis le facteur compressif (avec son type) et la concordance radio-clinique quand ils sont cotés */
+  if(d.im_irm_med===1){
+    const ip = []; let iab = false;
+    if(d.im_irm_med_res){ const r = lc1(flat(d.im_irm_med_res)).replace(/[.;,:\s]+$/,''), a = abnRes(r); iab = a; ip.push(a ? bold(r) : r); }
+    if(d.im_irm_med_fc===1){ iab = true; const t = d.im_irm_med_fc_type ? lc1(flat(d.im_irm_med_fc_type)).replace(/[.;,:\s]+$/,'') : ''; ip.push(bold('facteur compressif'+(t ? ' ('+t+')' : ''))); }
+    else if(d.im_irm_med_fc===0) ip.push('pas de facteur compressif');
+    if(d.im_irm_med_conc===1) ip.push('concordance radio-clinique');
+    else if(d.im_irm_med_conc===0) ip.push(bold('pas de concordance radio-clinique'));
+    PC('irm_med', ip.length ? fin('IRM médullaire : '+ip.join(' ; ')) : 'IRM médullaire réalisée.', iab);
+  }
   exam('eto', 'im_eto', 'Échographie cardiaque'+(d.im_eto_fop ? ' (recherche de FOP)' : ''), 'im_eto_res', 1);
+  /* épreuve d'effort et MAPA : réalisées, normales ou anormales (l'anomalie s'écrit en gras), avec leur commentaire */
+  const epr = (cat, k, lib, res, txt) => {
+    if(d[k]!==1) return;
+    const ep = [], ec = d[txt] ? lc1(flat(d[txt])).replace(/[.;,:\s]+$/,'') : '';
+    if(d[res]===1) ep.push(bold('anormale')); else if(d[res]===0) ep.push('normale');
+    if(ec) ep.push(ec);
+    PC(cat, ep.length ? fin(lib+' : '+ep.join(' ; ')) : lib+' réalisée.', d[res]===1);
+  };
+  epr('effort', 'im_effort', 'Épreuve d’effort', 'im_effort_res', 'im_effort_txt');
+  epr('mapa', 'im_mapa', 'MAPA', 'im_mapa_res', 'im_mapa_txt');
   if(d.im_dtc===1){
     const cd = [['dtc_repos','sans sensibilisation'],['dtc_sensib','après sensibilisation allongée'],['dtc_flack','pendant un test de Flack']]
                  .filter(x=>d[x[0]]!=null).map(x=>{ const t = x[1]+', '+lc1(lab(x[0])); return d[x[0]]>0 ? bold(t) : t; });
@@ -7366,6 +7458,7 @@ function narrativeBlocks(){
     if(Vn && Vn.total!=null) PC('score', Vn.nom+' : '+Vn.total+'.', false, 'vest');
   }
   if(asia) PC('score', asia, ASIA.ais!=='E', 'asia');
+  if(d.mjoas!=null){ const mt = 'Score MJOAS : '+d.mjoas+'/'+MJOAS_MAX+'.'; PC('score', d.mjoas < MJOAS_NORMAL ? bold(mt) : mt, d.mjoas < MJOAS_NORMAL, 'mjoas'); }
   sect('Examens paracliniques', pc, false);
   /* la biologie : tableau du dossier jusqu'à cette fiche, le plus récent à gauche */
   bioSynth(B, bioFichesSynth());
@@ -7660,6 +7753,9 @@ function scoresCRH(ST, noMsh, noVest){
       L.push(ligne('Score ASIA de sortie', x.A));
     }
   }
+  /* le score MJOAS de la fin de séjour : celui de la consultation la plus récente qui en porte un */
+  const mj = ST.slice().reverse().find(st=>st.d.mjoas!=null);
+  if(mj){ const t = 'Score MJOAS à la sortie : '+mj.d.mjoas+'/'+MJOAS_MAX+'.'; L.push(mj.d.mjoas < MJOAS_NORMAL ? bold(t) : t); }
   return L;
 }
 /* le score ASIA d'un examen à l'autre : sens de la variation (négatif = amélioration) et texte */
@@ -7956,7 +8052,7 @@ function pspecVal(f){
    plutôt que deux lignes. */
 const PMERGE = {
   adresse_par:['adresse_samu','adresse_etab_type','adresse_etab'],
-  evac_moyen:['evac_autre'], nationalite:['nationalite_autre'], pp_lien:['pp_lien_autre'],
+  evac_moyen:['evac_autre'], nationalite:['nationalite_autre'], pp_lien:['pp_lien_autre'], loc_appel:['loc_appel_autre'],
   soin_o2:['soin_o2_debit','soin_o2_duree'],
   niv_loisir:['niv_loisir_autre'], niv_pro:['niv_pro_autre'], niv_ens:['niv_ens_autre'],
   organisme:['organisme_autre'], certif_medecin:['certif_medecin_autre'],
@@ -7964,7 +8060,8 @@ const PMERGE = {
   im_ecg:['ecg_txt'], tb_table:['tb_table_autre'],
   rx_solu:['rx_solu_dose','rx_solu_jours'],
   im_rp:['im_rp_res'], im_tdm_thor:['im_tdm_thor_res'], im_tdm_cer:['im_tdm_cer_res'],
-  im_irm_cer:['im_irm_cer_res'], im_irm_med:['im_irm_med_res'], im_eto:['im_eto_fop','im_eto_res']
+  im_irm_cer:['im_irm_cer_res'], im_irm_med:['im_irm_med_res'], im_eto:['im_eto_fop','im_eto_res'],
+  im_effort:['im_effort_res','im_effort_txt'], im_mapa:['im_mapa_res','im_mapa_txt']
 };
 /* fréquence et QTc sont déjà dans le texte de l'ECG : on ne les répète pas, tant que ce texte existe */
 const PHIDE = {ecg_fc:1, ecg_qtc:1};
@@ -7973,13 +8070,21 @@ const PHIDE = {ecg_fc:1, ecg_qtc:1};
 const PSKIP = {pl_profil_type:1, pl_prof1:1, pl_h_inv:1, pl_yoyo_nb:1, pl_yoyo_amp:1, pl_yoyo_surf:1, pl_yoyo_int:1, pl_prof_df:1, pl_dpmax:1,
                ap_nb:1, ap_interval:1, ap_decomp:1, ap_rim_int:1, ap_rim_duree:1, ap_rim_prof:1, ap_rim_gaz:1, ap_surf_int:1, ap_surf_duree:1, ap_surf_gaz:1,
                pl_reimm_faite:1, pl_rr_emersion:1, pl_rr_delai:1, pl_rr_prof:1, pl_rr_duree:1, pl_rr_pal6:1, pl_rr_pal3:1, pl_reimm_txt:1,
-               dtc_repos:1, dtc_sensib:1, dtc_flack:1, dtc_txt:1,
+               dtc_repos:1, dtc_sensib:1, dtc_flack:1, dtc_txt:1, im_irm_med_fc:1, im_irm_med_fc_type:1, im_irm_med_conc:1,
                rx_o2_mode:1, rx_o2_debit:1, rx_vni_pep:1, rx_vni_ai:1, rx_vni_fr:1, rx_vni_fio2:1};
 /* Lignes dont la valeur est composée à part : le résultat du Doppler transcrânien par condition d'épreuve,
    et la modalité de l'oxygène prescrit. Chaque fonction complète la valeur déjà mise en forme. */
 const PCUSTOM = {
   /* la description commence par le type de remontée, déjà écrit en tête de ligne : on ne le répète pas */
   pl_reimm_type: v => REC.d.pl_reimm_txt ? v+' — '+esc(TXT.flat(REC.d.pl_reimm_txt).replace(/^Remontée (rapide \(RR\)|non conforme) : /, '')) : v,
+  /* IRM médullaire : le facteur compressif (avec son type) et la concordance radio-clinique suivent le résultat */
+  im_irm_med: v => {
+    const d = REC.d, c = [];
+    if(d.im_irm_med_fc===1) c.push('facteur compressif : OUI'+(d.im_irm_med_fc_type ? ' ('+TXT.flat(d.im_irm_med_fc_type)+')' : ''));
+    else if(d.im_irm_med_fc===0) c.push('facteur compressif : NON');
+    if(d.im_irm_med_conc!=null) c.push('concordance radio-clinique : '+(d.im_irm_med_conc===1 ? 'OUI' : 'NON'));
+    return c.length ? v+' — '+esc(c.join(' ; ')) : v;
+  },
   im_dtc: v => {
     const d = REC.d, c = [['dtc_repos','sans sensibilisation'],['dtc_sensib','après sensibilisation allongée'],['dtc_flack','pendant un test de Flack']]
       .filter(x=>d[x[0]]!=null).map(x=>x[1]+' : '+TXT.lc1(lab(x[0])));
@@ -8419,7 +8524,7 @@ function buildPrint(){
   h+=pspec('examens','Examens complémentaires');
   h+=pspec('prescriptions','Prescriptions');
   if(TY===2||TY===3) h+=pspec('evolution','Évolution depuis la consultation précédente');
-  if(TY===3) h+=pspec('sortie','Sortie : examens à prévoir et aptitude à la plongée');
+  if(TY===3) h+=pspec('sortie_sc','Sortie : séquelles et arrêt de travail')+pspec('sortie','Sortie : examens à prévoir et aptitude à la plongée');
 
   const dgt = diagnosticTexte(d);
   h+=box('DIAGNOSTIC RETENU', dgt ? '<div class="pl"><b>'+esc(dgt)+'</b></div>' : '<div class="pl"><span style="color:#888">—</span></div>');
@@ -8949,7 +9054,7 @@ function sortedDB(){
    l'explique (diagnostic) et propose ce qui fonctionne : « Exporter tout en JSON » (dossier choisi, ou archive
    ZIP), téléchargement du JSON à chaque enregistrement, import d'un dossier ou d'une archive.
    ===================================================================== */
-const APP_VERSION = '9.3.5';
+const APP_VERSION = '9.4.2';
 /* hasPicker teste une fonction de l'API au moment de s'en servir : une extension ou un réglage du navigateur peut la retirer */
 const hasPicker = name => { try{ return typeof window[name] === 'function'; }catch(e){ return false; } };
 let FSA = hasPicker('showDirectoryPicker');
@@ -10437,6 +10542,43 @@ function xlsEvol(s, init){
   return Object.keys(s.X).some(k=>s.X[k] && s.X[k].tested) ? 3 : null;
 }
 
+/* Jours d'hospitalisation : de la date d'entrée (la première fiche du dossier) à la date de sortie, les deux jours extrêmes compris (du 02/10 au 05/10 : 4 jours ; entrée et sortie le même jour : 1 jour) ;
+   0 si la sortie précède l'entrée ; null si une des deux dates manque. */
+function joursHospit(entree, sortie){
+  const j = jourDiff(entree, sortie);
+  return j==null ? null : (j < 0 ? 0 : j + AT_JOUR_PLUS);
+}
+/* « nombre j AT » de la ligne Excel ADP, pour les fiches d'un dossier (de la plus ancienne à la plus récente) : les jours d'AT de la consultation de sortie la plus récente qui en porte, plus les jours
+   d'hospitalisation de la date d'entrée (la première fiche du dossier) à la date de cette consultation de sortie. Sans jours d'AT saisis, la date de sortie est celle de la consultation de sortie la plus
+   récente du dossier et le total est le nombre de jours d'hospitalisation seul. null s'il n'y a aucune consultation de sortie, ou si une date manque. */
+function atCalc(FI){
+  const lastWith = pred => { for(let i = FI.length-1; i >= 0; i--) if(pred(FI[i])) return FI[i]; return null; };
+  const fAt = lastWith(f=>f.d.at_jours!=null), f = fAt || lastWith(f=>(f.d.fiche_type||1)===3);
+  if(!f || !FI.length) return null;
+  const e = FI[0].d.date_ex, so = f.d.date_ex, h = joursHospit(e, so), at = fAt ? XN(fAt.d.at_jours) : null;
+  return {fiche:f, entree:e, sortie:so, hosp:h, at:at, total:(h==null || (fAt && at==null)) ? null : (at || 0) + h};
+}
+/* l'encart sous les jours d'AT d'une consultation de sortie : la durée d'hospitalisation, et ce que la ligne Excel ADP en fera (le même calcul que la colonne : atCalc) */
+function atBox(){
+  const a = atCalc(dossierFiches());
+  let h;
+  if(!a || a.hosp==null) h = 'La durée d’hospitalisation se calcule avec la date de la première fiche du dossier et celle de la consultation de sortie.';
+  else {
+    const pl = n => n+' jour'+(n>1 ? 's' : '');
+    h = 'Hospitalisation : du <b>'+esc(frDate(a.entree))+'</b> au <b>'+esc(frDate(a.sortie))+'</b>, soit <b>'+pl(a.hosp)+'</b> (jours extrêmes compris). ';
+    h += a.at!=null
+      ? 'Dans la ligne Excel ADP, « nombre j AT » = '+esc(String(a.at))+' (AT) + '+a.hosp+' (hospitalisation) = <b>'+pl(a.total)+'</b>.'
+      : 'Sans jours d’AT saisis, la ligne Excel ADP reçoit les jours d’hospitalisation : « nombre j AT » = <b>'+pl(a.total)+'</b>.';
+    if(a.fiche.id !== REC.id) h += ' <i>(d’après la consultation de sortie du '+esc(frDate(a.sortie))+' du dossier)</i>';
+  }
+  return '<div class="note" id="atbox" style="margin:2px 0 8px">'+h+'</div>';
+}
+/* épreuve d'effort, MAPA : 1 si elle est anormale dans une fiche du dossier au moins, 0 si elle est réalisée et normale, null sinon (non faite, ou sans résultat) */
+function xlsExam(FI, k, res){
+  let r = null;
+  FI.forEach(f=>{ if(f.d[k]===1 && f.d[res]!=null){ if(f.d[res]===1) r = 1; else if(r==null) r = 0; } });
+  return r;
+}
 /* tout ce que la ligne lit, calculé une fois : les fiches du dossier, de la plus ancienne à la plus récente */
 function xlsCtx(){
   const FI = crhFiches(); if(!FI.length) return null;
@@ -10450,6 +10592,13 @@ function xlsCtx(){
   const X = {FI:FI, ST:ST, FC:C.map(s=>s.f), lastAll:ST[ST.length-1], init:init, last:last, d0:d0, after:after, premSuivi:after[0] || null, h24:h24,
              rc:recompCounts(FI), noMsh:FI.some(f=>scMasque(f.d, 'msh')), noVest:FI.some(f=>scMasque(f.d, 'vest'))};
   X.TX0 = withRec(init.f, terrainTextes);
+  /* Les données qui ne vivent que sur une fiche (la sortie : score MJOAS, jours d'AT, inaptitude ; l'IRM médullaire) sont lues sur la fiche la plus récente qui les porte, quelle que soit
+     la fiche ouverte et même si une fiche plus récente (un contrôle) existe. */
+  const lastWith = pred => { for(let i = FI.length-1; i >= 0; i--) if(pred(FI[i])) return FI[i]; return null; };
+  X.fMjoas = lastWith(f=>f.d.mjoas!=null);
+  X.fInapt = lastWith(f=>f.d.inapt_type!=null);
+  X.fIrmFc = FI.find(f=>f.d.im_irm_med===1 && f.d.im_irm_med_fc!=null) || null;                // la première IRM médullaire qui répond au facteur compressif (et à son type)
+  X.fIrmConc = FI.find(f=>f.d.im_irm_med===1 && f.d.im_irm_med_conc!=null) || null;            // la première qui répond à la concordance radio-clinique
   for(let i = ST.length-1; i >= 0 && X.diag==null; i--){ const c = xlsDiagCode(ST[i].d); if(c!=null) X.diag = c; }
   if(X.diag==null) X.diag = null;
   X.proMil = d0.niv_pro!=null || d0.pl_type===3 || d0.pl_type===4 || d0.cadre_plongee===3;
@@ -10527,7 +10676,7 @@ const XLS = [
           if(d.adresse_par===5) return 2;
           if(d.adresse_par===4) return d.adresse_etab_type===1 ? 3 : 5;
           return null; }},
- /* AT */ {h:'Localisation accidenté', n:'non recueillie', f:X=>null},
+ /* AT */ {h:'Localisation accidenté', n:'lieu de l’accidenté au moment de l’appel (prise en charge initiale) : en mer 1, à quai 2, dans un SAU 3, autre 4 ; la précision d’« autre » passe dans « Observations »', f:X=>X.d0.loc_appel!=null ? XN(X.d0.loc_appel) : null},
  /* AU */ {h:"Moyen d'évacuation", n:'hélicoptère 1, SMUR 2, VSAV 3, autre 5', f:X=>X.d0.evac_moyen!=null ? XN(XLS_EVAC[X.d0.evac_moyen]) : null},
  /* AV */ {h:'Heure début des soins', n:'heure des 1ers soins sur place', f:X=>XH(X.d0.heure_soins)},
  /* AW */ {h:'Circonstances de survenue', n:'remontée, profil, commentaire des paliers, histoire de la maladie', f:X=>{ const d = X.d0, c = [];
@@ -10582,8 +10731,9 @@ const XLS = [
           if(st.X.sen.items.some(i=>i.grp==='subj') || st.X.dou.items.length) return 1;
           return NEU.some(k=>st.X[k] && st.X[k].tested) ? 0 : null; }},
  /* BV */ {h:'Médecin ayant pris en charge', n:'médecin de la fiche initiale (sinon l’examinateur)', f:X=>XT(X.d0.medecin || X.d0.examinateur)},
- /* BW */ {h:'Observations', n:'lieu non codé, apnées, conditions environnementales, progressivité (facteur favorisant, sans colonne dans le fichier maître), tables « autres »', f:X=>{ const d = X.d0, o = [];
+ /* BW */ {h:'Observations', n:'lieu non codé, lieu de l’accidenté à l’appel (« autre »), apnées, conditions environnementales, progressivité (facteur favorisant, sans colonne dans le fichier maître), tables « autres »', f:X=>{ const d = X.d0, o = [];
           if(d.pl_lieu && !X.lieu) o.push('Lieu : '+TXT.flat(d.pl_lieu));
+          if(d.loc_appel===4 && d.loc_appel_autre) o.push('Lieu de l’accidenté à l’appel : '+TXT.flat(d.loc_appel_autre));
           if(isApnee(d)) o.push('Apnée : '+apneeTexte(d)+(d.pl_prof>0 ? ', profondeur maximale '+d.pl_prof+' m' : ''));
           const env = [];
           if(d.ff_courant!=null) env.push('courant '+(d.ff_courant===1 ? 'oui' : 'non'));
@@ -10594,9 +10744,10 @@ const XLS = [
           if(d.ff_progress!=null) o.push('Progressivité '+(d.ff_progress===1 ? 'respectée' : 'non respectée'));
           const au = X.rc.types.filter(t=>t.code===9); if(au.length) o.push('Autre table : '+au.map(t=>t.lib+' × '+t.n).join(', '));
           return o.length ? o.join(' ; ') : null; }},
- /* BX */ {h:'Score MJOAS', n:'non recueilli', f:X=>null},
- /* BY */ {h:'nombre j AT', n:'non recueilli', f:X=>null},
- /* BZ */ {h:'nombre j inaptitude', n:'inaptitude temporaire : mois × 30 jours ; « définitive » sinon', f:X=>{ const d = X.last.d;
+ /* BX */ {h:'Score MJOAS', n:'score MJOAS de la consultation de sortie (la fiche la plus récente qui en porte un) ; 17 = normal', f:X=>X.fMjoas ? XN(X.fMjoas.d.mjoas) : null},
+ /* BY */ {h:'nombre j AT', n:'jours d’arrêt de travail de la consultation de sortie + jours d’hospitalisation, du jour d’entrée (premier examen du dossier) au jour de sortie compris (du 02/10 au 05/10 : 4 jours) ; sans jours d’AT saisis, les jours d’hospitalisation seuls (jusqu’à la consultation de sortie la plus récente) ; vide sans consultation de sortie',
+          f:X=>{ const a = atCalc(X.FI); return a ? a.total : null; }},
+ /* BZ */ {h:'nombre j inaptitude', n:'inaptitude temporaire : mois × 30 jours ; « définitive » sinon ; lue sur la fiche la plus récente qui la porte', f:X=>{ const d = (X.fInapt || X.last).d;
           return d.inapt_type===1 && d.inapt_mois ? Math.round(d.inapt_mois*30) : (d.inapt_type===2 ? 'définitive' : null); }},
  /* CA */ {h:'GF ORDINATEUR', n:'marque - modèle de l’ordinateur, suivi de ses réglages (même case)', f:X=>XT([X.d0.pl_ordi_modele, X.d0.pl_ordi_reglage].map(x=>TXT.flat(x)).filter(Boolean).join(' - '))},
  /* CB */ {h:'Echodoppler', n:'meilleur grade de shunt noté au doppler transcrânien (0, 1, 2)', f:X=>{ const g = [];
@@ -10606,13 +10757,14 @@ const XLS = [
           if(!f || !X.d0.date_acc || !f.d.date_ex) return null; const n = Math.round((Date.parse(f.d.date_ex)-Date.parse(X.d0.date_acc))/864e5); return n >= 0 ? n : null; }},
  /* CD */ {h:'IRM\nImage', n:'IRM médullaire : image anormale 1, normale 0', f:X=>{ const f = X.FI.find(f=>f.d.im_irm_med===1 && f.d.im_irm_med_res);
           return f ? (abnRes(f.d.im_irm_med_res) ? 1 : 0) : null; }},
- /* CE */ {h:'IRM\nFacteur compressif\n0)', n:'non recueilli', f:X=>null},
- /* CF */ {h:'IRM\nFacteur compressif\nType', n:'non recueilli', f:X=>null},
- /* CG */ {h:'IRM\nconcordance', n:'non recueillie', f:X=>null},
+ /* CE */ {h:'IRM\nFacteur compressif\n0)', n:'facteur compressif à l’IRM médullaire (la première IRM où il est coté) : oui 1, non 0 (les codes 2, 3 et 4 — en regard de la lésion, en dessous, au-dessus — ne sont pas recueillis)', f:X=>X.fIrmFc ? XB(X.fIrmFc.d.im_irm_med_fc) : null},
+ /* CF */ {h:'IRM\nFacteur compressif\nType', n:'type du facteur compressif (texte, sans point final), quand il y en a un', f:X=>{ if(!(X.fIrmFc && X.fIrmFc.d.im_irm_med_fc===1)) return null;
+          const t = XT(X.fIrmFc.d.im_irm_med_fc_type); return t ? t.replace(/[.;,:\s]+$/, '') : null; }},
+ /* CG */ {h:'IRM\nconcordance', n:'concordance radio-clinique de l’IRM médullaire (la première IRM où elle est cotée) : oui 1, non 0', f:X=>X.fIrmConc ? XB(X.fIrmConc.d.im_irm_med_conc) : null},
  /* CH */ {h:'Echographie cardiaque anormale', n:'résultat de l’échographie cardiaque : anormal 1, normal 0', f:X=>{ const f = X.FI.find(f=>f.d.im_eto===1 && f.d.im_eto_res);
           return f ? (abnRes(f.d.im_eto_res) ? 1 : 0) : null; }},
- /* CI */ {h:"Epreuve d'effort", n:'non recueillie', f:X=>null},
- /* CJ */ {h:'MAPA anormale', n:'non recueillie', f:X=>null},
+ /* CI */ {h:"Epreuve d'effort", n:'épreuve d’effort réalisée : anormale 1 (dans une fiche du dossier au moins), normale 0 ; vide si elle n’est pas faite ou sans résultat', f:X=>xlsExam(X.FI, 'im_effort', 'im_effort_res')},
+ /* CJ */ {h:'MAPA anormale', n:'MAPA réalisée : anormale 1 (dans une fiche du dossier au moins), normale 0 ; vide si elle n’est pas faite ou sans résultat', f:X=>xlsExam(X.FI, 'im_mapa', 'im_mapa_res')},
  /* CK */ {h:'G', n:'colonne sans équivalent', f:X=>null}
 ];
 
@@ -10807,6 +10959,7 @@ function cohbCtx(X){
   });
   c.g = recompCotee(i0) ? cohbPeriode(i0.date_ex, i0.tb_h_mep || i0.heure_pec || null) : null;
   c.dtc = X.FI.filter(f=>f.d.im_dtc===1).length;
+  c.ee = X.FI.filter(f=>f.d.im_effort===1).length;
   c.compl = X.FI.filter(f=>f.d.tb_complic===1 || f.d.ev_complic===1).length;
   for(let i = X.ST.length-1; i >= 0 && c.diag==null; i--){ const t = cohbDiag(X.ST[i].d); if(t) c.diag = t; }
   if(c.diag==null) c.diag = null;
@@ -10846,7 +10999,7 @@ const COHB = [
  /* Y  */ {h:'DTC', n:'nombre de doppler transcrâniens réalisés (fiches du dossier)', f:X=>cohbX(X).dtc || null},
  /* Z  */ {h:'Audio / Tympan', n:'non recueilli', f:X=>null},
  /* AA */ {h:'Complication', n:'nombre de fiches du dossier avec une complication thérapeutique', f:X=>cohbX(X).compl || null},
- /* AB */ {h:'EE/ plateau technique', n:'non recueilli', f:X=>null},
+ /* AB */ {h:'EE/ plateau technique', n:'nombre d’épreuves d’effort (EE) réalisées : fiches du dossier où l’épreuve d’effort est cochée OUI', f:X=>cohbX(X).ee || null},
  /* AC */ {h:'Echo-doppler', n:'non recueilli (le doppler transcrânien est compté en colonne Y)', f:X=>null},
  /* AD */ {h:'CACI plong', n:'non recueilli', f:X=>null},
  /* AE */ {h:'Résidence', n:'pays cité dans l’adresse ; VAR (code postal 83 ou commune du Var) ; sinon France (dép. xx) d’après le code postal ; sinon pays de la nationalité si elle est étrangère', f:X=>cohbX(X).res}
@@ -10955,7 +11108,9 @@ function openXls(which){
   modalHTML('<h3>'+T.titre+'</h3>'+
     '<div style="display:flex;gap:6px;flex-wrap:wrap;margin:0 0 8px">'+tab(XLS_T.maitre)+tab(XLS_T.cohb)+'</div>'+
     '<div class="note" style="background:#eef4fb;border-color:#bcd4ee">Dossier <b>'+esc(REC.d.dossier)+'</b> : <b>'+X.FI.length+' fiche'+(X.FI.length>1?'s':'')+'</b>'+
-      (dates ? ' ('+esc(dates)+')' : '')+'. La ligne reprend les colonnes A à '+xlsCol(T.ncol-1)+' de '+T.cible+' : <b>'+n+'</b> sur '+T.ncol+
+      (dates ? ' ('+esc(dates)+')' : '')+(X.FI.length>1 ? ' — la ligne est composée à partir de <b>toutes</b> ces fiches, quelle que soit celle qui est ouverte' : '')+'. '+
+      (REC.d.dossier ? '' : '<b>Cette fiche n’a pas de numéro de dossier : seule elle est prise en compte</b> (les autres fiches du patient ne peuvent pas être retrouvées). ')+
+      'La ligne reprend les colonnes A à '+xlsCol(T.ncol-1)+' de '+T.cible+' : <b>'+n+'</b> sur '+T.ncol+
       ' sont remplies d’après les fiches, les autres sont vides (ce que l’application ne recueille pas, ou n’a pas encore reçu). '+
       '<b>Vérifiez les valeurs ci-dessous avant de coller.</b></div>'+
     '<label style="display:block;margin:8px 0;font-weight:400"><input type="checkbox" id="xlsNom"'+(XLS_OPT.nom!==false?' checked':'')+
@@ -11799,14 +11954,17 @@ function openHelp(){
   'toutes les fiches du dossier, une ligne de 89 colonnes (A à CK) qui suit le fichier maître du service. <b>Copier la ligne</b>, puis collez-la dans la '+
   'première cellule d’une ligne vide d’Excel (Ctrl+V) ; ou téléchargez un classeur .xlsx de même structure. Les valeurs sont affichées avant la copie : '+
   'vérifiez-les, les colonnes que l’application ne recueille pas restent vides. La colonne « ordinateur » (CA) porte la marque et le modèle, suivis des réglages, dans la même case. '+
-  'Un menu laissé sur « — » (organisme, niveaux de plongée et d’enseignement, niveau militaire) s’écrit 0, et « Aucun » pour le niveau professionnel (colonne O).</p>'+
+  'Un menu laissé sur « — » (organisme, niveaux de plongée et d’enseignement, niveau militaire) s’écrit 0, et « Aucun » pour le niveau professionnel (colonne O). '+
+  'Quelle que soit la fiche ouverte, la ligne reprend les données de <b>toutes</b> les fiches du dossier : le score MJOAS et les jours d’arrêt de travail de la consultation de sortie '+
+  '(colonne « nombre j AT » = jours d’AT + jours d’hospitalisation, du jour d’entrée au jour de sortie compris : du 02/10 au 05/10, 4 jours ; sans jours d’AT, les jours d’hospitalisation seuls), le facteur compressif et la concordance de l’IRM médullaire, l’épreuve d’effort, la MAPA '+
+  'et le lieu de l’accidenté au moment de l’appel.</p>'+
   '<p><b>5 ter. Ligne Excel COHB (activité COHB).</b><br>'+
   'Même fenêtre (bouton <b>Ligne Excel COHB</b> de la barre du haut, icône d’activité ; ou <b>Exporter</b> puis <b>Ligne Excel COHB du dossier ouvert</b> ; les deux lignes se choisissent en haut de la fenêtre) : '+
   'une ligne de 31 colonnes (A à AE) qui suit la feuille « Activité COHB » du service. Elle reprend la date de la dernière fiche, l’identité, le n° de dossier, le diagnostic, '+
   'le classement ARS, le nombre de consultations, la période de la première séance en urgence (O : lundi au vendredi de 7 h 45 à 16 h 00 hors jours fériés ; N : autre heure en semaine ; W : week-end ou jour férié), '+
   'les séances de recompression par table, comptées seulement quand elles sont réellement cotées dans l’encart « Recompression » (la table B18 proposée d’office sur une consultation initiale '+
   'ne compte que si l’encart est rempli : heure de mise en pression ou de fin, ou complication ; les colonnes « HNO » comptent les séances qui ne tombent pas en heures ouvrables), '+
-  'les doppler transcrâniens, les complications et la résidence. '+
+  'les doppler transcrâniens, les épreuves d’effort (colonne « EE / plateau technique »), les complications et la résidence. '+
   'Les colonnes que l’application ne recueille pas restent vides ; vérifiez les valeurs affichées avant de coller.</p>'+
   '<p><b>6. Analyser.</b><br>'+
   'Ouvrez <code>donnees_neuro.csv</code> dans Excel, R, Python, SPSS ou Jamovi. '+
@@ -12012,6 +12170,7 @@ function helpBtn(key){
 }
 function openHelpItem(key){
   const H = HELP[key]; if(!H){ toast('Aide indisponible'); return; }
+  if(H.fn){ H.fn(); return; }                       // une aide qui calcule (score MJOAS) a sa propre fenêtre
   modalHTML('<h3>'+esc(H.t)+'</h3>'+
     '<div class="helpdoc">'+H.h+'</div>'+
     (H.svg && HELP_SVG[H.svg] ? '<div style="text-align:center;margin:12px 0">'+HELP_SVG[H.svg]+'</div>' : ''));
@@ -12026,6 +12185,33 @@ function openHelpLib(){
     keys.map(k=>'<button class="tb" style="width:100%;text-align:left;margin-bottom:6px;padding:10px 12px" '+
       'onclick="openHelpItem(\''+k+'\')">'+esc(HELP[k].t)+'</button>').join('')+
     '</div>');
+}
+
+/* ---------- score MJOAS : la grille du service, et le calcul du total ---------- */
+function mjoasModal(){
+  const g = MJOAS.map(gr=>'<div class="mjg"><div class="mjt">'+esc(gr.l)+'</div>'+gr.o.map(o=>
+      '<label class="mjo"><input type="radio" name="mj_'+gr.k+'" value="'+o[0]+'"'+(o===gr.o[gr.o.length-1] ? ' checked' : '')+' onchange="mjoasCalc()"><b>'+o[0]+'</b> '+esc(o[1])+'</label>').join('')+'</div>').join('');
+  modalHTML('<h3>Score MJOAS <small style="font-weight:400">Modified Japanese Orthopedic Association</small></h3>'+
+    '<p style="margin:0 0 6px;color:var(--ink2);font-size:12.5px">Évaluation des séquelles, à réaliser à la fin du séjour au SMHEP (grille du protocole « Accidents de plongée SMHEP 2024 »). '+
+    'Cochez le niveau de chaque item : le total se calcule. <b>Score normal = '+MJOAS_NORMAL+'.</b></p>'+
+    '<div class="mjsc"><span id="mjtot" class="badge"></span><button class="tb gd" onclick="mjoasReporter()">Reporter ce score dans la fiche</button></div>'+
+    '<div style="max-height:52vh;overflow:auto">'+g+'</div>');
+  mjoasCalc();
+}
+/* le total des niveaux cochés dans la fenêtre */
+function mjoasTotal(){
+  return MJOAS.reduce((t, gr)=>{ const c = document.querySelector('input[name="mj_'+gr.k+'"]:checked'); return t + (c ? Number(c.value) : 0); }, 0);
+}
+function mjoasCalc(){
+  const el = document.getElementById('mjtot'); if(!el) return;
+  const t = mjoasTotal();
+  el.innerHTML = 'Score MJOAS : <b>'+t+' / '+MJOAS_MAX+'</b>'+(t < MJOAS_NORMAL ? ' — séquelles' : ' — score normal');
+  el.className = 'badge '+(t < MJOAS_NORMAL ? 'ab' : 'ok');
+}
+function mjoasReporter(){
+  if(!REC || ftype() !== 3){ toast('Le score se reporte sur une consultation de sortie'); return; }
+  const t = mjoasTotal(); REC.d.mjoas = t; touch(); closeModal(); refreshField('mjoas');
+  toast('Score MJOAS reporté dans la fiche : '+t+' / '+MJOAS_MAX);
 }
 
 </script>
