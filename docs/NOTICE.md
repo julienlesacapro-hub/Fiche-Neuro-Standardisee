@@ -1,4 +1,4 @@
-# ADP — accident de plongée, version 9.4.2
+# ADP — accident de plongée, version 9.5.1
 
 Fichier unique : `index.html`. Aucun réseau, aucune dépendance externe, aucun compte.
 Double-cliquez dessus, il s'ouvre dans votre navigateur et tout fonctionne.
@@ -82,8 +82,8 @@ toute seule et dit ce qu'il fait ; elle se referme quand on le quitte.
 | caisson à hublot (brun) | **Séance de recompression** | cote une séance **sans examen clinique** (voir *La séance de recompression sans examen*) |
 | disquette (vert) | **Enregistrer** | enregistre la fiche (aussi Ctrl+S) |
 | page « PDF » | **Enregistrer en PDF** | prépare le document imprimable : choisir *Enregistrer au format PDF* ou *Microsoft Print to PDF*, puis le dossier ; nom proposé `NOM_Prénom_IPP_numéro de dossier_EX1.pdf` (la bulle l'annonce) |
-| page à fermeture éclair | **Tout transférer en ZIP** | toutes les fiches du poste, une par fichier JSON, réunies en une archive ZIP |
-| flèche vers un plateau | **Importer** | importe ou fusionne un fichier JSON, une archive ZIP ou un dossier entier |
+| page à fermeture éclair | **Tout transférer en ZIP** | toutes les fiches du poste, une par fichier JSON, réunies en une archive ZIP ; **sa bulle rappelle la manipulation du service** (ci-dessous) |
+| flèche vers un plateau | **Importer** | importe ou fusionne un fichier JSON, une archive ZIP ou un dossier entier ; **sa bulle rappelle la manipulation du service** (ci-dessous) |
 | masque de plongée | **Ligne Excel ADP** | compose la ligne du fichier Excel maître (accident de plongée) d'après le dossier ouvert |
 | courbe d'activité | **Ligne Excel COHB** | compose la ligne de la feuille « Activité COHB » |
 | page d'ordonnance (« Rx ») | **Documents de sortie** | ouvre le générateur de courriers, d'ordonnances et de certificats, rempli d'après la fiche |
@@ -98,6 +98,10 @@ documents (avec le lien « Fichier du générateur… »).
 archive ZIP), **Douchette et pseudonymisation…**, **Dictionnaire des variables**, **Aides à l'examen**, **Installation hors ligne**, **Mode d'emploi**. Sur une tablette il
 propose aussi les **fiches enregistrées** (les patients en cours, puis la liste) ; sur un téléphone, la barre ne garde que *nouvelle fiche*, *enregistrer*, *PDF* et *Plus*, et le menu reprend tout le reste. Un bouton
 **Installer** (ou **Mise à jour**) apparaît à côté de *Plus* quand l'installation, ou une nouvelle version, est possible.
+
+**Import-export des fiches JSON : la bulle de la manipulation du service.** Depuis la 9.5.1, la bulle des boutons **Tout transférer en ZIP** et **Importer** (et celle des entrées du menu Plus *Exporter tout en JSON…*,
+*Importer / fusionner* et *Tout transférer en archive ZIP*) garde la description du bouton et y ajoute : « Import-export des fiches JSON : exporter l'ensemble des fiches JSON dans le dossier « T:\Services\Smhep\Commun\Personnels SMHEP\MEDECIN CAISSON F\ADP- Export JSON ». »
+La fenêtre *Exporter tout en JSON* dit la même chose en tête. Le même texte est répété par le rappel de 11 h 45 et de 16 h 00 (voir *Rappel de l'import-export des fiches JSON*).
 
 Les icônes sont dessinées dans le fichier lui-même : ni image, ni réseau.
 
@@ -262,6 +266,28 @@ l'identifiant de fiche : une fiche n'est remplacée que par une version plus ré
 
 **Données de santé.** Chaque fichier contient l'identité du patient et ses pièces jointes, sans protection :
 gardez-les sur un support chiffré ou à accès restreint, et supprimez-les de Téléchargements une fois copiés.
+
+---
+
+## Rappel de l'import-export des fiches JSON (11 h 45 et 16 h 00)
+
+Depuis la 9.5.1, ADP rappelle deux fois par jour la manipulation du service : **exporter l'ensemble des fiches JSON dans le dossier** `T:\Services\Smhep\Commun\Personnels SMHEP\MEDECIN CAISSON F\ADP- Export JSON` (menu Plus › *Exporter tout en JSON…*, ou le bouton
+*Tout transférer en ZIP* de la barre du haut).
+
+- **Quand.** À **11 h 45** et à **16 h 00**, **heure du navigateur** (celle de l'ordinateur), tous les jours, **tant que la page d'ADP est ouverte** : un onglet masqué compte, ADP fermé non (rien ne peut alors s'afficher).
+  Chaque rappel vient **une seule fois par jour** ; un rechargement de la page ne le répète pas. Si ADP est ouvert après l'heure (ou si l'ordinateur sort de veille), le rappel s'affiche encore **pendant une heure** : ouvert à
+  12 h 10, ADP montre le rappel de 11 h 45 ; ouvert à 12 h 45 ou plus tard, rien jusqu'à 16 h 00.
+- **Un bandeau** jaune en haut de la page, sous le bandeau patient (il reste en haut quand on fait défiler la fiche, et jusqu'à *Fermer*) : « Rappel de 11 h 45 : import-export des fiches JSON — Exporter l'ensemble des fiches
+  JSON dans le dossier … ». Boutons : **Exporter tout en JSON…** (ouvre la fenêtre d'export), **Copier le dossier** (le chemin dans le presse-papiers, à coller dans la fenêtre d'enregistrement du navigateur), **Activer les
+  notifications** (tant qu'elles ne sont pas autorisées), **Fermer**. Le bandeau n'est pas imprimé et passe derrière une fenêtre ouverte (il se voit à sa fermeture).
+- **Une notification du navigateur**, si elle est autorisée, qui répète la consigne (« ADP — import-export des fiches JSON : Rappel de 11 h 45 : Exporter l'ensemble des fiches JSON dans le dossier … ») : elle prévient même quand
+  ADP est derrière une autre fenêtre, reste affichée jusqu'à un clic (selon le navigateur) et, au clic, ramène ADP et ouvre la fenêtre d'export. L'autorisation se demande **une seule fois, sur un clic** : bouton *Activer les
+  notifications* du bandeau, ou de la fenêtre *Exporter les données…*. Sans autorisation, ou si le navigateur n'a pas de notifications (ou les bloque), seul le bandeau s'affiche.
+- **Réglage.** Fenêtre **Exporter les données…** (menu Plus) : case **Rappels** (cochée au départ ; *Enregistrer ces réglages* la retient dans le navigateur), boutons *Activer les notifications du navigateur* et *Voir le
+  rappel* (essai immédiat, notification comprise).
+- **Ce que le rappel ne fait pas.** Il ne vérifie pas que l'export a été fait, n'exporte rien lui-même (ADP ne peut pas écrire dans `T:` de son propre chef : le navigateur ouvre sa fenêtre de choix du dossier, ou d'enregistrement de
+  l'archive ZIP, et c'est vous qui y allez chercher le dossier) et ne tient compte ni des week-ends ni des jours fériés. Les heures (`RAPPEL_HEURES`), le délai d'une heure (`RAPPEL_GRACE`) et le chemin (`IMPEXP_DOSSIER`) sont des
+  constantes du fichier `index.html`.
 
 ---
 
@@ -598,7 +624,7 @@ reste modifiable à la main, et passe dans la synthèse et sur le PDF.
 
 L'encart « Facteurs favorisants » (onglet « Anamnèse et plongée ») compte onze questions OUI / NON : les dix d'origine et, depuis la 9.3.5, **« Progressivité respectée »** (`ff_progress`), juste sous le respect de la procédure
 de décompression. OUI est la réponse normale (« Tout normal » la coche) ; NON est un facteur favorisant : la synthèse écrit « progressivité non respectée » avec les autres facteurs, et « procédure de décompression et progressivité
-respectées » quand aucun facteur n'est retrouvé. La ligne Excel ADP n'a pas de colonne pour elle : elle s'écrit dans « Observations » (BW). Sous ces questions, un
+respectées » quand aucun facteur n'est retrouvé. La ligne Excel ADP n'a pas de colonne pour elle : elle n'y figure pas (la colonne « Observations » reste vide depuis la 9.5.1). Sous ces questions, un
 bloc **Conditions environnementales** cote à chaque plongée :
 
 - le **courant** : OUI ou NON (`ff_courant`) ;
@@ -1265,7 +1291,7 @@ sortie, qu'une fiche de contrôle saisie après elle ne masque pas).
 | V | Plongée auto-encadrée | plongée auto-encadrée : 1 ou 0 |
 | W | Date de l'accident (JJ:MM:AA) | date de l’accident |
 | X | Plongée pro | plongée professionnelle ou militaire : 1 |
-| Y | Lieu/site de l'accident | reconnu dans le texte du lieu (école, Var, parc national) ; sinon vide, le texte passe dans « Observations » |
+| Y | Lieu/site de l'accident | reconnu dans le texte du lieu (école, Var, parc national) ; sinon vide |
 | Z | Appareil utilisé | apnée 1 ; sinon circuit ouvert 2 par défaut (l’appareil n’est pas recueilli) |
 | AA | Mélange uilisé | air 1, nitrox 2, trimix 3, autres 4 |
 | AB | Procédure de décompression | tables 1, ordinateur 2, autre 3 |
@@ -1286,7 +1312,7 @@ sortie, qu'une fiche de contrôle saisie après elle ne masque pas).
 | AQ | Nb de plongées 15 derniers jours (< 20 m / > 20 m) | non recueilli |
 | AR | Heure d'appel SMHEP (hh:mm) | heure d’appel |
 | AS | Identité de l'appelant | SAMU 1 (SAMU 83, SCMM, autre SAMU), SAU HNIA SA 2, autre SAU 3, autre 5 |
-| AT | Localisation accidenté moment de l'appel | lieu de l’accidenté au moment de l’appel (prise en charge initiale) : en mer 1, à quai 2, dans un SAU 3, autre 4 ; la précision d’« autre » passe dans « Observations » ; vide si non coté |
+| AT | Localisation accidenté moment de l'appel | lieu de l’accidenté au moment de l’appel (prise en charge initiale) : en mer 1, à quai 2, dans un SAU 3, autre 4 (la précision d’« autre » n’est pas reprise) ; vide si non coté |
 | AU | Moyen d'évacuation vers SMHEP | hélicoptère 1, SMUR 2, VSAV 3, autre 5 |
 | AV | Heure début des soins (hh:mm) | heure des 1ers soins sur place |
 | AW | Circonstances de survenue de l'accident | remontée, profil, commentaire des paliers, histoire de la maladie |
@@ -1315,7 +1341,7 @@ sortie, qu'une fiche de contrôle saisie après elle ne masque pas).
 | BT | Nb séances d'OHB complémentaires (table O2, 2,5 ATA) | séances **cotées** du dossier à l’oxygène 2,5 ATA (A15, A15IOT), la table initiale déduite |
 | BU | Séquelles sortie service | dernier examen : signes objectifs 2, signes subjectifs 1, aucun 0 |
 | BV | Médecin ayant pris en charge le patient | médecin de la fiche initiale (sinon l’examinateur) |
-| BW | Observations | lieu non codé, lieu de l’accidenté à l’appel (« autre »), apnées, conditions environnementales, **progressivité** (« Progressivité respectée » ou « non respectée » : facteur favorisant sans colonne dans le fichier maître), tables « autres » |
+| BW | Observations | **non recueillie** : c’est votre case d’observations, ADP n’y écrit rien (depuis la 9.5.1) |
 | BX | Score MJOAS | score MJOAS de la consultation de sortie (la fiche la plus récente qui en porte un) ; 17 = normal |
 | BY | nombre j AT | jours d’arrêt de travail de la consultation de sortie **+ jours d’hospitalisation**, du jour d’entrée (premier examen du dossier) au jour de sortie **compris** (du 02/10 au 05/10 : 4 jours) ; **sans jours d’AT saisis, les jours d’hospitalisation seuls** (jusqu’à la consultation de sortie la plus récente) ; vide sans consultation de sortie |
 | BZ | nombre j inaptitude plongée | inaptitude temporaire : mois × 30 jours ; « définitive » sinon ; lue sur la fiche la plus récente qui la porte |
@@ -1331,7 +1357,7 @@ sortie, qu'une fiche de contrôle saisie après elle ne masque pas).
 | CJ | MAPA anormale | MAPA réalisée : anormale 1 (dans une fiche du dossier au moins), normale 0 ; vide si elle n’est pas faite ou sans résultat |
 | CK | G | colonne sans équivalent |
 
-Les colonnes qu'ADP **ne recueille pas** (AQ, CK) restent vides. La colonne Z
+Les colonnes qu'ADP **ne recueille pas** (AQ, BW, CK) restent vides. La colonne Z
 (appareil utilisé) est **« circuit ouvert » par défaut** hors apnée : ADP ne demande ni recycleur ni caisson. Les niveaux
 professionnel et militaire (O, P) sont repris en toutes lettres, la mention (A à D) et la catégorie n'étant pas recueillies.
 
@@ -1914,6 +1940,48 @@ aux analyses topographiques fines.
 
 ---
 
+## Changements de la version 9.5.1
+
+Trois modifications, dans un **nouveau dossier** : `ADP-9.5.1`, copié de `ADP-9.4.1` (qui contient la 9.4.2 et reste intact ; le numéro 9.5.0 n'existe pas). Aucune colonne ne s'ajoute ni ne disparaît (955 colonnes, le même
+dictionnaire), le papier ne change pas, les fiches de la 9.4.2 s'ouvrent telles quelles. `index.html` passe de 816 Ko à 824 Ko.
+
+### Bulle d'information sur l'import-export
+
+- La bulle des boutons d'import-export de la barre du haut (**Tout transférer en ZIP** et **Importer**), et celle des entrées du menu Plus (*Exporter tout en JSON…*, *Importer / fusionner*, *Tout transférer en archive ZIP*), dit la
+  manipulation du service : « Import-export des fiches JSON : exporter l'ensemble des fiches JSON dans le dossier « T:\Services\Smhep\Commun\Personnels SMHEP\MEDECIN CAISSON F\ADP- Export JSON ». » Elle apparaît dès que le curseur (ou le clavier) atteint le bouton, comme les autres bulles.
+  La fenêtre *Exporter tout en JSON* la redit en tête.
+
+### Rappel à 11 h 45 et à 16 h 00
+
+- Un **bandeau** en haut de la page et, si le navigateur l'autorise, une **notification du navigateur**, à **11 h 45** et à **16 h 00** (heure du navigateur), répètent la consigne de la bulle. Voir *Rappel de l'import-export des
+  fiches JSON (11 h 45 et 16 h 00)* : fonctionnement, rattrapage d'une heure, autorisation des notifications, réglage (case « Rappels » de la fenêtre *Exporter les données…*).
+
+### Ligne Excel ADP : colonne « Observations » (BW)
+
+- ADP **n'écrit plus rien** dans la colonne BW « Observations » de la ligne Excel ADP : elle reste vide (comme AQ et CK). Ce qui y passait (lieu non reconnu, précision du lieu à l'appel « autre », apnée, conditions environnementales,
+  progressivité, tables « autres ») n'est plus dans la ligne Excel ; cela reste dans la fiche, la synthèse, le compte rendu et le fichier de données. Les 89 colonnes sont inchangées.
+
+### À valider de votre côté
+
+- **Quels boutons sont l'« import-export » ?** La barre du haut n'a pas de bouton qui porte ce nom : j'ai mis la bulle sur les deux boutons voisins (**Tout transférer en ZIP**, l'export, et **Importer**) et sur leurs équivalents du
+  menu Plus, plus *Exporter tout en JSON…*. Dites-moi si vous pensiez à un autre bouton.
+- **Le rappel demande qu'ADP soit ouvert** (un onglet masqué suffit) : une page web ne peut pas réveiller le navigateur quand elle est fermée. À 11 h 45 et 16 h 00 **tous les jours, week-ends compris** ; si ADP est ouvert dans l'heure
+  qui suit, le rappel s'affiche encore. Je peux limiter aux jours ouvrés, ou changer les heures.
+- **La notification du navigateur doit être autorisée une fois** (bouton *Activer les notifications*), sinon seul le bandeau s'affiche. Si le navigateur est réglé pour bloquer les notifications des sites, il faut les autoriser pour
+  l'adresse d'ADP dans ses réglages.
+- **ADP n'écrit pas lui-même dans `T:`.** L'export passe par la fenêtre du navigateur : Chrome et Edge ouvrent un sélecteur de dossier (qui s'ouvre sur Téléchargements la première fois : il faut aller chercher le dossier du service, ou le
+  coller avec *Copier le dossier* ; le navigateur retient en général le dernier dossier choisi, et le sélecteur s'y rouvre les fois suivantes) ; Firefox ne sait pas écrire dans un dossier : il propose l'archive ZIP, à enregistrer ou à décompresser dans le dossier. La bulle et le rappel disent la manipulation, ils ne l'exécutent pas.
+- **Le chemin du dossier est écrit dans `index.html`.** Si vous publiez ce fichier sur un site public (par exemple GitHub Pages), le nom du dossier du service y est lisible par tout visiteur (aucune donnée de santé, mais un nom de
+  dossier interne). Dites-moi si vous préférez que le chemin se saisisse une fois par poste, dans les réglages, plutôt que d'être écrit dans le fichier.
+- **Colonne BW vide** : ce qui y passait n'est plus dans la ligne Excel (voir ci-dessus). Dites-moi si une de ces informations doit aller ailleurs.
+- **Ce qui n'a pas pu être vérifié.** L'affichage d'une vraie notification Windows depuis votre Firefox ESR 140 (essayée avec une notification simulée, et avec Firefox 137 : 21 contrôles) ; Chrome et un vrai téléphone ; l'écriture
+  dans `T:` (hors d'ADP).
+- **Ce qui a été essayé.** Les suites des versions précédentes (mises à jour : version, colonne BW vide) et deux suites propres à la 9.5.1 passent (1803 contrôles) : bulle (survol, bouton, menu Plus, fenêtre d'export), horloge
+  simulée (11 h 44 à 17 h 30, lendemain, rechargement, rattrapage d'une heure), notification (autorisée, à demander, refusée, absente, qui échoue), bouton « Copier le dossier », réglage, mode d'emploi, colonne BW ; horloge réelle de
+  20 secondes et mise en page du bandeau dans un vrai navigateur (en haut quand on défile, dans la fenêtre).
+
+---
+
 ## Changements de la version 9.4.2
 
 Trois modifications, **dans le même dossier** : `ADP-9.4.1` contient maintenant la 9.4.2 (l'ancien `index.html` est gardé à côté du dossier : `ADP-9.4.1_index_avant_9.4.2.html`). Aucune colonne ne s'ajoute ni ne disparaît
@@ -1973,7 +2041,7 @@ s'ouvrent telles quelles (les nouvelles colonnes y sont vides) et leur papier ne
 ### Lieu de l'accidenté au moment de l'appel
 
 - Dans « Mode d'entrée et prise en charge initiale », sous l'heure d'appel : **en mer, à quai, dans un SAU, autre** (à préciser), les lieux de votre fichier. Synthèse (« Au moment de l'appel, l'accidenté était en mer. »), papier,
-  fichier de données, et **colonne AT** de la ligne Excel ADP (1 à 4 ; la précision d'« autre » passe dans « Observations »).
+  fichier de données, et **colonne AT** de la ligne Excel ADP (1 à 4 ; la précision d'« autre » passe dans « Observations »). *(Depuis la 9.5.1, « Observations » reste vide : la précision n'est plus reprise.)*
 
 ### Score MJOAS
 
@@ -2006,7 +2074,7 @@ s'ouvrent telles quelles (les nouvelles colonnes y sont vides) et leur papier ne
 - **Type de facteur compressif.** Texte libre (colonne CF, sans point final), avec cinq phrases proposées : hernie discale, protrusion discale, canal rachidien étroit, ostéophytes, hématome épidural. Dites-moi si vous préférez une liste fermée.
 - **Épreuve d'effort et MAPA.** Si plusieurs fiches du dossier en portent une, **une seule anormale suffit** pour coder 1. Je n'ai pas touché à la feuille COHB : sa colonne AB (« EE / plateau technique ») reste non recueillie, car je ne sais pas si
   « EE » veut dire « épreuve d'effort » ; si oui, dites-le-moi et je la compte. *(Fait dans la 9.4.2 : « EE » = épreuve d'effort, la colonne AB est remplie.)*
-- **Lieu à l'appel.** Quatre choix, ceux de votre légende ; la précision d'« autre » va dans « Observations » (pas de colonne pour elle).
+- **Lieu à l'appel.** Quatre choix, ceux de votre légende ; la précision d'« autre » va dans « Observations » (pas de colonne pour elle). *(Depuis la 9.5.1, « Observations » reste vide : elle n'est plus reprise.)*
 - **Ce qui n'a pas pu être vérifié.** Aucun collage dans votre vrai fichier maître (colonnes AT, BX, BY, CE, CF, CG, CI, CJ) ; Firefox ESR 140, Chrome et un vrai téléphone ne sont pas essayés.
 - **Ce qui a été essayé.** Les suites des versions précédentes (mises à jour : 955 colonnes, l'encart de plus de la sortie, les colonnes de la ligne Excel désormais recueillies) et une suite propre à la 9.4.1 passent (1675 contrôles) :
   ligne Excel ADP et COHB identique depuis chacune des six fiches d'un dossier ; score MJOAS (17 d'office et son retrait, « ? », grille, calcul, report, synthèse, CRH, papier, Excel) ; jours d'AT et d'hospitalisation (dates, cas limites) ;
@@ -2029,7 +2097,7 @@ initiale gagne la tenue, le déséquipement et la progressivité dans leurs enca
 
 - **Type de tenue** (humide, semi-étanche, étanche, autre à préciser) et **déséquipement sur le lieu de plongée** (OUI proposé d'office, modifiable) dans l'encart « Paramètres de la plongée accidentelle » ; **« Progressivité respectée »**
   (OUI / NON) dans les « Facteurs favorisants », sous le respect de la procédure de décompression. Synthèse, papier, fichier de données (`pl_tenue`, `pl_tenue_autre`, `pl_deseq`, `ff_progress`).
-- **Ligne Excel ADP** : la tenue en colonne AC (« Combinaison » : 1, 2, 3 ; « autre » en texte), le déséquipement en colonne AY (1 ou 0), la progressivité dans « Observations » (BW). Les 89 colonnes du fichier maître sont inchangées.
+- **Ligne Excel ADP** : la tenue en colonne AC (« Combinaison » : 1, 2, 3 ; « autre » en texte), le déséquipement en colonne AY (1 ou 0), la progressivité dans « Observations » (BW). Les 89 colonnes du fichier maître sont inchangées. *(Depuis la 9.5.1, « Observations » reste vide : la progressivité n'est plus reprise.)*
 
 ### Hospitalisation de jour
 
@@ -2046,7 +2114,7 @@ initiale gagne la tenue, le déséquipement et la progressivité dans leurs enca
 - **Tenue « autre ».** Votre fichier maître n'a pas de code pour « autre » (0 aucune, 1 humide, 2 semi-étanche, 3 étanche) : la colonne AC reçoit le **texte précisé**. Il n'y a pas d'option « aucune » (vous aviez listé quatre choix).
 - **Déséquipement.** « OUI d'office » vaut pour une **nouvelle** consultation initiale ; une fiche déjà enregistrée reste vide (je n'invente pas de réponse). Votre colonne AY s'intitule « Déséquipement + protection thermique » : je n'y écris
   que le déséquipement (la protection thermique n'est pas recueillie).
-- **Progressivité : pas de colonne dans votre fichier maître.** Les 89 colonnes (A à CK) de la ligne Excel doivent rester alignées sur votre fichier : je n'en ai donc pas ajouté, et la progressivité s'écrit dans « Observations » (BW).
+- **Progressivité : pas de colonne dans votre fichier maître.** Les 89 colonnes (A à CK) de la ligne Excel doivent rester alignées sur votre fichier : je n'en ai donc pas ajouté, et la progressivité s'écrit dans « Observations » (BW). *(Depuis la 9.5.1, « Observations » reste vide.)*
   Si une colonne existe (ou si vous en créez une), dites-moi laquelle. Je n'ai pas défini « progressivité » dans le formulaire (aucune aide sous la ligne) : le sens est le vôtre.
 - **Sortie de l'hospitalisation de jour = une nouvelle consultation de sortie** dont l'orientation n'est plus « Hospitalisation de jour » (par exemple « Retour au domicile »), qui donne aussi un CRH sur l'ensemble du dossier. Je n'ai créé ni
   nouveau type de fiche ni case « fin d'hospitalisation de jour » : une fiche de suivi ou une séance ne fait pas sortir le patient. Si vous préférez une case sur ces fiches, dites-le-moi.
@@ -2978,13 +3046,15 @@ du script de `index.html`.
 
 ## Historique
 
+- **9.5.1** : la bulle des boutons d'import-export (Tout transférer en ZIP, Importer, menu Plus) dit la manipulation du service (exporter l'ensemble des fiches JSON dans `T:\Services\Smhep\Commun\Personnels SMHEP\MEDECIN CAISSON F\ADP- Export JSON`) ;
+  rappel à 11 h 45 et à 16 h 00 (heure du navigateur) : bandeau et notification du navigateur ; la colonne BW « Observations » de la ligne Excel ADP n'est plus remplie. Nouveau dossier `ADP-9.5.1`.
 - **9.4.2** : feuille COHB : la colonne « EE / plateau technique » (AB) compte les épreuves d'effort réalisées ; ligne Excel ADP : « nombre j AT » compte les jours d'hospitalisation jours extrêmes compris (du 02/10 au 05/10 : 4 jours)
   et reçoit les jours d'hospitalisation seuls quand aucun jour d'AT n'est saisi ; l'examen vestibulaire (Romberg, Fukuda, marche en étoile, marche funambule) passe dans l'onglet « Examen clinique général », après « ORL et barotraumatisme ».
 - **9.4.1** : lignes Excel ADP et COHB composées à partir de toutes les fiches du dossier quelle que soit la fiche ouverte (écrit et vérifié) ; lieu de l'accidenté au moment de l'appel (colonne AT) ; score MJOAS à la sortie,
   coté 17 d'office, avec la grille du service en aide (colonne BX) ; IRM médullaire : facteur compressif, type, concordance radio-clinique (colonnes CE, CF, CG) ; épreuve d'effort et MAPA, normales ou anormales (colonnes CI, CJ) ;
   jours d'arrêt de travail + jours d'hospitalisation (colonne BY). Nouveau dossier `ADP-9.4.1`.
 - **9.3.5** : les scores MEDSUBHYP et vestibulaire se retirent chacun à part (une case par score) ; plongée : type de tenue, déséquipement sur le lieu de plongée (OUI d'office), facteur favorisant « progressivité respectée »,
-  repris dans la ligne Excel ADP (colonnes AC et AY, et « Observations ») ; orientation « hospitalisation de jour » (hébergement : domicile, hôtel patient, autre établissement) : le patient reste dans les patients en cours (mention HDJ)
+  repris dans la ligne Excel ADP (colonnes AC et AY ; « Observations » n'est plus rempli depuis la 9.5.1) ; orientation « hospitalisation de jour » (hébergement : domicile, hôtel patient, autre établissement) : le patient reste dans les patients en cours (mention HDJ)
   jusqu'à une consultation de sortie dont l'orientation n'est plus l'hospitalisation de jour.
 - **9.3.3** : le nom proposé au PDF se termine par le numéro d'examen de la fiche (`NOM_Prénom_IPP_numéro de dossier_EX1.pdf`, `…_EX3b.pdf` pour une séance de recompression sans examen), pour distinguer les fiches d'un même patient.
 - **9.3.2** : le PDF est proposé sous le nom NOM_Prénom_IPP_numéro de dossier ; nom, prénom, examinateur, médecin et infirmier(e) mis en forme automatiquement (NOM en majuscules, Prénom avec l'initiale en majuscule, le reste en minuscules) ;

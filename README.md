@@ -2,7 +2,7 @@
 
 Outil de saisie pour la prise en charge d'un accident de plongée en médecine
 hyperbare : consultation initiale en urgence, consultations de suivi, compte
-rendu de séjour. Auteur : Dr Julien Lesaca. Version 9.4.2.
+rendu de séjour. Auteur : Dr Julien Lesaca. Version 9.5.1.
 
 Deux sorties, depuis la même saisie :
 
@@ -65,7 +65,7 @@ cd Fiche-Neuro-Standardisee
 # copiez ici le contenu de ce dossier (index.html, icons/, manifest, sw.js, docs/, native/)
 
 git add .
-git commit -m "ADP v9.4.2"
+git commit -m "ADP v9.5.1"
 git push origin main
 ```
 
@@ -84,12 +84,12 @@ en HTTPS, condition nécessaire pour l'installation et le service worker.
 ### Publier une mise à jour
 
 Modifiez `index.html`, incrémentez `VERSION` en tête de `sw.js`
-(`v9.4.2` → `v9.4.3`), poussez. Sans ce changement de version, les appareils
+(`v9.5.1` → `v9.5.2`), poussez. Sans ce changement de version, les appareils
 déjà installés gardent l'ancienne copie en cache.
 
 ```bash
-sed -i "s/const VERSION = 'v9.4.2'/const VERSION = 'v9.4.3'/" sw.js
-git commit -am "v9.4.3" && git push
+sed -i "s/const VERSION = 'v9.5.1'/const VERSION = 'v9.5.2'/" sw.js
+git commit -am "v9.5.2" && git push
 ```
 
 Au lancement suivant avec réseau, l'application signale la mise à jour et
@@ -113,7 +113,7 @@ serveur interne à l'établissement, ou distribuez `index.html` par clé USB.
 ## Contenu du dépôt
 
 ```
-index.html                 application complète, fichier unique, 816 ko
+index.html                 application complète, fichier unique, 824 ko
 manifest.webmanifest       déclaration d'installation (nom, icônes, plein écran)
 sw.js                      service worker : démarrage hors ligne, mises à jour
 icons/                     icônes 32 à 1024 px, dont deux masquables Android

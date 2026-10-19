@@ -114,6 +114,15 @@ body.genopen{overflow:hidden}
 #folderbanner{display:none}
 #folderbanner.on{display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:var(--warn-l);
   border:1px solid #e3bd9a;border-radius:6px;padding:7px 12px;margin:0 0 10px;font-size:12.5px}
+/* le rappel de l'import-export des fiches JSON (11 h 45 et 16 h 00) : dans l'en-tête, il reste visible tant qu'on ne l'a pas fermé */
+#rappel{display:none}
+#rappel.on{display:flex;gap:8px 12px;align-items:center;flex-wrap:wrap;background:#fff3cd;color:#3b2f00;border-top:2px solid #e0a800;border-bottom:1px solid #e0a800;padding:8px 14px;font-size:12.5px}
+#rappel .rp-ic svg{display:block;width:24px;height:24px;fill:none;stroke:#8a5a00;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+#rappel .rp-tx{flex:1 1 320px;min-width:0;line-height:1.4}
+#rappel .rp-tx b{display:block;font-size:13px}
+#rappel code{background:#fff;border:1px solid #e3d08a;border-radius:4px;padding:1px 5px;font-size:12px;overflow-wrap:anywhere}
+#rappel .rp-ac{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+#rappel .rp-ac small{color:#6b5300}
 
 /* ---------- structure ---------- */
 #wrap{display:flex;gap:0;align-items:flex-start;min-width:0;max-width:100%}
@@ -763,6 +772,7 @@ svg.echo rect.z:hover{stroke-width:2.6;filter:brightness(.96)}
 <div id="hdr">
 <div id="topbar"></div>
 <div id="patbar" onclick="goPage(1)" title="Aller à l’identification"></div>
+<div id="rappel" role="alert" aria-live="assertive"></div>
 </div>
 
 <div id="wrap">
@@ -831,6 +841,7 @@ const ICO = {
   adp:'<path d="M5.5 7h13A2.5 2.5 0 0 1 21 9.5V12a4.5 4.5 0 0 1-4.5 4.5H15a1.5 1.5 0 0 1-1.3-.75L13 14.5h-2l-.7 1.25A1.5 1.5 0 0 1 9 16.5H7.5A4.5 4.5 0 0 1 3 12V9.5A2.5 2.5 0 0 1 5.5 7z"/><path d="M19 7V4.5A1.5 1.5 0 0 1 20.5 3H22"/><path d="M3 10.5H1.5M21 10.5h1.5"/>',
   cohb:'<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>',
   docs:'<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><text x="7.4" y="14.2" font-size="6.6" font-weight="700" font-style="italic" font-family="Georgia,serif" fill="currentColor" stroke="none">Rx</text><path d="M8 17.6h8"/>',
+  bell:'<path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/>',
   more:'<circle cx="5" cy="12" r="1.4" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1.4" fill="currentColor" stroke="none"/>',
   folder:'<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
   export:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v12"/>',
@@ -843,6 +854,10 @@ const ICO = {
   refresh:'<path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v5h-5"/>'
 };
 const ico = n => '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">'+ICO[n]+'</svg>';
+/* Import-export des fiches JSON : la manipulation du service. Elle est dite dans la bulle des boutons d'import-export, dans la fenêtre « Exporter tout en JSON » et dans le rappel de 11 h 45 et de 16 h 00. */
+const IMPEXP_DOSSIER = 'T:\\Services\\Smhep\\Commun\\Personnels SMHEP\\MEDECIN CAISSON F\\ADP- Export JSON';
+const IMPEXP_PHRASE = 'Exporter l’ensemble des fiches JSON dans le dossier « '+IMPEXP_DOSSIER+' »';
+const IMPEXP_TIP = 'Import-export des fiches JSON : '+IMPEXP_PHRASE.charAt(0).toLowerCase()+IMPEXP_PHRASE.slice(1)+'.';
 /* cl : classes du bouton ; tbp : masqué sur téléphone (le menu « Plus » le propose alors) ; nophone : masqué sur tablette comme sur téléphone */
 const TOP_BTNS = [
   {id:'side',   ic:'list',     tip:'Volet de gauche (patients en cours et liste des fiches) : afficher ou masquer', fn:'toggleSide()', cl:'nophone'},
@@ -853,8 +868,8 @@ const TOP_BTNS = [
   '|',
   {id:'save',   ic:'save',     tip:'Enregistrer la fiche (Ctrl+S)', fn:'saveFiche()', cl:'gd'},
   {id:'pdf',    ic:'pdf',      tip:'Enregistrer en PDF (ou imprimer) la fiche ouverte', fn:'doPrint()', cl:''},
-  {id:'zip',    ic:'zip',      tip:'Tout transférer : toutes les fiches dans une archive ZIP', fn:'expJSONZip()', cl:'tbp'},
-  {id:'imp',    ic:'import',   tip:'Importer ou fusionner des fiches (fichier JSON, archive ZIP, dossier)', fn:'openImport()', cl:'tbp'},
+  {id:'zip',    ic:'zip',      tip:'Tout transférer : toutes les fiches dans une archive ZIP. '+IMPEXP_TIP, fn:'expJSONZip()', cl:'tbp'},
+  {id:'imp',    ic:'import',   tip:'Importer ou fusionner des fiches (fichier JSON, archive ZIP, dossier). '+IMPEXP_TIP, fn:'openImport()', cl:'tbp'},
   '|',
   {id:'adp',    ic:'adp',      tip:'Ligne Excel ADP (accident de plongée) : une ligne pour le fichier Excel maître, d’après le dossier ouvert', fn:'openXls()', cl:'tbp'},
   {id:'cohb',   ic:'cohb',     tip:'Ligne Excel COHB (activité) : une ligne pour la feuille Activité COHB, d’après le dossier ouvert', fn:'openXls(\'cohb\')', cl:'tbp'},
@@ -872,6 +887,8 @@ function buildTopbar(){
 }
 /* la bulle d'aide : elle s'ouvre dès que la souris (ou le clavier) atteint un élément qui porte data-tip, et se ferme dès qu'on le quitte */
 const TIP = {t:null};
+/* combien de temps la bulle reste ouverte tant que la souris n'a pas quitté l'élément : 60 ms par caractère, de 7 à 20 secondes (la bulle des boutons d'import-export dit une longue phrase) */
+const tipDuree = t => Math.min(20000, Math.max(7000, String(t == null ? '' : t).length * 60));
 function tipHide(){ clearTimeout(TIP.t); const el = $('#tip'); if(el) el.classList.remove('on'); }
 function tipShow(b){
   const el = $('#tip'), txt = b && b.getAttribute('data-tip'); if(!el || !txt){ tipHide(); return; }
@@ -880,7 +897,7 @@ function tipShow(b){
   const x = Math.max(6, Math.min(window.innerWidth - w - 6, r.left + r.width/2 - w/2));
   let y = r.bottom + 8; if(y + h > window.innerHeight - 6) y = Math.max(6, r.top - h - 8);
   el.style.left = x+'px'; el.style.top = y+'px';
-  clearTimeout(TIP.t); TIP.t = setTimeout(tipHide, 7000);
+  clearTimeout(TIP.t); TIP.t = setTimeout(tipHide, tipDuree(txt));
 }
 const tipOf = e => (e.target && e.target.closest) ? e.target.closest('[data-tip]') : null;
 document.addEventListener('mouseover', e=>{ const b = tipOf(e); if(b) tipShow(b); else tipHide(); }, true);
@@ -894,15 +911,15 @@ const PLUS_ITEMS = [
   {ic:'list',    t:'Fiches enregistrées', s:'patients en cours, liste et recherche des fiches', fn:'openFiches()', cl:'pm-sm'},
   {ic:'reexam',  t:'Ré-examen du patient', fn:'newFollowUp()', cl:'pm-ph'},
   {ic:'seance',  t:'Séance de recompression sans examen', fn:'newSeance()', cl:'pm-ph'},
-  {ic:'zip',     t:'Tout transférer en archive ZIP', fn:'expJSONZip()', cl:'pm-ph'},
-  {ic:'import',  t:'Importer / fusionner', fn:'openImport()', cl:'pm-ph'},
+  {ic:'zip',     t:'Tout transférer en archive ZIP', fn:'expJSONZip()', cl:'pm-ph', tip:IMPEXP_TIP},
+  {ic:'import',  t:'Importer / fusionner', fn:'openImport()', cl:'pm-ph', tip:IMPEXP_TIP},
   {ic:'adp',     t:'Ligne Excel ADP', fn:'openXls()', cl:'pm-ph'},
   {ic:'cohb',    t:'Ligne Excel COHB', fn:'openXls(\'cohb\')', cl:'pm-ph'},
   {ic:'docs',    t:'Documents de sortie', fn:'openGen()', cl:'pm-ph'},
   {sep:1, cl:'pm-sm'},
   {ic:'folder',  t:'Dossier de données…', s:'où chaque fiche est écrite en JSON, relue pour la recherche', fn:'openFolders()'},
   {ic:'export',  t:'Exporter les données…', s:'CSV, dictionnaire, sauvegarde JSON, réglages', fn:'openExport()'},
-  {ic:'braces',  t:'Exporter tout en JSON…', s:'dans un dossier au choix ou dans une archive ZIP', fn:'openExportJSON()'},
+  {ic:'braces',  t:'Exporter tout en JSON…', s:'dans un dossier au choix ou dans une archive ZIP', fn:'openExportJSON()', tip:IMPEXP_TIP},
   {ic:'barcode', t:'Douchette et pseudonymisation…', fn:'openScan()'},
   {sep:1},
   {ic:'book',    t:'Dictionnaire des variables', fn:'openDict()'},
@@ -912,7 +929,7 @@ const PLUS_ITEMS = [
 ];
 function plusHTML(){
   return PLUS_ITEMS.map(it=> it.sep ? '<hr'+(it.cl ? ' class="'+it.cl+'"' : '')+'>' :
-    '<button type="button" class="pmi '+(it.cl||'')+'" onclick="closePlus();'+it.fn+'">'+ico(it.ic)+'<span>'+esc(it.t)+(it.s ? '<small>'+esc(it.s)+'</small>' : '')+'</span></button>').join('');
+    '<button type="button" class="pmi '+(it.cl||'')+'"'+(it.tip ? ' data-tip="'+esc(it.tip)+'"' : '')+' onclick="closePlus();'+it.fn+'">'+ico(it.ic)+'<span>'+esc(it.t)+(it.s ? '<small>'+esc(it.s)+'</small>' : '')+'</span></button>').join('');
 }
 function closePlus(){ const m = $('#plusmenu'); if(m) m.hidden = true; const b = $('#btnplus'); if(b) b.setAttribute('aria-expanded', 'false'); }
 function openMenu(){
@@ -8625,7 +8642,7 @@ function doPrint(){
 /* =====================================================================
    COLONNES DU FICHIER STATISTIQUE + DICTIONNAIRE
    ===================================================================== */
-const SET = {pii:false, sep:';', poste:'', wedge:true, scanRe:'', hash:false, hashLen:12, salt:'', searchSame:true, autoDl:false, dictOk:false, rtf:true};
+const SET = {pii:false, sep:';', poste:'', wedge:true, scanRe:'', hash:false, hashLen:12, salt:'', searchSame:true, autoDl:false, dictOk:false, rtf:true, rappel:true};
 
 function codesOf(f){
   if(f.t==='choice' || f.t==='select')
@@ -9054,7 +9071,7 @@ function sortedDB(){
    l'explique (diagnostic) et propose ce qui fonctionne : « Exporter tout en JSON » (dossier choisi, ou archive
    ZIP), téléchargement du JSON à chaque enregistrement, import d'un dossier ou d'une archive.
    ===================================================================== */
-const APP_VERSION = '9.4.2';
+const APP_VERSION = '9.5.1';
 /* hasPicker teste une fonction de l'API au moment de s'en servir : une extension ou un réglage du navigateur peut la retirer */
 const hasPicker = name => { try{ return typeof window[name] === 'function'; }catch(e){ return false; } };
 let FSA = hasPicker('showDirectoryPicker');
@@ -9143,7 +9160,7 @@ async function persistTomb(){ try{ await metaSet('deleted', TOMB); }catch(e){} }
 /* tous les réglages dans un seul enregistrement : écrire seulement une partie perdrait les autres */
 async function persistSettings(){
   await metaSet('settings',{poste:SET.poste, sep:SET.sep, pii:SET.pii, wedge:SET.wedge, scanRe:SET.scanRe,
-                            hash:SET.hash, hashLen:SET.hashLen, searchSame:SET.searchSame, autoDl:SET.autoDl, dictOk:SET.dictOk, rtf:SET.rtf});
+                            hash:SET.hash, hashLen:SET.hashLen, searchSame:SET.searchSame, autoDl:SET.autoDl, dictOk:SET.dictOk, rtf:SET.rtf, rappel:SET.rappel});
 }
 
 /* ---------- dossiers : choix, mémorisation, autorisation ---------- */
@@ -10053,6 +10070,75 @@ function armMinuit(){
 }
 document.addEventListener('visibilitychange', ()=>{ if(!document.hidden && ENCOURS_JOUR && ENCOURS_JOUR !== iso(new Date())){ renderEnCours(); armMinuit(); } });
 
+/* ---------- rappel de l'import-export des fiches JSON : 11 h 45 et 16 h 00, heure du navigateur ----------
+   Une fois par jour et par heure, tant que la page est ouverte : un bandeau en haut de la page (il reste jusqu'à « Fermer ») et, si le navigateur l'a autorisée, une notification ; l'un et l'autre
+   répètent la consigne de la bulle des boutons d'import-export. Un rappel dû depuis moins de RAPPEL_GRACE minutes s'affiche encore (page ouverte en retard, ordinateur sorti de veille).
+   Une horloge toutes les 20 secondes compare l'heure du navigateur aux deux heures : ni minuterie à longue échéance, ni serveur. Désactivable : case « Rappels » de la fenêtre « Exporter les données ». */
+const RAPPEL_HEURES = ['11:45', '16:00'];
+const RAPPEL_GRACE = 60;
+const RAPPEL_VU = {};
+let RAPPEL_T = null;
+/* ce rappel a-t-il déjà été montré aujourd'hui dans cet onglet ? (mémorisé aussi dans sessionStorage : un rechargement de la page ne le répète pas) */
+function rappelVu(jour, h, set){
+  const k = 'adp.rappel.'+jour+'.'+h;
+  if(set){ RAPPEL_VU[k] = 1; try{ sessionStorage.setItem(k, '1'); }catch(e){} return true; }
+  if(RAPPEL_VU[k]) return true;
+  try{ return sessionStorage.getItem(k) === '1'; }catch(e){ return false; }
+}
+function rappelCheck(now){
+  if(!SET.rappel) return;
+  now = now || new Date();
+  const jour = iso(now), min = now.getHours()*60 + now.getMinutes();
+  RAPPEL_HEURES.forEach(h=>{
+    const t = hm2min(h);
+    if(t != null && min >= t && min < t + RAPPEL_GRACE && !rappelVu(jour, h)){ rappelVu(jour, h, true); rappelMontre(h); }
+  });
+}
+const rappelPerm = () => (typeof window.Notification === 'function') ? window.Notification.permission : 'absent';
+function rappelHTML(h){
+  const perm = rappelPerm();
+  return '<span class="rp-ic">'+ico('bell')+'</span>'+
+    '<div class="rp-tx"><b>'+(h ? 'Rappel de '+esc(TXT.hFr(h)) : 'Rappel')+' : import-export des fiches JSON</b>'+
+      'Exporter l’ensemble des fiches JSON dans le dossier <code>'+esc(IMPEXP_DOSSIER).split('\\').join('\\<wbr>')+'</code></div>'+
+    '<div class="rp-ac"><button class="tb pri" onclick="rappelOuvrir()">Exporter tout en JSON…</button>'+
+      '<button class="tb" onclick="rappelCopier()" title="Copie le chemin du dossier, pour le coller dans la fenêtre d’enregistrement">Copier le dossier</button>'+
+      (perm === 'default' ? '<button class="tb" onclick="rappelNotif()" title="Pour être prévenu même quand ADP est derrière une autre fenêtre">Activer les notifications</button>' : '')+
+      (perm === 'denied' ? '<small>notifications bloquées par le navigateur</small>' : '')+
+      '<button class="tb" onclick="rappelFermer()">Fermer</button></div>';
+}
+let RAPPEL_CUR = null;
+function rappelRender(h){ const el = $('#rappel'); if(el){ el.innerHTML = rappelHTML(h); el.className = 'on'; } }
+function rappelMontre(h){ RAPPEL_CUR = h; rappelRender(h); rappelSys(h); }
+/* la notification du navigateur : elle répète la consigne de la bulle ; un clic dessus ramène ADP au premier plan et ouvre la fenêtre d'export */
+function rappelSys(h){
+  if(rappelPerm() !== 'granted') return false;
+  try{
+    const n = new Notification('ADP — import-export des fiches JSON', {body:(h ? 'Rappel de '+TXT.hFr(h)+' : ' : '')+IMPEXP_PHRASE, tag:'adp-rappel'+(h ? '-'+h : ''), requireInteraction:true});
+    n.onclick = ()=>{ try{ window.focus(); }catch(e){} rappelOuvrir(); try{ n.close(); }catch(e){} };
+    return true;
+  }catch(e){ return false; }
+}
+function rappelFermer(){ const el = $('#rappel'); if(el){ el.innerHTML = ''; el.className = ''; } }
+function rappelOuvrir(){ rappelFermer(); openExportJSON(); }
+function rappelCopier(){ copyPlain(IMPEXP_DOSSIER, 'Dossier copié : collez-le dans la fenêtre d’enregistrement'); }
+/* l'autorisation des notifications se demande sur un clic (le navigateur l'exige) */
+async function rappelNotif(){
+  if(rappelPerm() === 'absent'){ toast('Ce navigateur n’offre pas les notifications : le rappel s’affiche seulement dans la page'); return; }
+  let r = Notification.permission;
+  try{ if(r === 'default') r = await Promise.resolve(Notification.requestPermission()); }catch(e){}
+  toast(r === 'granted' ? 'Notifications du navigateur activées' : r === 'denied' ? 'Notifications bloquées : à autoriser dans les réglages du site du navigateur' : 'Notifications non autorisées');
+  const el = $('#rappel'); if(el && el.className === 'on'){ rappelRender(RAPPEL_CUR); if(r === 'granted') rappelSys(RAPPEL_CUR); }
+}
+/* essai : le rappel s'affiche tout de suite (et la notification, si elle est autorisée) */
+function rappelVoir(){ closeModal(); rappelMontre(null); }
+function armRappels(){
+  clearInterval(RAPPEL_T);
+  RAPPEL_T = setInterval(()=>rappelCheck(), 20000);
+  rappelCheck();
+}
+document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) rappelCheck(); });
+window.addEventListener('focus', ()=>rappelCheck());
+
 /* ---------- bandeau patient ---------- */
 let PATBAR_HTML = null;
 /* Âge entre une date de naissance et une date (AAAA-MM-JJ, aujourd'hui par défaut) : {a: années révolues, m: mois révolus en plus} ; null si une date est
@@ -10216,9 +10302,10 @@ function dl(name,txt,type){
 const today = () => iso(new Date());
 
 async function saveSettings(){
-  const p=$('#setPoste'), sp=$('#setSep'), pi=$('#setPii'), rt=$('#setRtf');
+  const p=$('#setPoste'), sp=$('#setSep'), pi=$('#setPii'), rt=$('#setRtf'), rp=$('#setRappel');
   if(!p||!sp||!pi) return;
-  SET.poste = p.value.trim(); SET.sep = sp.value; SET.pii = pi.checked; if(rt) SET.rtf = rt.checked;
+  SET.poste = p.value.trim(); SET.sep = sp.value; SET.pii = pi.checked; if(rt) SET.rtf = rt.checked; if(rp) SET.rappel = rp.checked;
+  if(!SET.rappel) rappelFermer(); else rappelCheck();
   await persistSettings();
   await writeDataFiles(true);
   toast('Reglages enregistres');
@@ -10238,6 +10325,12 @@ function openExport(){
    '<label>Copie du texte</label><label style="font-weight:400"><input type="checkbox" id="setRtf"'+(SET.rtf!==false?' checked':'')+
      '> ajouter le format RTF quand on copie la synthèse ou le CRH (Firefox) : le gras et le souligné se collent alors dans un éditeur de dossier qui ne lit que le RTF. '+
      'À décocher si le collage montre du code ou des signes étranges.</label>'+
+   '<label>Rappels</label><label style="font-weight:400"><input type="checkbox" id="setRappel"'+(SET.rappel!==false?' checked':'')+
+     '> rappeler l’import-export des fiches JSON à '+RAPPEL_HEURES.map(h=>TXT.hFr(h)).join(' et à ')+' (heure du navigateur) : un bandeau s’affiche en haut de la page et, si le navigateur l’autorise, une notification '+
+     'répète la consigne de la bulle des boutons d’import-export.</label>'+
+   '<span></span><span style="display:flex;gap:8px;flex-wrap:wrap">'+
+     '<button class="tb" onclick="rappelNotif()" title="Le navigateur demande l’autorisation une seule fois">Activer les notifications du navigateur</button>'+
+     '<button class="tb" onclick="rappelVoir()" title="Affiche le rappel tout de suite, pour l’essayer">Voir le rappel</button></span>'+
   '</div>'+
   '<div class="note"><b>Donnees de sante.</b> Par defaut le fichier statistique ne contient ni nom, ni prenom, ni date de naissance, ni coordonnees : '+
    'seuls le numero de dossier que vous saisissez, le sexe et l\'age calcule y figurent. L\'identite complete reste sur le PDF, dans la sauvegarde JSON et dans les fichiers JSON du dossier de donnees. '+
@@ -10647,7 +10740,7 @@ const XLS = [
  /* V  */ {h:'Plongée auto-encadrée', n:'plongée auto-encadrée : 1 ou 0', f:X=>XB(X.d0.auto_encadre)},
  /* W  */ {h:"Date de l'accident", n:'date de l’accident', f:X=>XD(X.d0.date_acc)},
  /* X  */ {h:'Plongée pro', n:'plongée professionnelle ou militaire : 1', f:X=>(X.d0.pl_type===3 || X.d0.pl_type===4 || X.d0.cadre_plongee===3) ? 1 : ((X.d0.pl_type!=null || X.d0.cadre_plongee!=null) ? 0 : null)},
- /* Y  */ {h:"Lieu/site", n:'reconnu dans le texte du lieu (école, Var, parc national) ; sinon vide, le texte passe dans « Observations »', f:X=>X.lieu},
+ /* Y  */ {h:"Lieu/site", n:'reconnu dans le texte du lieu (école, Var, parc national) ; sinon vide', f:X=>X.lieu},
  /* Z  */ {h:'Appareil utilisé', n:'apnée 1 ; sinon circuit ouvert 2 par défaut (l’appareil n’est pas recueilli)', f:X=>isApnee(X.d0) ? 1 : ((X.d0.pl_prof!=null || X.d0.pl_gaz!=null || X.d0.pl_h_sortie) ? 2 : null)},
  /* AA */ {h:'Mélange', n:'air 1, nitrox 2, trimix 3, autres 4', f:X=>X.d0.pl_gaz!=null ? XN(XLS_GAZ[X.d0.pl_gaz]) : null},
  /* AB */ {h:'Procédure de décompression', n:'tables 1, ordinateur 2, autre 3', f:X=>X.d0.pl_proc!=null ? XN(XLS_PROC[X.d0.pl_proc]) : null},
@@ -10676,7 +10769,7 @@ const XLS = [
           if(d.adresse_par===5) return 2;
           if(d.adresse_par===4) return d.adresse_etab_type===1 ? 3 : 5;
           return null; }},
- /* AT */ {h:'Localisation accidenté', n:'lieu de l’accidenté au moment de l’appel (prise en charge initiale) : en mer 1, à quai 2, dans un SAU 3, autre 4 ; la précision d’« autre » passe dans « Observations »', f:X=>X.d0.loc_appel!=null ? XN(X.d0.loc_appel) : null},
+ /* AT */ {h:'Localisation accidenté', n:'lieu de l’accidenté au moment de l’appel (prise en charge initiale) : en mer 1, à quai 2, dans un SAU 3, autre 4 (la précision d’« autre » n’est pas reprise)', f:X=>X.d0.loc_appel!=null ? XN(X.d0.loc_appel) : null},
  /* AU */ {h:"Moyen d'évacuation", n:'hélicoptère 1, SMUR 2, VSAV 3, autre 5', f:X=>X.d0.evac_moyen!=null ? XN(XLS_EVAC[X.d0.evac_moyen]) : null},
  /* AV */ {h:'Heure début des soins', n:'heure des 1ers soins sur place', f:X=>XH(X.d0.heure_soins)},
  /* AW */ {h:'Circonstances de survenue', n:'remontée, profil, commentaire des paliers, histoire de la maladie', f:X=>{ const d = X.d0, c = [];
@@ -10731,19 +10824,7 @@ const XLS = [
           if(st.X.sen.items.some(i=>i.grp==='subj') || st.X.dou.items.length) return 1;
           return NEU.some(k=>st.X[k] && st.X[k].tested) ? 0 : null; }},
  /* BV */ {h:'Médecin ayant pris en charge', n:'médecin de la fiche initiale (sinon l’examinateur)', f:X=>XT(X.d0.medecin || X.d0.examinateur)},
- /* BW */ {h:'Observations', n:'lieu non codé, lieu de l’accidenté à l’appel (« autre »), apnées, conditions environnementales, progressivité (facteur favorisant, sans colonne dans le fichier maître), tables « autres »', f:X=>{ const d = X.d0, o = [];
-          if(d.pl_lieu && !X.lieu) o.push('Lieu : '+TXT.flat(d.pl_lieu));
-          if(d.loc_appel===4 && d.loc_appel_autre) o.push('Lieu de l’accidenté à l’appel : '+TXT.flat(d.loc_appel_autre));
-          if(isApnee(d)) o.push('Apnée : '+apneeTexte(d)+(d.pl_prof>0 ? ', profondeur maximale '+d.pl_prof+' m' : ''));
-          const env = [];
-          if(d.ff_courant!=null) env.push('courant '+(d.ff_courant===1 ? 'oui' : 'non'));
-          if(d.ff_houle!=null) env.push('houle de surface '+(d.ff_houle===1 ? 'oui' : 'non'));
-          if(d.ff_visib!=null) env.push('visibilité '+TXT.low(xlsOpt('ff_visib', d.ff_visib)));
-          if(d.ff_env) env.push(TXT.flat(d.ff_env).replace(/[.;,:\s]+$/,''));
-          if(env.length) o.push('Conditions : '+env.join(', '));
-          if(d.ff_progress!=null) o.push('Progressivité '+(d.ff_progress===1 ? 'respectée' : 'non respectée'));
-          const au = X.rc.types.filter(t=>t.code===9); if(au.length) o.push('Autre table : '+au.map(t=>t.lib+' × '+t.n).join(', '));
-          return o.length ? o.join(' ; ') : null; }},
+ /* BW */ {h:'Observations', n:'non recueillie : c’est votre case d’observations, ADP n’y écrit rien (depuis la 9.5.1)', f:X=>null},
  /* BX */ {h:'Score MJOAS', n:'score MJOAS de la consultation de sortie (la fiche la plus récente qui en porte un) ; 17 = normal', f:X=>X.fMjoas ? XN(X.fMjoas.d.mjoas) : null},
  /* BY */ {h:'nombre j AT', n:'jours d’arrêt de travail de la consultation de sortie + jours d’hospitalisation, du jour d’entrée (premier examen du dossier) au jour de sortie compris (du 02/10 au 05/10 : 4 jours) ; sans jours d’AT saisis, les jours d’hospitalisation seuls (jusqu’à la consultation de sortie la plus récente) ; vide sans consultation de sortie',
           f:X=>{ const a = atCalc(X.FI); return a ? a.total : null; }},
@@ -11493,6 +11574,7 @@ function openExportJSON(){
   const n = DB.length, dirOk = hasPicker('showDirectoryPicker'), dis = n ? '' : ' disabled', g = exportGaps();
   const gap = t => '<br><span style="color:var(--warn)">'+t+'</span>';
   modalHTML('<h3>Exporter tout en JSON</h3>'+
+    '<div class="note" style="background:#fff3cd;border-color:#e0a800"><b>Import-export des fiches JSON.</b> '+esc(IMPEXP_PHRASE)+'.</div>'+
     '<div class="note" style="background:#eef4fb;border-color:#bcd4ee"><b>'+nFiches(n)+'</b>, <b>une par fichier</b>, nommé '+
       '<code>xxx-aaaa_bbbbbbbb-EXc.json</code> : <b>xxx</b> numéro d’accident, <b>aaaa</b> année de la prise en charge, '+
       '<b>bbbbbbbb</b> numéro de dossier, <b>c</b> numéro d’examen (par exemple <code>187-2026_50987654-EX1.json</code>). '+
@@ -11970,6 +12052,10 @@ function openHelp(){
   'Ouvrez <code>donnees_neuro.csv</code> dans Excel, R, Python, SPSS ou Jamovi. '+
   '<code>dictionnaire_variables.csv</code> donne le codage de chaque colonne. '+
   'Cellule vide = valeur manquante (NA).</p>'+
+  '<p><b>7. Rappel de l’import-export des fiches JSON.</b><br>'+
+  'À '+RAPPEL_HEURES.map(h=>TXT.hFr(h)).join(' et à ')+' (heure du navigateur), tant qu’ADP est ouvert, un bandeau s’affiche en haut de la page, et une notification du navigateur si elle est autorisée : '+
+  esc(IMPEXP_PHRASE)+'. La même consigne est dans la bulle des boutons <b>Tout transférer (ZIP)</b> et <b>Importer</b> de la barre du haut. Le bouton <b>Exporter tout en JSON…</b> du bandeau ouvre la fenêtre d’export ; '+
+  '<b>Plus › Exporter les données…</b> règle les rappels (case « Rappels », autorisation des notifications, essai).</p>'+
   '<div class="note"><b>Sauvegardez.</b> Les fiches vivent dans la base locale du navigateur en plus du dossier de données. '+
   'Vider les données de navigation efface cette base, mais le dossier de données la reconstitue à la prochaine ouverture. '+
   'Ce dossier et les sauvegardes JSON sont votre filet de sécurité : copiez-les régulièrement ailleurs.</div>');
@@ -12130,7 +12216,7 @@ async function saveDraft(){ if(DIRTY && REC) await metaSet('draft',JSON.parse(JS
   const s = await metaGet('settings');
   if(s){ SET.poste=s.poste||''; SET.sep=s.sep||';'; SET.pii=!!s.pii;
          SET.wedge = s.wedge!==false; SET.scanRe=s.scanRe||''; SET.hash=!!s.hash; SET.hashLen=s.hashLen||12;
-         SET.searchSame = s.searchSame!==false; SET.autoDl = !!s.autoDl; SET.dictOk = !!s.dictOk; SET.rtf = s.rtf!==false; }
+         SET.searchSame = s.searchSame!==false; SET.autoDl = !!s.autoDl; SET.dictOk = !!s.dictOk; SET.rtf = s.rtf!==false; SET.rappel = s.rappel!==false; }
   SET.salt = (await metaGet('salt')) || '';
   TOMB = (await metaGet('deleted')) || {};
   SYNCMAP = Object.assign({save:{}, search:{}}, (await metaGet('syncmap')) || {});
@@ -12140,7 +12226,7 @@ async function saveDraft(){ if(DIRTY && REC) await metaSet('draft',JSON.parse(JS
   const draft = await metaGet('draft');
   if(!wantNew && draft && draft.d && Object.keys(draft.d).length>2){ REC=draft; DIRTY=true; }
   else REC=blank();
-  renderForm(); renderList(); updateBar(); watchHdr(); armMinuit();
+  renderForm(); renderList(); updateBar(); watchHdr(); armMinuit(); armRappels();
   initPWA();
   setInterval(saveDraft,4000);
   startupSync().catch(e=>console.error('dossier de données :', e));      // sans attendre : le dossier est relu pendant que la fiche s'affiche
