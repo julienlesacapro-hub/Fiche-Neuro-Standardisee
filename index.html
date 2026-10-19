@@ -578,6 +578,7 @@ svg.echo rect.z:hover{stroke-width:2.6;filter:brightness(.96)}
 .csttab input,.csttab select{width:100%;box-sizing:border-box;border:0;background:transparent;
   font:inherit;padding:4px 3px;color:var(--ink)}
 .csttab input:focus,.csttab select:focus{outline:2px solid var(--acc);outline-offset:-2px;background:#fff}
+.csttab input.bad{background:var(--bad-l);color:var(--bad)}
 .csttab tbody tr:nth-child(even) td{background:#fafbfd}
 
 /* ---------- scores de sévérité ---------- */
@@ -3064,6 +3065,8 @@ function orlAudio(){
 function computeAll(){
   const d = REC.d;
   Object.keys(FMT).forEach(k=>{ const v = d[k]; if(typeof v === 'string' && v){ const w = FMT[k](v); if(w !== v) d[k] = w; } });
+  /* l'heure d'un relevé de constantes saisie sans « : » (1145) avant la 9.5.2 s'écrit HH:MM, sans marquer la fiche modifiée */
+  if(Array.isArray(d.cst)) d.cst.forEach(r=>{ if(r && typeof r.h === 'string'){ const hm = cstHeure(r.h); if(hm !== r.h) r.h = hm; } });
   /* fiche d'avant la 9.3.5 : l'ancienne case unique « ne pas mentionner les scores » est reprise dans les deux cases, une par score */
   if(d.sc_masquer){ if(!d.sc_masquer_msh) d.sc_masquer_msh = 1; if(!d.sc_masquer_vest) d.sc_masquer_vest = 1; }
   delete d.sc_masquer;
@@ -3789,6 +3792,8 @@ const normHeure = s => {
   if(H > 23 || M > 59) return null;
   return String(H).padStart(2,'0')+':'+String(M).padStart(2,'0');
 };
+/* l'heure d'un relevé de constantes enregistrée sans « : » avant la 9.5.2 (1145, 930) se lit HH:MM ; toute autre valeur est rendue telle quelle */
+const cstHeure = h => { if(typeof h === 'string' && /^\d{3,4}$/.test(h.trim())){ const hm = normHeure(h); if(hm) return hm; } return h; };
 
 function dateHTML(f, v, g){
   const bad = REC._badDate && REC._badDate[f.k];
@@ -6343,7 +6348,9 @@ function cstAdd(){
   REC.d.cst = L; touch(); renderForm();
 }
 function cstDel(i){
-  const L = cstList().slice(); L.splice(i,1);
+  const L = cstList().slice();
+  if(REC._badTime){ const B = REC._badTime; for(let k = i; k < L.length; k++){ const nx = B['cst.'+(k+1)+'.h']; if(nx != null) B['cst.'+k+'.h'] = nx; else delete B['cst.'+k+'.h']; } }     // les heures en cours de saisie suivent leur ligne
+  L.splice(i,1);
   if(L.length) REC.d.cst = L; else delete REC.d.cst;
   touch(); renderForm();
 }
@@ -6352,6 +6359,27 @@ function cstSet(i, k, v){
   if(v==='' || v==null) delete L[i][k];
   else L[i][k] = (k==='h' || k==='mict') ? v : Number(v);
   REC.d.cst = L; touch(); computeAll(); renderSynth();
+}
+/* l'heure d'un relevé se saisit comme les autres heures de la fiche (timeType, timeBlur) : HHMM, les deux points se posent tout seuls, la valeur enregistrée est HH:MM ;
+   « + » ou espace (dateHeureRapide) y écrit l'heure du moment.
+   Pendant la frappe, l'heure n'est enregistrée qu'à 4 chiffres : à 3 chiffres (09:3, qui deviendra 09:30 ; ou 93:0 = 9 h 30), la valeur n'est ni jugée ni enregistrée, elle l'est à la sortie de
+   la case (cstTimeBlur). Sans cela, le 3e chiffre de « 2400 » (24:0, lu 02:40) serait enregistré puis resterait sous l'heure impossible 24:00, affichée en rouge. */
+function cstTimeType(i, el){
+  const pos = el.selectionStart, before = el.value;
+  const d = el.value.replace(/\D/g,'').slice(0,4);
+  const out = d.length>2 ? d.slice(0,2)+':'+d.slice(2,4) : d;
+  el.value = out;
+  if(pos === before.length) el.setSelectionRange(out.length, out.length);
+  const hm = d.length === 4 ? normHeure(out) : null, bk = 'cst.'+i+'.h';
+  if(!REC._badTime) REC._badTime = {};
+  if(hm){ delete REC._badTime[bk]; el.classList.remove('bad'); cstSet(i, 'h', hm); }
+  else { REC._badTime[bk] = out; if(d.length === 4) el.classList.add('bad'); else el.classList.remove('bad'); }
+}
+function cstTimeBlur(i, el){
+  const hm = normHeure(el.value), bk = 'cst.'+i+'.h';
+  if(!el.value.trim()){ if(REC._badTime) delete REC._badTime[bk]; el.classList.remove('bad'); cstSet(i, 'h', ''); return; }
+  if(hm){ if(REC._badTime) delete REC._badTime[bk]; el.classList.remove('bad'); el.value = hm; cstSet(i, 'h', hm); }
+  else { el.classList.add('bad'); toast('Heure impossible : attendu HH:MM'); }
 }
 function cstBlock(){
   const L = cstList(), closed = CLOSED.constantes?' closed':'';
@@ -6363,10 +6391,12 @@ function cstBlock(){
         return '<td><select onchange="cstSet('+i+',\''+c.k+'\',this.value)">'+
           ['','oui','non'].map(o=>'<option value="'+o+'"'+(String(v)===o?' selected':'')+'>'+(o||'—')+'</option>').join('')+
           '</select></td>';
-      if(c.t==='time')
-        return '<td><input type="text" inputmode="numeric" maxlength="5" placeholder="HH:MM" value="'+esc(v)+'" '+
-          'oninput="this.value=this.value.replace(/[^0-9:]/g,\'\')" '+
-          'onchange="cstSet('+i+',\''+c.k+'\',this.value)"></td>';
+      if(c.t==='time'){
+        /* comme les autres heures de la fiche : on tape HHMM, les deux points se posent tout seuls ; une saisie incomplète ou impossible reste en rouge */
+        const bad = REC._badTime && REC._badTime['cst.'+i+'.h'];
+        return '<td><input type="text" class="cth'+(bad ? ' bad' : '')+'" inputmode="numeric" maxlength="5" autocomplete="off" placeholder="HH:MM" title="HHMM : les deux points se posent tout seuls ; « + » ou espace : l’heure du moment" '+
+          'value="'+esc(bad!=null ? bad : v)+'" oninput="cstTimeType('+i+',this)" onblur="cstTimeBlur('+i+',this)" onchange="cstTimeBlur('+i+',this)"></td>';
+      }
       return '<td><input type="text" inputmode="decimal" value="'+esc(v)+'" '+
         'onchange="cstSet('+i+',\''+c.k+'\',this.value)"></td>';
     }).join('')+
@@ -8894,12 +8924,12 @@ function columns(pii){
   add('cst_nb','Constantes - nombre de releves','entier ; vide = aucun releve',
       r=>cstArr(r).length||'');
   add('cst_h_debut','Constantes - heure du premier releve','HH:MM',
-      r=>{const L=cstArr(r); return L.length?(L[0].h||''):'';});
+      r=>{const L=cstArr(r); return L.length?(cstHeure(L[0].h)||''):'';});
   add('cst_h_fin','Constantes - heure du dernier releve','HH:MM',
-      r=>{const L=cstArr(r); return L.length?(L[L.length-1].h||''):'';});
+      r=>{const L=cstArr(r); return L.length?(cstHeure(L[L.length-1].h)||''):'';});
   add('cst_duree','Constantes - duree de surveillance','entier, minutes (calcule du premier au dernier releve)',
       r=>{const L=cstArr(r); if(L.length<2) return '';
-          const d=deltaMin(L[0].h, L[L.length-1].h); return d==null?'':d;});
+          const d=deltaMin(cstHeure(L[0].h), cstHeure(L[L.length-1].h)); return d==null?'':d;});
   CST_COLS.filter(c=>c.k!=='h' && c.k!=='mict').forEach(c=>{
     const u = c.u?' ('+c.u+')':'';
     add('cst_'+c.k+'_1',  'Constantes - '+c.l+' : premiere valeur','numerique'+u,
@@ -9071,7 +9101,7 @@ function sortedDB(){
    l'explique (diagnostic) et propose ce qui fonctionne : « Exporter tout en JSON » (dossier choisi, ou archive
    ZIP), téléchargement du JSON à chaque enregistrement, import d'un dossier ou d'une archive.
    ===================================================================== */
-const APP_VERSION = '9.5.1';
+const APP_VERSION = '9.5.2';
 /* hasPicker teste une fonction de l'API au moment de s'en servir : une extension ou un réglage du navigateur peut la retirer */
 const hasPicker = name => { try{ return typeof window[name] === 'function'; }catch(e){ return false; } };
 let FSA = hasPicker('showDirectoryPicker');
@@ -11958,6 +11988,7 @@ function openHelp(){
   '<b>Reprendre tout l\'examen precedent</b>. '+
   'Cliquez <b>Tout renseigner comme NORMAL</b>, puis ne modifiez que les items anormaux. '+
   'Dans une case de date ou d’heure, la touche <b>+</b> ou la barre d’espace écrit la date du jour ou l’heure du moment. '+
+  'Les heures se tapent sans les deux points (<b>1145</b> devient 11:45), l’heure d’un relevé de constantes comme les autres. '+
   'Le <b>nom</b> s’écrit en majuscules, le <b>prénom</b> avec l’initiale en majuscule (accents conservés), l’<b>examinateur</b>, le <b>médecin</b> et l’<b>infirmier(e)</b> en majuscules, tout seuls. '+
   'Le délai accident → examen n’est calculé que sur la consultation initiale. '+
   'Sur une fiche de suivi ou de sortie, le poids de la fiche initiale, le diagnostic retenu, la prednisolone encore à prescrire et les séances depuis '+
