@@ -52,6 +52,10 @@ button,input,select,textarea{font-family:inherit;font-size:13px;color:inherit}
 .ib.pri{background:#1b6fd0;border-color:#3b8ae8}.ib.pri:hover{background:#2a80e4}
 .ib.gd{background:#1a6b43;border-color:#2a8a59}.ib.gd:hover{background:#228152}
 .ib.acc{background:#7a5516;border-color:#a8782a}.ib.acc:hover{background:#8e6419}
+.ib.busy{cursor:progress;opacity:.9}
+.ib.busy svg{animation:adpspin .9s linear infinite}
+@keyframes adpspin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){ .ib.busy svg{animation:none} }
 #topbar .tbsep{width:1px;height:22px;background:#3a4558;margin:0 2px}
 #tip{position:fixed;z-index:400;max-width:300px;padding:6px 10px;background:#fffbe6;color:#14181f;border:1px solid #c9b458;border-radius:6px;font-size:12px;line-height:1.35;
   box-shadow:0 3px 12px rgba(0,0,0,.28);pointer-events:none;display:none}
@@ -114,15 +118,6 @@ body.genopen{overflow:hidden}
 #folderbanner{display:none}
 #folderbanner.on{display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:var(--warn-l);
   border:1px solid #e3bd9a;border-radius:6px;padding:7px 12px;margin:0 0 10px;font-size:12.5px}
-/* le rappel de l'import-export des fiches JSON (11 h 45 et 16 h 00) : dans l'en-tête, il reste visible tant qu'on ne l'a pas fermé */
-#rappel{display:none}
-#rappel.on{display:flex;gap:8px 12px;align-items:center;flex-wrap:wrap;background:#fff3cd;color:#3b2f00;border-top:2px solid #e0a800;border-bottom:1px solid #e0a800;padding:8px 14px;font-size:12.5px}
-#rappel .rp-ic svg{display:block;width:24px;height:24px;fill:none;stroke:#8a5a00;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-#rappel .rp-tx{flex:1 1 320px;min-width:0;line-height:1.4}
-#rappel .rp-tx b{display:block;font-size:13px}
-#rappel code{background:#fff;border:1px solid #e3d08a;border-radius:4px;padding:1px 5px;font-size:12px;overflow-wrap:anywhere}
-#rappel .rp-ac{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
-#rappel .rp-ac small{color:#6b5300}
 
 /* ---------- structure ---------- */
 #wrap{display:flex;gap:0;align-items:flex-start;min-width:0;max-width:100%}
@@ -363,6 +358,13 @@ input.bio.bad{border-color:var(--bad);outline:2px solid var(--bad-l)}
   font-size:12.5px;line-height:1.55}
 #synth p,#crh p{margin:0 0 .75em}
 #synth p:last-child,#crh p:last-child{margin-bottom:0}
+/* le texte court de la consultation initiale (avis spécialisé Résurgences) : un aperçu qui se déplie sous la synthèse */
+#s_syn>h3{flex-wrap:wrap}
+#avisbox{margin-top:10px}
+#avisbox>summary{cursor:pointer;font-size:12px;color:var(--ink2);padding:2px 0}
+#avisbox>summary b{color:var(--ink)}
+#avis{background:#fbfcfe;border:1px solid var(--bd2);border-radius:6px;padding:9px 11px;margin-top:6px;font-size:12.5px;line-height:1.5;white-space:pre-wrap}
+#avis .avnote{color:var(--ink2);font-size:11.5px;white-space:normal;margin-top:8px}
 
 /* ---------- modale ---------- */
 #mask{position:fixed;inset:0;background:rgba(12,18,28,.55);z-index:100;display:none;
@@ -773,7 +775,6 @@ svg.echo rect.z:hover{stroke-width:2.6;filter:brightness(.96)}
 <div id="hdr">
 <div id="topbar"></div>
 <div id="patbar" onclick="goPage(1)" title="Aller à l’identification"></div>
-<div id="rappel" role="alert" aria-live="assertive"></div>
 </div>
 
 <div id="wrap">
@@ -797,7 +798,7 @@ svg.echo rect.z:hover{stroke-width:2.6;filter:brightness(.96)}
 </div>
 
 <div id="patholder" aria-hidden="true"></div>
-<div id="mask" onclick="if(event.target===this)closeModal()"><div id="modal"></div></div>
+<div id="mask" onclick="if(event.target===this)closeModal(true)"><div id="modal"></div></div>
 <div id="toast"></div>
 <div id="tip" role="tooltip"></div>
 <div id="plusmenu" hidden></div>
@@ -842,7 +843,6 @@ const ICO = {
   adp:'<path d="M5.5 7h13A2.5 2.5 0 0 1 21 9.5V12a4.5 4.5 0 0 1-4.5 4.5H15a1.5 1.5 0 0 1-1.3-.75L13 14.5h-2l-.7 1.25A1.5 1.5 0 0 1 9 16.5H7.5A4.5 4.5 0 0 1 3 12V9.5A2.5 2.5 0 0 1 5.5 7z"/><path d="M19 7V4.5A1.5 1.5 0 0 1 20.5 3H22"/><path d="M3 10.5H1.5M21 10.5h1.5"/>',
   cohb:'<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>',
   docs:'<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><text x="7.4" y="14.2" font-size="6.6" font-weight="700" font-style="italic" font-family="Georgia,serif" fill="currentColor" stroke="none">Rx</text><path d="M8 17.6h8"/>',
-  bell:'<path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/>',
   more:'<circle cx="5" cy="12" r="1.4" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1.4" fill="currentColor" stroke="none"/>',
   folder:'<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
   export:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v12"/>',
@@ -855,11 +855,11 @@ const ICO = {
   refresh:'<path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v5h-5"/>'
 };
 const ico = n => '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">'+ICO[n]+'</svg>';
-/* Import-export des fiches JSON : la manipulation du service. Elle est dite dans la bulle des boutons d'import-export, dans la fenêtre « Exporter tout en JSON » et dans le rappel de 11 h 45 et de 16 h 00. */
+/* Import-export des fiches JSON : la manipulation du service. Elle est dite dans la bulle des boutons d'import-export et dans la fenêtre « Exporter tout en JSON » (le rappel de 11 h 45 et de 16 h 00 a été retiré en 10.1.1). */
 const IMPEXP_DOSSIER = 'T:\\Services\\Smhep\\Commun\\Personnels SMHEP\\MEDECIN CAISSON F\\ADP- Export JSON';
 const IMPEXP_PHRASE = 'Exporter l’ensemble des fiches JSON dans le dossier « '+IMPEXP_DOSSIER+' »';
 const IMPEXP_TIP = 'Import-export des fiches JSON : '+IMPEXP_PHRASE.charAt(0).toLowerCase()+IMPEXP_PHRASE.slice(1)+'.';
-/* cl : classes du bouton ; tbp : masqué sur téléphone (le menu « Plus » le propose alors) ; nophone : masqué sur tablette comme sur téléphone */
+/* cl : classes du bouton ; tbp : masqué sur téléphone (le menu « Plus » le propose alors) ; nophone : masqué sur tablette comme sur téléphone ; le bouton « Actualiser » reste toujours visible */
 const TOP_BTNS = [
   {id:'side',   ic:'list',     tip:'Volet de gauche (patients en cours et liste des fiches) : afficher ou masquer', fn:'toggleSide()', cl:'nophone'},
   '|',
@@ -874,7 +874,9 @@ const TOP_BTNS = [
   '|',
   {id:'adp',    ic:'adp',      tip:'Ligne Excel ADP (accident de plongée) : une ligne pour le fichier Excel maître, d’après le dossier ouvert', fn:'openXls()', cl:'tbp'},
   {id:'cohb',   ic:'cohb',     tip:'Ligne Excel COHB (activité) : une ligne pour la feuille Activité COHB, d’après le dossier ouvert', fn:'openXls(\'cohb\')', cl:'tbp'},
-  {id:'docs',   ic:'docs',     tip:'Documents de sortie : courriers, ordonnances, certificats (générateur de courriers du service)', fn:'openGen()', cl:'tbp'}
+  {id:'docs',   ic:'docs',     tip:'Documents de sortie : courriers, ordonnances, certificats (générateur de courriers du service)', fn:'openGen()', cl:'tbp'},
+  '|',
+  {id:'refresh', ic:'refresh', tip:'Actualiser : relire le dossier de données connecté pour mettre à jour la communication avec lui (fiches ajoutées ou modifiées depuis un autre poste, autorisation du dossier) ; la liste des fiches est relue aussi', fn:'actualiserDossier()', cl:''}
 ];
 function buildTopbar(){
   const el = $('#topbar'); if(!el) return;
@@ -4030,8 +4032,11 @@ function renderFormInner(){
 
   h += '<div class="sec" id="s_syn"><h3 onclick="if(!event.target.closest(\'button\'))toggleSec(\'syn\')">'+
        '<span class="caret">&#9660;</span>Synthèse rédigée (générée automatiquement)'+
-       '<span class="fill"><button class="mini" onclick="copySynth()">copier le texte</button></span></h3>'+
-       '<div class="body"><div id="synth"></div></div></div>';
+       '<span class="fill">'+
+       (ftype()===1 ? '<button class="mini" id="btn_avis" onclick="copyAvis()" data-tip="Texte court de la consultation initiale pour une demande d’avis spécialisé : '+nbFr(AVIS_MAX)+' caractères au plus (un retour à la ligne compte pour deux, comme sous Windows), sans tableau (la biologie est résumée en une phrase), en texte brut. Le texte complet se copie avec « copier le texte intégral ».">copier Avis Spécialisé Résurgences</button>' : '')+
+       '<button class="mini" id="btn_synth" onclick="copySynth()" data-tip="La synthèse complète, avec ses tableaux de biologie, en texte enrichi : titres soulignés, anomalies en gras">copier le texte intégral</button></span></h3>'+
+       '<div class="body"><div id="synth"></div>'+
+       (ftype()===1 ? '<details id="avisbox"><summary id="avissum"></summary><div id="avis"></div></details>' : '')+'</div></div>';
 
   $('#form').innerHTML = h;
   buildNav(); renderSynth(); renderCRH(); updateGlobalFill();
@@ -4430,7 +4435,64 @@ function addPhrase(k,p){
   REC.d[k] = f.t==='area' ? (cur?cur.replace(/\s*$/,'')+'\n'+p:p) : (cur?cur.replace(/\s*;?\s*$/,'')+' ; '+p:p);
   touch(); const el=$('#i_'+k); if(el) el.value=REC.d[k]; softRefresh();
 }
-function touch(){ DIRTY=true; REC.updated=new Date().toISOString(); updateBar(); }
+function touch(){ editGarde(); DIRTY=true; REC.updated=new Date().toISOString(); updateBar(); }
+
+/* =====================================================================
+   FICHE DÉJÀ ENREGISTRÉE : LA PREMIÈRE MODIFICATION DEMANDE CONFIRMATION
+   Une fiche ouverte depuis la liste des fiches enregistrées (loadFiche) est verrouillée : sa première tentative de modification, quel que soit l'encart (une frappe, un clic, « tout normal »,
+   une ligne de constantes, une dictée…), pose la question « Cette fiche est déjà enregistrée. Êtes-vous sûr de vouloir la modifier ? » avant de la marquer modifiée. Toute modification passe par
+   touch(), qui appelle editGarde(). Oui : la fiche reste modifiable jusqu'à l'ouverture d'une autre fiche, la modification déjà faite est gardée. Non (ou Échap, ou un clic à côté de la fenêtre) :
+   la fiche revient telle qu'elle est enregistrée, et la question se reposera à la prochaine tentative. Une nouvelle fiche, un ré-examen, une séance, un brouillon repris au démarrage et une
+   fiche enregistrée dans la même séance de saisie ne sont pas concernés : on est en train de les remplir. EDIT_LOCK est l'identifiant de la fiche verrouillée (une autre fiche n'est jamais gênée).
+   ===================================================================== */
+let EDIT_LOCK = null;       // identifiant de la fiche ouverte dont la modification n'a pas encore été confirmée
+let EDIT_ASK = false;       // la question est affichée : la réponse est attendue
+let EDIT_T0 = 0, EDIT_FOCUS = null;
+const ficheEnregistree = () => !!(REC && DB.some(f=>f.id===REC.id));
+function editGarde(){
+  if(EDIT_ASK || !EDIT_LOCK || !REC || REC.id !== EDIT_LOCK || !ficheEnregistree()) return;
+  const m = $('#modal'), mk = $('#mask'); if(!m || !mk) return;
+  EDIT_ASK = true; EDIT_T0 = Date.now();
+  const ae = document.activeElement; EDIT_FOCUS = (ae && ae !== document.body) ? ae : null;
+  const d = REC.d || {};
+  m.innerHTML = '<h3 id="edit_titre" tabindex="-1" style="outline:none">Fiche déjà enregistrée</h3>'+
+    '<div class="note" style="background:#fbeee4;border-color:#e3bd9a;font-size:14.5px;line-height:1.4"><b>Cette fiche est déjà enregistrée.</b> Êtes-vous sûr de vouloir la modifier ?</div>'+
+    '<p style="margin:8px 0 0;color:var(--ink2);font-size:12.5px">Dossier '+esc(d.dossier || '(sans numéro)')+(d.date_ex ? ', examen du '+frDate(d.date_ex)+(d.heure_ex ? ' à '+esc(d.heure_ex) : '') : '')+
+    '. Si vous répondez non, la modification que vous venez de faire est annulée.</p>'+
+    '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px">'+
+      '<button type="button" class="tb gd" id="edit_oui" style="min-height:40px" onclick="editReponse(true,event)">Oui, modifier cette fiche</button>'+
+      '<button type="button" class="tb" id="edit_non" style="min-height:40px" onclick="editReponse(false,event)">Non, la laisser telle qu’elle est enregistrée</button></div>';
+  m.setAttribute('role', 'alertdialog'); m.setAttribute('aria-modal', 'true'); m.setAttribute('aria-labelledby', 'edit_titre');
+  mk.classList.add('on');
+  /* le clavier ne doit pas répondre à la place de l'utilisateur : plus aucun champ n'a le focus, et aucun bouton non plus (le focus est sur le titre) : une frappe qui continue (espace, Entrée) ne répond ni oui ni non */
+  try{ if(ae && ae.blur) ae.blur(); }catch(e){}
+  const tt = $('#edit_titre'); if(tt){ try{ tt.focus(); }catch(e){} }
+}
+function editReponse(oui, ev){
+  if(!EDIT_ASK) return;
+  /* une touche (espace, Entrée) tapée au moment où la question s'affiche ne répond pas à la place de l'utilisateur */
+  if(ev && ev.detail === 0 && Date.now() - EDIT_T0 < 700) return;
+  EDIT_ASK = false;
+  const mk = $('#mask'); if(mk) mk.classList.remove('on');
+  const md = $('#modal'); if(md){ md.removeAttribute('role'); md.removeAttribute('aria-modal'); md.removeAttribute('aria-labelledby'); }
+  const fo = EDIT_FOCUS; EDIT_FOCUS = null;
+  if(oui){
+    EDIT_LOCK = null;
+    if(fo && document.body.contains(fo)){
+      try{ fo.focus(); if(typeof fo.setSelectionRange === 'function' && /^(text|search|tel|url|email|password|textarea|)$/.test(fo.type || '')){ const n = String(fo.value == null ? '' : fo.value).length; fo.setSelectionRange(n, n); } }catch(e){}
+    }
+    return;
+  }
+  /* non : la fiche revient telle qu'elle est enregistrée (copie de la base), sans modification en cours ni brouillon */
+  const sv = REC && DB.find(x=>x.id===REC.id);
+  if(sv) REC = JSON.parse(JSON.stringify(sv));
+  DIRTY = false;
+  clearTimeout(DOSSIER_T);
+  try{ if(DICT) dictAbort(); }catch(e){}
+  try{ Promise.resolve(metaSet('draft', null)).catch(()=>{}); }catch(e){}
+  renderForm(); renderList(); updateBar();
+  toast('Modification annulée : la fiche reste telle qu’elle est enregistrée');
+}
 
 function refreshField(k){
   computeAll();
@@ -7008,7 +7070,7 @@ function sideOfItems(A){
   return (g && dr) ? 'bilatéral' : dr ? 'droit' : g ? 'gauche' : '';
 }
 
-/* Les constats, traduits en syndromes. gen : examen général, neu : examen neurologique.
+/* Les constats, traduits en syndromes. gen : examen général (avec l'ORL et le vestibulaire), neu : examen neurologique.
    pos : ce qui est anormal (écrit en gras), neg : ce qui a été examiné et trouvé normal. s : nom court du
    syndrome, repris dans la conclusion « au total ». */
 function syndromes(X){
@@ -7025,14 +7087,6 @@ function syndromes(X){
     if(G.length) P(neu, 'altération de la conscience', G[0].txt);
     if(!A.length && D.tested) N(neu, 'absence de signe cérébral');
     if(D.gcs===15) N(neu, 'GCS 15'); else if(D.gcsNc && D.gcs==null) N(neu, 'Glasgow non calculable (modalité non cotable)');
-  }
-  /* vestibulo-cochléaire */
-  { const D = X.ves, V = ab(D).filter(i=>i.grp==='v'), C = ab(D).filter(i=>i.grp==='c');
-    if(V.length && C.length) P(neu, 'syndrome vestibulo-cochléaire', 'un syndrome vestibulo-cochléaire : '+det(V.concat(C)));
-    else if(V.length) P(neu, 'syndrome vestibulaire', 'un syndrome vestibulaire : '+det(V));
-    else if(C.length) P(neu, 'signes cochléaires', 'des signes cochléaires : '+det(C));
-    if(!V.length && D.tv) N(neu, 'absence de syndrome vestibulaire');
-    if(!C.length && D.tc) N(neu, 'absence de signe cochléaire');
   }
   /* motricité */
   { const D = X.mot, A = ab(D);
@@ -7085,6 +7139,14 @@ function syndromes(X){
   { const D = X.orl, A = ab(D);
     if(A.length) P(gen, 'anomalies ORL', 'des anomalies ORL : '+det(A));
     else if(D.tested) N(gen, 'examen ORL normal');
+  }
+  /* vestibulo-cochléaire : dit avec l'examen général, à la suite de l'ORL (comme l'onglet « Examen clinique général »), et non plus avec l'examen neurologique (depuis la 10.1.1) */
+  { const D = X.ves, V = ab(D).filter(i=>i.grp==='v'), C = ab(D).filter(i=>i.grp==='c');
+    if(V.length && C.length) P(gen, 'syndrome vestibulo-cochléaire', 'un syndrome vestibulo-cochléaire : '+det(V.concat(C)));
+    else if(V.length) P(gen, 'syndrome vestibulaire', 'un syndrome vestibulaire : '+det(V));
+    else if(C.length) P(gen, 'signes cochléaires', 'des signes cochléaires : '+det(C));
+    if(!V.length && D.tv) N(gen, 'absence de syndrome vestibulaire');
+    if(!C.length && D.tc) N(gen, 'absence de signe cochléaire');
   }
   { const D = X.cut, A = ab(D);
     if(A.length) P(gen, 'lésions cutanées', 'des '+A[0].txt);
@@ -8032,13 +8094,246 @@ function evolBox(){
    '<div id="evolp" style="white-space:pre-wrap;font-size:12.5px;line-height:1.45'+(t?'':';color:var(--ink2)')+'">'+
    (t ? esc(t) : "Renseignez l'encart : le paragraphe s'écrit tout seul et se recopie dans le CRH.")+'</div></div>';
 }
-function renderSynth(){ const el=$('#synth'); if(el) el.innerHTML=narrativeHTML() ||
+function renderSynth(){ const el=$('#synth'), B = (el || $('#avisbox')) ? narrativeBlocks() : null;
+  if(el) el.innerHTML=(B ? blocksHTML(B) : '') ||
     '<span style="color:var(--ink2)">Renseignez la fiche : la synthèse s\'écrit toute seule.</span>';
+  renderAvis(B);
   scheduleCRH();
   const ev=$('#evolp'); if(ev) ev.textContent = evolTexte() ||
     "Renseignez l'encart : le paragraphe s'écrit tout seul et se recopie dans le CRH.";
 }
 function copySynth(){ const B = narrativeBlocks(); copyRich(blocksHTML(B), blocksPlain(B), 'Synthèse copiée', blocksRTF(B)); }
+
+/* =====================================================================
+   AVIS SPÉCIALISÉ RÉSURGENCES : LE TEXTE COURT DE LA CONSULTATION INITIALE
+   La synthèse, réduite à AVIS_MAX caractères (3 800) au plus (un retour à la ligne compte pour deux, comme dans un champ de Windows), sans tableau (les tableaux de biologie deviennent une phrase : les valeurs hors des normes), en texte brut, pour être collée dans une
+   demande d'avis. Il est fait des mêmes phrases que la synthèse (narrativeBlocks), donc du même texte rédigé : chaque phrase a une priorité (avisClasse) ; tant que le texte est trop long, la phrase de
+   plus faible priorité est d'abord raccourcie (étapes de coupe), puis retirée, jusqu'à tenir. Ce qui est retiré ou abrégé est annoncé à la copie. La synthèse complète reste disponible
+   (« copier le texte intégral »).
+   ===================================================================== */
+const AVIS_MAX = 3800;
+/* un nombre avec une espace insécable entre les milliers : 3 800 */
+const nbFr = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, String.fromCharCode(160));
+/* la longueur d'un texte « à la façon de Windows » : un retour à la ligne vaut deux caractères (CR + LF) une fois collé dans un champ de Windows ; la limite du texte court est tenue ainsi, donc a fortiori
+   avec un compteur qui ne compte qu'un caractère par retour à la ligne */
+const avisLen = t => { t = String(t == null ? '' : t); return t.length + (t.match(/\n/g) || []).length; };
+/* un texte coupé à n caractères au plus, à la fin d'un mot, suivi de trois points (le texte rédigé n'a pas de signe spécial : pas de « … ») */
+function avisCoupe(t, n){
+  t = String(t == null ? '' : t);
+  if(t.length <= n) return t;
+  let c = t.slice(0, Math.max(0, n - 3));
+  const sp = c.lastIndexOf(' '); if(sp > (n - 3) * 0.6) c = c.slice(0, sp);
+  return c.replace(/[\s,;:.]+$/, '')+'...';
+}
+/* les phrases d'une ligne de texte rédigé (avec ses marqueurs de gras) : une phrase finit par un point suivi d'une espace puis d'une majuscule, d'un chiffre, d'un guillemet ou d'une parenthèse */
+function avisPhrases(s){
+  s = String(s == null ? '' : s);
+  const out = []; let from = 0, m;
+  const re = new RegExp('[.!?]+'+BC+'?\\s+', 'g');
+  while((m = re.exec(s)) !== null){
+    let j = m.index + m[0].length;
+    if(s.charAt(j) === BO) j++;
+    const nx = s.charAt(j);
+    if(nx && /[A-ZÀ-ÖØ-Þ0-9«"(]/.test(nx)){ out.push(s.slice(from, m.index + m[0].length)); from = m.index + m[0].length; }
+  }
+  if(from < s.length) out.push(s.slice(from));
+  return out.map(x=>x.trim()).filter(Boolean);
+}
+/* le plongeur : d'abord sans la nationalité ni la profession, puis l'âge seul */
+function avisPlongeur1(t){
+  const i = t.search(/, (niveau |pratique \()/), c = t.indexOf(',');
+  return (c > 0 && i > c) ? t.slice(0, c)+t.slice(i) : t;
+}
+function avisPlongeur2(t){ const c = t.indexOf(','); return c > 0 ? t.slice(0, c)+'.' : t; }
+/* les constantes sans le poids, la taille ni l'IMC : restent la tension, le pouls, la saturation et la température */
+function avisConstantes(t){
+  const q = t.replace(/\.$/, '').split(' ; ').filter(x=>!/^(Poids|Taille|IMC)\b/.test(x));
+  return q.length ? q.join(' ; ')+'.' : t;
+}
+/* La priorité d'une phrase (0 à 100, la plus haute est retirée en dernier), son nom (pour dire ce qui a été retiré) et ses étapes de coupe : {n : longueur maximale, ou f : fonction du texte, p : priorité
+   de cette étape}. h : titre du paragraphe, t : la phrase, k : son rang dans la ligne, gras : elle est en gras (anormale) dans la synthèse. */
+function avisClasse(h, t, k, gras){
+  const R = (p, lab, et) => ({p:p, lab:lab, et:et || []});
+  const T = re => re.test(t);
+  if(h === 'Le plongeur') return R(88, 'détails du plongeur', [{f:avisPlongeur1, p:38, lab:'nationalité et profession'}, {f:avisPlongeur2, p:64, lab:'niveau et expérience de plongée'}]);
+  if(h === 'La plongée'){
+    if(T(/^Plongée dans les 24/)) return R(74, 'plongée précédente');
+    if(T(/^Pas de plongée dans les 24/)) return R(46, 'absence de plongée précédente');
+    if(T(/^Facteurs favorisants/)) return R(73, 'facteurs favorisants');
+    if(T(/^Pas de facteur favorisant/)) return R(48, 'absence de facteur favorisant');
+    if(T(/^Conditions environnementales/)) return R(36, 'conditions environnementales');
+    if(k === 0) return R(97, 'description de la plongée', [{n:520, p:52}, {n:380, p:80}]);
+    return R(84, 'précisions sur la plongée', [{n:300, p:62}]);
+  }
+  if(h === 'Histoire des symptômes'){
+    if(T(/^Premiers symptômes à/)) return R(98, 'premiers symptômes');
+    if(T(/^Signes fonctionnels à l.arrivée/)) return R(86, 'signes fonctionnels à l’arrivée', [{n:300, p:58}]);
+    return R(95, 'histoire de la maladie', [{n:560, p:44}, {n:380, p:70}, {n:240, p:90}]);
+  }
+  if(h === 'Prise en charge initiale'){
+    if(T(/^(Mis sous ONB|Pas d.oxygénothérapie|Premiers soins sur place|Déséquipement|Pas de déséquipement)/)) return R(86, 'soins sur place', [{n:260, p:48}]);
+    if(T(/^Évolution avant recompression/)) return R(82, 'évolution avant recompression');
+    if(T(/^Prise en charge au SMHEP/)) return R(76, 'heure de prise en charge');
+    if(T(/^Alerte à/)) return R(54, 'heure de l’alerte');
+    if(T(/^(Venu par|Transporté|Héliporté|Évacué par)/)) return R(50, 'moyen d’évacuation');
+    if(T(/^Adressée? par/)) return R(42, 'adressé par');
+    if(T(/^Au moment de l.appel/)) return R(18, 'lieu à l’appel');
+    return R(60, 'prise en charge initiale', [{n:300, p:46}]);
+  }
+  if(h === 'Antécédents et terrain'){
+    if(T(/^Antécédents médico-chirurgicaux/)) return R(79, 'antécédents médico-chirurgicaux', [{n:260, p:50}]);
+    if(T(/^Antécédents de plongée/)) return R(83, 'antécédents de plongée', [{n:260, p:50}]);
+    if(T(/^Allergies/)) return R(77, 'allergies');
+    if(T(/^Habitudes toxiques/)) return R(44, 'habitudes toxiques', [{n:200, p:30}]);
+    if(T(/^Certificat médical/)) return R(22, 'certificat médical');
+    return R(75, 'traitement habituel', [{n:260, p:48}]);
+  }
+  if(h === 'Constantes') return R(84, 'constantes', [{f:avisConstantes, p:45, lab:'poids, taille et IMC'}]);
+  if(/^À l.examen général/.test(h)) return gras ? R(90, 'anomalies de l’examen général', [{n:420, p:70}]) : R(56, 'examen général normal', [{n:240, p:42}]);
+  if(/^À l.examen neurologique/.test(h)) return gras ? R(94, 'anomalies de l’examen neurologique', [{n:520, p:76}]) : R(72, 'examen neurologique normal', [{n:300, p:58}]);
+  if(h === 'Au total') return R(93, 'conclusion de l’examen');
+  if(h === 'Examens paracliniques'){
+    if(gras) return R(80, 'examens anormaux', [{n:400, p:60}]);
+    if(T(/^Actes :/)) return R(30, 'actes');
+    if(T(/^Score /)) return R(79, 'scores');
+    if(T(/^ECG réalisé/)) return R(40, 'ECG');
+    if(T(/^Biologie :/)) return R(71, 'biologie (résultats marquants)', [{n:300, p:55}]);
+    if(T(/^Examens demandés/)) return R(58, 'examens demandés');
+    if(T(/^Autres examens/)) return R(56, 'autres examens', [{n:260, p:42}]);
+    if(/réalisée?\.$/.test(t)) return R(40, 'examens réalisés, sans résultat');
+    return R(66, 'résultats d’examens normaux', [{n:260, p:46}]);
+  }
+  if(h === 'Résultats biologiques') return gras ? R(73, 'biologie', [{n:300, p:55}]) : R(34, 'biologie normale');
+  if(h === 'Diagnostic retenu') return R(98, 'diagnostic retenu');
+  if(h === 'Conduite à tenir'){
+    if(T(/^(Table |Orientation :)/)) return R(96, 'table de recompression et orientation');
+    if(T(/^Complication thérapeutique/)) return R(92, 'complication thérapeutique');
+    if(T(/^Oxygénothérapie normobare/)) return R(88, 'oxygénothérapie');
+    if(T(/^Corticothérapie/)) return R(87, 'corticothérapie');
+    if(T(/^Remplissage/)) return R(68, 'remplissage vasculaire');
+    if(T(/^Antalgiques/)) return R(55, 'antalgiques');
+    return R(66, 'autres traitements et orientation', [{n:300, p:50}]);
+  }
+  if(h === 'Commentaires') return R(26, 'commentaires', [{n:300, p:20}]);
+  return R(60, TXT.low(h), [{n:400, p:40}]);
+}
+/* une unité de texte : sa phrase, et ses étapes dans l'ordre : coupes successives (abrégé) puis retrait */
+function avisUnite(t, c, ord){
+  const steps = []; let cur = t;
+  (c.et || []).forEach(e=>{
+    const n = e.f ? e.f(cur) : avisCoupe(cur, e.n);
+    if(n && n.length < cur.length){ steps.push({p:e.p, t:n, lab:e.lab || c.lab, cut:true}); cur = n; }
+  });
+  steps.push({p:c.p, t:'', lab:c.lab, cut:false});
+  return {t:t, steps:steps, k:0, ord:ord};
+}
+/* le tableau de biologie devient une phrase par tableau : les valeurs hors des normes (la plus récente de chaque paramètre), ou « dans les limites des normes » */
+function avisBio(b, ord){
+  const L = []; let nab = 0;
+  (b.tabs || []).forEach(tb=>{
+    const v = [];
+    tb.rows.forEach(r=>{
+      const c = r.slice(3).find(x=>x && x.t);
+      if(c && c.ab) v.push(TXT.clean(r[0].t)+' '+c.t+(r[2].t ? ' '+TXT.clean(r[2].t) : ''));
+    });
+    if(v.length){ nab++; L.push({t:TXT.clean(tb.titre)+', valeurs hors des normes : '+v.join(', ')+'.', gras:true}); }
+  });
+  if(!nab && (b.tabs || []).length) L.push({t:'Valeurs dans les limites des normes.', gras:false});
+  const lg = L.map(x=>avisUnite(x.t, avisClasse('Résultats biologiques', x.t, 0, x.gras), ord++));
+  return lg.length ? {h:'Résultats biologiques', inline:true, lignes:[lg]} : null;
+}
+/* les paragraphes de la synthèse (B : narrativeBlocks) découpés en phrases classées */
+function avisBlocs(B){
+  const bl = []; let ord = 0;
+  B.forEach(b=>{
+    if(b.title) return;
+    if(b.tabs){ const x = avisBio(b, ord); if(x){ bl.push(x); ord += 20; } return; }
+    const lignes = b.lines.map(l=>avisPhrases(l).map((ph, k)=>{
+      const t = TXT.clean(plainTxt(ph)).trim();
+      return t ? avisUnite(t, avisClasse(b.h, t, k, ph.indexOf(BO) >= 0), ord++) : null;
+    }).filter(Boolean)).filter(l=>l.length);
+    if(lignes.length) bl.push({h:b.h, inline:!!b.inline, lignes:lignes});
+  });
+  return bl;
+}
+/* l'en-tête : le type de consultation, la date et l'heure de prise en charge (sans l'examinateur) */
+function avisTitre(B){
+  const t = B.find(b=>b.title);
+  return t ? t.lines.slice(0, 3).map(x=>TXT.fin(x)).filter(Boolean).join(' ') : '';
+}
+function avisAssemble(blocs, titre){
+  const P = [titre];
+  blocs.forEach(b=>{
+    const ls = b.lignes.map(l=>l.map(u=>u.t).filter(Boolean).join(' ')).filter(Boolean);
+    if(ls.length) P.push(b.inline ? b.h+' : '+ls.join('\n') : b.h+' :\n'+ls.join('\n'));
+  });
+  return P.filter(Boolean).join('\n\n');
+}
+/* le texte court : tant qu'il dépasse AVIS_MAX, l'étape de plus faible priorité (la phrase la moins importante : d'abord raccourcie, puis retirée ; à égalité, la plus tardive). Une fois le texte
+   assez court, ce qui a été retiré en trop est remis, des plus importants aux moins importants, tant que le texte tient dans la limite. */
+function avisFit(blocs, titre){
+  const U = []; blocs.forEach(b=>b.lignes.forEach(l=>l.forEach(u=>U.push(u))));
+  U.forEach(u=>{ u.tx = [u.t].concat(u.steps.map(x=>x.t)); });                  // tx[k] : le texte quand k étapes sont faites
+  const poser = (u, k) => { u.k = k; u.t = u.tx[k]; };
+  const cur = () => avisAssemble(blocs, titre);
+  let txt = cur(), garde = 0;
+  while(avisLen(txt) > AVIS_MAX && garde++ < 1000){
+    let best = null;
+    U.forEach(u=>{
+      if(u.k >= u.steps.length) return;
+      const st = u.steps[u.k];
+      if(!best || st.p < best.st.p || (st.p === best.st.p && u.ord > best.u.ord)) best = {u:u, st:st};
+    });
+    if(!best) break;
+    poser(best.u, best.u.k + 1);
+    txt = cur();
+  }
+  if(avisLen(txt) <= AVIS_MAX){
+    let change = true, tours = 0;
+    while(change && tours++ < 30){
+      change = false;
+      const C = U.filter(u=>u.k > 0).sort((a, b)=>(b.steps[b.k-1].p - a.steps[a.k-1].p) || (a.ord - b.ord));
+      for(const u of C){
+        poser(u, u.k - 1);
+        const t2 = cur();
+        if(avisLen(t2) <= AVIS_MAX){ txt = t2; change = true; } else poser(u, u.k + 1);
+      }
+    }
+  }
+  let coupe = false;
+  if(avisLen(txt) > AVIS_MAX){ txt = avisCoupe(txt, AVIS_MAX - (txt.match(/\n/g) || []).length); coupe = true; }            // dernier recours : jamais plus de AVIS_MAX caractères (retours à la ligne comptés pour deux)
+  const omis = {}, abr = {};
+  U.forEach(u=>{
+    if(!u.k) return;
+    if(u.t === '') omis[u.steps[u.k - 1].lab] = 1;
+    else for(let i = 0; i < u.k; i++) abr[u.steps[i].lab] = 1;
+  });
+  const O = Object.keys(omis), A = Object.keys(abr).filter(x=>!omis[x]);
+  if(coupe) A.push('fin du texte');
+  return {txt:txt, n:avisLen(txt), omis:O, abreges:A};
+}
+function avisTexte(B){
+  B = B || narrativeBlocks();
+  const bl = avisBlocs(B);
+  return bl.length ? avisFit(bl, avisTitre(B)) : {txt:'', n:0, omis:[], abreges:[]};          // fiche sans rien d'écrit : pas de texte
+}
+const avisBilan = r => [r.omis.length ? 'retiré pour tenir dans la limite : '+r.omis.join(', ') : '', r.abreges.length ? 'abrégé : '+r.abreges.join(', ') : ''].filter(Boolean).join(' ; ');
+function copyAvis(){
+  if(!REC || ftype() !== 1){ toast('L’avis spécialisé se rédige sur une consultation initiale'); return; }
+  const r = avisTexte();
+  if(!r.txt){ toast('Rien à copier : renseignez la fiche'); return; }
+  const bil = avisBilan(r);
+  copyPlain(r.txt, 'Avis Spécialisé Résurgences copié : '+nbFr(r.n)+' caractères sur '+nbFr(AVIS_MAX)+(bil ? ' ('+bil+')' : ''));
+}
+/* l'aperçu sous la synthèse : le nombre de caractères sur la ligne qui le déplie, le texte, et ce qui a été retiré ou abrégé */
+function renderAvis(B){
+  const box = $('#avisbox'); if(!box) return;
+  if(!REC || ftype() !== 1){ box.hidden = true; return; }
+  box.hidden = false;
+  const r = avisTexte(B), bil = avisBilan(r), sum = $('#avissum'), el = $('#avis');
+  if(sum) sum.innerHTML = '<b>Avis Spécialisé Résurgences</b> : '+nbFr(r.n)+' caractères sur '+nbFr(AVIS_MAX)+' au plus (un retour à la ligne compte pour deux), sans tableau'+(bil ? ' (texte abrégé)' : '');
+  if(el) el.innerHTML = r.txt ? esc(r.txt)+(bil ? '<div class="avnote">'+esc(bil)+'</div>' : '') : '<span style="color:var(--ink2)">Renseignez la fiche : le texte court s’écrit tout seul.</span>';
+}
 
 /* =====================================================================
    IMPRESSION / PDF
@@ -8672,7 +8967,7 @@ function doPrint(){
 /* =====================================================================
    COLONNES DU FICHIER STATISTIQUE + DICTIONNAIRE
    ===================================================================== */
-const SET = {pii:false, sep:';', poste:'', wedge:true, scanRe:'', hash:false, hashLen:12, salt:'', searchSame:true, autoDl:false, dictOk:false, rtf:true, rappel:true};
+const SET = {pii:false, sep:';', poste:'', wedge:true, scanRe:'', hash:false, hashLen:12, salt:'', searchSame:true, autoDl:false, dictOk:false, rtf:true};
 
 function codesOf(f){
   if(f.t==='choice' || f.t==='select')
@@ -9101,7 +9396,7 @@ function sortedDB(){
    l'explique (diagnostic) et propose ce qui fonctionne : « Exporter tout en JSON » (dossier choisi, ou archive
    ZIP), téléchargement du JSON à chaque enregistrement, import d'un dossier ou d'une archive.
    ===================================================================== */
-const APP_VERSION = '9.5.2';
+const APP_VERSION = '10.1.1';
 /* hasPicker teste une fonction de l'API au moment de s'en servir : une extension ou un réglage du navigateur peut la retirer */
 const hasPicker = name => { try{ return typeof window[name] === 'function'; }catch(e){ return false; } };
 let FSA = hasPicker('showDirectoryPicker');
@@ -9190,7 +9485,7 @@ async function persistTomb(){ try{ await metaSet('deleted', TOMB); }catch(e){} }
 /* tous les réglages dans un seul enregistrement : écrire seulement une partie perdrait les autres */
 async function persistSettings(){
   await metaSet('settings',{poste:SET.poste, sep:SET.sep, pii:SET.pii, wedge:SET.wedge, scanRe:SET.scanRe,
-                            hash:SET.hash, hashLen:SET.hashLen, searchSame:SET.searchSame, autoDl:SET.autoDl, dictOk:SET.dictOk, rtf:SET.rtf, rappel:SET.rappel});
+                            hash:SET.hash, hashLen:SET.hashLen, searchSame:SET.searchSame, autoDl:SET.autoDl, dictOk:SET.dictOk, rtf:SET.rtf});
 }
 
 /* ---------- dossiers : choix, mémorisation, autorisation ---------- */
@@ -9688,6 +9983,7 @@ function reportSync(st, nExp, announce){
   if(st.upd) p.push(st.upd+' mise'+(st.upd>1?'s':'')+' à jour');
   if(nExp) p.push(nExp+' fiche'+(nExp>1?'s':'')+' écrite'+(nExp>1?'s':'')+' dans le dossier');
   if(st.bad) p.push(st.bad+' fichier'+(st.bad>1?'s':'')+' illisible'+(st.bad>1?'s':''));
+  if(announce) (st.errors || []).forEach(r=>{ const e = FD[r].state; p.push((r==='search' ? 'dossier de recherche ' : 'dossier d’enregistrement ')+(e==='lost' ? 'introuvable (déplacé, renommé ou disque absent)' : e==='need' ? 'à autoriser de nouveau' : 'illisible')); });
   if(p.length) toast('Dossier de données : '+p.join(', '));
   else if(announce) toast('Dossier relu : rien de nouveau');
 }
@@ -9840,6 +10136,61 @@ async function regrantSave(){ await regrant('save'); if(modalOpen()) openFolders
 async function regrantSearch(){ await regrant('search'); if(modalOpen()) openFolders(); }
 async function setSearchSame(v){ SET.searchSame = !!v; await persistSettings(); updateBar(); openFolders(); }
 async function syncNow(){ await afterConnect({announce:true}); if(modalOpen()) openFolders(); }
+/* ---------- bouton « Actualiser » de la barre du haut ----------
+   Il relit le dossier de données connecté, pour remettre à jour la communication avec lui : l'autorisation de chaque dossier mémorisé est revérifiée (un dossier perdu est retenté), les fiches
+   nouvelles ou modifiées par un autre poste sont lues, celles que le dossier n'a pas lui sont écrites, le fichier de données est remis à jour ; la liste des fiches, la barre d'état et la fiche
+   affichée (si elle n'a pas de modification en cours) suivent. La base locale du navigateur est relue d'abord : une fiche enregistrée depuis un autre onglet apparaît. Un navigateur sans écriture
+   directe dans un dossier (Firefox, Safari, téléphone) relit seulement la liste et le dit. */
+let ACTUALISE = false;
+function actualiserEtat(on){
+  ACTUALISE = !!on;
+  const b = $('#tb_refresh'); if(!b) return;
+  b.classList.toggle('busy', !!on); b.setAttribute('aria-busy', on ? 'true' : 'false');
+}
+async function rechargerBase(){
+  try{ DB = await idbAll(); await renumberAll(); }catch(e){ console.error('base locale :', e); }
+}
+/* l'autorisation de chaque dossier mémorisé est relue : un dossier dont l'autorisation a été retirée est signalé, un dossier perdu est retenté */
+async function requalifierDossiers(){
+  for(const role of ['save','search']){
+    const o = FD[role]; if(!o.h || typeof o.h.queryPermission !== 'function') continue;
+    const pm = await permOf(o.h, roleMode(role));
+    if(pm === 'granted'){ if(o.state === 'need' || o.state === 'lost') o.state = 'ok'; }
+    else if(o.state === 'ok') o.state = 'need';
+  }
+  updateBar();
+}
+async function actualiserDossier(){
+  if(ACTUALISE) return;
+  actualiserEtat(true);
+  try{
+    /* ni écriture directe dans un dossier (Firefox, Safari, téléphone), ni dossier connecté : seule la liste de la base du navigateur est relue */
+    if(!FSA || FD.save.state === 'unsupported'){
+      await rechargerBase(); renderList(); updateBar();
+      toast('Liste des fiches actualisée ('+DB.length+' fiche'+(DB.length>1?'s':'')+'). Ce navigateur n’écrit pas directement dans un dossier : il n’y a pas de dossier connecté à relire (Plus › Dossier de données…)');
+      return;
+    }
+    if(!FD.save.h && !(FD.search.h && !SET.searchSame)){
+      await rechargerBase(); renderList(); updateBar();
+      toast('Aucun dossier de données connecté : choisissez-en un'); openFolders(); return;
+    }
+    /* l'autorisation de chaque dossier est revérifiée AVANT toute lecture longue : celle qui est à redonner se demande dans ce clic (le navigateur n'accepte la demande que dans les secondes qui suivent le geste) */
+    if(!needsGrant('save') && !needsGrant('search')) await requalifierDossiers();
+    if(needsGrant('save') || needsGrant('search')){
+      if(navigator.userActivation && !navigator.userActivation.isActive){
+        await rechargerBase(); renderList();
+        toast('Le dossier de données doit être autorisé pour cette session : cliquez à nouveau sur Actualiser'); return;
+      }
+      await regrantNeeded();
+      await rechargerBase(); renderList();
+      return;
+    }
+    await rechargerBase(); renderList();
+    await afterConnect({announce:true});
+  }catch(e){
+    console.error('actualiser :', e); toast('Actualisation impossible : '+errTxt(e));
+  }finally{ actualiserEtat(false); }
+}
 async function forgetFolder(role){
   FD[role].h = null; FD[role].state = FSA ? 'none' : 'unsupported'; SYNCMAP[role] = {};
   try{ await metaSet(roleKey(role), null); }catch(e){}
@@ -9853,6 +10204,7 @@ const forgetSave = () => forgetFolder('save'), forgetSearch = () => forgetFolder
    ENREGISTREMENT / NAVIGATION
    ===================================================================== */
 async function saveFiche(){
+  if(EDIT_ASK){ toast('Répondez d’abord à la question : modifier cette fiche déjà enregistrée ?'); return; }
   computeAll();
   if(!REC.d.dossier){ toast('Le numero de dossier est obligatoire'); const i=$('#i_dossier'); if(i){i.classList.add('req');i.focus();} return; }
   if(!REC.d.date_ex||!REC.d.heure_ex){ toast("Date et heure de l'examen obligatoires"); return; }
@@ -9957,7 +10309,7 @@ function loadFiche(id, patient){
   const f=DB.find(x=>x.id===id); if(!f) return;
   if(DICT) dictAbort();
   if(patient) filtrerPatient(f.d.dossier);                       // clic sur une pastille : la barre de recherche et la liste du bas suivent ce patient
-  REC=JSON.parse(JSON.stringify(f)); DIRTY=false; PAGE=1; TYPE_CHOISI=true; renderForm(); renderList(); updateBar(); window.scrollTo(0,0);
+  REC=JSON.parse(JSON.stringify(f)); DIRTY=false; EDIT_LOCK=REC.id; PAGE=1; TYPE_CHOISI=true; renderForm(); renderList(); updateBar(); window.scrollTo(0,0);
 }
 async function delFiche(id,ev){
   ev.stopPropagation();
@@ -10100,75 +10452,6 @@ function armMinuit(){
 }
 document.addEventListener('visibilitychange', ()=>{ if(!document.hidden && ENCOURS_JOUR && ENCOURS_JOUR !== iso(new Date())){ renderEnCours(); armMinuit(); } });
 
-/* ---------- rappel de l'import-export des fiches JSON : 11 h 45 et 16 h 00, heure du navigateur ----------
-   Une fois par jour et par heure, tant que la page est ouverte : un bandeau en haut de la page (il reste jusqu'à « Fermer ») et, si le navigateur l'a autorisée, une notification ; l'un et l'autre
-   répètent la consigne de la bulle des boutons d'import-export. Un rappel dû depuis moins de RAPPEL_GRACE minutes s'affiche encore (page ouverte en retard, ordinateur sorti de veille).
-   Une horloge toutes les 20 secondes compare l'heure du navigateur aux deux heures : ni minuterie à longue échéance, ni serveur. Désactivable : case « Rappels » de la fenêtre « Exporter les données ». */
-const RAPPEL_HEURES = ['11:45', '16:00'];
-const RAPPEL_GRACE = 60;
-const RAPPEL_VU = {};
-let RAPPEL_T = null;
-/* ce rappel a-t-il déjà été montré aujourd'hui dans cet onglet ? (mémorisé aussi dans sessionStorage : un rechargement de la page ne le répète pas) */
-function rappelVu(jour, h, set){
-  const k = 'adp.rappel.'+jour+'.'+h;
-  if(set){ RAPPEL_VU[k] = 1; try{ sessionStorage.setItem(k, '1'); }catch(e){} return true; }
-  if(RAPPEL_VU[k]) return true;
-  try{ return sessionStorage.getItem(k) === '1'; }catch(e){ return false; }
-}
-function rappelCheck(now){
-  if(!SET.rappel) return;
-  now = now || new Date();
-  const jour = iso(now), min = now.getHours()*60 + now.getMinutes();
-  RAPPEL_HEURES.forEach(h=>{
-    const t = hm2min(h);
-    if(t != null && min >= t && min < t + RAPPEL_GRACE && !rappelVu(jour, h)){ rappelVu(jour, h, true); rappelMontre(h); }
-  });
-}
-const rappelPerm = () => (typeof window.Notification === 'function') ? window.Notification.permission : 'absent';
-function rappelHTML(h){
-  const perm = rappelPerm();
-  return '<span class="rp-ic">'+ico('bell')+'</span>'+
-    '<div class="rp-tx"><b>'+(h ? 'Rappel de '+esc(TXT.hFr(h)) : 'Rappel')+' : import-export des fiches JSON</b>'+
-      'Exporter l’ensemble des fiches JSON dans le dossier <code>'+esc(IMPEXP_DOSSIER).split('\\').join('\\<wbr>')+'</code></div>'+
-    '<div class="rp-ac"><button class="tb pri" onclick="rappelOuvrir()">Exporter tout en JSON…</button>'+
-      '<button class="tb" onclick="rappelCopier()" title="Copie le chemin du dossier, pour le coller dans la fenêtre d’enregistrement">Copier le dossier</button>'+
-      (perm === 'default' ? '<button class="tb" onclick="rappelNotif()" title="Pour être prévenu même quand ADP est derrière une autre fenêtre">Activer les notifications</button>' : '')+
-      (perm === 'denied' ? '<small>notifications bloquées par le navigateur</small>' : '')+
-      '<button class="tb" onclick="rappelFermer()">Fermer</button></div>';
-}
-let RAPPEL_CUR = null;
-function rappelRender(h){ const el = $('#rappel'); if(el){ el.innerHTML = rappelHTML(h); el.className = 'on'; } }
-function rappelMontre(h){ RAPPEL_CUR = h; rappelRender(h); rappelSys(h); }
-/* la notification du navigateur : elle répète la consigne de la bulle ; un clic dessus ramène ADP au premier plan et ouvre la fenêtre d'export */
-function rappelSys(h){
-  if(rappelPerm() !== 'granted') return false;
-  try{
-    const n = new Notification('ADP — import-export des fiches JSON', {body:(h ? 'Rappel de '+TXT.hFr(h)+' : ' : '')+IMPEXP_PHRASE, tag:'adp-rappel'+(h ? '-'+h : ''), requireInteraction:true});
-    n.onclick = ()=>{ try{ window.focus(); }catch(e){} rappelOuvrir(); try{ n.close(); }catch(e){} };
-    return true;
-  }catch(e){ return false; }
-}
-function rappelFermer(){ const el = $('#rappel'); if(el){ el.innerHTML = ''; el.className = ''; } }
-function rappelOuvrir(){ rappelFermer(); openExportJSON(); }
-function rappelCopier(){ copyPlain(IMPEXP_DOSSIER, 'Dossier copié : collez-le dans la fenêtre d’enregistrement'); }
-/* l'autorisation des notifications se demande sur un clic (le navigateur l'exige) */
-async function rappelNotif(){
-  if(rappelPerm() === 'absent'){ toast('Ce navigateur n’offre pas les notifications : le rappel s’affiche seulement dans la page'); return; }
-  let r = Notification.permission;
-  try{ if(r === 'default') r = await Promise.resolve(Notification.requestPermission()); }catch(e){}
-  toast(r === 'granted' ? 'Notifications du navigateur activées' : r === 'denied' ? 'Notifications bloquées : à autoriser dans les réglages du site du navigateur' : 'Notifications non autorisées');
-  const el = $('#rappel'); if(el && el.className === 'on'){ rappelRender(RAPPEL_CUR); if(r === 'granted') rappelSys(RAPPEL_CUR); }
-}
-/* essai : le rappel s'affiche tout de suite (et la notification, si elle est autorisée) */
-function rappelVoir(){ closeModal(); rappelMontre(null); }
-function armRappels(){
-  clearInterval(RAPPEL_T);
-  RAPPEL_T = setInterval(()=>rappelCheck(), 20000);
-  rappelCheck();
-}
-document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) rappelCheck(); });
-window.addEventListener('focus', ()=>rappelCheck());
-
 /* ---------- bandeau patient ---------- */
 let PATBAR_HTML = null;
 /* Âge entre une date de naissance et une date (AAAA-MM-JJ, aujourd'hui par défaut) : {a: années révolues, m: mois révolus en plus} ; null si une date est
@@ -10277,9 +10560,12 @@ function updateBar(){
 /* =====================================================================
    MODALES, EXPORT, IMPORT / FUSION
    ===================================================================== */
-function modalHTML(h){ $('#modal').innerHTML=h+'<div style="margin-top:14px;text-align:right">'+
+function modalHTML(h){ if(EDIT_ASK) return;                 // la question « modifier cette fiche déjà enregistrée ? » attend sa réponse
+  $('#modal').innerHTML=h+'<div style="margin-top:14px;text-align:right">'+
   '<button class="tb" onclick="closeModal()">Fermer</button></div>'; $('#mask').classList.add('on'); }
-function closeModal(){ $('#mask').classList.remove('on'); }
+/* user : fermeture voulue par l'utilisateur (Échap, clic à côté) ; pendant la question, une fermeture demandée par le code est ignorée, et celle de l'utilisateur répond « non », sauf pendant les 0,6 seconde qui suivent l'affichage
+   (un double clic sur une réponse, une touche tapée en cours de saisie, ne doivent pas répondre à la place de l'utilisateur) */
+function closeModal(user){ if(EDIT_ASK){ if(user === true && Date.now() - EDIT_T0 >= 600) editReponse(false); return; } $('#mask').classList.remove('on'); }
 let toastT=null;
 function toast(m){ const t=$('#toast'); t.textContent=m; t.classList.add('on');
   clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('on'),Math.max(2600,Math.min(9000,String(m).length*60))); }
@@ -10332,10 +10618,9 @@ function dl(name,txt,type){
 const today = () => iso(new Date());
 
 async function saveSettings(){
-  const p=$('#setPoste'), sp=$('#setSep'), pi=$('#setPii'), rt=$('#setRtf'), rp=$('#setRappel');
+  const p=$('#setPoste'), sp=$('#setSep'), pi=$('#setPii'), rt=$('#setRtf');
   if(!p||!sp||!pi) return;
-  SET.poste = p.value.trim(); SET.sep = sp.value; SET.pii = pi.checked; if(rt) SET.rtf = rt.checked; if(rp) SET.rappel = rp.checked;
-  if(!SET.rappel) rappelFermer(); else rappelCheck();
+  SET.poste = p.value.trim(); SET.sep = sp.value; SET.pii = pi.checked; if(rt) SET.rtf = rt.checked;
   await persistSettings();
   await writeDataFiles(true);
   toast('Reglages enregistres');
@@ -10355,12 +10640,6 @@ function openExport(){
    '<label>Copie du texte</label><label style="font-weight:400"><input type="checkbox" id="setRtf"'+(SET.rtf!==false?' checked':'')+
      '> ajouter le format RTF quand on copie la synthèse ou le CRH (Firefox) : le gras et le souligné se collent alors dans un éditeur de dossier qui ne lit que le RTF. '+
      'À décocher si le collage montre du code ou des signes étranges.</label>'+
-   '<label>Rappels</label><label style="font-weight:400"><input type="checkbox" id="setRappel"'+(SET.rappel!==false?' checked':'')+
-     '> rappeler l’import-export des fiches JSON à '+RAPPEL_HEURES.map(h=>TXT.hFr(h)).join(' et à ')+' (heure du navigateur) : un bandeau s’affiche en haut de la page et, si le navigateur l’autorise, une notification '+
-     'répète la consigne de la bulle des boutons d’import-export.</label>'+
-   '<span></span><span style="display:flex;gap:8px;flex-wrap:wrap">'+
-     '<button class="tb" onclick="rappelNotif()" title="Le navigateur demande l’autorisation une seule fois">Activer les notifications du navigateur</button>'+
-     '<button class="tb" onclick="rappelVoir()" title="Affiche le rappel tout de suite, pour l’essayer">Voir le rappel</button></span>'+
   '</div>'+
   '<div class="note"><b>Donnees de sante.</b> Par defaut le fichier statistique ne contient ni nom, ni prenom, ni date de naissance, ni coordonnees : '+
    'seuls le numero de dossier que vous saisissez, le sexe et l\'age calcule y figurent. L\'identite complete reste sur le PDF, dans la sauvegarde JSON et dans les fichiers JSON du dossier de donnees. '+
@@ -11975,6 +12254,7 @@ function openHelp(){
   'Sur Chrome ou Edge, il y écrit la fiche au format JSON à chaque enregistrement, puis réécrit <code>donnees_neuro.csv</code> '+
   'et son dictionnaire (toutes les fiches de tous les patients, une ligne par fiche). À chaque ouverture, il relit ce dossier pour '+
   'la recherche par nom, prénom ou numéro. Le dossier n’est jamais redemandé : au plus un clic pour l’autoriser à nouveau. '+
+  'Le bouton <b>Actualiser</b> de la barre du haut (deux flèches en cercle, à droite des icônes) le relit à tout moment : fiches ajoutées ou modifiées depuis un autre poste, autorisation du dossier, liste des fiches. '+
   'Sur un navigateur sans écriture directe (Firefox, Safari, téléphone, tablette), le bouton en explique la raison et propose ce qui '+
   'reste possible : télécharger le JSON de chaque fiche à l’enregistrement, exporter une archive ZIP, importer un dossier.</p>'+
   '<p><b>1 bis. Exporter tout en JSON.</b><br>'+
@@ -11992,7 +12272,9 @@ function openHelp(){
   'Le <b>nom</b> s’écrit en majuscules, le <b>prénom</b> avec l’initiale en majuscule (accents conservés), l’<b>examinateur</b>, le <b>médecin</b> et l’<b>infirmier(e)</b> en majuscules, tout seuls. '+
   'Le délai accident → examen n’est calculé que sur la consultation initiale. '+
   'Sur une fiche de suivi ou de sortie, le poids de la fiche initiale, le diagnostic retenu, la prednisolone encore à prescrire et les séances depuis '+
-  'la dernière consultation sont repris ou proposés d’après les fiches précédentes : tout reste modifiable.</p>'+
+  'la dernière consultation sont repris ou proposés d’après les fiches précédentes : tout reste modifiable. '+
+  'Une fiche <b>déjà enregistrée</b>, ouverte depuis la liste, demande confirmation à sa première modification, quel que soit l’encart (« Cette fiche est déjà enregistrée. Êtes-vous sûr de vouloir la modifier ? ») : '+
+  '« Oui » garde la modification et laisse la fiche modifiable jusqu’à l’ouverture d’une autre fiche ; « Non » (ou Échap) l’annule et rend la fiche telle qu’elle est enregistrée.</p>'+
   '<p><b>2 ter. Six onglets et un bandeau.</b><br>'+
   'La fiche se remplit en six onglets : <b>Administratif</b>, <b>Anamnèse et plongée</b>, <b>Examen clinique général</b>, '+
   '<b>Examen neurologique</b>, <b>Examens complémentaires</b>, <b>Conclusion et évolution</b>. Le bandeau bleu sous la barre du haut rappelle en permanence le nom, '+
@@ -12002,7 +12284,10 @@ function openHelp(){
   'téléphone, e-mail), après le mode d’entrée. Sur une fiche de suivi ou de sortie, l’onglet « Anamnèse et plongée » disparaît : la plongée reste sur la fiche initiale.</p>'+
   '<p><b>2 quater. Synthèse rédigée et compte rendu d’hospitalisation.</b><br>'+
   'La synthèse, sous la fiche, se copie en texte enrichi : titres soulignés, anomalies en <b>gras</b>, examen dit en syndromes '+
-  '(« absence de déficit moteur », « syndrome pyramidal »…). Sur une <b>consultation de sortie</b>, l’encart « Compte rendu '+
+  '(« absence de déficit moteur », « syndrome pyramidal »…) ; le <b>syndrome vestibulaire</b> (avec les signes cochléaires) est dit avec l’<b>examen général</b>, à la suite de l’ORL, et non avec l’examen neurologique, dans la synthèse comme dans le compte rendu. '+
+  'Le bouton <b>copier le texte intégral</b> copie cette synthèse complète. Sur une <b>consultation initiale</b>, le bouton <b>copier Avis Spécialisé Résurgences</b> copie un <b>texte court</b> de '+nbFr(AVIS_MAX)+' caractères au plus (un retour à la ligne compte pour deux, comme dans un champ de Windows), '+
+  'sans tableau (la biologie y devient une phrase : les valeurs hors des normes), en texte brut : mêmes phrases que la synthèse, les moins importantes étant raccourcies puis retirées quand le texte est trop long ; '+
+  'la copie dit ce qui a été retiré, et un aperçu avec le nombre de caractères se déplie sous la synthèse. Sur une <b>consultation de sortie</b>, l’encart « Compte rendu '+
   'd’hospitalisation » (fin de l’onglet « Conclusion et évolution ») écrit, sans en-tête, un compte rendu à partir de toutes les fiches '+
   'du dossier : examens paracliniques réunis, évolution horodatée, évolution des scores, diagnostic retenu, examens à réaliser secondairement (proposés d’après le diagnostic), inaptitude à la plongée.</p>'+
   '<p><b>2 quinquies. Dictée vocale.</b><br>'+
@@ -12021,7 +12306,8 @@ function openHelp(){
   '<p><b>2 octies. Barre du haut, séance de recompression, bandeau.</b><br>'+
   'Chaque bouton de la barre du haut porte une icône et ouvre une bulle d’aide dès que la souris le pointe : <b>nouvelle fiche</b>, <b>ré-examen du patient</b>, '+
   '<b>séance de recompression</b>, <b>enregistrer</b>, <b>enregistrer en PDF</b>, <b>tout transférer en archive ZIP</b>, <b>importer</b>, puis la <b>ligne Excel ADP</b>, la '+
-  '<b>ligne Excel COHB</b> et les <b>documents de sortie</b>. Tous les autres boutons (dossier de données, exports, douchette, dictionnaire, aides, installation, mode d’emploi) sont sous <b>Plus</b>. '+
+  '<b>ligne Excel COHB</b> et les <b>documents de sortie</b>, puis <b>Actualiser</b> (deux flèches en cercle) qui relit le dossier de données connecté pour remettre à jour la communication avec lui. '+
+  'Tous les autres boutons (dossier de données, exports, douchette, dictionnaire, aides, installation, mode d’emploi) sont sous <b>Plus</b>. '+
   'La <b>séance de recompression</b> cote une séance sans examen clinique, en quelques clics : ouvrez une fiche du patient (sans fiche ouverte, la recherche du patient s’ouvre), cliquez le bouton, vérifiez la table (celle de la dernière séance est reprise) '+
   'et l’heure de mise en pression (proposée : maintenant), puis enregistrez. La fiche porte le numéro du dernier examen suivi d’une lettre minuscule (EX3b, EX3c…), y compris dans le nom du fichier JSON. '+
   'Le bandeau du patient est <b>rose</b> pour une femme, <b>bleu</b> pour un homme, <b>vert</b> pour un enfant ; l’âge d’un mineur s’écrit en années et mois.</p>'+
@@ -12083,10 +12369,6 @@ function openHelp(){
   'Ouvrez <code>donnees_neuro.csv</code> dans Excel, R, Python, SPSS ou Jamovi. '+
   '<code>dictionnaire_variables.csv</code> donne le codage de chaque colonne. '+
   'Cellule vide = valeur manquante (NA).</p>'+
-  '<p><b>7. Rappel de l’import-export des fiches JSON.</b><br>'+
-  'À '+RAPPEL_HEURES.map(h=>TXT.hFr(h)).join(' et à ')+' (heure du navigateur), tant qu’ADP est ouvert, un bandeau s’affiche en haut de la page, et une notification du navigateur si elle est autorisée : '+
-  esc(IMPEXP_PHRASE)+'. La même consigne est dans la bulle des boutons <b>Tout transférer (ZIP)</b> et <b>Importer</b> de la barre du haut. Le bouton <b>Exporter tout en JSON…</b> du bandeau ouvre la fenêtre d’export ; '+
-  '<b>Plus › Exporter les données…</b> règle les rappels (case « Rappels », autorisation des notifications, essai).</p>'+
   '<div class="note"><b>Sauvegardez.</b> Les fiches vivent dans la base locale du navigateur en plus du dossier de données. '+
   'Vider les données de navigation efface cette base, mais le dossier de données la reconstitue à la prochaine ouverture. '+
   'Ce dossier et les sauvegardes JSON sont votre filet de sécurité : copiez-les régulièrement ailleurs.</div>');
@@ -12237,7 +12519,7 @@ function openInstall(){
 /* =====================================================================
    INITIALISATION
    ===================================================================== */
-async function saveDraft(){ if(DIRTY && REC) await metaSet('draft',JSON.parse(JSON.stringify(REC))); }
+async function saveDraft(){ if(DIRTY && REC && !EDIT_ASK) await metaSet('draft',JSON.parse(JSON.stringify(REC))); }      // pas de brouillon tant que la question « modifier cette fiche déjà enregistrée ? » attend sa réponse
 
 (async function init(){
   buildTopbar();
@@ -12247,7 +12529,7 @@ async function saveDraft(){ if(DIRTY && REC) await metaSet('draft',JSON.parse(JS
   const s = await metaGet('settings');
   if(s){ SET.poste=s.poste||''; SET.sep=s.sep||';'; SET.pii=!!s.pii;
          SET.wedge = s.wedge!==false; SET.scanRe=s.scanRe||''; SET.hash=!!s.hash; SET.hashLen=s.hashLen||12;
-         SET.searchSame = s.searchSame!==false; SET.autoDl = !!s.autoDl; SET.dictOk = !!s.dictOk; SET.rtf = s.rtf!==false; SET.rappel = s.rappel!==false; }
+         SET.searchSame = s.searchSame!==false; SET.autoDl = !!s.autoDl; SET.dictOk = !!s.dictOk; SET.rtf = s.rtf!==false; }
   SET.salt = (await metaGet('salt')) || '';
   TOMB = (await metaGet('deleted')) || {};
   SYNCMAP = Object.assign({save:{}, search:{}}, (await metaGet('syncmap')) || {});
@@ -12257,7 +12539,7 @@ async function saveDraft(){ if(DIRTY && REC) await metaSet('draft',JSON.parse(JS
   const draft = await metaGet('draft');
   if(!wantNew && draft && draft.d && Object.keys(draft.d).length>2){ REC=draft; DIRTY=true; }
   else REC=blank();
-  renderForm(); renderList(); updateBar(); watchHdr(); armMinuit(); armRappels();
+  renderForm(); renderList(); updateBar(); watchHdr(); armMinuit();
   initPWA();
   setInterval(saveDraft,4000);
   startupSync().catch(e=>console.error('dossier de données :', e));      // sans attendre : le dossier est relu pendant que la fiche s'affiche
@@ -12268,7 +12550,7 @@ window.addEventListener('afterprint', titreApp);
 window.addEventListener('beforeunload',e=>{ if(DIRTY){ e.preventDefault(); e.returnValue=''; } });
 document.addEventListener('keydown',e=>{
   if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='s'){ e.preventDefault(); saveFiche(); }
-  if(e.key==='Escape'){ closeModal(); closePlus(); tipHide(); }
+  if(e.key==='Escape'){ closeModal(true); closePlus(); tipHide(); }
 });
 
 /* =====================================================================

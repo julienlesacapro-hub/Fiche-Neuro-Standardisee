@@ -1,4 +1,4 @@
-# ADP — accident de plongée, version 9.5.1
+# ADP — accident de plongée, version 10.1.1
 
 Fichier unique : `index.html`. Aucun réseau, aucune dépendance externe, aucun compte.
 Double-cliquez dessus, il s'ouvre dans votre navigateur et tout fonctionne.
@@ -87,21 +87,35 @@ toute seule et dit ce qu'il fait ; elle se referme quand on le quitte.
 | masque de plongée | **Ligne Excel ADP** | compose la ligne du fichier Excel maître (accident de plongée) d'après le dossier ouvert |
 | courbe d'activité | **Ligne Excel COHB** | compose la ligne de la feuille « Activité COHB » |
 | page d'ordonnance (« Rx ») | **Documents de sortie** | ouvre le générateur de courriers, d'ordonnances et de certificats, rempli d'après la fiche |
+| flèche circulaire | **Actualiser** | relit le dossier de données connecté, pour remettre à jour la communication avec lui ; l'icône tourne pendant la relecture (voir *Le bouton Actualiser*, ci-dessous) |
 | « … Plus » | **Plus** | tous les autres boutons (ci-dessous) |
 
-Les trois derniers boutons (**lignes Excel ADP et COHB**, **documents de sortie**) sont **disponibles quel que soit le type de consultation**, même sur une fiche
+Les trois boutons **lignes Excel ADP et COHB** et **documents de sortie** sont **disponibles quel que soit le type de consultation**, même sur une fiche
 incomplète, même sans numéro de dossier (la fiche ouverte forme alors, à elle seule, le « dossier »). Ils ne figurent plus dans l'en-tête du compte rendu
 d'hospitalisation, qui garde « copier le CRH » ; la fenêtre *Exporter les données* garde ses deux boutons de lignes Excel, et l'encart « Sortie » son bouton de
 documents (avec le lien « Fichier du générateur… »).
 
 **Plus** ouvre un menu : **Dossier de données…**, **Exporter les données…** (CSV, dictionnaire, sauvegarde JSON, réglages), **Exporter tout en JSON…** (dossier au choix ou
 archive ZIP), **Douchette et pseudonymisation…**, **Dictionnaire des variables**, **Aides à l'examen**, **Installation hors ligne**, **Mode d'emploi**. Sur une tablette il
-propose aussi les **fiches enregistrées** (les patients en cours, puis la liste) ; sur un téléphone, la barre ne garde que *nouvelle fiche*, *enregistrer*, *PDF* et *Plus*, et le menu reprend tout le reste. Un bouton
+propose aussi les **fiches enregistrées** (les patients en cours, puis la liste) ; sur un téléphone, la barre ne garde que *nouvelle fiche*, *enregistrer*, *PDF*, *Actualiser* et *Plus*, et le menu reprend tout le reste. Un bouton
 **Installer** (ou **Mise à jour**) apparaît à côté de *Plus* quand l'installation, ou une nouvelle version, est possible.
 
 **Import-export des fiches JSON : la bulle de la manipulation du service.** Depuis la 9.5.1, la bulle des boutons **Tout transférer en ZIP** et **Importer** (et celle des entrées du menu Plus *Exporter tout en JSON…*,
 *Importer / fusionner* et *Tout transférer en archive ZIP*) garde la description du bouton et y ajoute : « Import-export des fiches JSON : exporter l'ensemble des fiches JSON dans le dossier « T:\Services\Smhep\Commun\Personnels SMHEP\MEDECIN CAISSON F\ADP- Export JSON ». »
-La fenêtre *Exporter tout en JSON* dit la même chose en tête. Le même texte est répété par le rappel de 11 h 45 et de 16 h 00 (voir *Rappel de l'import-export des fiches JSON*).
+La fenêtre *Exporter tout en JSON* dit la même chose en tête. (Le rappel de 11 h 45 et de 16 h 00 que la 9.5.1 ajoutait, et qui répétait ce texte, a été **retiré** en 10.1.1.)
+
+### Le bouton Actualiser
+
+Le bouton **Actualiser** (flèche circulaire), placé **à droite des petites icônes** de la barre du haut, juste avant *Plus*, **relit le dossier de données connecté** pour remettre à jour la communication avec lui. Il reste visible sur téléphone.
+
+- **La base du navigateur est relue d'abord** : une fiche enregistrée depuis un autre onglet apparaît dans la liste, et le compteur de fiches est remis à jour.
+- **Le dossier de données est relu ensuite** (voir *Mise en place, une seule fois*) : les fiches ajoutées ou modifiées par un autre poste sont lues, celles que le dossier n'a pas encore lui sont écrites, le fichier de données et le dictionnaire sont remis à jour ;
+  le dossier de recherche, s'il est distinct, est relu aussi. Le message dit ce qui a changé (« Dossier de données : 1 fiche ajoutée, 1 mise à jour ») ou « Dossier relu : rien de nouveau ».
+- **L'autorisation est revérifiée.** Un dossier « à autoriser » (nouvelle session du navigateur) ou dont le navigateur a retiré l'accès est autorisé de nouveau **dans ce même clic** (le navigateur n'accepte la demande que sur un geste de l'utilisateur : il affiche sa propre
+  fenêtre d'autorisation) ; un dossier « introuvable » est retenté ; un dossier réellement disparu (déplacé, renommé, disque absent) est signalé par un message et par le bandeau habituel.
+- **La fiche affichée** est remplacée par la version plus récente du dossier **si vous ne l'avez pas modifiée** ; une fiche en cours de modification n'est **jamais écrasée** (votre saisie est gardée, la version du dossier est dans la base).
+- **Pendant la relecture**, l'icône tourne et le bouton attend : un second clic ne relance rien.
+- **Sans dossier connecté**, le message le dit et la fenêtre *Dossier de données* s'ouvre pour en choisir un. Sur **Firefox, Safari et les navigateurs de téléphone et de tablette**, qui n'écrivent pas dans un dossier, le bouton relit seulement la liste des fiches de la base du navigateur, et le dit.
 
 Les icônes sont dessinées dans le fichier lui-même : ni image, ni réseau.
 
@@ -193,7 +207,7 @@ aussi.
 
 ### Les autres actions de la fenêtre « Dossier de données »
 
-- **Relire le dossier maintenant** : relit sans attendre la prochaine ouverture.
+- **Relire le dossier maintenant** : relit sans attendre la prochaine ouverture. Le bouton **Actualiser** de la barre du haut fait la même relecture sans ouvrir cette fenêtre, et revérifie l'autorisation du dossier (voir *Le bouton Actualiser*).
 - **Réécrire tout le dossier** : relit, puis réécrit **toutes** les fiches, le CSV et le dictionnaire.
 - **Ne plus l'utiliser** : oublie le dossier mémorisé, sans rien effacer sur le disque.
 
@@ -266,28 +280,6 @@ l'identifiant de fiche : une fiche n'est remplacée que par une version plus ré
 
 **Données de santé.** Chaque fichier contient l'identité du patient et ses pièces jointes, sans protection :
 gardez-les sur un support chiffré ou à accès restreint, et supprimez-les de Téléchargements une fois copiés.
-
----
-
-## Rappel de l'import-export des fiches JSON (11 h 45 et 16 h 00)
-
-Depuis la 9.5.1, ADP rappelle deux fois par jour la manipulation du service : **exporter l'ensemble des fiches JSON dans le dossier** `T:\Services\Smhep\Commun\Personnels SMHEP\MEDECIN CAISSON F\ADP- Export JSON` (menu Plus › *Exporter tout en JSON…*, ou le bouton
-*Tout transférer en ZIP* de la barre du haut).
-
-- **Quand.** À **11 h 45** et à **16 h 00**, **heure du navigateur** (celle de l'ordinateur), tous les jours, **tant que la page d'ADP est ouverte** : un onglet masqué compte, ADP fermé non (rien ne peut alors s'afficher).
-  Chaque rappel vient **une seule fois par jour** ; un rechargement de la page ne le répète pas. Si ADP est ouvert après l'heure (ou si l'ordinateur sort de veille), le rappel s'affiche encore **pendant une heure** : ouvert à
-  12 h 10, ADP montre le rappel de 11 h 45 ; ouvert à 12 h 45 ou plus tard, rien jusqu'à 16 h 00.
-- **Un bandeau** jaune en haut de la page, sous le bandeau patient (il reste en haut quand on fait défiler la fiche, et jusqu'à *Fermer*) : « Rappel de 11 h 45 : import-export des fiches JSON — Exporter l'ensemble des fiches
-  JSON dans le dossier … ». Boutons : **Exporter tout en JSON…** (ouvre la fenêtre d'export), **Copier le dossier** (le chemin dans le presse-papiers, à coller dans la fenêtre d'enregistrement du navigateur), **Activer les
-  notifications** (tant qu'elles ne sont pas autorisées), **Fermer**. Le bandeau n'est pas imprimé et passe derrière une fenêtre ouverte (il se voit à sa fermeture).
-- **Une notification du navigateur**, si elle est autorisée, qui répète la consigne (« ADP — import-export des fiches JSON : Rappel de 11 h 45 : Exporter l'ensemble des fiches JSON dans le dossier … ») : elle prévient même quand
-  ADP est derrière une autre fenêtre, reste affichée jusqu'à un clic (selon le navigateur) et, au clic, ramène ADP et ouvre la fenêtre d'export. L'autorisation se demande **une seule fois, sur un clic** : bouton *Activer les
-  notifications* du bandeau, ou de la fenêtre *Exporter les données…*. Sans autorisation, ou si le navigateur n'a pas de notifications (ou les bloque), seul le bandeau s'affiche.
-- **Réglage.** Fenêtre **Exporter les données…** (menu Plus) : case **Rappels** (cochée au départ ; *Enregistrer ces réglages* la retient dans le navigateur), boutons *Activer les notifications du navigateur* et *Voir le
-  rappel* (essai immédiat, notification comprise).
-- **Ce que le rappel ne fait pas.** Il ne vérifie pas que l'export a été fait, n'exporte rien lui-même (ADP ne peut pas écrire dans `T:` de son propre chef : le navigateur ouvre sa fenêtre de choix du dossier, ou d'enregistrement de
-  l'archive ZIP, et c'est vous qui y allez chercher le dossier) et ne tient compte ni des week-ends ni des jours fériés. Les heures (`RAPPEL_HEURES`), le délai d'une heure (`RAPPEL_GRACE`) et le chemin (`IMPEXP_DOSSIER`) sont des
-  constantes du fichier `index.html`.
 
 ---
 
@@ -846,6 +838,11 @@ tableau « Biologie » : elles figurent déjà dans celui du gaz du sang. Sur le
 Un relevé par ligne, horodaté, comme sur la fiche papier. **+ Ajouter un relevé** crée une ligne
 à l'heure courante, la croix la retire. Vingt-quatre relevés au maximum.
 
+**L'heure d'un relevé se tape comme les autres heures de la fiche** (depuis la 9.5.2). Tapez **HHMM** (« 1145 ») : les deux points se posent tout seuls (« 11:45 ») et l'heure enregistrée est toujours au format
+HH:MM. Une heure **impossible** (« 2400 », « 1160 ») ou **incomplète** (« 11 ») reste en **rouge** et n'est pas enregistrée : l'heure précédente du relevé est conservée, et la sortie de la case le dit (« Heure
+impossible : attendu HH:MM »). La touche **+** ou la **barre d'espace** y écrit l'heure du moment. Un nouveau relevé porte déjà l'heure du moment : pour la changer, sélectionnez-la (**Ctrl + A** dans la case) puis tapez
+la nouvelle.
+
 Le PDF imprime le tableau complet. Le fichier de données porte une ligne par fiche : il reçoit la
 **première et la dernière valeur**, le **minimum** et le **maximum** de chaque paramètre, la durée
 de surveillance et le nombre de mictions notées. Le détail relevé par relevé reste dans la fiche
@@ -933,10 +930,11 @@ observation d'entrée, en **paragraphes distincts dont le titre est en gras et s
 *La plongée*, *Histoire des symptômes*, *Prise en charge initiale*, *Antécédents et terrain*, *Constantes*,
 *À l'examen général, on retrouve*, *À l'examen neurologique, on retrouve*, *Au total*, *Examens paracliniques*,
 *Diagnostic retenu*, *Conduite à tenir*. Chaque phrase vient d'un champ renseigné ; une négation (« absence
-de… ») n'est écrite que si l'item a été examiné. Le bouton **Copier** met le texte dans le presse-papiers **en
+de… ») n'est écrite que si l'item a été examiné. Le bouton **copier le texte intégral** (dans l'en-tête de la synthèse ; il s'appelait « copier le texte » avant la 10.1.1) met le texte dans le presse-papiers **en
 texte enrichi** (titres soulignés et anomalies en gras, pour un traitement de texte ou un dossier patient) et en
 texte brut pour un champ simple, où il n'y a ni gras ni souligné ; sur Firefox, aussi en **RTF**, que lisent les éditeurs de
 dossier patient qui ignorent le HTML (voir *Copier vers un traitement de texte ou le dossier patient*).
+Sur une **consultation initiale**, un second petit bouton, **copier Avis Spécialisé Résurgences**, copie un **texte court** de 3 800 caractères au plus, sans tableau, pour une demande d'avis (voir *Le texte court « Avis Spécialisé Résurgences »*).
 
 ### Ce qui est anormal est en gras
 
@@ -957,7 +955,7 @@ normal ni anormal.
 | Domaine | Examiné et normal | Anormal |
 |---|---|---|
 | Conscience, signes cérébraux | « absence de signe cérébral », « GCS 15 » | « des signes cérébraux : » conscience altérée, troubles du comportement, désorientation, parole, vue, paralysie faciale, pupilles ; un Glasgow inférieur à 15 |
-| Vestibulo-cochléaire | « absence de syndrome vestibulaire », « absence de signe cochléaire » | « un syndrome vestibulaire : » vertiges, nystagmus (côté, regard, sens), VNS, NIV, Romberg, Fukuda, marche en étoile, marche funambule. Avec une atteinte de l'audition ou des acouphènes : « syndrome vestibulo-cochléaire » ; sans atteinte vestibulaire : « signes cochléaires » |
+| Vestibulo-cochléaire (dit avec l'**examen général**, voir ci-dessous) | « absence de syndrome vestibulaire », « absence de signe cochléaire » | « un syndrome vestibulaire : » vertiges, nystagmus (côté, regard, sens), VNS, NIV, Romberg, Fukuda, marche en étoile, marche funambule. Avec une atteinte de l'audition ou des acouphènes : « syndrome vestibulo-cochléaire » ; sans atteinte vestibulaire : « signes cochléaires » |
 | Motricité | « absence de déficit moteur » | « un déficit moteur de type » paraparésie, tétraparésie, hémiparésie droite ou gauche, monoparésie d'un membre, « des deux membres supérieurs », ou « multifocal » ; **plégie** quand tous les myotomes atteints sont cotés 0 ; puis le détail myotome par myotome |
 | Sensibilités | « absence de déficit sensitif aux trois modes (tact léger, piqûre et pallesthésie) » | « un déficit sensitif aux trois modes » ; **dissocié** quand un mode au moins est conservé (« modes épargnés : pallesthésie ») ; l'étendue en intervalles de métamères, avec le côté ; les signes subjectifs à part |
 | Réflexes | « absence de syndrome pyramidal » | « un syndrome pyramidal droit, gauche ou bilatéral : » ROT vifs ou polycinétiques, signe de Hoffmann, trépidation épileptoïde, cutané plantaire en extension. L'abolition des ROT reste une « anomalie des réflexes » distincte |
@@ -965,6 +963,12 @@ normal ni anormal.
 | Miction, sphincter anal | « absence de trouble vésico-sphinctérien » | « des troubles vésico-sphinctériens : » pas de miction, rétention, résidu post-mictionnel de plus de 100 mL, contraction anale volontaire absente, pression anale profonde non perçue |
 | Score ASIA | | « une atteinte médullaire : niveau neurologique…, AIS… » quand l'AIS va de A à D |
 | Examen général | « examen cardio-vasculaire, respiratoire… sans anomalie », « examen ORL normal », « pas de lésion cutanée », « pas de céphalée ni de douleur rachidienne » | « une anomalie respiratoire (…) », « des anomalies ORL », « des lésions cutanées de désaturation », « une symptomatologie douloureuse » |
+
+**Le syndrome vestibulaire est dit avec l'examen général** (depuis la 10.1.1). Les signes vestibulaires (vertiges, nystagmus, épreuves de Romberg, de Fukuda, marche en étoile ou funambule) et les **signes cochléaires** (audition, acouphènes) s'écrivent dans le
+paragraphe « À l'examen général, on retrouve », **à la suite de l'ORL** : l'ordre est celui de l'onglet « Examen clinique général » (général, ORL, vestibulaire, lésions cutanées, douleur), et plus dans « À l'examen neurologique, on retrouve ». C'est le cas dans la **synthèse** (copiée et imprimée en page 6 du PDF),
+dans le **compte rendu d'hospitalisation** (examen d'admission, examen de sortie, évolution) et dans le texte court « Avis Spécialisé Résurgences ». Les **pages de saisie du PDF** ne changent pas : les épreuves vestibulaires y gardent leur place
+dans l'encart « Coordination et examen vestibulaire » de la page de l'examen neurologique. Les négations (« absence de syndrome vestibulaire », « absence de signe cochléaire ») ne s'écrivent toujours
+que si l'examen a été fait. La conclusion **« Au total »** continue de citer le syndrome vestibulaire parmi les syndromes du tableau clinique.
 
 Ces règles sont une **proposition à valider** : elles s'écrivent dans les fonctions `examFindings` (les constats)
 et `syndromes` (leur traduction), en fin de script de `index.html`.
@@ -994,9 +998,27 @@ et `syndromes` (leur traduction), en fin de script de `index.html`.
 
 Chacun de ces choix est une ligne de la fonction `narrativeBlocks`, en fin de script.
 
+### Le texte court « Avis Spécialisé Résurgences »
+
+Sur une **consultation initiale**, l'en-tête de la synthèse porte deux petits boutons : **copier Avis Spécialisé Résurgences** et **copier le texte intégral**. Le second copie la synthèse complète, tableaux de biologie compris, en texte enrichi, comme avant. Le premier copie un
+**texte court**, pour une demande d'avis spécialisé :
+
+- **3 800 caractères au plus** (espaces comprises), **sans tableau**, en **texte brut** (ni gras ni souligné : il se colle dans n'importe quel champ). **Un retour à la ligne compte pour deux caractères** (CR + LF, comme dans un champ de Windows qui reçoit le texte collé) :
+  le texte tient donc dans la limite avec n'importe quel compteur, au prix d'une trentaine de caractères. Le nombre de caractères ainsi compté est donné à la copie (« Avis Spécialisé Résurgences copié : 3 770 caractères sur 3 800 ») et sur la ligne de l'aperçu.
+- **Il est fait des mêmes phrases que la synthèse** : le même texte rédigé, les mêmes paragraphes dans le même ordre (type de consultation, date et heure de prise en charge ; *Le plongeur*, *La plongée*, *Histoire des symptômes*, *Prise en charge initiale*, *Antécédents et terrain*, *Constantes*,
+  *À l'examen général*, *À l'examen neurologique*, *Au total*, *Examens paracliniques*, *Diagnostic retenu*, *Conduite à tenir*), **sans l'identité du patient ni l'examinateur**. Une fiche qui tient en 3 800 caractères est copiée **en entier**, avec le même contenu que la synthèse.
+- **La biologie devient une phrase** par tableau : les valeurs **hors des normes** (la plus récente de chaque paramètre), ou « Valeurs dans les limites des normes. ».
+- **Quand la fiche est trop longue**, chaque phrase a une **priorité** : ADP raccourcit puis retire d'abord les moins importantes (conditions environnementales, lieu à l'appel, certificat médical, actes, ECG, biologie normale, examens normaux, poids et taille…), jamais le **diagnostic retenu**,
+  la **table de recompression et l'orientation**, les **premiers symptômes**, la description de la plongée ni les anomalies de l'examen et la conclusion « Au total » ; puis il **remet** ce qui peut l'être tant que le texte tient dans la limite. Dans tous les cas, le texte ne dépasse jamais 3 800 caractères.
+  **Ce qui a été retiré ou abrégé est annoncé** à la copie (« … retiré pour tenir dans la limite : … ; abrégé : … ») et sous l'aperçu.
+- **Un aperçu** se déplie sous la synthèse (ligne « Avis Spécialisé Résurgences : N caractères sur 3 800 au plus, sans tableau ») : il montre exactement le texte qui sera copié et se met à jour à chaque saisie.
+- Les autres types de fiche (suivi, sortie, séance) n'ont **que** « copier le texte intégral » ; il n'y a ni bouton ni aperçu du texte court. Sans rien d'écrit dans la synthèse, il n'y a rien à copier (« Rien à copier : renseignez la fiche »).
+
+Les priorités et les coupes sont dans les fonctions `avisClasse`, `avisFit` et `avisTexte` de `index.html` ; la limite est la constante `AVIS_MAX`.
+
 ### Copier vers un traitement de texte ou le dossier patient
 
-**Copier** (synthèse) et **Copier le CRH** posent le texte dans le presse-papiers sous plusieurs formes à la fois ; le logiciel qui reçoit
+**copier le texte intégral** (synthèse) et **Copier le CRH** posent le texte dans le presse-papiers sous plusieurs formes à la fois ; le logiciel qui reçoit
 prend celle qu'il sait lire :
 
 | Où l'on colle | Ce qui est collé |
@@ -1542,9 +1564,20 @@ ce qui est anormal.
 
 **Ctrl + S** enregistre. Un brouillon est sauvegardé toutes les 4 secondes.
 
+**Modifier une fiche déjà enregistrée : une confirmation.** Depuis la 10.1.1, quand vous ouvrez une fiche **déjà enregistrée** (clic dans la liste des fiches ou sur une pastille de patient en cours) et que vous tentez de la modifier, **quel que soit l'encart** (une frappe, un clic sur
+une réponse, « tout normal », une ligne de constantes, la dictée, le changement de type…), ADP pose la question « **Cette fiche est déjà enregistrée. Êtes-vous sûr de vouloir la modifier ?** » dès la **première** tentative, avant de marquer la fiche modifiée.
+
+- **Oui, modifier cette fiche** : la modification (déjà faite à l'écran) est gardée, et la fiche reste modifiable **sans nouvelle question** jusqu'à l'ouverture d'une autre fiche. Le curseur revient là où vous étiez.
+- **Non, la laisser telle qu'elle est enregistrée** (ou la touche **Échap**, ou un clic à côté de la fenêtre) : la modification est **annulée**, la fiche revient exactement telle qu'enregistrée, aucun brouillon n'est gardé ; la question se reposera à la prochaine tentative.
+- Ne posent **pas** la question : une **nouvelle fiche**, un **ré-examen**, une **séance de recompression**, un **brouillon repris** à l'ouverture d'ADP, et une fiche **enregistrée à l'instant** dans la même séance de saisie (on est en train de la remplir). Changer d'onglet, replier un encart,
+  chercher dans la liste, copier un texte ou ouvrir le mode d'emploi ne sont pas des modifications. Une fiche rouverte depuis la liste est de nouveau protégée.
+- Tant que la question est affichée, rien d'autre n'avance : l'enregistrement est refusé (« Répondez d'abord à la question »), les autres fenêtres ne s'ouvrent pas. **Aucun bouton n'a le curseur à l'ouverture** (il est sur le titre de la question) : une frappe qui continue (espace, Entrée) ne répond ni « oui » ni « non » ;
+  la touche **Tab** mène aux boutons, et Entrée ou espace sur un bouton ne compte qu'après 0,7 seconde. Un **clic à côté** de la fenêtre ou la touche **Échap** pendant les 0,6 seconde qui suivent l'affichage sont ignorés (le second clic d'un double clic sur une réponse ne ferme pas la question).
+
 **Date et heure en un geste.** Dans une case de **date** ou d'**heure** (date et heure de l'examen, de l'accident, de la mise en pression, heure d'un relevé de
 constantes…), la touche **+** ou la **barre d'espace** écrit la **date du jour** (« 07/10/2026 ») ou l'**heure du moment** (« 14:35 »). Dans une case déjà remplie,
-elle la remplace par le moment présent.
+elle la remplace par le moment présent. Les **heures se tapent sans les deux points** : « 1145 » devient « 11:45 » (comme les dates : « 07102026 » devient « 07/10/2026 »), y compris l'heure d'un relevé de
+constantes depuis la 9.5.2.
 
 Un champ dont la question commandante change de réponse est effacé automatiquement. Exemple :
 si vous repassez « Nystagmus » de OUI à NON, le côté, la position du regard et le sens du nystagmus
@@ -1566,7 +1599,7 @@ l'examen neurologique. *Avant la 9.4.2, les quatre épreuves terminaient l'encar
 
 Une épreuve non réalisée reste vide. *Tout renseigner comme NORMAL* les cote normales. Un Romberg
 positif cote l'instabilité du score vestibulaire « présente debout yeux fermés ». Dans la synthèse, les
-épreuves anormales sont écrites avec les signes vestibulo-cochléaires.
+épreuves anormales sont écrites avec les signes vestibulo-cochléaires, **dans l'examen général** (à la suite de l'ORL) et non plus dans l'examen neurologique (depuis la 10.1.1 : synthèse, compte rendu d'hospitalisation, texte court ; les pages de saisie du PDF ne changent pas).
 
 ### Les schémas corporels
 
@@ -1940,6 +1973,98 @@ aux analyses topographiques fines.
 
 ---
 
+## Changements de la version 10.1.1
+
+Cinq modifications, dans un **nouveau dossier** : `ADP-10.1.1`, copié de `ADP-9.5.1` (qui contient la 9.5.2 et reste **intact**). Aucune colonne ne s'ajoute ni ne disparaît (955 colonnes, le même dictionnaire), les fiches de la 9.5.2 s'ouvrent telles quelles ;
+les pages de saisie du PDF ne changent pas, seule la place du syndrome vestibulaire dans la synthèse écrite (donc imprimée en page 6) change. `index.html` passe de 827 Ko à 847 Ko.
+
+### Le rappel de l'import-export est retiré
+
+- Le **rappel de 11 h 45 et de 16 h 00** est **retiré complètement** : le bandeau jaune, la notification du navigateur, l'horloge qui les déclenchait, la case **Rappels** et les boutons *Activer les notifications du navigateur* et *Voir le rappel* de la fenêtre *Exporter les données…*,
+  l'icône de cloche, le paragraphe « 7. Rappel… » du mode d'emploi et la section *Rappel de l'import-export des fiches JSON* de cette notice. Il ne reste dans `index.html` ni code, ni réglage, ni style de ce rappel. Un réglage « Rappels » déjà mémorisé par votre navigateur est simplement ignoré.
+- **Gardées** : la **bulle** des boutons *Tout transférer en ZIP* et *Importer* (et de leurs entrées du menu Plus) et la phrase en tête de la fenêtre *Exporter tout en JSON*, qui disent la manipulation du service (voir *À valider*).
+
+### Bouton Actualiser
+
+- Un bouton à icône **Actualiser** (flèche circulaire), à **droite des petites icônes** de la barre du haut, avant *Plus* : il **relit le dossier de données connecté**, revérifie son autorisation (et la redemande dans le clic si besoin), lit les fiches ajoutées ou modifiées par un autre poste, écrit celles que le dossier
+  n'a pas et remet à jour le fichier de données. Sur téléphone, il reste dans la barre (avec *nouvelle fiche*, *enregistrer*, *PDF* et *Plus*). Voir *Le bouton Actualiser*.
+
+### Le syndrome vestibulaire est dit avec l'examen général
+
+- Dans la **synthèse rédigée**, le **compte rendu d'hospitalisation** (admission, sortie, évolution) et le texte court, le syndrome vestibulaire (vertiges, nystagmus, Romberg, Fukuda, marche en étoile, marche funambule) et les signes cochléaires sont écrits dans « **À l'examen général, on retrouve** »,
+  à la suite de l'ORL, et plus dans « À l'examen neurologique, on retrouve ». Voir *L'examen est dit en syndromes*.
+
+### Confirmation avant de modifier une fiche déjà enregistrée
+
+- À la **première tentative de modification** d'une fiche déjà enregistrée, quel que soit l'encart, ADP demande « Cette fiche est déjà enregistrée. Êtes-vous sûr de vouloir la modifier ? » (**Oui, modifier cette fiche** / **Non, la laisser telle qu'elle est enregistrée**). « Non », la touche Échap
+  ou un clic à côté de la fenêtre annulent la modification. Voir *Remplir une fiche*.
+
+### Texte court « Avis Spécialisé Résurgences »
+
+- Sur une **consultation initiale**, un texte de synthèse de **3 800 caractères au plus, sans tableau**, copié par un petit bouton **copier Avis Spécialisé Résurgences** (en-tête de la synthèse), avec un aperçu qui se déplie sous la synthèse. Le bouton « copier le texte » de la synthèse complète est
+  renommé **copier le texte intégral** (pour tous les types de fiche). Voir *Le texte court « Avis Spécialisé Résurgences »*.
+
+### À valider de votre côté
+
+- **Quelle « alerte import-export » vouliez-vous retirer ?** J'ai retiré le **rappel de 11 h 45 et 16 h 00** (bandeau et notification), la seule fonction qui « alerte ». La **bulle** de la manipulation du service sur les boutons d'import-export (ajoutée aussi en 9.5.1) est **conservée** :
+  si vous vouliez la retirer elle aussi, dites-le-moi, c'est une ligne.
+- **Le bouton Actualiser : ce qu'il relit.** J'ai compris « relire le dossier connecté » comme : relire la base du navigateur et le dossier de données (et celui de recherche, s'il est distinct), revérifier l'autorisation, lire les fiches nouvelles ou modifiées d'un autre poste, écrire celles
+  que le dossier n'a pas. Il peut donc faire apparaître **la demande d'autorisation du navigateur** (elle exige un clic : c'est le navigateur qui l'impose). Sur **Firefox, Safari et les navigateurs de téléphone**, sans dossier connecté, il relit seulement la liste et le dit.
+  Son **emplacement** (entre la dernière petite icône et *Plus*) est ma lecture de « à droite des petits icônes » : dites-moi s'il doit être tout à droite, après *Plus*.
+- **Signes cochléaires.** J'ai déplacé avec le syndrome vestibulaire les **signes cochléaires** (hypoacousie, acouphènes), qui s'écrivaient avec lui (« syndrome vestibulo-cochléaire »). La conclusion **« Au total »** cite toujours les syndromes anormaux de l'examen général comme de l'examen neurologique
+  (par exemple « Au total : examen neurologique anormal, avec déficit moteur, atteinte médullaire et syndrome vestibulo-cochléaire. »), comme avant : dites-moi si le vestibulaire ne doit plus y figurer.
+- **La confirmation.** Elle se pose à l'**ouverture d'une fiche enregistrée** (liste ou pastille) puis à la **première** modification ; après « Oui », la fiche reste modifiable jusqu'à l'ouverture d'une autre fiche ; une fiche rouverte est de nouveau protégée. Elle ne concerne pas une nouvelle fiche, un ré-examen,
+  une séance, un brouillon repris, ni **une fiche qu'on vient d'enregistrer** et qu'on continue de remplir (sinon chaque Ctrl+S la redemanderait) : dites-moi si vous voulez qu'elle se repose aussi après un enregistrement. C'est une **fenêtre d'ADP** (pas la boîte du navigateur) : elle ne peut pas être masquée par
+  « ne plus afficher », et elle est testée. « Non » rend la fiche **telle qu'enregistrée** (la modification faite est perdue, par conception). Aucun bouton n'a le curseur à l'ouverture (il est sur le titre) : une frappe qui continue (espace, Entrée) ne répond ni « oui » ni « non » ; Échap et un clic à côté sont ignorés pendant 0,6 seconde, pour qu'un double clic sur une réponse ne ferme pas la question.
+- **Le texte court.** Il est fait des **mêmes phrases** que la synthèse, avec des **priorités** qui décident ce qui saute (ou est abrégé) quand la fiche dépasse 3 800 caractères ; ce qui saute est annoncé à la copie. Ces priorités sont **ma proposition** : diagnostic, table et orientation, premiers symptômes, plongée
+  et anomalies sont gardés en dernier ; conditions environnementales, lieu à l'appel, certificat médical, actes, ECG et biologie normale partent en premier. Dites-moi ce que vous voulez garder ou perdre en premier. La biologie n'est qu'une phrase (les valeurs hors des normes). Le texte est **brut** (ni gras ni souligné).
+  **Un retour à la ligne compte pour deux caractères** (CR + LF sous Windows) : le texte tient donc dans 3 800 caractères même dans une zone de saisie qui les compte ainsi, au prix d'une trentaine de caractères avec un compteur qui ne compte qu'un caractère par retour à la ligne. Je n'ai pas pu essayer la zone de saisie de Résurgences :
+  si elle compte autrement (en octets, par exemple), dites-moi comment.
+- **Ce qui n'a pas pu être vérifié.** Chrome et Safari ; un vrai téléphone ou une vraie tablette (essayés à la largeur d'un téléphone et d'une tablette dans Edge et Firefox) ; un vrai dossier de données sur disque ou sur `T:` (essayé avec le système de fichiers privé d'Edge) ; la fenêtre d'autorisation d'un dossier réel ;
+  le collage du texte court dans Résurgences.
+- **Ce qui a été essayé.** Les suites des versions précédentes (mises à jour : version ; celle de la 9.5.1 vérifie maintenant que le rappel n'existe plus) et quatre suites propres à la 10.1.1 passent (2254 contrôles au total, dans un navigateur automatisé) : bouton Actualiser (place, bulle, rotation, dossier connecté,
+  à autoriser, introuvable, de recherche distinct, absent, navigateur sans dossier, fiche ouverte jamais écrasée), syndrome vestibulaire dans l'examen général (synthèse, compte rendu d'admission, de sortie et d'évolution, synthèse imprimée, texte copié), confirmation (16 chemins de modification, Oui, Non, Échap, clic à côté,
+  touche tapée trop vite, double clic, enregistrement, brouillon, nouvelle fiche, ré-examen, séance, fiche rouverte), texte court (150 fiches au hasard : jamais plus de 3 800 caractères, retours à la ligne comptés pour deux, toujours le diagnostic, toujours le même texte pour la même fiche). Puis, dans de vrais navigateurs :
+  **Edge** (56 contrôles à trois largeurs de fenêtre, 1100, 768 et 390 px : vrais clics, touche Échap, horloge simulée à 11 h 45 pendant plus de 20 secondes sans aucun rappel) et le **système de fichiers privé d'Edge** pour le dossier de données (35 contrôles : fiches ajoutées et modifiées par un autre poste, autorisation
+  redemandée, refusée ou sans geste valable, dossier disparu) ; un vrai **Firefox 137** (24 contrôles propres à la 10.1.1 : vrais clics et vraies frappes, vrai presse-papiers de Windows pour les deux boutons de copie, mise en page sur 390 px, avec captures d'écran ; 142 contrôles des versions précédentes qui repassent,
+  dont deux scénarios adaptés à la question de confirmation).
+
+---
+
+## Changements de la version 9.5.2
+
+Une modification, **dans le même dossier** : `ADP-9.5.1` contient maintenant la 9.5.2 (l'`index.html` de la 9.5.1 est gardé à côté du dossier, sous le nom `ADP-9.5.1_index_avant_9.5.2.html`). Aucune colonne ne s'ajoute ni ne
+disparaît (955 colonnes, le même dictionnaire), le papier ne change pas, les fiches de la 9.5.1 s'ouvrent telles quelles. `index.html` passe de 824 Ko à 827 Ko.
+
+### L'heure d'un relevé de constantes se tape en HHMM
+
+- Dans **Constantes et surveillance**, la case « Heure » d'un relevé se saisit comme les autres cases d'heure de la fiche : on tape **1145**, les deux points se posent tout seuls (**11:45**), l'heure enregistrée est toujours
+  au format HH:MM. Avant, il fallait taper les deux points soi-même ; sans eux, « 1145 » était enregistré tel quel, ce qui donnait un papier sans deux points et une durée de surveillance vide dans le fichier de données.
+- Une heure **impossible** (« 2400 », « 1160 ») ou **incomplète** (« 11 ») reste en **rouge** et n'est **pas enregistrée** : l'heure précédente du relevé est conservée ; à la sortie de la case, un message le dit (« Heure
+  impossible : attendu HH:MM »). Retaper une heure juste enlève le rouge. Le rouge reste sur sa ligne quand on ajoute ou retire un relevé.
+- **+** ou **barre d'espace** : l'heure du moment, comme avant (et le rouge s'efface).
+- Une saisie à **trois chiffres** est lue comme dans les autres cases d'heure : « 930 » est 9 h 30 (« 09:30 »). Dans un relevé, elle n'est enregistrée qu'**à la sortie de la case** (ou au 4e chiffre), et le rouge n'est posé en
+  cours de frappe qu'au 4e chiffre : « 0930 » ne devient jamais rouge en route.
+- Les **fiches enregistrées avant la 9.5.2** avec une heure de relevé sans deux points (« 1145 », « 930 ») s'ouvrent avec « 11:45 » et « 09:30 », sans que la fiche soit marquée modifiée ; le fichier de données lit ces heures de la même
+  façon, même pour une fiche qu'on n'a pas rouverte (première heure, dernière heure, durée de surveillance). Le mode d'emploi de l'application le dit en une phrase.
+
+### À valider de votre côté
+
+- **Les autres cases d'heure de la fiche ont encore un défaut ancien, que je n'ai pas touché** (hors de votre demande) : en tapant « 2400 » **chiffre par chiffre** dans « heure de l'accident » (ou de l'examen, de la mise en pression…),
+  le 3e chiffre (« 24:0 », lu 02:40) est enregistré, puis « 24:00 » reste en rouge **sans rétablir l'heure précédente** ; la fiche garde « 02:40 » sous une case rouge. Collée ou corrigée, l'heure est juste. Dans la case d'un
+  relevé, c'est corrigé (ci-dessus). Voulez-vous que j'aligne les autres cases (9.5.3) ?
+- **Un nouveau relevé porte déjà l'heure du moment** (c'était déjà le cas) : pour taper la vôtre, il faut d'abord la sélectionner (**Ctrl + A** dans la case), faute de quoi la case est pleine (5 signes) et la frappe n'ajoute rien. Je
+  peux sélectionner l'heure toute seule à l'arrivée dans la case, ou laisser la case vide.
+- **« 930 » est lu 9 h 30** : c'est la règle des autres cases d'heure (3 chiffres = H et MM), conservée ; « 11:4 » puis une sortie de case donne donc « 01:14 ».
+- **Ce qui n'a pas pu être vérifié.** (1) La **sortie de la case par la touche Tab dans un Firefox piloté** : la fenêtre pilotée n'a pas le focus du système et Firefox n'y envoie alors ni « blur » ni « change » ; ces deux événements ont
+  été envoyés par le script (les frappes, elles, sont réelles). (2) Chrome, et un vrai téléphone ou une tablette (c'est là que le clavier numérique, sans la touche « : », rend la saisie en HHMM utile).
+- **Ce qui a été essayé.** Les suites des versions précédentes (mises à jour : version) et une suite propre à la 9.5.2 passent (1891 contrôles au total, dans un navigateur automatisé) : frappe chiffre par chiffre (rien d'enregistré en
+  route, rouge au seul 4e chiffre), heures impossibles ou incomplètes, collage, effacement, retour arrière, `+` et espace, comparaison de 30 saisies avec la case « heure de l'accident », lignes ajoutées ou retirées avec une saisie en rouge,
+  papier, fichier de données, durée à cheval sur minuit, fiches d'avant la 9.5.2 (ouvertes ou non), aspect du rouge. Puis, avec de **vraies frappes au clavier** (touche par touche), de vrais clics et les vraies touches `+` et espace : dans **Edge** (22 contrôles, avec un vrai Tab : « blur » et « change » partent d'eux-mêmes)
+  et dans un vrai **Firefox 137** (25 contrôles propres à la 9.5.2 et 111 des versions précédentes qui repassent ; la sortie de la case y est envoyée par le script, voir ci-dessus).
+
+---
+
 ## Changements de la version 9.5.1
 
 Trois modifications, dans un **nouveau dossier** : `ADP-9.5.1`, copié de `ADP-9.4.1` (qui contient la 9.4.2 et reste intact ; le numéro 9.5.0 n'existe pas). Aucune colonne ne s'ajoute ni ne disparaît (955 colonnes, le même
@@ -1951,10 +2076,10 @@ dictionnaire), le papier ne change pas, les fiches de la 9.4.2 s'ouvrent telles 
   manipulation du service : « Import-export des fiches JSON : exporter l'ensemble des fiches JSON dans le dossier « T:\Services\Smhep\Commun\Personnels SMHEP\MEDECIN CAISSON F\ADP- Export JSON ». » Elle apparaît dès que le curseur (ou le clavier) atteint le bouton, comme les autres bulles.
   La fenêtre *Exporter tout en JSON* la redit en tête.
 
-### Rappel à 11 h 45 et à 16 h 00
+### Rappel à 11 h 45 et à 16 h 00 (retiré en 10.1.1)
 
-- Un **bandeau** en haut de la page et, si le navigateur l'autorise, une **notification du navigateur**, à **11 h 45** et à **16 h 00** (heure du navigateur), répètent la consigne de la bulle. Voir *Rappel de l'import-export des
-  fiches JSON (11 h 45 et 16 h 00)* : fonctionnement, rattrapage d'une heure, autorisation des notifications, réglage (case « Rappels » de la fenêtre *Exporter les données…*).
+- Un **bandeau** en haut de la page et, si le navigateur l'autorise, une **notification du navigateur**, à **11 h 45** et à **16 h 00** (heure du navigateur), répétaient la consigne de la bulle (fonctionnement, rattrapage d'une heure, autorisation des notifications, case « Rappels » de la fenêtre
+  *Exporter les données…*). **Ce rappel, et la section de la notice qui le décrivait, ont été retirés en 10.1.1** : voir *Changements de la version 10.1.1*.
 
 ### Ligne Excel ADP : colonne « Observations » (BW)
 
@@ -3046,6 +3171,11 @@ du script de `index.html`.
 
 ## Historique
 
+- **10.1.1** : le rappel de 11 h 45 et de 16 h 00 de l'import-export est retiré (la bulle des boutons d'import-export reste) ; bouton **Actualiser** à droite des petites icônes de la barre du haut (relit le dossier de données connecté, revérifie son autorisation) ;
+  le syndrome vestibulaire (et les signes cochléaires) est dit avec l'examen général, dans la synthèse et le CRH ; confirmation « Cette fiche est déjà enregistrée. Êtes-vous sûr de vouloir la modifier ? » à la première modification d'une fiche enregistrée ;
+  texte court « Avis Spécialisé Résurgences » (consultation initiale, 3 800 caractères au plus, sans tableau, bouton **copier Avis Spécialisé Résurgences**) ; le bouton « copier le texte » de la synthèse devient **copier le texte intégral**. Nouveau dossier `ADP-10.1.1`.
+- **9.5.2** : l'heure d'un relevé de « Constantes et surveillance » se tape en HHMM (1145 → 11:45) comme les autres cases d'heure ; une heure impossible ou incomplète reste en rouge et n'est pas enregistrée ; les heures
+  de relevés enregistrées sans deux points avant la 9.5.2 sont lues HH:MM. Dans le même dossier `ADP-9.5.1`.
 - **9.5.1** : la bulle des boutons d'import-export (Tout transférer en ZIP, Importer, menu Plus) dit la manipulation du service (exporter l'ensemble des fiches JSON dans `T:\Services\Smhep\Commun\Personnels SMHEP\MEDECIN CAISSON F\ADP- Export JSON`) ;
   rappel à 11 h 45 et à 16 h 00 (heure du navigateur) : bandeau et notification du navigateur ; la colonne BW « Observations » de la ligne Excel ADP n'est plus remplie. Nouveau dossier `ADP-9.5.1`.
 - **9.4.2** : feuille COHB : la colonne « EE / plateau technique » (AB) compte les épreuves d'effort réalisées ; ligne Excel ADP : « nombre j AT » compte les jours d'hospitalisation jours extrêmes compris (du 02/10 au 05/10 : 4 jours)
